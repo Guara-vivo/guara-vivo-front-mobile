@@ -1,68 +1,85 @@
-import { useState } from 'react';
-import { EyeOff, Eye } from 'lucide-react';
+import type { FormEvent } from 'react'
+import { useState } from 'react'
+import { EyeOff, Eye } from 'lucide-react'
+
+import { Button } from './ui/button'
+import { Input } from './ui/input'
 
 interface RegisterPasswordScreenProps {
-  onNavigate: (screen: string) => void;
+	onNavigate: (screen: string) => void
 }
 
-export function RegisterPasswordScreen({ onNavigate }: RegisterPasswordScreenProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+export function RegisterPasswordScreen({
+	onNavigate,
+}: RegisterPasswordScreenProps) {
+	const [showPassword, setShowPassword] = useState(false)
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-  const handleContinue = (e: React.FormEvent) => {
-    e.preventDefault();
-    onNavigate('home');
-  };
+	const handleContinue = (e: FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		onNavigate('home')
+	}
 
-  return (
-    <div className="min-h-screen bg-white px-6 py-12">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-[#1A1A1A] mb-12">Crie sua senha</h1>
+	return (
+		<div className="min-h-screen bg-white px-6 py-12">
+			<div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-md flex-col">
+				<h1 className="mb-12 text-[var(--color-foreground)]">Crie sua senha</h1>
 
-        <form onSubmit={handleContinue} className="space-y-6">
-          <div>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Senha"
-                className="w-full pb-3 border-b border-[#1A1A1A]/20 focus:border-[#1A1A1A] focus:outline-none bg-transparent text-[#1A1A1A] placeholder:text-[#1A1A1A]/40 pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-0 text-[#1A1A1A]/40 hover:text-[#1A1A1A] transition-colors"
-              >
-                {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-              </button>
-            </div>
-            <p className="text-xs text-[#1A1A1A]/50 mt-2">Mínimo de 8 caracteres</p>
-          </div>
+				<form
+					onSubmit={handleContinue}
+					className="flex flex-1 flex-col justify-between gap-6"
+				>
+					<div>
+						<div className="relative">
+							<Input
+								type={showPassword ? 'text' : 'password'}
+								placeholder="Senha"
+								className="border-0 border-b border-[var(--color-border)] bg-transparent px-0 pb-3 pr-10 text-[var(--color-foreground)] shadow-none placeholder:text-[var(--color-muted-foreground)] focus-visible:ring-0"
+							/>
+							<button
+								type="button"
+								onClick={() => setShowPassword(!showPassword)}
+								className="absolute right-0 top-0 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
+							>
+								{showPassword ? (
+									<Eye className="w-5 h-5" />
+								) : (
+									<EyeOff className="w-5 h-5" />
+								)}
+							</button>
+						</div>
+						<p className="mt-2 text-xs text-[var(--color-muted-foreground)]">
+							Mínimo de 8 caracteres
+						</p>
+					</div>
 
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder="Confirmar senha"
-              className="w-full pb-3 border-b border-[#1A1A1A]/20 focus:border-[#1A1A1A] focus:outline-none bg-transparent text-[#1A1A1A] placeholder:text-[#1A1A1A]/40 pr-10"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-0 top-0 text-[#1A1A1A]/40 hover:text-[#1A1A1A] transition-colors"
-            >
-              {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-            </button>
-          </div>
+					<div className="relative">
+						<Input
+							type={showConfirmPassword ? 'text' : 'password'}
+							placeholder="Confirmar senha"
+							className="border-0 border-b border-[var(--color-border)] bg-transparent px-0 pb-3 pr-10 text-[var(--color-foreground)] shadow-none placeholder:text-[var(--color-muted-foreground)] focus-visible:ring-0"
+						/>
+						<button
+							type="button"
+							onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+							className="absolute right-0 top-0 text-[var(--color-muted-foreground)] transition-colors hover:text-[var(--color-foreground)]"
+						>
+							{showConfirmPassword ? (
+								<Eye className="w-5 h-5" />
+							) : (
+								<EyeOff className="w-5 h-5" />
+							)}
+						</button>
+					</div>
 
-          <div className="pt-80">
-            <button
-              type="submit"
-              className="w-full bg-[#1A1A1A] hover:bg-black text-[#F1F1F1] py-4 rounded-xl uppercase tracking-wide transition-colors shadow-lg"
-            >
-              Continuar
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+					<Button
+						type="submit"
+						className="w-full rounded-xl bg-[var(--color-foreground)] py-4 uppercase tracking-wide text-[var(--color-primary-foreground)] shadow-lg transition-colors hover:opacity-90"
+					>
+						Continuar
+					</Button>
+				</form>
+			</div>
+		</div>
+	)
 }

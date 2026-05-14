@@ -1,3 +1,1 @@
-@import './fonts.css';
-@import './tailwind.css';
-@import './theme.css';
+/* Global web styles removed. React Native handles styling via StyleSheet. */

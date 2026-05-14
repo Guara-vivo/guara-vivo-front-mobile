@@ -1,0 +1,16 @@
+export type ScreenId =
+  | 'splash'
+  | 'welcome'
+  | 'login'
+  | 'register-email'
+  | 'register-password'
+  | 'home'
+  | 'register'
+  | 'maps'
+  | 'history'
+  | 'record-detail'
+  | 'profile'
+  | 'edit-profile'
+  | 'change-password'
+  | 'notifications'
+  | 'about';
