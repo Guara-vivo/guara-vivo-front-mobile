@@ -6,10 +6,10 @@ const screenBottomPadding = 120
 const cornerRadius = radius.md ?? 12
 const unifiedShadow = {
 	shadowColor: colors.text,
-	shadowOpacity: 0.1,
-	shadowOffset: { width: 0, height: 4 },
-	shadowRadius: 10,
-	elevation: 3,
+	shadowOpacity: 1,
+	shadowOffset: { width: 0, height: 5 },
+	shadowRadius: cornerRadius,
+	elevation: 10,
 }
 
 // palette aliases — prefer theme colors, fallback to literals when needed
@@ -366,13 +366,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	homeHeader: {
 		alignItems: 'center',
 		paddingTop: 2,
-		gap: 8,
 	},
 	homeLogo: {
 		width: '100%',
 		maxWidth: 300,
 		height: 180,
-		marginBottom: 4,
 	},
 	homeKicker: {
 		color: palette.text,
@@ -444,7 +442,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerContent: {
 		paddingHorizontal: screenGutter,
-		paddingBottom: screenBottomPadding,
+    paddingBottom: screenBottomPadding,
+    paddingTop: spacing.lg,
 	},
 	registerCard: {
 		backgroundColor: colors.surface,
@@ -594,7 +593,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapsContent: {
 		paddingHorizontal: screenGutter,
-		paddingBottom: screenBottomPadding,
+    paddingBottom: screenBottomPadding,
+    paddingTop: spacing.lg,
 		gap: 8,
 	},
 	mapsFilterCard: {
@@ -784,8 +784,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'flex-start',
-		marginTop: spacing.sm,
-		marginBottom: spacing.sm,
 		paddingHorizontal: 18,
 		paddingVertical: 14,
 		height: 56,
@@ -1032,14 +1030,12 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyContent: {
 		paddingHorizontal: screenGutter,
-		paddingBottom: screenBottomPadding,
-		gap: 12,
+    paddingBottom: screenBottomPadding,
+    paddingTop: spacing.lg,
 	},
 	historySearchCard: {
-		borderWidth: 0,
-		borderRadius: cornerRadius,
-		padding: 14,
-		gap: 12,
+    borderRadius: cornerRadius,
+    marginBottom: spacing.lg,
 		...unifiedShadow,
 	},
 	historySearchInputWrap: {
@@ -1050,7 +1046,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: 10,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
 		backgroundColor: colors.surface,
 	},
 	historySearchInput: {
@@ -1076,17 +1071,15 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.border,
 		paddingHorizontal: 12,
 		paddingVertical: 12,
-		gap: 8,
+		gap: spacing.md,
 		...unifiedShadow,
 	},
 	historyRecordTopRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 10,
+		gap: spacing.sm,
 	},
 	historyRecordIdBadge: {
 		minWidth: 45,
@@ -1500,7 +1493,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileContent: {
 		paddingHorizontal: screenGutter,
-		paddingBottom: screenBottomPadding,
+    paddingBottom: screenBottomPadding,
+    paddingTop: spacing.md,
 		gap: 20,
 	},
 	profileHeroCard: {
