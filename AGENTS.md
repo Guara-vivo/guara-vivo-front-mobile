@@ -9,20 +9,29 @@
 
 ## 📂 Codebase Structure
 
-- **Entrypoints:** A lógica de telas, componentes e utilitários para o mobile deve ser procurada e manipulada dentro de `src/native`.
+- **Entrypoints:** A lógica de telas, componentes e utilitários para o mobile deve ser procurada e manipulada dentro de `src`.
 - **Separação:** O diretório `src/app` foi removido, pois continha componentes e telas obsoletos da web.
-- **Main App:** A navegação principal fica em `src/native/GuaraVivoApp.tsx`.
-- **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/native/types/navigation.ts`.
-- **Screens:** As telas principais ficam em `src/native/screens/authScreens.tsx`, `src/native/screens/mainScreens.tsx` e `src/native/screens/profileScreens.tsx`.
-- **Mapa:** A visualização do mapa fica em `src/native/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/native/screens/mainScreens.tsx`.
-- **Estilos:** O visual do app fica centralizado em `src/native/styles/appStyles.ts` e `src/native/constants/theme.ts`.
-- **Dados:** Os registros mockados e tipos do mapa ficam em `src/native/config/map.ts` e `src/native/data/mockRecords.ts`.
-- **Assets:** As logos usadas no app ficam em `src/native/assets/images`.
+- **Main App:** A navegação principal fica em `src/GuaraVivoApp.tsx`.
+- **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/types/navigation.ts`.
+- **Screens:** As telas principais ficam em `src/screens/authScreens.tsx`, `src/screens/mainScreens.tsx` e `src/screens/profileScreens.tsx`.
+- **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/mainScreens.tsx`.
+- **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
+- **Dados:** Os registros mockados e tipos do mapa ficam em `src/config/map.ts` e `src/data/mockRecords.ts`.
+- **Assets:** As logos usadas no app ficam em `src/assets/images`.
+
+### Arquitetura Modular (atual)
+
+- **Components:** `src/components/` contém componentes reutilizáveis e pequenos componentes por domínio (ex.: `auth/`, `history/`).
+- **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`). `mainScreens.tsx` reexporta as telas.
+- **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`).
+- **Services:** Abstrações de dados e APIs locais em `src/services/` (ex.: `recordsService.ts`).
+- **Styles:** `src/styles/appStyles.ts` mantém estilos globais; prefira mover estilos muito grandes para arquivos por domínio.
+- **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
 
 ## 🛠️ Constraints & Quirks
 
 - **Framework:** A plataforma é estritamente **React Native**. Evite qualquer lógica ou importação que dependa de APIs web (DOM, etc.).
-- **Styling:** Os estilos e a aparência são gerenciados localmente em `src/native/styles/appStyles.ts` e `src/native/constants/theme.ts`.
+- **Styling:** Os estilos e a aparência são gerenciados localmente em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
 - **Expo Setup:** O app usa `expo-font` e `expo-location` no `app.json`. A permissão de localização está configurada para centralizar o mapa no aparelho.
 - **Platform:** `app.json` define orientação portrait, tema claro, suporte a tablet no iOS e adaptive icon no Android.
 - **Scripts Atuais:** Use `npm start`, `npm run lint`, `npm run lint:fix` e `npm run typecheck`.
@@ -41,6 +50,13 @@
 - Example:
   - "Fix code"
   - Not: "I will fix the code"
+
+## Agent / Developer Guidelines
+
+- **Preserve negócio:** Não alterar regras de negócio ou validações existentes enquanto refatorar.
+- **Tipagem:** Manter tipagem TypeScript; rode `npm run typecheck` após mudanças.
+- **Validação:** Rode `npm run lint` e, se apropriado, `npm run lint -- --fix` antes de abrir PR.
+- **Small commits:** Faça commits pequenos com descrições claras ao extrair componentes ou hooks.
 
 ## Response Style
 

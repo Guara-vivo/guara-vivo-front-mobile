@@ -1,1 +1,1 @@
-export { default } from './src/native/GuaraVivoApp';
+export { default } from './src/GuaraVivoApp';
