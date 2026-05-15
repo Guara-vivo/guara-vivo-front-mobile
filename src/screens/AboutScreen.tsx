@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, Pressable, ScrollView, Text, View } from 'react-native'
+import { ScrollView, Image, Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
@@ -15,7 +15,6 @@ export function AboutScreen({
 		<View style={appStyles.profileScreen}>
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
-				style={appStyles.screen}
 			>
 				<Pressable
 					onPress={() => onNavigate('profile')}

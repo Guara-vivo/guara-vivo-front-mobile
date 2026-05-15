@@ -3,9 +3,9 @@ import { Ionicons } from '@expo/vector-icons'
 import {
 	View,
 	Pressable,
-	ScrollView,
 	Text,
 	TextInput,
+	ScrollView,
 	FlatList,
 } from 'react-native'
 import { ScreenCard } from '../components/common'
@@ -40,7 +40,6 @@ export function HistoryScreen({
 		<View style={appStyles.historyScreen}>
 			<ScrollView
 				contentContainerStyle={appStyles.historyContent}
-				style={appStyles.screen}
 			>
 				<ScreenCard style={appStyles.historySearchCard}>
 					<View style={appStyles.historySearchInputWrap}>
@@ -75,7 +74,7 @@ export function HistoryScreen({
 							</Text>
 						</View>
 					}
-					renderItem={({ item }) => (
+					renderItem={({ item }: { item: any }) => (
 						<HistoryRecordCard item={item} onOpenRecord={onOpenRecord} />
 					)}
 				/>

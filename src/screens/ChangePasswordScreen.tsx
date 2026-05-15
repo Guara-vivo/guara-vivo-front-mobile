@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useReducer } from 'react'
 import {
 	Alert,
-	Pressable,
 	ScrollView,
+	Pressable,
 	Text,
 	TextInput,
 	View,
@@ -13,17 +13,61 @@ import { usePasswordValidation } from '../hooks/usePasswordValidation'
 
 import type { ScreenId } from '../types/navigation'
 
+type ChangePasswordState = {
+	currentPassword: string
+	newPassword: string
+	confirmPassword: string
+	showCurrentPassword: boolean
+	showNewPassword: boolean
+	showConfirmPassword: boolean
+}
+
+type ChangePasswordAction =
+	| { type: 'SET_CURRENT_PASSWORD'; payload: string }
+	| { type: 'SET_NEW_PASSWORD'; payload: string }
+	| { type: 'SET_CONFIRM_PASSWORD'; payload: string }
+	| { type: 'TOGGLE_SHOW_CURRENT_PASSWORD' }
+	| { type: 'TOGGLE_SHOW_NEW_PASSWORD' }
+	| { type: 'TOGGLE_SHOW_CONFIRM_PASSWORD' }
+
+function changePasswordReducer(
+	state: ChangePasswordState,
+	action: ChangePasswordAction,
+): ChangePasswordState {
+	switch (action.type) {
+		case 'SET_CURRENT_PASSWORD':
+			return { ...state, currentPassword: action.payload }
+		case 'SET_NEW_PASSWORD':
+			return { ...state, newPassword: action.payload }
+		case 'SET_CONFIRM_PASSWORD':
+			return { ...state, confirmPassword: action.payload }
+		case 'TOGGLE_SHOW_CURRENT_PASSWORD':
+			return { ...state, showCurrentPassword: !state.showCurrentPassword }
+		case 'TOGGLE_SHOW_NEW_PASSWORD':
+			return { ...state, showNewPassword: !state.showNewPassword }
+		case 'TOGGLE_SHOW_CONFIRM_PASSWORD':
+			return { ...state, showConfirmPassword: !state.showConfirmPassword }
+		default:
+			return state
+	}
+}
+
 export function ChangePasswordScreen({
 	onNavigate,
 }: {
 	onNavigate: (screen: ScreenId) => void
 }) {
-	const [currentPassword, setCurrentPassword] = useState('')
-	const [newPassword, setNewPassword] = useState('')
-	const [confirmPassword, setConfirmPassword] = useState('')
-	const [showCurrentPassword, setShowCurrentPassword] = useState(false)
-	const [showNewPassword, setShowNewPassword] = useState(false)
-const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+	const [state, dispatch] = useReducer(
+		changePasswordReducer,
+		{
+			currentPassword: '',
+			newPassword: '',
+			confirmPassword: '',
+			showCurrentPassword: false,
+			showNewPassword: false,
+			showConfirmPassword: false,
+		},
+	)
 
 	const { message: passwordHint } = usePasswordValidation()
 
@@ -31,7 +75,6 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 		<View style={appStyles.profileScreen}>
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
-				style={appStyles.screen}
 			>
 				<Pressable
 					onPress={() => onNavigate('profile')}
@@ -48,17 +91,17 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 						</View>
 						<View style={appStyles.changePasswordInputRow}>
 							<TextInput
-								value={currentPassword}
-								onChangeText={setCurrentPassword}
-								secureTextEntry={!showCurrentPassword}
+								value={state.currentPassword}
+								onChangeText={(text) => dispatch({ type: 'SET_CURRENT_PASSWORD', payload: text })}
+								secureTextEntry={!state.showCurrentPassword}
 								style={appStyles.changePasswordInputNoPadding}
 							/>
 							<Pressable
-								onPress={() => setShowCurrentPassword((value) => !value)}
+								onPress={() => dispatch({ type: 'TOGGLE_SHOW_CURRENT_PASSWORD' })}
 								style={appStyles.changePasswordEyeButton}
 							>
 								<Ionicons
-									name={showCurrentPassword ? 'eye-outline' : 'eye-off-outline'}
+									name={state.showCurrentPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
 									color="#909097"
 								/>
@@ -73,17 +116,17 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 						</View>
 						<View style={appStyles.changePasswordInputRow}>
 							<TextInput
-								value={newPassword}
-								onChangeText={setNewPassword}
-								secureTextEntry={!showNewPassword}
+								value={state.newPassword}
+								onChangeText={(text) => dispatch({ type: 'SET_NEW_PASSWORD', payload: text })}
+								secureTextEntry={!state.showNewPassword}
 								style={appStyles.changePasswordInputNoPadding}
 							/>
 							<Pressable
-								onPress={() => setShowNewPassword((value) => !value)}
+								onPress={() => dispatch({ type: 'TOGGLE_SHOW_NEW_PASSWORD' })}
 								style={appStyles.changePasswordEyeButton}
 							>
 								<Ionicons
-									name={showNewPassword ? 'eye-outline' : 'eye-off-outline'}
+									name={state.showNewPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
 									color="#909097"
 								/>
@@ -101,17 +144,17 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 						</View>
 						<View style={appStyles.changePasswordInputRow}>
 							<TextInput
-								value={confirmPassword}
-								onChangeText={setConfirmPassword}
-								secureTextEntry={!showConfirmPassword}
+								value={state.confirmPassword}
+								onChangeText={(text) => dispatch({ type: 'SET_CONFIRM_PASSWORD', payload: text })}
+								secureTextEntry={!state.showConfirmPassword}
 								style={appStyles.changePasswordInputNoPadding}
 							/>
 							<Pressable
-								onPress={() => setShowConfirmPassword((value) => !value)}
+								onPress={() => dispatch({ type: 'TOGGLE_SHOW_CONFIRM_PASSWORD' })}
 								style={appStyles.changePasswordEyeButton}
 							>
 								<Ionicons
-									name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
+									name={state.showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
 									color="#909097"
 								/>

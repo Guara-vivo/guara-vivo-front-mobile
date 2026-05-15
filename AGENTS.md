@@ -40,6 +40,40 @@
 - **Mapa:** O mapa já remove POIs comerciais, usa marcadores personalizados neutros e exibe badge de contagem por camada.
 - **Map Layers:** `all` mostra o total visível, `feeding` mostra pontos vermelhos e `nests` mostra casas azuis.
 
+## Performance Optimization Guidelines
+
+### CRITICAL - List Rendering
+
+- **ScrollView:** Use only for static content (images, cards without dynamic lists).
+- **FlatList:** Use for dynamic, scrollable lists with data arrays.
+- **Avoid:** Nested ScrollView + FlatList (causes layout thrashing).
+
+**Pattern:**
+```tsx
+// ❌ Bad
+<ScrollView>
+  <FlatList data={...} />
+</ScrollView>
+
+// ✅ Good
+<FlatList data={...} />
+```
+
+### HIGH - State Management
+
+- **useReducer:** Use for complex form state with multiple inputs (password screens, edit profiles).
+- **useState:** Use for simple, independent state values.
+- **Atomic State:** Keep related form fields in single reducer for efficient updates.
+
+**Pattern:**
+```tsx
+// ✅ Good - Atomic state
+const [state, dispatch] = useReducer(
+  reducer,
+  { password, confirmPassword, showCurrentPassword }
+)
+```
+
 ## Agent Behavior Rules
 
 - Use short sentences (3–6 words when possible).
@@ -90,3 +124,6 @@
 - Moved hardcoded record details to recordDetails.ts.
 - Implemented password validation in ChangePasswordScreen.
 - Fixed TypeScript type issues throughout the codebase.
+- **Optimized list rendering:** Replaced nested ScrollView+FlatList with FlatList for HistoryScreen.
+- **Optimized state management:** Implemented useReducer for atomic state in ChangePasswordScreen and EditProfileScreen.
+- **React Native performance best practices:** ScrollView used for static content, FlatList for dynamic lists.

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { StatusBar } from 'react-native'
+import { StatusBar, Text, TextInput } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { BottomNavigation } from './components/common'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -14,7 +14,6 @@ import { HomeScreen } from './screens/HomeScreen'
 import { MapsScreen } from './screens/MapsScreen'
 import { RecordDetailScreen } from './screens/RecordDetailScreen'
 import { RegisterScreen } from './screens/RegisterScreen'
-
 import { AboutScreen } from './screens/AboutScreen'
 import { ChangePasswordScreen } from './screens/ChangePasswordScreen'
 import { EditProfileScreen } from './screens/EditProfileScreen'
@@ -24,6 +23,20 @@ import { appStyles } from './styles/appStyles'
 import type { ScreenId } from './types/navigation'
 
 export default function GuaraVivoApp() {
+	if (Text && (Text as any).defaultProps == null) {
+		;(Text as any).defaultProps = {}
+	}
+	;(Text as any).defaultProps.style = {
+		...((Text as any).defaultProps.style || {}),
+		letterSpacing: 0.1,
+	}
+	if (TextInput && (TextInput as any).defaultProps == null) {
+		;(TextInput as any).defaultProps = {}
+	}
+	;(TextInput as any).defaultProps.style = {
+		...((TextInput as any).defaultProps.style || {}),
+		letterSpacing: 0.1,
+	}
 	const [currentScreen, setCurrentScreen] = useState<ScreenId>('splash')
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
 	const [selectedRecordId, setSelectedRecordId] = useState<number | undefined>()
@@ -46,7 +59,7 @@ export default function GuaraVivoApp() {
 		)
 	}, [currentScreen, isAuthenticated])
 
-const renderScreen = () => {
+	const renderScreen = () => {
 		switch (currentScreen) {
 			case 'splash':
 				return <SplashScreen onFinish={() => setCurrentScreen('welcome')} />
@@ -78,7 +91,7 @@ const renderScreen = () => {
 				return (
 					<HistoryScreen
 						onNavigate={handleNavigate}
-						onOpenRecord={(recordId) =>
+						onOpenRecord={(recordId: number) =>
 							handleNavigate('record-detail', recordId)
 						}
 					/>
@@ -121,7 +134,7 @@ const renderScreen = () => {
 		currentScreen === 'welcome' ? appStyles.appSplash : colors.background,
 	]
 
-  return (
+	return (
 		<ErrorBoundary>
 			<SafeAreaView style={safeAreaStyle}>
 				<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />

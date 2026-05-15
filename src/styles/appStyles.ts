@@ -48,7 +48,6 @@ const basePrimaryButtonLabel: TextStyle = {
 	color: palette.surface,
 	fontSize: 15,
 	fontWeight: '800',
-	letterSpacing: 0.7,
 }
 
 export const appStyles = StyleSheet.create<Record<string, any>>({
@@ -119,8 +118,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 	},
 	welcomePrimaryButton: {
-    ...basePrimaryButton,
-    padding: 16,
+		...basePrimaryButton,
+		padding: 16,
 		backgroundColor: colors.text,
 	},
 	welcomePrimaryButtonLabel: {
@@ -130,14 +129,13 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	welcomeTextButton: {
 		alignItems: 'center',
 		paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: 'transparent',
+		paddingHorizontal: 12,
+		backgroundColor: 'transparent',
 	},
 	welcomeTextButtonLabel: {
 		color: colors.text,
 		fontSize: 16,
 		fontWeight: '800',
-		letterSpacing: 0.6,
 	},
 	loginScreen: {
 		flex: 1,
@@ -314,7 +312,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: palette.surface,
 		fontSize: 15,
 		fontWeight: '900',
-		letterSpacing: 0.5,
 	},
 	card: {
 		...baseCard,
@@ -328,7 +325,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 12,
 		fontWeight: '700',
 		textTransform: 'uppercase',
-		letterSpacing: 1.4,
 	},
 	heroTitle: {
 		color: palette.text,
@@ -372,7 +368,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: palette.text,
 		fontSize: 15,
 		fontWeight: '800',
-		letterSpacing: 0.8,
 		textTransform: 'uppercase',
 	},
 	homeSubtitle: {
@@ -390,7 +385,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	homePrimaryButtonLabel: {
 		fontSize: 16,
 		fontWeight: '800',
-		letterSpacing: 0.8,
 	},
 	homeShortcutRow: {
 		flexDirection: 'row',
@@ -420,7 +414,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		fontWeight: '800',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	registerScreen: {
 		flex: 1,
@@ -439,7 +432,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 22,
 		lineHeight: 26,
 		fontWeight: '900',
-		letterSpacing: 0.5,
 	},
 	registerScroll: {
 		flex: 1,
@@ -466,7 +458,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 15,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	registerSubsection: {
 		gap: 10,
@@ -481,7 +472,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 12,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	registerDropZone: {
 		minHeight: 110,
@@ -584,7 +574,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerActionButtonLabel: {
 		fontSize: 12,
 		fontWeight: '900',
-		letterSpacing: 0.5,
 	},
 	mapsScreen: {
 		flex: 1,
@@ -604,7 +593,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 26,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.5,
 	},
 	mapsContent: {
 		paddingHorizontal: screenGutter,
@@ -658,7 +646,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 9,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.2,
 	},
 	mapsFilterButtonLabelActive: {
 		color: colors.surface,
@@ -683,7 +670,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 12,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 1.1,
 	},
 	mapsLegendRow: {
 		flexDirection: 'row',
@@ -725,7 +711,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		fontWeight: '700',
 		textTransform: 'uppercase',
-		letterSpacing: 0.8,
 	},
 	textField: {
 		backgroundColor: colors.background,
@@ -783,7 +768,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 17,
 		fontWeight: '800',
 		textTransform: 'uppercase',
-		letterSpacing: 0.8,
 	},
 	actionButtonPressed: {
 		opacity: 0.85,
@@ -797,7 +781,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 15,
 		fontWeight: '700',
 		textTransform: 'uppercase',
-		letterSpacing: 0.8,
 	},
 	actionButtonTextOutline: {
 		color: colors.secondary,
@@ -837,7 +820,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 12,
 		fontWeight: '800',
 		textTransform: 'uppercase',
-		letterSpacing: 1.1,
 	},
 	photoDropZone: {
 		backgroundColor: colors.splash,
@@ -1023,7 +1005,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 26,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.5,
 	},
 	historyContent: {
 		paddingHorizontal: screenGutter,
@@ -1069,7 +1050,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	historyRecordCard: {
 		backgroundColor: colors.surface,
@@ -1099,7 +1079,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 14,
 		fontWeight: '900',
-		letterSpacing: 0.2,
 	},
 	historyRecordDateRow: {
 		flexDirection: 'row',
@@ -1156,7 +1135,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 13,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	historyEmptyWrap: {
@@ -1195,7 +1173,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 27,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	historyModalContent: {
 		paddingHorizontal: 16,
@@ -1216,7 +1193,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	historyDateLabelsRow: {
 		flexDirection: 'row',
@@ -1327,7 +1303,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 12,
 		fontWeight: '900',
-		letterSpacing: 0.3,
 		textTransform: 'uppercase',
 	},
 	historyApplyButton: {
@@ -1342,7 +1317,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 12,
 		fontWeight: '900',
-		letterSpacing: 0.3,
 		textTransform: 'uppercase',
 	},
 	recordDetailScreen: {
@@ -1370,7 +1344,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 22,
 		lineHeight: 20,
 		fontWeight: '900',
-		letterSpacing: 0.5,
 		textTransform: 'uppercase',
 	},
 	recordDetailContent: {
@@ -1397,7 +1370,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 14,
 		fontWeight: '900',
-		letterSpacing: 0.2,
 		textTransform: 'uppercase',
 	},
 	recordDetailCard: {
@@ -1417,7 +1389,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 15,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	recordDetailInfoList: {
@@ -1436,7 +1407,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: 11,
 		fontWeight: '900',
-		letterSpacing: 0.7,
 		textTransform: 'uppercase',
 	},
 	recordDetailValue: {
@@ -1466,7 +1436,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 14,
 		fontWeight: '900',
-		letterSpacing: 0.3,
 	},
 	recordDetailImageGrid: {
 		flexDirection: 'row',
@@ -1519,7 +1488,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 22,
 		lineHeight: 39,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	profileContent: {
@@ -1574,7 +1542,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 14,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	profileMenuCard: {
@@ -1589,7 +1556,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 14,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 		marginBottom: 2,
 	},
@@ -1630,7 +1596,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 12,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	changePasswordInputRow: {
@@ -1691,7 +1656,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 12,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	changePasswordSecondaryAction: {
@@ -1706,7 +1670,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 12,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	notificationsCard: {
@@ -1727,7 +1690,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 13,
 		fontWeight: '900',
-		letterSpacing: 0.4,
 		textTransform: 'uppercase',
 	},
 	notificationsItem: {
@@ -1777,7 +1739,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontWeight: '900',
 		textAlign: 'center',
 		textTransform: 'uppercase',
-		letterSpacing: 0.4,
 	},
 	aboutVersion: {
 		color: colors.muted,
@@ -1798,7 +1759,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 13,
 		fontWeight: '900',
-		letterSpacing: 0.3,
 		textTransform: 'uppercase',
 	},
 	aboutBodyText: {
@@ -1914,7 +1874,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 10,
 		fontWeight: '700',
 		textTransform: 'uppercase',
-		letterSpacing: 0.7,
 		textAlign: 'center',
 	},
 	bottomNavLabelActive: {
