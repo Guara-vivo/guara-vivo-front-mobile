@@ -9,20 +9,17 @@ import {
 	SplashScreen,
 	WelcomeScreen,
 } from './screens/authScreens'
-import {
-	HistoryScreen,
-	HomeScreen,
-	MapsScreen,
-	RecordDetailScreen,
-	RegisterScreen,
-} from './screens/mainScreens'
-import {
-	AboutScreen,
-	ChangePasswordScreen,
-	EditProfileScreen,
-	NotificationsScreen,
-	ProfileScreen,
-} from './screens/profileScreens'
+import { HistoryScreen } from './screens/HistoryScreen'
+import { HomeScreen } from './screens/HomeScreen'
+import { MapsScreen } from './screens/MapsScreen'
+import { RecordDetailScreen } from './screens/RecordDetailScreen'
+import { RegisterScreen } from './screens/RegisterScreen'
+
+import { AboutScreen } from './screens/AboutScreen'
+import { ChangePasswordScreen } from './screens/ChangePasswordScreen'
+import { EditProfileScreen } from './screens/EditProfileScreen'
+import { NotificationsScreen } from './screens/NotificationsScreen'
+import { ProfileScreen } from './screens/ProfileScreen'
 import { appStyles } from './styles/appStyles'
 import type { ScreenId } from './types/navigation'
 

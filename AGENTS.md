@@ -13,8 +13,8 @@
 - **Separação:** O diretório `src/app` foi removido, pois continha componentes e telas obsoletos da web.
 - **Main App:** A navegação principal fica em `src/GuaraVivoApp.tsx`.
 - **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/types/navigation.ts`.
-- **Screens:** As telas principais ficam em `src/screens/authScreens.tsx`, `src/screens/mainScreens.tsx` e `src/screens/profileScreens.tsx`.
-- **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/mainScreens.tsx`.
+- **Screens:** As telas principais ficam em `src/screens/authScreens.tsx` e em arquivos individuais em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
+- **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
 - **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
 - **Dados:** Os registros mockados e tipos do mapa ficam em `src/config/map.ts` e `src/data/mockRecords.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
@@ -22,7 +22,7 @@
 ### Arquitetura Modular (atual)
 
 - **Components:** `src/components/` contém componentes reutilizáveis e pequenos componentes por domínio (ex.: `auth/`, `history/`).
-- **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`). `mainScreens.tsx` reexporta as telas.
+- **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`).
 - **Services:** Abstrações de dados e APIs locais em `src/services/` (ex.: `recordsService.ts`).
 - **Styles:** `src/styles/appStyles.ts` mantém estilos globais; prefira mover estilos muito grandes para arquivos por domínio.
