@@ -11,6 +11,15 @@ import { Ionicons } from '@expo/vector-icons'
 import { behaviorOptions } from '../data/mockRecords'
 import { appStyles } from '../styles/appStyles'
 
+interface HistoryFilterState {
+	fromDate: string
+	toDate: string
+	location: string
+	minQuantity: string
+	maxQuantity: string
+	behaviors: string[]
+}
+
 export function HistoryFilterModal({
 	visible,
 	draftFilters,
@@ -21,8 +30,8 @@ export function HistoryFilterModal({
 	onClose,
 }: {
 	visible: boolean
-	draftFilters: any
-	setDraftFilters: (updater: any) => void
+	draftFilters: HistoryFilterState
+	setDraftFilters: React.Dispatch<React.SetStateAction<HistoryFilterState>>
 	toggleBehaviorFilter: (behavior: string) => void
 	applyFilters: () => void
 	clearFilters: () => void

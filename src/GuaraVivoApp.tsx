@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react'
-import { SafeAreaView, StatusBar } from 'react-native'
+import { StatusBar } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { BottomNavigation } from './components/common'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { colors } from './constants/theme'
 import { LoginScreen } from './screens/LoginScreen'
 import { RegisterEmailScreen } from './screens/RegisterEmailScreen'
@@ -44,7 +46,7 @@ export default function GuaraVivoApp() {
 		)
 	}, [currentScreen, isAuthenticated])
 
-	const renderScreen = () => {
+const renderScreen = () => {
 		switch (currentScreen) {
 			case 'splash':
 				return <SplashScreen onFinish={() => setCurrentScreen('welcome')} />
@@ -113,22 +115,24 @@ export default function GuaraVivoApp() {
 	}
 
 	const statusBarColor =
-		currentScreen === 'welcome' ? colors.splash : colors.surface
+		currentScreen === 'welcome' ? colors.splash : colors.background
 	const safeAreaStyle = [
 		appStyles.app,
-		currentScreen === 'welcome' ? appStyles.appSplash : null,
+		currentScreen === 'welcome' ? appStyles.appSplash : colors.background,
 	]
 
-	return (
-		<SafeAreaView style={safeAreaStyle}>
-			<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />
-			{renderScreen()}
-			{showNavigation ? (
-				<BottomNavigation
-					currentScreen={currentScreen}
-					onNavigate={handleNavigate}
-				/>
-			) : null}
-		</SafeAreaView>
+  return (
+		<ErrorBoundary>
+			<SafeAreaView style={safeAreaStyle}>
+				<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />
+				{renderScreen()}
+				{showNavigation ? (
+					<BottomNavigation
+						currentScreen={currentScreen}
+						onNavigate={handleNavigate}
+					/>
+				) : null}
+			</SafeAreaView>
+		</ErrorBoundary>
 	)
 }

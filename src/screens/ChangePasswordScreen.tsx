@@ -9,6 +9,8 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
+import { usePasswordValidation } from '../hooks/usePasswordValidation'
+
 import type { ScreenId } from '../types/navigation'
 
 export function ChangePasswordScreen({
@@ -21,7 +23,9 @@ export function ChangePasswordScreen({
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [showCurrentPassword, setShowCurrentPassword] = useState(false)
 	const [showNewPassword, setShowNewPassword] = useState(false)
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+
+	const { message: passwordHint } = usePasswordValidation()
 
 	return (
 		<View style={appStyles.profileScreen}>
@@ -85,9 +89,7 @@ export function ChangePasswordScreen({
 								/>
 							</Pressable>
 						</View>
-						<Text style={appStyles.changePasswordHint}>
-							Minimo de 8 caracteres
-						</Text>
+						<Text style={appStyles.changePasswordHint}>{passwordHint}</Text>
 					</View>
 
 					<View style={appStyles.changePasswordFieldWrap}>

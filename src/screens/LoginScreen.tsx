@@ -43,7 +43,16 @@ export function LoginScreen({
 				style={appStyles.screen}
 				keyboardShouldPersistTaps="handled"
 			>
-				<Text style={appStyles.loginTitle}>Acessar conta</Text>
+				<View style={appStyles.loginHeaderRow}>
+					<Pressable
+						onPress={() => onNavigate('welcome')}
+						hitSlop={10}
+						style={appStyles.loginBackButton}
+					>
+						<Ionicons name="chevron-back" size={24} color="#1A1A1A" />
+					</Pressable>
+					<Text style={appStyles.loginTitle}>Acessar conta</Text>
+				</View>
 
 				<View style={appStyles.loginFields}>
 					<View style={appStyles.loginFieldWrap}>

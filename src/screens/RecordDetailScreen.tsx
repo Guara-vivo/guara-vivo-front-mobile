@@ -4,46 +4,24 @@ import { Pressable, ScrollView, Text, View } from 'react-native'
 import { appStyles } from '../styles/appStyles'
 import { mockRecords } from '../data/mockRecords'
 import { formatDate, formatTime } from '../data/mockRecords'
+import { recordDetails } from '../data/recordDetails'
 import type { ScreenId } from '../types/navigation'
 
 export function RecordDetailScreen({
 	onNavigate,
-	recordId,
+	recordId = 0,
 }: {
 	onNavigate: (screen: ScreenId) => void
 	recordId?: number
 }) {
 	const record = mockRecords.find((item) => item.id === recordId)
-	const detailById: Record<number, any> = {
-		1: {
-			location: 'Area A - Setor Norte',
-			distanceMeters: 45,
-			behaviors: ['Alimentando', 'Voando'],
-			observations:
-				'Grupo de tres individuos avistados proximo a area de vegetacao densa.',
-			imageSlots: 2,
-		},
-		2: {
-			location: 'Area C - Trilha Leste',
-			distanceMeters: 30,
-			behaviors: ['Ninhando', 'Pousado'],
-			observations: 'Casal em comportamento de ninho na copa baixa.',
-			imageSlots: 2,
-		},
-		3: {
-			location: 'Area B - Mirante Sul',
-			distanceMeters: 60,
-			behaviors: ['Voando'],
-			observations: 'Passagem rapida em voo sobre area aberta.',
-			imageSlots: 2,
-		},
-		4: {
-			location: 'Area D - Canal Oeste',
-			distanceMeters: 22,
-			behaviors: ['Pousado', 'Alimentando'],
-			observations: 'Grupo alimentando em margem de canal com lama exposta.',
-			imageSlots: 2,
-		},
+
+	const detail = recordDetails[recordId] ?? {
+		location: `Area ${record?.id || 'Desconhecida'} - Setor Principal`,
+		distanceMeters: 40,
+		behaviors: [record?.flock_size],
+		observations: 'Registro visual sem observações adicionais.',
+		imageSlots: 2,
 	}
 
 	if (!record) {
@@ -68,14 +46,6 @@ export function RecordDetailScreen({
 				</ScrollView>
 			</View>
 		)
-	}
-
-	const details = detailById[record.id] ?? {
-		location: `Area ${record.id} - Setor Principal`,
-		distanceMeters: 40,
-		behaviors: [record.flock_size],
-		observations: 'Registro visual sem observacoes adicionais.',
-		imageSlots: 2,
 	}
 
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'individuo' : 'individuos'}`
@@ -109,7 +79,7 @@ export function RecordDetailScreen({
 							<View style={appStyles.recordDetailInfoTextWrap}>
 								<Text style={appStyles.recordDetailInfoLabel}>DATA E HORA</Text>
 								<Text style={appStyles.recordDetailValue}>
-									{formatDate(record.datetime)} as {formatTime(record.datetime)}
+									{formatDate(record.datetime)} às {formatTime(record.datetime)}
 								</Text>
 							</View>
 						</View>
@@ -119,7 +89,7 @@ export function RecordDetailScreen({
 							<View style={appStyles.recordDetailInfoTextWrap}>
 								<Text style={appStyles.recordDetailInfoLabel}>LOCALIZACAO</Text>
 								<Text style={appStyles.recordDetailValue}>
-									{details.location}
+									{detail.location}
 								</Text>
 								<Text style={appStyles.recordDetailCoordinates}>
 									Lat: {record.latitude.toFixed(4)} / Lng:{' '}
@@ -143,7 +113,7 @@ export function RecordDetailScreen({
 									DISTANCIA ESTIMADA
 								</Text>
 								<Text style={appStyles.recordDetailValue}>
-									{details.distanceMeters} metros
+									{detail.distanceMeters} metros
 								</Text>
 							</View>
 						</View>
@@ -159,7 +129,7 @@ export function RecordDetailScreen({
 					</View>
 
 					<View style={appStyles.recordDetailChipRow}>
-						{details.behaviors.map((behavior: string) => (
+						{detail.behaviors.map((behavior: string) => (
 							<View key={behavior} style={appStyles.recordDetailChip}>
 								<Text style={appStyles.recordDetailChipText}>
 									{behavior.toUpperCase()}
@@ -173,12 +143,12 @@ export function RecordDetailScreen({
 					<View style={appStyles.recordDetailSectionTitleRow}>
 						<Ionicons name="camera-outline" size={16} color="#125ED0" />
 						<Text style={appStyles.recordDetailSectionTitle}>
-							IMAGENS ({details.imageSlots})
+							IMAGENS ({detail.imageSlots})
 						</Text>
 					</View>
 
 					<View style={appStyles.recordDetailImageGrid}>
-						{Array.from({ length: details.imageSlots }).map((_, index) => (
+						{Array.from({ length: detail.imageSlots }).map((_, index) => (
 							<View
 								key={`img-${index}`}
 								style={appStyles.recordDetailImagePlaceholder}
@@ -192,7 +162,7 @@ export function RecordDetailScreen({
 				<View style={appStyles.recordDetailCard}>
 					<Text style={appStyles.recordDetailSectionTitle}>OBSERVACOES</Text>
 					<Text style={appStyles.recordDetailObservationText}>
-						{details.observations}
+						{detail.observations}
 					</Text>
 				</View>
 			</ScrollView>

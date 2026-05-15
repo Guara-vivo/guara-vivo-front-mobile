@@ -16,16 +16,16 @@
 - **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
 - **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
-- **Dados:** Os registros mockados e tipos do mapa ficam em `src/config/map.ts` e `src/data/mockRecords.ts`.
+- **Dados:** Os registros mockados e tipos do mapa ficam em `src/config/map.ts` e `src/data/mockRecords.ts`. Dados de detalhes de registros em `src/data/recordDetails.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
 
 - **Nota:** Arquivos combinados anteriores como `mainScreens.tsx`, `profileScreens.tsx` e `authScreens.tsx` foram divididos em arquivos por tela para facilitar manutenção.
 
 ### Arquitetura Modular (atual)
 
-- **Components:** `src/components/` contém componentes reutilizáveis e pequenos componentes por domínio (ex.: `auth/`, `history/`).
+- **Components:** `src/components/` contém componentes reutilizáveis e pequenos componentes por domínio (ex.: `auth/`, `history/`, `common`). Componentes padrão: `Button`, `ErrorBoundary`, `MapLibreMapView`, `BottomNavigation`.
 - **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
-- **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`).
+- **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`, `usePasswordValidation.ts`).
 - **Services:** Abstrações de dados e APIs locais em `src/services/` (ex.: `recordsService.ts`).
 - **Styles:** `src/styles/appStyles.ts` mantém estilos globais; prefira mover estilos muito grandes para arquivos por domínio.
 - **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
@@ -74,3 +74,19 @@
 - Avoid asking confirmation for obvious actions.
 - Return concise summaries after execution.
 - Stop after completing requested task.
+
+## Recent Changes by Agent
+
+- Standardized colors in `src/styles/appStyles.ts` to use `src/constants/theme.ts`.
+- Centralized shared base styles (`baseCard`, `basePrimaryButton`, `basePrimaryButtonLabel`) and added `palette` aliases.
+- Replaced hardcoded hex literals with existing theme tokens; did not add new tokens to `src/constants/theme.ts` (reverted prior additions).
+- Fixed syntax errors and balanced braces in `src/styles/appStyles.ts` that caused widespread type failures.
+- Restored `src/constants/theme.ts` to original token set (no new tokens added).
+- Ran `npm run typecheck` — passed.
+- Ran `npm run lint` — passed.
+- Created ErrorBoundary component for error handling.
+- Created Button reusable component to eliminate duplication.
+- Created usePasswordValidation hook with password complexity rules.
+- Moved hardcoded record details to recordDetails.ts.
+- Implemented password validation in ChangePasswordScreen.
+- Fixed TypeScript type issues throughout the codebase.
