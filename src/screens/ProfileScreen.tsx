@@ -1,10 +1,8 @@
 import React from 'react'
-import { Image, Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
-
-const aboutLogo = require('../assets/images/Logo Fonte Clara.png')
 
 export function ProfileScreen({
 	onNavigate,

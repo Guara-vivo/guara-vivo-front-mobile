@@ -13,11 +13,13 @@
 - **Separação:** O diretório `src/app` foi removido, pois continha componentes e telas obsoletos da web.
 - **Main App:** A navegação principal fica em `src/GuaraVivoApp.tsx`.
 - **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/types/navigation.ts`.
-- **Screens:** As telas principais ficam em `src/screens/authScreens.tsx` e em arquivos individuais em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
+- **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
 - **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
 - **Dados:** Os registros mockados e tipos do mapa ficam em `src/config/map.ts` e `src/data/mockRecords.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
+
+- **Nota:** Arquivos combinados anteriores como `mainScreens.tsx`, `profileScreens.tsx` e `authScreens.tsx` foram divididos em arquivos por tela para facilitar manutenção.
 
 ### Arquitetura Modular (atual)
 

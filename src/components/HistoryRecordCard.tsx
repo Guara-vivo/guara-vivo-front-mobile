@@ -7,7 +7,6 @@ import {
 	formatTime,
 } from '../data/mockRecords'
 import { appStyles } from '../styles/appStyles'
-import type { RecordItem } from '../types/records'
 
 export function HistoryRecordCard({
 	item,

@@ -2,13 +2,11 @@ import React, { useMemo, useState } from 'react'
 import { SafeAreaView, StatusBar } from 'react-native'
 import { BottomNavigation } from './components/common'
 import { colors } from './constants/theme'
-import {
-	LoginScreen,
-	RegisterEmailScreen,
-	RegisterPasswordScreen,
-	SplashScreen,
-	WelcomeScreen,
-} from './screens/authScreens'
+import { LoginScreen } from './screens/LoginScreen'
+import { RegisterEmailScreen } from './screens/RegisterEmailScreen'
+import { RegisterPasswordScreen } from './screens/RegisterPasswordScreen'
+import { SplashScreen } from './screens/SplashScreen'
+import { WelcomeScreen } from './screens/WelcomeScreen'
 import { HistoryScreen } from './screens/HistoryScreen'
 import { HomeScreen } from './screens/HomeScreen'
 import { MapsScreen } from './screens/MapsScreen'
