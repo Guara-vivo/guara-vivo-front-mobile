@@ -594,16 +594,22 @@ export const appStyles = StyleSheet.create({
 		gap: 8,
 	},
 	mapsFilterCard: {
-		padding: 10,
-		gap: 8,
+		padding: 12,
+		gap: 10,
 		borderRadius: cornerRadius,
 		borderWidth: 0,
+		backgroundColor: '#F7F8FA',
 		...unifiedShadow,
 	},
 	mapsFilterTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 8,
+	},
+	mapsFilterHint: {
+		color: colors.muted,
+		fontSize: 12,
+		lineHeight: 18,
 	},
 	mapsFilterRow: {
 		flexDirection: 'row',
@@ -619,7 +625,7 @@ export const appStyles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 8,
+		paddingHorizontal: 12,
 		gap: 5,
 	},
 	mapsFilterButtonActive: {
@@ -631,10 +637,10 @@ export const appStyles = StyleSheet.create({
 	},
 	mapsFilterButtonLabel: {
 		color: colors.text,
-		fontSize: 11,
+		fontSize: 9,
 		fontWeight: '900',
 		textTransform: 'uppercase',
-		letterSpacing: 0.3,
+		letterSpacing: 0.2,
 	},
 	mapsFilterButtonLabelActive: {
 		color: colors.surface,

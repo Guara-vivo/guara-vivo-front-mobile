@@ -18,7 +18,7 @@ import {
 	formatTime,
 	mockRecords,
 } from '../data/mockRecords'
-import { ActionButton, ScreenCard, ScreenHeader } from '../components/common'
+import { ActionButton, ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { appStyles } from '../styles/appStyles'
 import { MAP_RECORDS } from '../config/map'
@@ -89,7 +89,7 @@ export function RegisterScreen({
 }: {
 	onNavigate: (screen: ScreenId) => void
 }) {
-	const [photos, setPhotos] = useState(0)
+	const [, setPhotos] = useState(0)
 	const [behaviors, setBehaviors] = useState<string[]>([])
 	const behaviorOrder = [
 		'Em cio',
@@ -126,7 +126,6 @@ export function RegisterScreen({
 				contentContainerStyle={appStyles.registerContent}
 				style={appStyles.registerScroll}
 			>
-
 				<View style={appStyles.registerCard}>
 					<View style={appStyles.registerSectionTitleRow}>
 						<Ionicons name="camera-outline" size={22} color="#125ED0" />
@@ -252,13 +251,18 @@ export function MapsScreen({
 		'all' | 'feeding' | 'nests'
 	>('all')
 
+	const layerButtons = [
+		{ id: 'all' as const, label: 'TODOS', icon: 'layers-outline' as const },
+		{ id: 'feeding' as const, label: 'ALIMENTAÇÃO', icon: 'dot' as const },
+		{ id: 'nests' as const, label: 'NINHOS', icon: 'home' as const },
+	]
+
 	return (
 		<View style={appStyles.mapsScreen}>
 			<ScrollView
 				contentContainerStyle={appStyles.mapsContent}
 				style={appStyles.screen}
 			>
-
 				<ScreenCard style={appStyles.mapsFilterCard}>
 					<View style={appStyles.mapsFilterTitleRow}>
 						<Ionicons name="layers-outline" size={18} color="#125ED0" />
@@ -266,24 +270,9 @@ export function MapsScreen({
 					</View>
 
 					<View style={appStyles.mapsFilterRow}>
-						{[
-							{
-								id: 'all' as const,
-								label: 'TODOS',
-								icon: 'location-outline' as const,
-							},
-							{
-								id: 'feeding' as const,
-								label: 'ALIMENTAÇÃO',
-								icon: 'restaurant-outline' as const,
-							},
-							{
-								id: 'nests' as const,
-								label: 'NINHOS',
-								icon: 'home-outline' as const,
-							},
-						].map((item) => {
+						{layerButtons.map((item) => {
 							const active = selectedLayer === item.id
+
 							return (
 								<Pressable
 									key={item.id}
@@ -293,12 +282,26 @@ export function MapsScreen({
 										active && appStyles.mapsFilterButtonActive,
 									]}
 								>
-									<Ionicons
-										name={item.icon}
-										size={15}
-										color={active ? '#FFFFFF' : '#1A1A1A'}
-										style={appStyles.mapsFilterButtonIcon}
-									/>
+									{item.id === 'feeding' ? (
+										<View
+											style={[
+												appStyles.mapsFilterButtonIcon,
+												{
+													width: 9,
+													height: 9,
+													borderRadius: 9,
+													backgroundColor: active ? '#FFFFFF' : '#E53935',
+												},
+											]}
+										/>
+									) : (
+										<Ionicons
+											name={item.icon}
+											size={15}
+											color={active ? '#FFFFFF' : '#2F6FE4'}
+											style={appStyles.mapsFilterButtonIcon}
+										/>
+									)}
 									<Text
 										style={[
 											appStyles.mapsFilterButtonLabel,
@@ -495,7 +498,6 @@ export function HistoryScreen({
 				contentContainerStyle={appStyles.historyContent}
 				style={appStyles.screen}
 			>
-
 				<ScreenCard style={appStyles.historySearchCard}>
 					<View style={appStyles.historySearchInputWrap}>
 						<Ionicons name="search-outline" size={19} color="#5C8BD6" />
