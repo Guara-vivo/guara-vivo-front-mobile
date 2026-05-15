@@ -8,6 +8,7 @@ import {
 	ScrollView,
 	FlatList,
 } from 'react-native'
+import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
@@ -38,6 +39,7 @@ export function HistoryScreen({
 
 	return (
 		<View style={appStyles.historyScreen}>
+			<Header title="Histórico" />
 			<ScrollView
 				contentContainerStyle={appStyles.historyContent}
 			>

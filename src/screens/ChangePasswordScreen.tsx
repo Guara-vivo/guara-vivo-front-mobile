@@ -12,6 +12,7 @@ import { appStyles } from '../styles/appStyles'
 import { usePasswordValidation } from '../hooks/usePasswordValidation'
 
 import type { ScreenId } from '../types/navigation'
+import { Header } from '../components/Header'
 
 type ChangePasswordState = {
 	currentPassword: string
@@ -72,16 +73,23 @@ export function ChangePasswordScreen({
 	const { message: passwordHint } = usePasswordValidation()
 
 	return (
-		<View style={appStyles.profileScreen}>
+    <View style={appStyles.profileScreen}>
+      
+      <Header
+              title="Editar Senha"
+              leftIcon={
+                <Pressable
+                  onPress={() => onNavigate('profile')}
+                  hitSlop={8}
+                  style={appStyles.headerActionButton}
+                >
+                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+                </Pressable>
+              }
+            />
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
 			>
-				<Pressable
-					onPress={() => onNavigate('profile')}
-					style={appStyles.pageBackButton}
-				>
-					<Ionicons name="chevron-back" size={28} color="#125ED0" />
-				</Pressable>
 
 				<View style={appStyles.changePasswordCard}>
 					<View style={appStyles.changePasswordFieldWrap}>

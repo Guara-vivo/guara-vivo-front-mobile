@@ -42,7 +42,7 @@ export function RegisterPasswordScreen({
 	return (
 		<View style={appStyles.registerAccountScreen}>
 			<ScrollView
-				contentContainerStyle={appStyles.registerAccountContent}
+				contentContainerStyle={appStyles.authContent}
 				style={appStyles.screen}
 				keyboardShouldPersistTaps="handled"
 			>
@@ -109,12 +109,12 @@ export function RegisterPasswordScreen({
 					</View>
 				</View>
 
-				<View style={appStyles.registerAccountBottomWrap}>
+				<View style={appStyles.authButtonWrap}>
 					<ActionButton
 						title="CONTINUAR"
 						onPress={handleFinish}
-						containerStyle={appStyles.registerAccountPrimaryButton}
-						textStyle={appStyles.registerAccountPrimaryButtonText}
+						containerStyle={appStyles.authPrimaryButton}
+						textStyle={appStyles.authPrimaryButtonText}
 					/>
 				</View>
 			</ScrollView>

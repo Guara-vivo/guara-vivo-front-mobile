@@ -38,6 +38,7 @@ const baseCard: ViewStyle = {
 
 const basePrimaryButton: ViewStyle = {
 	minHeight: 44,
+	padding: 16,
 	borderRadius: cornerRadius,
 	alignItems: 'center',
 	justifyContent: 'center',
@@ -47,7 +48,6 @@ const basePrimaryButton: ViewStyle = {
 const basePrimaryButtonLabel: TextStyle = {
 	color: palette.surface,
 	fontSize: 15,
-	fontWeight: '800',
 }
 
 export const appStyles = StyleSheet.create<Record<string, any>>({
@@ -78,7 +78,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	pageTitle: {
 		color: palette.text,
 		fontSize: 22,
-		fontWeight: '800',
 	},
 	pageSubtitle: {
 		color: colors.muted,
@@ -119,7 +118,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	welcomePrimaryButton: {
 		...basePrimaryButton,
-		padding: 16,
 		backgroundColor: colors.text,
 	},
 	welcomePrimaryButtonLabel: {
@@ -135,37 +133,34 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	welcomeTextButtonLabel: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '800',
 	},
 	loginScreen: {
 		flex: 1,
-		backgroundColor: colors.border,
+		backgroundColor: colors.surface,
 	},
 	loginContent: {
 		flexGrow: 1,
 		backgroundColor: colors.surface,
+		paddingTop: 48,
+		paddingHorizontal: screenGutter,
 		paddingBottom: 24,
 	},
 	loginHeaderRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'flex-start',
-		marginTop: 12,
-		marginBottom: 34,
+		gap: 6,
+		marginBottom: 56,
 	},
 	loginTitle: {
 		color: colors.text,
 		fontSize: 22,
-		fontWeight: '800',
-		flexShrink: 1,
+		lineHeight: 26,
 	},
 	loginBackButton: {
-		flexDirection: 'row',
+		width: 28,
+		height: 28,
 		alignItems: 'center',
-		gap: 6,
-		paddingVertical: 6,
-		paddingHorizontal: 12,
-		marginLeft: 8,
+		justifyContent: 'center',
 	},
 	loginFields: {
 		gap: 22,
@@ -178,7 +173,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: 4,
 		fontSize: 14,
 		lineHeight: 20,
-		fontWeight: '600',
 		color: colors.text,
 		backgroundColor: 'transparent',
 	},
@@ -202,15 +196,39 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	loginForgot: {
 		color: colors.secondary,
 		fontSize: 14,
-		fontWeight: '500',
 		marginTop: 2,
 	},
 	loginButtonWrap: {
 		marginTop: 44,
+		alignItems: 'center',
 	},
 	loginPrimaryButton: {
 		...basePrimaryButton,
 		backgroundColor: palette.text,
+		width: '86%',
+		maxWidth: 360,
+	},
+
+	/* Shared auth styles for login/register screens */
+	authContent: {
+		flexGrow: 1,
+		backgroundColor: colors.surface,
+		paddingTop: 48,
+		paddingHorizontal: screenGutter,
+		paddingBottom: 24,
+	},
+	authButtonWrap: {
+		marginTop: 44,
+		alignItems: 'center',
+	},
+	authPrimaryButton: {
+		...basePrimaryButton,
+		backgroundColor: palette.text,
+		width: '86%',
+		maxWidth: 360,
+	},
+	authPrimaryButtonText: {
+		...basePrimaryButtonLabel,
 	},
 	loginPrimaryButtonLabel: {
 		...basePrimaryButtonLabel,
@@ -246,7 +264,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: palette.text,
 		fontSize: 42,
 		lineHeight: 46,
-		fontWeight: '800',
 	},
 	registerAccountFieldBlock: {
 		gap: 8,
@@ -255,7 +272,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: palette.text,
 		fontSize: 14,
 		lineHeight: 20,
-		fontWeight: '600',
 		paddingVertical: 4,
 		paddingHorizontal: 0,
 	},
@@ -278,7 +294,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: palette.text,
 		fontSize: 14,
 		lineHeight: 20,
-		fontWeight: '600',
 		paddingVertical: 2,
 		paddingHorizontal: 0,
 	},
@@ -297,7 +312,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: 11,
 		lineHeight: 14,
-		fontWeight: '600',
 	},
 	registerAccountBottomWrap: {
 		marginTop: 325,
@@ -306,12 +320,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerAccountPrimaryButton: {
 		...basePrimaryButton,
 		minHeight: 45,
-		backgroundColor: palette.primaryDark,
+		backgroundColor: palette.text,
 	},
 	registerAccountPrimaryButtonText: {
 		color: palette.surface,
 		fontSize: 15,
-		fontWeight: '900',
 	},
 	card: {
 		...baseCard,
@@ -323,19 +336,16 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	kicker: {
 		color: palette.secondary,
 		fontSize: 12,
-		fontWeight: '700',
 		textTransform: 'uppercase',
 	},
 	heroTitle: {
 		color: palette.text,
 		fontSize: 28,
-		fontWeight: '800',
 		lineHeight: 34,
 	},
 	homeTitle: {
 		color: palette.text,
 		fontSize: 30,
-		fontWeight: '800',
 	},
 	heroText: {
 		color: palette.muted,
@@ -367,7 +377,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	homeKicker: {
 		color: palette.text,
 		fontSize: 15,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	homeSubtitle: {
@@ -384,7 +393,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	homePrimaryButtonLabel: {
 		fontSize: 16,
-		fontWeight: '800',
 	},
 	homeShortcutRow: {
 		flexDirection: 'row',
@@ -412,7 +420,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	homeShortcutLabel: {
 		color: colors.secondary,
 		fontSize: 13,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	registerScreen: {
@@ -431,7 +438,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 22,
 		lineHeight: 26,
-		fontWeight: '900',
 	},
 	registerScroll: {
 		flex: 1,
@@ -456,7 +462,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerSectionTitleTextBlue: {
 		color: colors.secondary,
 		fontSize: 15,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	registerSubsection: {
@@ -470,7 +475,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerSubTitleText: {
 		color: colors.text,
 		fontSize: 12,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	registerDropZone: {
@@ -495,13 +499,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerDropZoneTitle: {
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '800',
 		textAlign: 'center',
 	},
 	registerDropZoneText: {
 		color: colors.muted,
 		fontSize: 12,
-		fontWeight: '600',
 		textAlign: 'center',
 	},
 	registerBehaviorList: {
@@ -533,7 +535,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerBehaviorLabel: {
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '800',
 	},
 	registerDateRow: {
 		flexDirection: 'row',
@@ -554,7 +555,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerDateFieldText: {
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '700',
 	},
 	registerActionsRow: {
 		flexDirection: 'row',
@@ -573,7 +573,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerActionButtonLabel: {
 		fontSize: 12,
-		fontWeight: '900',
 	},
 	mapsScreen: {
 		flex: 1,
@@ -591,7 +590,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 22,
 		lineHeight: 26,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	mapsContent: {
@@ -644,7 +642,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapsFilterButtonLabel: {
 		color: colors.text,
 		fontSize: 9,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	mapsFilterButtonLabelActive: {
@@ -668,7 +665,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapsLegendTitle: {
 		color: colors.secondary,
 		fontSize: 12,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	mapsLegendRow: {
@@ -691,12 +687,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapsLegendLabel: {
 		color: colors.text,
 		fontSize: 11,
-		fontWeight: '700',
 	},
 	gridCardTitle: {
 		color: colors.text,
 		fontSize: 18,
-		fontWeight: '700',
 	},
 	gridCardText: {
 		color: colors.muted,
@@ -709,7 +703,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	fieldLabel: {
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '700',
 		textTransform: 'uppercase',
 	},
 	textField: {
@@ -766,7 +759,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	actionButtonGhostText: {
 		color: colors.text,
 		fontSize: 17,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	actionButtonPressed: {
@@ -779,7 +771,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	actionButtonText: {
 		color: colors.surface,
 		fontSize: 15,
-		fontWeight: '700',
 		textTransform: 'uppercase',
 	},
 	actionButtonTextOutline: {
@@ -787,6 +778,46 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	actionButtonTextGhost: {
 		color: colors.primary,
+	},
+	header: {
+		backgroundColor: colors.secondary,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		marginTop: spacing.sm,
+		marginBottom: spacing.sm,
+		paddingHorizontal: 18,
+		paddingVertical: 14,
+		height: 56,
+		width: '100%',
+		alignSelf: 'stretch',
+		overflow: 'hidden',
+		...unifiedShadow,
+	},
+	headerLeft: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginRight: spacing.sm,
+	},
+	appHeaderTitle: {
+		flex: 1,
+		color: colors.surface,
+		fontSize: 18,
+		lineHeight: 22,
+		fontWeight: '800',
+		textTransform: 'uppercase',
+		letterSpacing: 0.8,
+	},
+	headerRight: {
+		alignItems: 'center',
+		justifyContent: 'flex-end',
+		marginLeft: spacing.sm,
+	},
+	headerActionButton: {
+		width: 32,
+		height: 32,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	headerWrap: {
 		gap: spacing.xs,
@@ -802,13 +833,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	backButtonText: {
 		color: colors.secondary,
 		fontSize: 12,
-		fontWeight: '700',
 		textTransform: 'uppercase',
 	},
 	headerTitle: {
 		color: colors.text,
 		fontSize: 26,
-		fontWeight: '800',
 	},
 	headerSubtitle: {
 		color: colors.muted,
@@ -818,7 +847,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	sectionTitle: {
 		color: colors.secondary,
 		fontSize: 12,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	photoDropZone: {
@@ -832,7 +860,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	photoDropZoneTitle: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '700',
 	},
 	photoDropZoneText: {
 		color: colors.muted,
@@ -864,7 +891,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	chipText: {
 		color: colors.text,
 		fontSize: 12,
-		fontWeight: '700',
 	},
 	chipTextActive: {
 		color: colors.surface,
@@ -985,7 +1011,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	badgeText: {
 		color: colors.text,
 		fontSize: 12,
-		fontWeight: '700',
 	},
 	historyScreen: {
 		flex: 1,
@@ -1003,7 +1028,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 22,
 		lineHeight: 26,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	historyContent: {
@@ -1033,7 +1057,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '500',
 		paddingVertical: 0,
 	},
 	historyFilterButton: {
@@ -1048,7 +1071,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyFilterButtonText: {
 		color: colors.surface,
 		fontSize: 13,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	historyRecordCard: {
@@ -1078,7 +1100,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordIdText: {
 		color: colors.surface,
 		fontSize: 14,
-		fontWeight: '900',
 	},
 	historyRecordDateRow: {
 		flexDirection: 'row',
@@ -1088,12 +1109,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordDateText: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '700',
 	},
 	historyRecordDateDot: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '800',
 	},
 	historyRecordInfoRow: {
 		flexDirection: 'row',
@@ -1103,7 +1122,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordInfoText: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '600',
 	},
 	historyTagRow: {
 		flexDirection: 'row',
@@ -1120,7 +1138,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyTagChipText: {
 		color: colors.secondary,
 		fontSize: 11,
-		fontWeight: '800',
+
 		textTransform: 'uppercase',
 	},
 	historyDetailButton: {
@@ -1134,7 +1152,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyDetailButtonText: {
 		color: colors.surface,
 		fontSize: 13,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	historyEmptyWrap: {
@@ -1145,7 +1162,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyEmptyText: {
 		color: colors.muted,
 		fontSize: 13,
-		fontWeight: '600',
 		textAlign: 'center',
 	},
 	historyModalBackdrop: {
@@ -1171,7 +1187,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyModalTitle: {
 		color: colors.secondary,
 		fontSize: 27,
-		fontWeight: '900',
 		textTransform: 'uppercase',
 	},
 	historyModalContent: {
@@ -1191,7 +1206,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyFilterSectionTitle: {
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	historyDateLabelsRow: {
@@ -1202,7 +1217,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historySmallLabel: {
 		color: colors.muted,
 		fontSize: 11,
-		fontWeight: '700',
+
 		width: '48%',
 	},
 	historyDateRow: {
@@ -1226,7 +1241,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '600',
+
 		paddingVertical: 0,
 	},
 	historySingleInput: {
@@ -1238,7 +1253,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: 12,
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '500',
 	},
 	historyHalfInput: {
 		flex: 1,
@@ -1250,7 +1264,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: 12,
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '600',
 	},
 	historyBehaviorList: {
 		gap: 8,
@@ -1281,7 +1294,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyBehaviorLabel: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '700',
 	},
 	historyModalActions: {
 		borderTopWidth: 1,
@@ -1302,7 +1314,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyClearButtonText: {
 		color: colors.text,
 		fontSize: 12,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	historyApplyButton: {
@@ -1316,7 +1328,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyApplyButtonText: {
 		color: colors.surface,
 		fontSize: 12,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	recordDetailScreen: {
@@ -1343,7 +1355,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 22,
 		lineHeight: 20,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	recordDetailContent: {
@@ -1369,7 +1381,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailIdText: {
 		color: colors.surface,
 		fontSize: 14,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	recordDetailCard: {
@@ -1388,7 +1400,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailSectionTitle: {
 		color: colors.secondary,
 		fontSize: 15,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	recordDetailInfoList: {
@@ -1406,20 +1418,18 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailInfoLabel: {
 		color: colors.muted,
 		fontSize: 11,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	recordDetailValue: {
 		color: colors.text,
 		fontSize: 16,
 		lineHeight: 20,
-		fontWeight: '800',
 	},
 	recordDetailCoordinates: {
 		color: colors.muted,
 		fontSize: 13,
 		lineHeight: 17,
-		fontWeight: '600',
 	},
 	recordDetailChipRow: {
 		flexDirection: 'row',
@@ -1435,7 +1445,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailChipText: {
 		color: colors.secondary,
 		fontSize: 14,
-		fontWeight: '900',
 	},
 	recordDetailImageGrid: {
 		flexDirection: 'row',
@@ -1453,7 +1462,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 15,
 		lineHeight: 23,
-		fontWeight: '700',
 	},
 	profileScreen: {
 		flex: 1,
@@ -1487,7 +1495,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 22,
 		lineHeight: 39,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	profileContent: {
@@ -1518,14 +1526,14 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 15,
 		lineHeight: 18,
-		fontWeight: '800',
+
 		textAlign: 'center',
 	},
 	profileHeroEmail: {
 		color: colors.muted,
 		fontSize: 12,
 		lineHeight: 15,
-		fontWeight: '600',
+
 		textAlign: 'center',
 		marginBottom: 10,
 	},
@@ -1541,7 +1549,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	profileEditButtonText: {
 		color: colors.surface,
 		fontSize: 14,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	profileMenuCard: {
@@ -1555,7 +1563,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	profileMenuTitle: {
 		color: colors.secondary,
 		fontSize: 14,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 		marginBottom: 2,
 	},
@@ -1569,12 +1577,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	profileMenuItemText: {
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '700',
 	},
 	profileMenuItemTextLogout: {
 		color: colors.primary,
 		fontSize: 14,
-		fontWeight: '700',
 	},
 	changePasswordCard: {
 		backgroundColor: colors.surface,
@@ -1595,7 +1601,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordLabel: {
 		color: colors.text,
 		fontSize: 12,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	changePasswordInputRow: {
@@ -1619,13 +1625,12 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: 10,
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '600',
 	},
 	changePasswordInputNoPadding: {
 		flex: 1,
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '600',
+
 		paddingVertical: 0,
 	},
 	changePasswordEyeButton: {
@@ -1637,7 +1642,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordHint: {
 		color: colors.muted,
 		fontSize: 11,
-		fontWeight: '600',
 	},
 	changePasswordActionsRow: {
 		flexDirection: 'row',
@@ -1655,7 +1659,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordPrimaryActionText: {
 		color: colors.surface,
 		fontSize: 12,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	changePasswordSecondaryAction: {
@@ -1669,7 +1673,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordSecondaryActionText: {
 		color: colors.surface,
 		fontSize: 12,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	notificationsCard: {
@@ -1689,7 +1693,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	notificationsTitle: {
 		color: colors.secondary,
 		fontSize: 13,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	notificationsItem: {
@@ -1710,13 +1714,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	notificationsItemTitle: {
 		color: colors.text,
 		fontSize: 14,
-		fontWeight: '700',
 	},
 	notificationsItemSubtitle: {
 		color: colors.muted,
 		fontSize: 11,
 		lineHeight: 14,
-		fontWeight: '600',
 	},
 	aboutCard: {
 		backgroundColor: colors.surface,
@@ -1736,14 +1738,14 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	aboutAppName: {
 		color: colors.secondary,
 		fontSize: 19,
-		fontWeight: '900',
+
 		textAlign: 'center',
 		textTransform: 'uppercase',
 	},
 	aboutVersion: {
 		color: colors.muted,
 		fontSize: 14,
-		fontWeight: '700',
+
 		textAlign: 'center',
 		marginBottom: 10,
 	},
@@ -1758,14 +1760,13 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	aboutSectionTitle: {
 		color: colors.secondary,
 		fontSize: 13,
-		fontWeight: '900',
+
 		textTransform: 'uppercase',
 	},
 	aboutBodyText: {
 		color: colors.text,
 		fontSize: 13,
 		lineHeight: 25,
-		fontWeight: '600',
 	},
 	aboutBulletRow: {
 		flexDirection: 'row',
@@ -1776,7 +1777,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.primary,
 		fontSize: 12,
 		lineHeight: 24,
-		fontWeight: '900',
 	},
 	aboutFooterDivider: {
 		height: 1,
@@ -1787,7 +1787,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: 11,
 		lineHeight: 15,
-		fontWeight: '500',
+
 		textAlign: 'center',
 	},
 	profileHero: {
@@ -1806,12 +1806,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	avatarInitial: {
 		color: colors.secondary,
 		fontSize: 46,
-		fontWeight: '800',
 	},
 	profileName: {
 		color: colors.text,
 		fontSize: 20,
-		fontWeight: '800',
+
 		textAlign: 'center',
 	},
 	profileEmail: {
@@ -1832,7 +1831,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	toggleTitle: {
 		color: colors.text,
 		fontSize: 15,
-		fontWeight: '700',
 	},
 	toggleSubtitle: {
 		color: colors.muted,
@@ -1872,7 +1870,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	bottomNavLabel: {
 		color: colors.muted,
 		fontSize: 10,
-		fontWeight: '700',
+
 		textTransform: 'uppercase',
 		textAlign: 'center',
 	},

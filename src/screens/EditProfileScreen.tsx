@@ -3,6 +3,7 @@ import { ScrollView, Pressable, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
+import { Header } from '../components/Header'
 
 type EditProfileState = {
 	name: string
@@ -13,7 +14,10 @@ type EditProfileAction =
 	| { type: 'SET_NAME'; payload: string }
 	| { type: 'SET_EMAIL'; payload: string }
 
-function editProfileReducer(state: EditProfileState, action: EditProfileAction): EditProfileState {
+function editProfileReducer(
+	state: EditProfileState,
+	action: EditProfileAction,
+): EditProfileState {
 	switch (action.type) {
 		case 'SET_NAME':
 			return { ...state, name: action.payload }
@@ -29,31 +33,33 @@ export function EditProfileScreen({
 }: {
 	onNavigate: (screen: ScreenId) => void
 }) {
-	const [state, dispatch] = useReducer(
-		editProfileReducer,
-		{
-			name: 'Joao da Silva Goulard',
-			email: 'joaosgoulard@email.com',
-		},
-	)
+	const [state, dispatch] = useReducer(editProfileReducer, {
+		name: 'Joao da Silva Goulard',
+		email: 'joaosgoulard@email.com',
+	})
 
 	return (
 		<View style={appStyles.profileScreen}>
-			<ScrollView
-				contentContainerStyle={appStyles.profileContent}
-			>
-				<Pressable
-					onPress={() => onNavigate('profile')}
-					style={appStyles.pageBackButton}
-				>
-					<Ionicons name="chevron-back" size={28} color="#125ED0" />
-				</Pressable>
-
+			<Header
+				title="Editar Perfil"
+				leftIcon={
+					<Pressable
+						onPress={() => onNavigate('profile')}
+						hitSlop={8}
+						style={appStyles.headerActionButton}
+					>
+						<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+					</Pressable>
+				}
+			/>
+			<ScrollView contentContainerStyle={appStyles.profileContent}>
 				<View style={appStyles.changePasswordCard}>
 					<Text style={appStyles.changePasswordLabel}>NOME</Text>
 					<TextInput
 						value={state.name}
-						onChangeText={(text) => dispatch({ type: 'SET_NAME', payload: text })}
+						onChangeText={(text) =>
+							dispatch({ type: 'SET_NAME', payload: text })
+						}
 						placeholder="Nome completo"
 						placeholderTextColor="#8F9098"
 						style={appStyles.changePasswordInput}
@@ -62,7 +68,9 @@ export function EditProfileScreen({
 					<Text style={appStyles.changePasswordLabel}>E-MAIL</Text>
 					<TextInput
 						value={state.email}
-						onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
+						onChangeText={(text) =>
+							dispatch({ type: 'SET_EMAIL', payload: text })
+						}
 						placeholder="E-mail"
 						placeholderTextColor="#8F9098"
 						keyboardType="email-address"

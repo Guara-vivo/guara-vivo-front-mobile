@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { StatusBar, Text, TextInput } from 'react-native'
+import { StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { BottomNavigation } from './components/common'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -23,20 +23,6 @@ import { appStyles } from './styles/appStyles'
 import type { ScreenId } from './types/navigation'
 
 export default function GuaraVivoApp() {
-	if (Text && (Text as any).defaultProps == null) {
-		;(Text as any).defaultProps = {}
-	}
-	;(Text as any).defaultProps.style = {
-		...((Text as any).defaultProps.style || {}),
-		letterSpacing: 0.1,
-	}
-	if (TextInput && (TextInput as any).defaultProps == null) {
-		;(TextInput as any).defaultProps = {}
-	}
-	;(TextInput as any).defaultProps.style = {
-		...((TextInput as any).defaultProps.style || {}),
-		letterSpacing: 0.1,
-	}
 	const [currentScreen, setCurrentScreen] = useState<ScreenId>('splash')
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
 	const [selectedRecordId, setSelectedRecordId] = useState<number | undefined>()

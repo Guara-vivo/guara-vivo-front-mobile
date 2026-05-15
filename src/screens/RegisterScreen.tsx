@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Pressable, ScrollView, Text, View } from 'react-native'
+import Header from '../components/Header'
 import { ActionButton } from '../components/common'
 import RegisterBehaviorList from '../components/RegisterBehaviorList'
 import { appStyles } from '../styles/appStyles'
@@ -45,6 +46,7 @@ export function RegisterScreen({
 
 	return (
 		<View style={appStyles.registerScreen}>
+			<Header title="Novo Registro" />
 			<ScrollView
 				contentContainerStyle={appStyles.registerContent}
 				style={appStyles.registerScroll}

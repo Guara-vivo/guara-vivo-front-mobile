@@ -3,6 +3,7 @@ import { Pressable, ScrollView, Switch, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
+import { Header } from '../components/Header'
 
 export function NotificationsScreen({
 	onNavigate,
@@ -15,17 +16,24 @@ export function NotificationsScreen({
 	const [systemAlerts, setSystemAlerts] = useState(true)
 
 	return (
-		<View style={appStyles.profileScreen}>
+    <View style={appStyles.profileScreen}>
+            <Header
+              title="Notificacoes"
+              leftIcon={
+                <Pressable
+                  onPress={() => onNavigate('profile')}
+                  hitSlop={8}
+                  style={appStyles.headerActionButton}
+                >
+                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+                </Pressable>
+              }
+            />
+
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
 				style={appStyles.screen}
 			>
-				<Pressable
-					onPress={() => onNavigate('profile')}
-					style={appStyles.pageBackButton}
-				>
-					<Ionicons name="chevron-back" size={28} color="#125ED0" />
-				</Pressable>
 
 				<View style={appStyles.notificationsCard}>
 					<View style={appStyles.notificationsTitleRow}>

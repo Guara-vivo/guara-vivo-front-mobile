@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { Pressable, ScrollView, Text, View } from 'react-native'
+import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { appStyles } from '../styles/appStyles'
@@ -24,6 +25,7 @@ export function MapsScreen({
 
 	return (
 		<View style={appStyles.mapsScreen}>
+			<Header title="Mapas" />
 			<ScrollView
 				contentContainerStyle={appStyles.mapsContent}
 				style={appStyles.screen}

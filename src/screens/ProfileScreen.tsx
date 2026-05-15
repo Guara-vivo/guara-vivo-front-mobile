@@ -1,6 +1,7 @@
 import React from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import Header from '../components/Header'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
 
@@ -13,6 +14,7 @@ export function ProfileScreen({
 }) {
 	return (
 		<View style={appStyles.profileScreen}>
+			<Header title="Meu Perfil" />
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
 				style={appStyles.screen}

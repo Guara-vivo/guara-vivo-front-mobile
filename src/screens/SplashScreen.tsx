@@ -12,11 +12,13 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
 
 	return (
 		<View style={[appStyles.screen, appStyles.splashScreen]}>
-			<Image
-				source={welcomeLogo}
-				style={appStyles.splashLogo}
-				resizeMode="contain"
-			/>
+			<View style={{ alignItems: 'center', justifyContent: 'center' }}>
+				<Image
+					source={welcomeLogo}
+					style={[appStyles.splashLogo, { alignSelf: 'center' }]}
+					resizeMode="contain"
+				/>
+			</View>
 		</View>
 	)
 }

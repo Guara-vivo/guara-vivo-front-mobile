@@ -29,6 +29,7 @@
 - **Services:** Abstrações de dados e APIs locais em `src/services/` (ex.: `recordsService.ts`).
 - **Styles:** `src/styles/appStyles.ts` mantém estilos globais; prefira mover estilos muito grandes para arquivos por domínio.
 - **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
+- **Header padrão:** Use `src/components/Header.tsx` nas telas principais; mantenha o estilo compartilhado em `appStyles.header`, `appHeaderTitle` e `headerRight` para preservar a faixa azul em largura total.
 
 ## 🛠️ Constraints & Quirks
 
@@ -49,6 +50,7 @@
 - **Avoid:** Nested ScrollView + FlatList (causes layout thrashing).
 
 **Pattern:**
+
 ```tsx
 // ❌ Bad
 <ScrollView>
@@ -66,12 +68,14 @@
 - **Atomic State:** Keep related form fields in single reducer for efficient updates.
 
 **Pattern:**
+
 ```tsx
 // ✅ Good - Atomic state
-const [state, dispatch] = useReducer(
-  reducer,
-  { password, confirmPassword, showCurrentPassword }
-)
+const [state, dispatch] = useReducer(reducer, {
+	password,
+	confirmPassword,
+	showCurrentPassword,
+})
 ```
 
 ## Agent Behavior Rules
@@ -111,6 +115,8 @@ const [state, dispatch] = useReducer(
 
 ## Recent Changes by Agent
 
+- Implemented shared `Header` component in `src/components/Header.tsx` with a full-width blue bar, rounded top corners, uppercase white title, and optional right-side action.
+- Centralized the Header styling in `src/styles/appStyles.ts` using `appHeaderTitle` for the shared title and `headerRight` for trailing actions.
 - Standardized colors in `src/styles/appStyles.ts` to use `src/constants/theme.ts`.
 - Centralized shared base styles (`baseCard`, `basePrimaryButton`, `basePrimaryButtonLabel`) and added `palette` aliases.
 - Replaced hardcoded hex literals with existing theme tokens; did not add new tokens to `src/constants/theme.ts` (reverted prior additions).

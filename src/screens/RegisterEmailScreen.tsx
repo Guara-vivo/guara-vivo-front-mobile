@@ -22,7 +22,7 @@ export function RegisterEmailScreen({
 	return (
 		<View style={appStyles.registerAccountScreen}>
 			<ScrollView
-				contentContainerStyle={appStyles.registerAccountContent}
+				contentContainerStyle={appStyles.authContent}
 				style={appStyles.screen}
 				keyboardShouldPersistTaps="handled"
 			>
@@ -50,7 +50,7 @@ export function RegisterEmailScreen({
 					</View>
 				</View>
 
-				<View style={appStyles.registerAccountBottomWrap}>
+				<View style={appStyles.authButtonWrap}>
 					<ActionButton
 						title="CONTINUAR"
 						onPress={() => {
@@ -63,8 +63,8 @@ export function RegisterEmailScreen({
 							}
 							onNavigate('register-password')
 						}}
-						containerStyle={appStyles.registerAccountPrimaryButton}
-						textStyle={appStyles.registerAccountPrimaryButtonText}
+						containerStyle={appStyles.authPrimaryButton}
+						textStyle={appStyles.authPrimaryButtonText}
 					/>
 				</View>
 			</ScrollView>
