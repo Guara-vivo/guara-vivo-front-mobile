@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Alert } from 'react-native'
+import DateTimePicker, {
+	type DateTimePickerEvent,
+} from '@react-native-community/datetimepicker'
 import { Ionicons } from '@expo/vector-icons'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import Header from '../components/Header'
@@ -15,6 +18,9 @@ export function RegisterScreen({
 }) {
 	const [, setPhotos] = useState(0)
 	const [behaviors, setBehaviors] = useState<string[]>([])
+	const [selectedAt, setSelectedAt] = useState(new Date())
+	const [showDatePicker, setShowDatePicker] = useState(false)
+	const [showTimePicker, setShowTimePicker] = useState(false)
 	const behaviorOrder = [
 		'Em cio',
 		'Ninhando',
@@ -22,8 +28,12 @@ export function RegisterScreen({
 		'Voando',
 		'Pousado',
 	]
-	const selectedDate = '13/05/2026'
-	const selectedTime = '19:50'
+
+	const selectedDate = selectedAt.toLocaleDateString('pt-BR')
+	const selectedTime = selectedAt.toLocaleTimeString('pt-BR', {
+		hour: '2-digit',
+		minute: '2-digit',
+	})
 
 	const toggleBehavior = (behavior: string) => {
 		setBehaviors((current) =>
@@ -36,6 +46,32 @@ export function RegisterScreen({
 	const handleSave = () => {
 		Alert.alert('Sucesso', 'Registro salvo no prototipo nativo.')
 		onNavigate('home')
+	}
+
+	const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
+		setShowDatePicker(false)
+		if (event.type !== 'set' || !date) {
+			return
+		}
+
+		setSelectedAt((current) => {
+			const next = new Date(current)
+			next.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
+			return next
+		})
+	}
+
+	const handleTimeChange = (event: DateTimePickerEvent, date?: Date) => {
+		setShowTimePicker(false)
+		if (event.type !== 'set' || !date) {
+			return
+		}
+
+		setSelectedAt((current) => {
+			const next = new Date(current)
+			next.setHours(date.getHours(), date.getMinutes(), 0, 0)
+			return next
+		})
 	}
 
 	const handleCancel = () => {
@@ -107,20 +143,42 @@ export function RegisterScreen({
 						</View>
 
 						<View style={appStyles.registerDateRow}>
-							<View style={appStyles.registerDateField}>
+							<Pressable
+								onPress={() => setShowDatePicker(true)}
+								style={appStyles.registerDateField}
+							>
 								<Text style={appStyles.registerDateFieldText}>
 									{selectedDate}
 								</Text>
 								<Ionicons name="calendar-outline" size={16} color="#1A1A1A" />
-							</View>
+							</Pressable>
 
-							<View style={appStyles.registerDateField}>
+							<Pressable
+								onPress={() => setShowTimePicker(true)}
+								style={appStyles.registerDateField}
+							>
 								<Text style={appStyles.registerDateFieldText}>
 									{selectedTime}
 								</Text>
 								<Ionicons name="time-outline" size={16} color="#1A1A1A" />
-							</View>
+							</Pressable>
 						</View>
+
+						{showDatePicker ? (
+							<DateTimePicker
+								mode="date"
+								value={selectedAt}
+								onChange={handleDateChange}
+							/>
+						) : null}
+
+						{showTimePicker ? (
+							<DateTimePicker
+								mode="time"
+								value={selectedAt}
+								onChange={handleTimeChange}
+							/>
+						) : null}
 					</View>
 
 					<View style={appStyles.registerActionsRow}>

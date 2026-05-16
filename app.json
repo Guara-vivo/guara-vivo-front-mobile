@@ -23,7 +23,8 @@
         {
           "locationWhenInUsePermission": "O app precisa da sua localização para centralizar o mapa na posição atual do aparelho."
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker"
     ]
   }
 }
