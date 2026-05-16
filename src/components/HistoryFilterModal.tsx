@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { behaviorOptions } from '../data/mockRecords'
+import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 
 interface HistoryFilterState {
@@ -19,6 +20,14 @@ interface HistoryFilterState {
 	maxQuantity: string
 	behaviors: string[]
 }
+
+type HistoryFilterField =
+	| 'fromDate'
+	| 'toDate'
+	| 'location'
+	| 'minQuantity'
+	| 'maxQuantity'
+	| null
 
 export function HistoryFilterModal({
 	visible,
@@ -37,6 +46,9 @@ export function HistoryFilterModal({
 	clearFilters: () => void
 	onClose: () => void
 }) {
+	const [focusedField, setFocusedField] =
+		React.useState<HistoryFilterField>(null)
+
 	return (
 		<Modal
 			visible={visible}
@@ -66,7 +78,17 @@ export function HistoryFilterModal({
 							</View>
 
 							<View style={appStyles.historyDateRow}>
-								<View style={appStyles.historyDateInputWrap}>
+								<View
+									style={[
+										appStyles.historyDateInputWrap,
+										{
+											borderColor:
+												focusedField === 'fromDate'
+													? colors.secondaryLight
+													: colors.border,
+										},
+									]}
+								>
 									<TextInput
 										value={draftFilters.fromDate}
 										onChangeText={(value) =>
@@ -75,6 +97,8 @@ export function HistoryFilterModal({
 												fromDate: value,
 											}))
 										}
+										onFocus={() => setFocusedField('fromDate')}
+										onBlur={() => setFocusedField(null)}
 										placeholder="dd/mm/aaaa"
 										placeholderTextColor="#6B6B74"
 										style={appStyles.historyDateInput}
@@ -82,7 +106,17 @@ export function HistoryFilterModal({
 									<Ionicons name="calendar-outline" size={14} color="#1A1A1A" />
 								</View>
 
-								<View style={appStyles.historyDateInputWrap}>
+								<View
+									style={[
+										appStyles.historyDateInputWrap,
+										{
+											borderColor:
+												focusedField === 'toDate'
+													? colors.secondaryLight
+													: colors.border,
+										},
+									]}
+								>
 									<TextInput
 										value={draftFilters.toDate}
 										onChangeText={(value) =>
@@ -91,6 +125,8 @@ export function HistoryFilterModal({
 												toDate: value,
 											}))
 										}
+										onFocus={() => setFocusedField('toDate')}
+										onBlur={() => setFocusedField(null)}
 										placeholder="dd/mm/aaaa"
 										placeholderTextColor="#6B6B74"
 										style={appStyles.historyDateInput}
@@ -116,9 +152,19 @@ export function HistoryFilterModal({
 										location: value,
 									}))
 								}
+								onFocus={() => setFocusedField('location')}
+								onBlur={() => setFocusedField(null)}
 								placeholder="Ex: -24.4959, -47.8431"
 								placeholderTextColor="#8E8E96"
-								style={appStyles.historySingleInput}
+								style={[
+									appStyles.historySingleInput,
+									{
+										borderColor:
+											focusedField === 'location'
+												? colors.secondaryLight
+												: colors.border,
+									},
+								]}
 							/>
 						</View>
 
@@ -144,10 +190,20 @@ export function HistoryFilterModal({
 											minQuantity: value,
 										}))
 									}
+									onFocus={() => setFocusedField('minQuantity')}
+									onBlur={() => setFocusedField(null)}
 									placeholder="Min"
 									placeholderTextColor="#6B6B74"
 									keyboardType="numeric"
-									style={appStyles.historyHalfInput}
+									style={[
+										appStyles.historyHalfInput,
+										{
+											borderColor:
+												focusedField === 'minQuantity'
+													? colors.secondaryLight
+													: colors.border,
+										},
+									]}
 								/>
 
 								<TextInput
@@ -158,10 +214,20 @@ export function HistoryFilterModal({
 											maxQuantity: value,
 										}))
 									}
+									onFocus={() => setFocusedField('maxQuantity')}
+									onBlur={() => setFocusedField(null)}
 									placeholder="Max"
 									placeholderTextColor="#6B6B74"
 									keyboardType="numeric"
-									style={appStyles.historyHalfInput}
+									style={[
+										appStyles.historyHalfInput,
+										{
+											borderColor:
+												focusedField === 'maxQuantity'
+													? colors.secondaryLight
+													: colors.border,
+										},
+									]}
 								/>
 							</View>
 						</View>

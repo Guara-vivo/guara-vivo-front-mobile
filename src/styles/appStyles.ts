@@ -1036,6 +1036,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historySearchCard: {
     borderRadius: cornerRadius,
     marginBottom: spacing.lg,
+    borderWidth: 0,
 		...unifiedShadow,
 	},
 	historySearchInputWrap: {
@@ -1163,7 +1164,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'flex-end',
 	},
 	historyModalCard: {
-		backgroundColor: colors.background,
+		backgroundColor: colors.surface,
 		borderTopLeftRadius: 12,
 		borderTopRightRadius: 12,
 		maxHeight: '84%',
@@ -1179,7 +1180,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyModalTitle: {
 		color: colors.secondary,
-		fontSize: 27,
+    fontSize: 22,
+    fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	historyModalContent: {
@@ -1252,7 +1254,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 40,
 		borderRadius: cornerRadius,
 		borderWidth: 1.4,
-		borderColor: colors.secondaryLight,
+		borderColor: colors.border,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
 		color: colors.text,
@@ -1494,7 +1496,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	profileContent: {
 		paddingHorizontal: screenGutter,
     paddingBottom: screenBottomPadding,
-    paddingTop: spacing.md,
+    paddingTop: spacing.lg,
 		gap: 20,
 	},
 	profileHeroCard: {
