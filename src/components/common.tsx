@@ -169,7 +169,7 @@ export function BottomNavigation({
 						<Ionicons
 							name={item.icon}
 							size={23}
-							color={active ? colors.primary : '#8A8D95'}
+							color={active ? colors.surface : '#8A8D95'}
 							style={appStyles.bottomNavIcon}
 						/>
 						<Text

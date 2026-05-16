@@ -1831,14 +1831,12 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingVertical: 10,
+    paddingVertical: 5,
 		borderRadius: cornerRadius,
-		marginHorizontal: 2,
-		gap: 5,
+		gap: spacing.xs,
 	},
 	bottomNavItemActive: {
-		backgroundColor: colors.surface,
-		...unifiedShadow,
+    backgroundColor: colors.primary,
 	},
 	bottomNavIcon: {
 		marginBottom: -1,
@@ -1846,11 +1844,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	bottomNavLabel: {
 		color: colors.muted,
 		fontSize: 10,
-
 		textTransform: 'uppercase',
 		textAlign: 'center',
 	},
 	bottomNavLabelActive: {
-		color: colors.primary,
+		color: colors.surface,
 	},
 })
