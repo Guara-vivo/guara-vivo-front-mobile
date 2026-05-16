@@ -543,7 +543,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 42,
 		borderRadius: cornerRadius,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
@@ -598,10 +598,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: 8,
 	},
 	mapsFilterCard: {
-		padding: 12,
 		gap: 10,
 		borderRadius: cornerRadius,
-		borderWidth: 0,
+    borderWidth: 0,
+    marginBottom: spacing.lg,
 		backgroundColor: colors.surface,
 		...unifiedShadow,
 	},
@@ -1032,16 +1032,16 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: screenGutter,
     paddingBottom: screenBottomPadding,
     paddingTop: spacing.lg,
+    gap: spacing.lg,
 	},
 	historySearchCard: {
     borderRadius: cornerRadius,
-    marginBottom: spacing.lg,
     borderWidth: 0,
 		...unifiedShadow,
 	},
 	historySearchInputWrap: {
 		minHeight: 42,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		borderRadius: cornerRadius,
 		paddingHorizontal: 10,
@@ -1093,7 +1093,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordIdText: {
 		color: colors.surface,
-		fontSize: 14,
+		fontSize: 12,
 	},
 	historyRecordDateRow: {
 		flexDirection: 'row',
@@ -1102,11 +1102,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordDateText: {
 		color: colors.text,
-		fontSize: 16,
+		fontSize: 12,
 	},
 	historyRecordDateDot: {
 		color: colors.text,
-		fontSize: 16,
+		fontSize: 12,
 	},
 	historyRecordInfoRow: {
 		flexDirection: 'row',
@@ -1115,13 +1115,12 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordInfoText: {
 		color: colors.text,
-		fontSize: 16,
+		fontSize: 12,
 	},
 	historyTagRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		gap: 8,
-		marginTop: 2,
 	},
 	historyTagChip: {
 		paddingHorizontal: 10,
@@ -1131,12 +1130,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyTagChipText: {
 		color: colors.secondary,
-		fontSize: 11,
-
+		fontSize: 10,
 		textTransform: 'uppercase',
 	},
 	historyDetailButton: {
-		marginTop: 4,
 		minHeight: 38,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.secondary,
@@ -1223,7 +1220,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 40,
 		borderRadius: cornerRadius,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.border,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 10,
@@ -1236,13 +1233,12 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		color: colors.text,
 		fontSize: 13,
-
 		paddingVertical: 0,
 	},
 	historySingleInput: {
 		minHeight: 40,
 		borderRadius: cornerRadius,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.border,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
@@ -1253,7 +1249,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 40,
 		borderRadius: cornerRadius,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.border,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
@@ -1338,7 +1334,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: screenGutter,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.lg,
 	},
 	recordDetailBackButton: {
 		width: 28,
@@ -1350,14 +1346,13 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.surface,
 		fontSize: 22,
 		lineHeight: 20,
-
 		textTransform: 'uppercase',
 	},
 	recordDetailContent: {
 		paddingHorizontal: screenGutter,
-		paddingTop: 8,
-		paddingBottom: 24,
-		gap: 18,
+		paddingTop: spacing.lg,
+		paddingBottom: spacing.lg,
+		gap: spacing.lg,
 	},
 	recordDetailNotFoundWrap: {
 		paddingHorizontal: screenGutter,
@@ -1376,7 +1371,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailIdText: {
 		color: colors.surface,
 		fontSize: 14,
-
 		textTransform: 'uppercase',
 	},
 	recordDetailCard: {
@@ -1384,7 +1378,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		paddingHorizontal: 18,
 		paddingVertical: 18,
-		gap: 14,
+		gap: spacing.sm,
 		...unifiedShadow,
 	},
 	recordDetailSectionTitleRow: {
@@ -1497,15 +1491,14 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: screenGutter,
     paddingBottom: screenBottomPadding,
     paddingTop: spacing.lg,
-		gap: 20,
+		gap: spacing.lg,
 	},
 	profileHeroCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
 		paddingHorizontal: 12,
-		paddingVertical: 20,
+    paddingVertical: 20,
 		alignItems: 'center',
-		gap: 8,
 		...unifiedShadow,
 	},
 	profileAvatarCircle: {
@@ -1603,7 +1596,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordInputRow: {
 		minHeight: 42,
 		borderRadius: cornerRadius,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
 		paddingLeft: 10,
@@ -1615,7 +1608,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordInput: {
 		minHeight: 42,
 		borderRadius: cornerRadius,
-		borderWidth: 1.4,
+		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.background,
 		paddingHorizontal: 10,
@@ -1626,7 +1619,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		color: colors.text,
 		fontSize: 14,
-
 		paddingVertical: 0,
 	},
 	changePasswordEyeButton: {
@@ -1662,7 +1654,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 42,
 		borderRadius: cornerRadius,
-		backgroundColor: colors.secondaryLight,
+		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

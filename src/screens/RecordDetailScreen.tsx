@@ -6,6 +6,7 @@ import { mockRecords } from '../data/mockRecords'
 import { formatDate, formatTime } from '../data/mockRecords'
 import { recordDetails } from '../data/recordDetails'
 import type { ScreenId } from '../types/navigation'
+import { Header } from '../components/Header'
 
 export function RecordDetailScreen({
 	onNavigate,
@@ -52,17 +53,25 @@ export function RecordDetailScreen({
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
 
 	return (
-		<View style={appStyles.recordDetailScreen}>
+    <View style={appStyles.recordDetailScreen}>
+            <Header
+              title="Detalhes do Registro"
+              leftIcon={
+                <Pressable
+                  onPress={() => onNavigate('profile')}
+                  hitSlop={8}
+                  style={appStyles.headerActionButton}
+                >
+                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+                </Pressable>
+              }
+            />
+
 			<ScrollView
 				style={appStyles.screen}
 				contentContainerStyle={appStyles.recordDetailContent}
 			>
-				<Pressable
-					onPress={() => onNavigate('history')}
-					style={appStyles.pageBackButton}
-				>
-					<Ionicons name="chevron-back" size={28} color="#125ED0" />
-				</Pressable>
+				
 
 				<View style={appStyles.recordDetailIdBadge}>
 					<Text style={appStyles.recordDetailIdText}>{idLabel}</Text>
