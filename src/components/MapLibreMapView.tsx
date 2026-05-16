@@ -141,7 +141,9 @@ export function MapLibreMapView({ selectedLayer, records }: Props) {
 				<Text style={styles.countBadgeValue}>{visibleCount}</Text>
 				<Text style={styles.countBadgeLabel}>{badgeText}</Text>
 			</View>
-			{!locationReady ? <View style={styles.loadingOverlay} /> : null}
+			{!locationReady ? (
+				<View pointerEvents="none" style={styles.loadingOverlay} />
+			) : null}
 		</View>
 	)
 }

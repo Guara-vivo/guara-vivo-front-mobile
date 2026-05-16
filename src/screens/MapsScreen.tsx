@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
@@ -19,17 +19,14 @@ export function MapsScreen({
 
 	const layerButtons = [
 		{ id: 'all' as const, label: 'TODOS', icon: 'layers-outline' as const },
-		{ id: 'feeding' as const, label: 'ALIMENTAÇÃO', icon: 'dot' as const },
+		{ id: 'feeding' as const, label: 'ALIMENTAÇÃO', icon: 'fish' as const },
 		{ id: 'nests' as const, label: 'NINHOS', icon: 'home' as const },
 	]
 
 	return (
 		<View style={appStyles.mapsScreen}>
 			<Header title="Mapas" />
-			<ScrollView
-				contentContainerStyle={appStyles.mapsContent}
-				style={appStyles.screen}
-			>
+			<View style={[appStyles.screen, appStyles.mapsContent]}>
 				<ScreenCard style={appStyles.mapsFilterCard}>
 					<View style={appStyles.mapsFilterTitleRow}>
 						<Ionicons name="layers-outline" size={18} color="#125ED0" />
@@ -89,7 +86,7 @@ export function MapsScreen({
 						records={MAP_RECORDS}
 					/>
 				</ScreenCard>
-			</ScrollView>
+			</View>
 		</View>
 	)
 }

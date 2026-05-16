@@ -651,7 +651,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		borderWidth: 0,
 		...unifiedShadow,
-		minHeight: 490,
+		height: 450,
 	},
 	mapsLegendCard: {
 		padding: 12,
@@ -795,7 +795,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	appHeaderTitle: {
     color: colors.surface,
     marginLeft: spacing.md,
-		fontSize: 18,
+		fontSize: 20,
 		lineHeight: 22,
 		fontWeight: '800',
 		textTransform: 'uppercase',
