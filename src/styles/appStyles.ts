@@ -402,7 +402,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		alignItems: 'center',
 		justifyContent: 'center',
-		gap: spacing.md,
 		...unifiedShadow,
 	},
 	homeShortcutIconBox: {
