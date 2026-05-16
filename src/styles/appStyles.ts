@@ -108,16 +108,16 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		paddingTop: 42,
-		paddingBottom: 20,
-		gap: 150,
+		paddingTop: spacing.lg,
+		gap: spacing.xl,
 	},
 	welcomeActions: {
 		width: '100%',
 		alignItems: 'center',
 	},
 	welcomePrimaryButton: {
-		...basePrimaryButton,
+    ...basePrimaryButton,
+    elevation: 5,
 		backgroundColor: colors.text,
 	},
 	welcomePrimaryButtonLabel: {
@@ -131,7 +131,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: 'transparent',
 	},
 	welcomeTextButtonLabel: {
-		color: colors.text,
+    color: colors.text,
+    fontWeight: '600',
 		fontSize: 16,
 	},
 	loginScreen: {
@@ -163,10 +164,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 	},
 	loginFields: {
-		gap: 22,
+		gap: 10,
 	},
 	loginFieldWrap: {
-		gap: 8,
+		gap: 5,
 	},
 	loginInput: {
 		paddingHorizontal: 0,
@@ -178,14 +179,12 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	loginDivider: {
 		height: 1,
-		backgroundColor: 'rgba(26, 26, 26, 0.18)',
-		marginTop: 1,
+		backgroundColor: colors.border,
 	},
 	loginPasswordRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		gap: 10,
 	},
 	loginEyeButton: {
 		width: 28,
@@ -196,7 +195,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	loginForgot: {
 		color: colors.secondary,
 		fontSize: 14,
-		marginTop: 2,
 	},
 	loginButtonWrap: {
 		marginTop: 44,
@@ -266,7 +264,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 46,
 	},
 	registerAccountFieldBlock: {
-		gap: 8,
+		gap: 5,
 	},
 	registerAccountInput: {
 		color: palette.text,
@@ -281,7 +279,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		marginTop: 1,
 	},
 	registerPasswordFieldBlock: {
-		gap: 6,
+		gap: 2,
 	},
 	registerPasswordInputRow: {
 		minHeight: 40,
@@ -361,11 +359,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: 18,
 	},
 	homeScreen: {
-		flex: 1,
+    flex: 1,
 	},
 	homeHeader: {
-		alignItems: 'center',
-		paddingTop: 2,
+    alignItems: 'center',
+    marginTop: spacing.lg,
 	},
 	homeLogo: {
 		width: '100%',
@@ -394,7 +392,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	homeShortcutRow: {
 		flexDirection: 'row',
-		gap: 12,
+		gap: spacing.md,
 		justifyContent: 'space-between',
 	},
 	homeShortcutCard: {
@@ -404,7 +402,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		alignItems: 'center',
 		justifyContent: 'center',
-		gap: 12,
+		gap: spacing.md,
 		...unifiedShadow,
 	},
 	homeShortcutIconBox: {
@@ -487,7 +485,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 		paddingHorizontal: 16,
 		paddingVertical: 16,
-		gap: 6,
+		gap: spacing.md,
 	},
 	registerDropZoneIconWrap: {
 		width: 48,
@@ -506,7 +504,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		textAlign: 'center',
 	},
 	registerBehaviorList: {
-		gap: 10,
+		gap: spacing.md,
 	},
 	registerBehaviorItem: {
 		flexDirection: 'row',
