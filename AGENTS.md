@@ -4,7 +4,7 @@
 
 - **Initialization:** O projeto é um aplicativo móvel construído com **React Native/Expo**. O ponto de entrada principal é `expo/AppEntry`.
 - **Development Command:** Para iniciar o ambiente de desenvolvimento, use `npm start` ou `expo start`.
-- **Validation:** Os comandos principais do projeto são `npm run lint` e `npm run typecheck`.
+- **Validation:** Os comandos principais do projeto são `npm run lint`, `npm run typecheck` e `npx expo-doctor`.
 - **Testing:** Testes devem seguir as convenções do Expo/React Native. Verifique a necessidade de mocking específico do Expo antes de testar componentes nativos.
 
 ## 📂 Codebase Structure
