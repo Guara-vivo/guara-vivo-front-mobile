@@ -795,7 +795,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	headerLeft: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginRight: spacing.sm,
+		marginRight: spacing.md,
 	},
 	appHeaderTitle: {
 		flex: 1,
@@ -804,18 +804,14 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 22,
 		fontWeight: '800',
 		textTransform: 'uppercase',
-		letterSpacing: 0.8,
 	},
 	headerRight: {
 		alignItems: 'center',
 		justifyContent: 'flex-end',
 		marginLeft: spacing.sm,
 	},
-	headerActionButton: {
-		width: 32,
-		height: 32,
-		alignItems: 'center',
-		justifyContent: 'center',
+  headerActionButton: {
+    marginTop: 1,
 	},
 	headerWrap: {
 		gap: spacing.xs,
@@ -1384,30 +1380,27 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailSectionTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	recordDetailSectionTitle: {
 		color: colors.secondary,
 		fontSize: 15,
-
 		textTransform: 'uppercase',
 	},
 	recordDetailInfoList: {
-		gap: 14,
+		gap: spacing.sm,
 	},
 	recordDetailInfoRow: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		gap: 10,
+		gap: spacing.sm,
 	},
 	recordDetailInfoTextWrap: {
 		flex: 1,
-		gap: 2,
 	},
 	recordDetailInfoLabel: {
 		color: colors.muted,
 		fontSize: 11,
-
 		textTransform: 'uppercase',
 	},
 	recordDetailValue: {
