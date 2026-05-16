@@ -58,7 +58,7 @@ export function RecordDetailScreen({
               title="Detalhes do Registro"
               leftIcon={
                 <Pressable
-                  onPress={() => onNavigate('profile')}
+                  onPress={() => onNavigate('history')}
                   hitSlop={8}
                   style={appStyles.headerActionButton}
                 >
