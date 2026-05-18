@@ -16,7 +16,7 @@
 - **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
 - **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
-- **Dados:** Os registros mockados e tipos do mapa ficam em `src/config/map.ts` e `src/data/mockRecords.ts`. Dados de detalhes de registros em `src/data/recordDetails.ts`.
+- **Dados/API:** Os registros reais vêm da API por `src/services/recordsService.ts` e `src/services/recordsApi.ts`. Tipos reais ficam em `src/types/api.ts`; formatadores em `src/utils/recordFormatters.ts`; opções de comportamento em `src/constants/behaviors.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
 
 - **Nota:** Arquivos combinados anteriores como `mainScreens.tsx`, `profileScreens.tsx` e `authScreens.tsx` foram divididos em arquivos por tela para facilitar manutenção.
@@ -25,8 +25,8 @@
 
 - **Components:** `src/components/` contém componentes reutilizáveis e pequenos componentes por domínio (ex.: `auth/`, `history/`, `common`). Componentes padrão: `Button`, `ErrorBoundary`, `MapLibreMapView`, `BottomNavigation`.
 - **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
-- **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`, `usePasswordValidation.ts`).
-- **Services:** Abstrações de dados e APIs locais em `src/services/` (ex.: `recordsService.ts`).
+- **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`, `usePasswordValidation.ts`, `usePullRefreshAnimation.ts`).
+- **Services:** Integração de API e cache ficam em `src/services/` (ex.: `apiClient.ts`, `authService.ts`, `recordsApi.ts`, `recordsCache.ts`, `recordsService.ts`, `tokenStorage.ts`).
 - **Styles:** `src/styles/appStyles.ts` mantém estilos globais; prefira mover estilos muito grandes para arquivos por domínio.
 - **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
 - **Header padrão:** Use `src/components/Header.tsx` nas telas principais; mantenha o estilo compartilhado em `appStyles.header`, `appHeaderTitle` e `headerRight` para preservar a faixa azul em largura total.
@@ -35,11 +35,15 @@
 
 - **Framework:** A plataforma é estritamente **React Native**. Evite qualquer lógica ou importação que dependa de APIs web (DOM, etc.).
 - **Styling:** Os estilos e a aparência são gerenciados localmente em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
-- **Expo Setup:** O app usa `expo-font` e `expo-location` no `app.json`. A permissão de localização está configurada para centralizar o mapa no aparelho.
+- **Expo Setup:** O app usa `expo-font`, `expo-location` e `expo-image-picker` no `app.json`. Localização centraliza o mapa e envia coordenadas no registro; image picker seleciona fotos do avistamento.
 - **Platform:** `app.json` define orientação portrait, tema claro, suporte a tablet no iOS e adaptive icon no Android.
 - **Scripts Atuais:** Use `npm start`, `npm run lint`, `npm run lint:fix` e `npm run typecheck`.
 - **Mapa:** O mapa já remove POIs comerciais, usa marcadores personalizados neutros e exibe badge de contagem por camada.
 - **Map Layers:** `all` mostra o total visível, `feeding` mostra pontos vermelhos e `nests` mostra casas azuis.
+- **API URL:** `src/services/apiClient.ts` define a base URL por plataforma. Android usa o IP local configurado para acessar a API na rede.
+- **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts`. `apiFetch` renova token automaticamente em `401` usando `POST /users/refresh` e repete a requisição original.
+- **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`.
+- **Cache:** `src/services/recordsCache.ts` mantém cache em memória de histórico e detalhes. Invalide com `invalidateRecordsCache()` após upload ou mudanças nos registros.
 
 ## Performance Optimization Guidelines
 
@@ -142,3 +146,9 @@ const [state, dispatch] = useReducer(reducer, {
 - **Optimized list rendering:** Replaced nested ScrollView+FlatList with FlatList for HistoryScreen.
 - **Optimized state management:** Implemented useReducer for atomic state in ChangePasswordScreen and EditProfileScreen.
 - **React Native performance best practices:** ScrollView used for static content, FlatList for dynamic lists.
+- Integrated real API auth, token persistence, automatic refresh token flow, and API logout.
+- Removed mock records and mock record details from app runtime.
+- Added real image selection with `expo-image-picker`, image previews, remove buttons, upload loading feedback, and cache invalidation after successful upload.
+- Added lightweight frontend cache for records and record details with request deduplication.
+- History and record detail screens use backend aggregate endpoints (`/records/summary`, `/records/{id}/detail`) and support pull-to-refresh.
+- Added animated pull-to-refresh movement via `usePullRefreshAnimation` while keeping native `RefreshControl`.
