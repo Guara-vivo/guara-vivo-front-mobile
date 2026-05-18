@@ -1,12 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import {
+	ActivityIndicator,
+	Image,
+	Pressable,
+	ScrollView,
+	Text,
+	View,
+} from 'react-native'
+import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
-import { mockRecords } from '../data/mockRecords'
-import { formatDate, formatTime } from '../data/mockRecords'
-import { recordDetails } from '../data/recordDetails'
+import {
+	formatDate,
+	formatLocationLabel,
+	formatTime,
+} from '../utils/recordFormatters'
 import type { ScreenId } from '../types/navigation'
 import { Header } from '../components/Header'
+import {
+	fetchRecordDetail,
+	type RecordDetailItem,
+} from '../services/recordsService'
 
 export function RecordDetailScreen({
 	onNavigate,
@@ -15,72 +29,140 @@ export function RecordDetailScreen({
 	onNavigate: (screen: ScreenId) => void
 	recordId?: number
 }) {
-	const record = mockRecords.find((item) => item.id === recordId)
+	const [record, setRecord] = useState<RecordDetailItem | undefined>()
+	const [isLoading, setIsLoading] = useState(true)
 
-	const detail = recordDetails[recordId] ?? {
-		location: `Area ${record?.id || 'Desconhecida'} - Setor Principal`,
-		distanceMeters: 40,
-		behaviors: [record?.flock_size],
-		observations: 'Registro visual sem observações adicionais.',
-		imageSlots: 2,
+	useEffect(() => {
+		let mounted = true
+
+		if (!recordId) {
+			setRecord(undefined)
+			setIsLoading(false)
+			return () => {
+				mounted = false
+			}
+		}
+
+		setIsLoading(true)
+		fetchRecordDetail(recordId)
+			.then((item) => {
+				if (mounted) {
+					setRecord(item)
+				}
+			})
+			.catch(() => {
+				if (mounted) {
+					setRecord(undefined)
+				}
+			})
+			.finally(() => {
+				if (mounted) {
+					setIsLoading(false)
+				}
+			})
+
+		return () => {
+			mounted = false
+		}
+	}, [recordId])
+
+	if (isLoading) {
+		return (
+			<View style={appStyles.recordDetailScreen}>
+				<Header
+					title="Detalhes do Registro"
+					leftIcon={
+						<Pressable
+							onPress={() => onNavigate('history')}
+							hitSlop={8}
+							style={appStyles.headerActionButton}
+						>
+							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						</Pressable>
+					}
+				/>
+				<View style={appStyles.recordDetailNotFoundWrap}>
+					<ActivityIndicator
+						color={colors.muted}
+						size="small"
+						style={appStyles.recordDetailLoadingIcon}
+					/>
+					<Text style={appStyles.recordDetailEmptyText}>
+						Carregando registro...
+					</Text>
+				</View>
+			</View>
+		)
 	}
 
 	if (!record) {
 		return (
 			<View style={appStyles.recordDetailScreen}>
-				<ScrollView
-					style={appStyles.screen}
-					contentContainerStyle={appStyles.recordDetailContent}
-				>
-					<Pressable
-						onPress={() => onNavigate('history')}
-						style={appStyles.pageBackButton}
-					>
-						<Ionicons name="chevron-back" size={28} color="#125ED0" />
-					</Pressable>
-
-					<View style={appStyles.recordDetailCard}>
-						<Text style={appStyles.recordDetailValue}>
-							Registro nao encontrado.
-						</Text>
-					</View>
-				</ScrollView>
+				<Header
+					title="Detalhes do Registro"
+					leftIcon={
+						<Pressable
+							onPress={() => onNavigate('history')}
+							hitSlop={8}
+							style={appStyles.headerActionButton}
+						>
+							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						</Pressable>
+					}
+				/>
+				<View style={appStyles.recordDetailNotFoundWrap}>
+					<Text style={appStyles.recordDetailEmptyText}>
+						Registro nao encontrado.
+					</Text>
+				</View>
 			</View>
 		)
 	}
 
+	const behaviorTags = String(record.flock_size)
+		.split(',')
+		.map((item) => item.trim())
+		.filter(Boolean)
+	const imageUris = record.images ?? []
+	const imageSlots = imageUris.length
+
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'individuo' : 'individuos'}`
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
+	const locationLabel = formatLocationLabel(record.latitude, record.longitude)
 
 	return (
-    <View style={appStyles.recordDetailScreen}>
-            <Header
-              title="Detalhes do Registro"
-              leftIcon={
-                <Pressable
-                  onPress={() => onNavigate('history')}
-                  hitSlop={8}
-                  style={appStyles.headerActionButton}
-                >
-                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-                </Pressable>
-              }
-            />
+		<View style={appStyles.recordDetailScreen}>
+			<Header
+				title="Detalhes do Registro"
+				leftIcon={
+					<Pressable
+						onPress={() => onNavigate('history')}
+						hitSlop={8}
+						style={appStyles.headerActionButton}
+					>
+						<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+					</Pressable>
+				}
+			/>
 
 			<ScrollView
 				style={appStyles.screen}
 				contentContainerStyle={appStyles.recordDetailContent}
 			>
-				
-
-				<View style={appStyles.recordDetailIdBadge}>
-					<Text style={appStyles.recordDetailIdText}>{idLabel}</Text>
-				</View>
-
 				<View style={appStyles.recordDetailCard}>
-					<Text style={appStyles.recordDetailSectionTitle}>
-						INFORMACOES GERAIS
-					</Text>
+					<View style={appStyles.recordDetailHeaderRow}>
+						<Text
+							style={[
+								appStyles.recordDetailSectionTitle,
+								appStyles.recordDetailInfoHeaderTitle,
+							]}
+						>
+							INFORMACOES GERAIS
+						</Text>
+						<View style={appStyles.recordDetailIdBadge}>
+							<Text style={appStyles.recordDetailIdText}>{idLabel}</Text>
+						</View>
+					</View>
 
 					<View style={appStyles.recordDetailInfoList}>
 						<View style={appStyles.recordDetailInfoRow}>
@@ -97,9 +179,7 @@ export function RecordDetailScreen({
 							<Ionicons name="location-outline" size={18} color="#F2201F" />
 							<View style={appStyles.recordDetailInfoTextWrap}>
 								<Text style={appStyles.recordDetailInfoLabel}>LOCALIZACAO</Text>
-								<Text style={appStyles.recordDetailValue}>
-									{detail.location}
-								</Text>
+								<Text style={appStyles.recordDetailValue}>{locationLabel}</Text>
 								<Text style={appStyles.recordDetailCoordinates}>
 									Lat: {record.latitude.toFixed(4)} / Lng:{' '}
 									{record.longitude.toFixed(4)}
@@ -119,11 +199,9 @@ export function RecordDetailScreen({
 							<Ionicons name="eye-outline" size={18} color="#F2201F" />
 							<View style={appStyles.recordDetailInfoTextWrap}>
 								<Text style={appStyles.recordDetailInfoLabel}>
-									DISTANCIA ESTIMADA
+									STATUS
 								</Text>
-								<Text style={appStyles.recordDetailValue}>
-									{detail.distanceMeters} metros
-								</Text>
+								<Text style={appStyles.recordDetailValue}>{record.status}</Text>
 							</View>
 						</View>
 					</View>
@@ -138,7 +216,7 @@ export function RecordDetailScreen({
 					</View>
 
 					<View style={appStyles.recordDetailChipRow}>
-						{detail.behaviors.map((behavior: string) => (
+						{behaviorTags.map((behavior: string) => (
 							<View key={behavior} style={appStyles.recordDetailChip}>
 								<Text style={appStyles.recordDetailChipText}>
 									{behavior.toUpperCase()}
@@ -152,26 +230,39 @@ export function RecordDetailScreen({
 					<View style={appStyles.recordDetailSectionTitleRow}>
 						<Ionicons name="camera-outline" size={16} color="#125ED0" />
 						<Text style={appStyles.recordDetailSectionTitle}>
-							IMAGENS ({detail.imageSlots})
+							IMAGENS ({imageSlots})
 						</Text>
 					</View>
 
 					<View style={appStyles.recordDetailImageGrid}>
-						{Array.from({ length: detail.imageSlots }).map((_, index) => (
-							<View
-								key={`img-${index}`}
-								style={appStyles.recordDetailImagePlaceholder}
-							>
-								<Ionicons name="camera-outline" size={26} color="#8FB0F4" />
-							</View>
-						))}
+						{Array.from({ length: imageSlots }).map((_, index) => {
+							const imageUri = imageUris[index]
+
+							return imageUri ? (
+								<Image
+									key={imageUri}
+									source={{ uri: imageUri }}
+									style={appStyles.recordDetailImagePlaceholder}
+									resizeMode="cover"
+								/>
+							) : (
+								<View
+									key={`img-${index}`}
+									style={appStyles.recordDetailImagePlaceholder}
+								>
+									<Ionicons name="camera-outline" size={26} color="#8FB0F4" />
+								</View>
+							)
+						})}
 					</View>
 				</View>
 
 				<View style={appStyles.recordDetailCard}>
 					<Text style={appStyles.recordDetailSectionTitle}>OBSERVACOES</Text>
 					<Text style={appStyles.recordDetailObservationText}>
-						{detail.observations}
+						{record.status
+							? `Status do processamento: ${record.status}.`
+							: 'Sem observacoes da API.'}
 					</Text>
 				</View>
 			</ScrollView>

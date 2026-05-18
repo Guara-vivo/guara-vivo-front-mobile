@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { StatusBar } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { BottomNavigation } from './components/common'
@@ -19,13 +19,49 @@ import { ChangePasswordScreen } from './screens/ChangePasswordScreen'
 import { EditProfileScreen } from './screens/EditProfileScreen'
 import { NotificationsScreen } from './screens/NotificationsScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
+import { logout, restoreSession } from './services/authService'
 import { appStyles } from './styles/appStyles'
+import type { UserRead } from './types/api'
 import type { ScreenId } from './types/navigation'
 
 export default function GuaraVivoApp() {
 	const [currentScreen, setCurrentScreen] = useState<ScreenId>('splash')
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
+	const [isSessionReady, setIsSessionReady] = useState(false)
+	const [splashFinished, setSplashFinished] = useState(false)
+	const [currentUser, setCurrentUser] = useState<UserRead | null>(null)
 	const [selectedRecordId, setSelectedRecordId] = useState<number | undefined>()
+
+	useEffect(() => {
+		let mounted = true
+
+		restoreSession()
+			.then((user) => {
+				if (!mounted) {
+					return
+				}
+
+				setCurrentUser(user)
+				setIsAuthenticated(Boolean(user))
+			})
+			.finally(() => {
+				if (mounted) {
+					setIsSessionReady(true)
+				}
+			})
+
+		return () => {
+			mounted = false
+		}
+	}, [])
+
+	useEffect(() => {
+		if (!splashFinished || !isSessionReady || currentScreen !== 'splash') {
+			return
+		}
+
+		setCurrentScreen(isAuthenticated ? 'home' : 'welcome')
+	}, [currentScreen, isAuthenticated, isSessionReady, splashFinished])
 
 	const handleNavigate = (screen: ScreenId, recordId?: number) => {
 		if (recordId !== undefined) {
@@ -33,6 +69,19 @@ export default function GuaraVivoApp() {
 		}
 
 		setCurrentScreen(screen)
+	}
+
+	const handleAuthSuccess = (user?: UserRead) => {
+		setCurrentUser(user ?? null)
+		setIsAuthenticated(true)
+	}
+
+	const handleLogout = async () => {
+		await logout()
+		setIsAuthenticated(false)
+		setCurrentUser(null)
+		setSelectedRecordId(undefined)
+		setCurrentScreen('welcome')
 	}
 
 	const showNavigation = useMemo(() => {
@@ -48,14 +97,14 @@ export default function GuaraVivoApp() {
 	const renderScreen = () => {
 		switch (currentScreen) {
 			case 'splash':
-				return <SplashScreen onFinish={() => setCurrentScreen('welcome')} />
+				return <SplashScreen onFinish={() => setSplashFinished(true)} />
 			case 'welcome':
 				return <WelcomeScreen onNavigate={handleNavigate} />
 			case 'login':
 				return (
 					<LoginScreen
 						onNavigate={handleNavigate}
-						onSuccess={() => setIsAuthenticated(true)}
+						onSuccess={handleAuthSuccess}
 					/>
 				)
 			case 'register-email':
@@ -64,7 +113,7 @@ export default function GuaraVivoApp() {
 				return (
 					<RegisterPasswordScreen
 						onNavigate={handleNavigate}
-						onSuccess={() => setIsAuthenticated(true)}
+						onSuccess={handleAuthSuccess}
 					/>
 				)
 			case 'home':
@@ -93,11 +142,8 @@ export default function GuaraVivoApp() {
 				return (
 					<ProfileScreen
 						onNavigate={handleNavigate}
-						onLogout={() => {
-							setIsAuthenticated(false)
-							setSelectedRecordId(undefined)
-							setCurrentScreen('welcome')
-						}}
+						onLogout={handleLogout}
+						user={currentUser}
 					/>
 				)
 			case 'edit-profile':

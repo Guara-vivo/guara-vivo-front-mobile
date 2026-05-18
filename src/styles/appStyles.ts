@@ -354,9 +354,9 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flexGrow: 1,
 		backgroundColor: palette.background,
 		paddingHorizontal: screenGutter,
-		paddingTop: 68,
+		paddingTop: '25%',
 		paddingBottom: 24,
-		gap: 18,
+		gap: spacing.md,
 	},
 	homeScreen: {
     flex: 1,
@@ -439,7 +439,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerContent: {
 		paddingHorizontal: screenGutter,
-    paddingBottom: screenBottomPadding,
+    paddingBottom: spacing.lg,
     paddingTop: spacing.lg,
 	},
 	registerCard: {
@@ -501,6 +501,17 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: 12,
 		textAlign: 'center',
+	},
+	registerImagePreviewGrid: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: 8,
+	},
+	registerImagePreview: {
+		width: 72,
+		height: 72,
+		borderRadius: cornerRadius,
+		backgroundColor: colors.border,
 	},
 	registerBehaviorList: {
 		gap: spacing.md,
@@ -598,7 +609,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: 10,
 		borderRadius: cornerRadius,
     borderWidth: 0,
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
 		backgroundColor: colors.surface,
 		...unifiedShadow,
 	},
@@ -650,7 +661,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		borderWidth: 0,
 		...unifiedShadow,
-		height: 450,
+		height: '95%',
 	},
 	mapsLegendCard: {
 		padding: 12,
@@ -775,6 +786,49 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	actionButtonTextGhost: {
 		color: colors.primary,
+	},
+	feedbackModalBackdrop: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.28)',
+		paddingHorizontal: screenGutter,
+	},
+	feedbackModalCard: {
+		width: '100%',
+		maxWidth: 360,
+		alignItems: 'center',
+		backgroundColor: colors.surface,
+		borderRadius: radius.lg,
+		paddingHorizontal: spacing.lg,
+		paddingVertical: spacing.xl,
+		gap: spacing.md,
+		...unifiedShadow,
+	},
+	feedbackModalIconWrap: {
+		width: 64,
+		height: 64,
+		borderRadius: radius.pill,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.splash,
+	},
+	feedbackModalTitle: {
+		color: colors.secondary,
+		fontSize: 20,
+		textAlign: 'center',
+		textTransform: 'uppercase',
+	},
+	feedbackModalMessage: {
+		color: colors.muted,
+		fontSize: 14,
+		lineHeight: 20,
+		textAlign: 'center',
+	},
+	feedbackModalButton: {
+		width: '100%',
+		minHeight: 44,
+		marginTop: spacing.sm,
 	},
 	header: {
 		backgroundColor: colors.secondary,
@@ -1019,6 +1073,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	historyContent: {
+		flexGrow: 1,
 		paddingHorizontal: screenGutter,
 		paddingBottom: screenBottomPadding,
 		paddingTop: spacing.lg,
@@ -1053,6 +1108,9 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		gap: 7,
+	},
+	historyFilterButtonDisabled: {
+		opacity: 0.45,
 	},
 	historyFilterButtonText: {
 		color: colors.surface,
@@ -1136,9 +1194,14 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	historyEmptyWrap: {
-		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		padding: 16,
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'transparent',
+		paddingHorizontal: spacing.md,
+	},
+	historyLoadingIcon: {
+		marginBottom: spacing.sm,
 	},
 	historyEmptyText: {
 		color: colors.muted,
@@ -1345,22 +1408,35 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.lg,
 	},
 	recordDetailNotFoundWrap: {
+		flexGrow: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'transparent',
 		paddingHorizontal: screenGutter,
-		paddingTop: 12,
+		paddingVertical: spacing.lg,
+	},
+	recordDetailLoadingIcon: {
+		marginBottom: spacing.sm,
+	},
+	recordDetailEmptyText: {
+		color: colors.muted,
+		fontSize: 14,
+		textAlign: 'center',
 	},
 	recordDetailIdBadge: {
-		alignSelf: 'flex-start',
-		minWidth: 50,
-		height: 34,
+		flexShrink: 0,
+		maxWidth: '30%',
+		minWidth: 44,
+		height: 30,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.primary,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm,
 	},
 	recordDetailIdText: {
 		color: colors.surface,
-		fontSize: 14,
+		fontSize: 13,
 		textTransform: 'uppercase',
 	},
 	recordDetailCard: {
@@ -1375,6 +1451,15 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm,
+	},
+	recordDetailHeaderRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: spacing.sm,
+	},
+	recordDetailInfoHeaderTitle: {
+		flex: 1,
 	},
 	recordDetailSectionTitle: {
 		color: colors.secondary,

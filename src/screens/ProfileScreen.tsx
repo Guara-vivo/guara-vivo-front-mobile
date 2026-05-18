@@ -3,15 +3,21 @@ import { Pressable, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import Header from '../components/Header'
 import { appStyles } from '../styles/appStyles'
+import type { UserRead } from '../types/api'
 import type { ScreenId } from '../types/navigation'
 
 export function ProfileScreen({
 	onNavigate,
 	onLogout,
+	user,
 }: {
 	onNavigate: (screen: ScreenId) => void
-	onLogout: () => void
+	onLogout: () => void | Promise<void>
+	user: UserRead | null
 }) {
+	const displayName = user?.name ?? 'Usuario Guara Vivo'
+	const displayEmail = user?.email ?? 'Sessao local'
+
 	return (
 		<View style={appStyles.profileScreen}>
 			<Header title="Meu Perfil" />
@@ -24,8 +30,8 @@ export function ProfileScreen({
 						<Ionicons name="person-outline" size={58} color="#1F61C5" />
 					</View>
 
-					<Text style={appStyles.profileHeroName}>Joao da Silva Goulard</Text>
-					<Text style={appStyles.profileHeroEmail}>joaosgoulard@email.com</Text>
+					<Text style={appStyles.profileHeroName}>{displayName}</Text>
+					<Text style={appStyles.profileHeroEmail}>{displayEmail}</Text>
 
 					<Pressable
 						onPress={() => onNavigate('edit-profile')}

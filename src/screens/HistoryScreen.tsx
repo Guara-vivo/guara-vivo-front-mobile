@@ -1,13 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { View, Pressable, Text, TextInput, FlatList } from 'react-native'
+import {
+	ActivityIndicator,
+	View,
+	Pressable,
+	Text,
+	TextInput,
+	FlatList,
+} from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
+import { colors } from '../constants/theme'
 import useHistoryFilters from '../hooks/useHistoryFilters'
+import { fetchRecords } from '../services/recordsService'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
+import type { RecordItem } from '../types/records'
 
 export function HistoryScreen({
 	onNavigate,
@@ -16,6 +26,37 @@ export function HistoryScreen({
 	onNavigate: (screen: ScreenId) => void
 	onOpenRecord: (recordId: number) => void
 }) {
+	const [records, setRecords] = useState<RecordItem[]>([])
+	const [isLoading, setIsLoading] = useState(true)
+	const [loadError, setLoadError] = useState(false)
+
+	useEffect(() => {
+		let mounted = true
+
+		setIsLoading(true)
+		setLoadError(false)
+		fetchRecords()
+			.then((items) => {
+				if (mounted) {
+					setRecords(items)
+				}
+			})
+			.catch(() => {
+				if (mounted) {
+					setLoadError(true)
+				}
+			})
+			.finally(() => {
+				if (mounted) {
+					setIsLoading(false)
+				}
+			})
+
+		return () => {
+			mounted = false
+		}
+	}, [])
+
 	const {
 		searchTerm,
 		setSearchTerm,
@@ -28,7 +69,13 @@ export function HistoryScreen({
 		clearFilters,
 		filteredRecords,
 		setIsFilterOpen,
-	} = useHistoryFilters()
+	} = useHistoryFilters(records)
+
+	const emptyMessage = isLoading
+		? 'Carregando registros...'
+		: loadError
+			? 'Nao foi possivel carregar os registros.'
+			: 'Nenhum registro encontrado com os filtros atuais.'
 
 	return (
 		<View style={appStyles.historyScreen}>
@@ -53,7 +100,11 @@ export function HistoryScreen({
 
 						<Pressable
 							onPress={openFilters}
-							style={appStyles.historyFilterButton}
+							disabled={isLoading}
+							style={[
+								appStyles.historyFilterButton,
+								isLoading && appStyles.historyFilterButtonDisabled,
+							]}
 						>
 							<Ionicons name="funnel-outline" size={17} color="#FFFFFF" />
 							<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
@@ -62,12 +113,17 @@ export function HistoryScreen({
 				}
 				ListEmptyComponent={
 					<View style={appStyles.historyEmptyWrap}>
-						<Text style={appStyles.historyEmptyText}>
-							Nenhum registro encontrado com os filtros atuais.
-						</Text>
+						{isLoading ? (
+							<ActivityIndicator
+								color={colors.muted}
+								size="small"
+								style={appStyles.historyLoadingIcon}
+							/>
+						) : null}
+						<Text style={appStyles.historyEmptyText}>{emptyMessage}</Text>
 					</View>
 				}
-				renderItem={({ item }: { item: any }) => (
+				renderItem={({ item }: { item: RecordItem }) => (
 					<HistoryRecordCard item={item} onOpenRecord={onOpenRecord} />
 				)}
 			/>

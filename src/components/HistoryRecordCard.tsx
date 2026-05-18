@@ -5,14 +5,15 @@ import {
 	formatDate,
 	formatLocationLabel,
 	formatTime,
-} from '../data/mockRecords'
+} from '../utils/recordFormatters'
 import { appStyles } from '../styles/appStyles'
+import type { RecordItem } from '../types/records'
 
 export function HistoryRecordCard({
 	item,
 	onOpenRecord,
 }: {
-	item: any
+	item: RecordItem
 	onOpenRecord: (id: number) => void
 }) {
 	const behaviorTags = String(item.flock_size)

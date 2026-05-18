@@ -24,6 +24,12 @@
           "locationWhenInUsePermission": "O app precisa da sua localização para centralizar o mapa na posição atual do aparelho."
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O app precisa acessar suas fotos para anexar imagens ao registro."
+        }
+      ],
       "@react-native-community/datetimepicker"
     ]
   }

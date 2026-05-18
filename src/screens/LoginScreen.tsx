@@ -9,7 +9,9 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { ActionButton } from '../components/common'
+import { login } from '../services/authService'
 import { appStyles } from '../styles/appStyles'
+import type { UserRead } from '../types/api'
 import type { ScreenId } from '../types/navigation'
 
 export function LoginScreen({
@@ -17,13 +19,14 @@ export function LoginScreen({
 	onSuccess,
 }: {
 	onNavigate: (screen: ScreenId) => void
-	onSuccess: () => void
+	onSuccess: (user: UserRead) => void
 }) {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
+	const [isLoading, setIsLoading] = useState(false)
 
-	const handleLogin = () => {
+	const handleLogin = async () => {
 		if (!email || !password) {
 			Alert.alert(
 				'Campos obrigatorios',
@@ -32,8 +35,19 @@ export function LoginScreen({
 			return
 		}
 
-		onSuccess()
-		onNavigate('home')
+		try {
+			setIsLoading(true)
+			const response = await login(email.trim(), password)
+			onSuccess(response.user)
+			onNavigate('home')
+		} catch {
+			Alert.alert(
+				'Falha no login',
+				'Confira e-mail, senha e se a API esta acessivel.',
+			)
+		} finally {
+			setIsLoading(false)
+		}
 	}
 
 	return (
@@ -61,6 +75,8 @@ export function LoginScreen({
 							onChangeText={setEmail}
 							placeholder="E-mail de acesso"
 							keyboardType="email-address"
+							autoCapitalize="none"
+							editable={!isLoading}
 							placeholderTextColor="#AEB4BF"
 							style={appStyles.loginInput}
 						/>
@@ -74,6 +90,8 @@ export function LoginScreen({
 								onChangeText={setPassword}
 								placeholder="Senha de acesso"
 								secureTextEntry={!showPassword}
+								autoCapitalize="none"
+								editable={!isLoading}
 								placeholderTextColor="#AEB4BF"
 								style={appStyles.loginInput}
 							/>
@@ -106,8 +124,9 @@ export function LoginScreen({
 
 				<View style={appStyles.loginButtonWrap}>
 					<ActionButton
-						title="ACESSAR"
+						title={isLoading ? 'ACESSANDO...' : 'ACESSAR'}
 						onPress={handleLogin}
+						disabled={isLoading}
 						containerStyle={appStyles.loginPrimaryButton}
 						textStyle={appStyles.loginPrimaryButtonLabel}
 					/>

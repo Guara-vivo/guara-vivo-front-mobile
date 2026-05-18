@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import {
-	mockRecords,
 	formatDate,
 	formatTime,
 	formatLocationLabel,
-} from '../data/mockRecords'
+} from '../utils/recordFormatters'
+import type { RecordItem } from '../types/records'
 
 type HistoryFilters = {
 	fromDate: string
@@ -49,7 +49,7 @@ const parseBehaviorTags = (value: string) =>
 		.map((item) => item.trim())
 		.filter(Boolean)
 
-export function useHistoryFilters() {
+export function useHistoryFilters(records: RecordItem[]) {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [isFilterOpen, setIsFilterOpen] = useState(false)
 	const [appliedFilters, setAppliedFilters] =
@@ -97,7 +97,7 @@ export function useHistoryFilters() {
 			behavior.toLowerCase(),
 		)
 
-		return mockRecords.filter((record) => {
+		return records.filter((record) => {
 			const recordDate = new Date(record.datetime)
 			const recordDateOnly = new Date(
 				recordDate.getFullYear(),
@@ -163,7 +163,7 @@ export function useHistoryFilters() {
 
 			return true
 		})
-	}, [appliedFilters, searchTerm])
+	}, [appliedFilters, records, searchTerm])
 
 	return {
 		searchTerm,

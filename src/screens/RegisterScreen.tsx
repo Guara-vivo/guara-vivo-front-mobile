@@ -1,26 +1,48 @@
 import React, { useState } from 'react'
-import { Alert } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 import DateTimePicker, {
 	type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
 import { Ionicons } from '@expo/vector-icons'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import * as ImagePicker from 'expo-image-picker'
+import * as Location from 'expo-location'
+import { Image, Pressable, ScrollView, Text, View } from 'react-native'
+import FeedbackModal from '../components/FeedbackModal'
 import Header from '../components/Header'
 import { ActionButton } from '../components/common'
 import RegisterBehaviorList from '../components/RegisterBehaviorList'
+import { colors } from '../constants/theme'
+import { getToken } from '../services/authService'
+import { uploadRecord } from '../services/recordsApi'
 import { appStyles } from '../styles/appStyles'
+import type { BirdBehavior, ReactNativeFile } from '../types/api'
 import type { ScreenId } from '../types/navigation'
+
+const behaviorApiMap: Partial<Record<string, BirdBehavior>> = {
+	Alimentando: 'alimentando-se',
+	Ninhando: 'ninhando',
+	Voando: 'voando',
+}
+
+type RegisterFeedback = {
+	title: string
+	message: string
+	iconName: keyof typeof Ionicons.glyphMap
+	iconColor: string
+}
 
 export function RegisterScreen({
 	onNavigate,
 }: {
 	onNavigate: (screen: ScreenId) => void
 }) {
-	const [, setPhotos] = useState(0)
+	const [selectedImages, setSelectedImages] = useState<ReactNativeFile[]>([])
 	const [behaviors, setBehaviors] = useState<string[]>([])
 	const [selectedAt, setSelectedAt] = useState(new Date())
 	const [showDatePicker, setShowDatePicker] = useState(false)
 	const [showTimePicker, setShowTimePicker] = useState(false)
+	const [isSaving, setIsSaving] = useState(false)
+	const [feedback, setFeedback] = useState<RegisterFeedback | null>(null)
 	const behaviorOrder = [
 		'Em cio',
 		'Ninhando',
@@ -43,9 +65,132 @@ export function RegisterScreen({
 		)
 	}
 
-	const handleSave = () => {
-		Alert.alert('Sucesso', 'Registro salvo no prototipo nativo.')
-		onNavigate('home')
+	const showErrorFeedback = (title: string, message: string) => {
+		setFeedback({
+			title,
+			message,
+			iconName: 'alert-circle-outline',
+			iconColor: colors.primary,
+		})
+	}
+
+	const handlePickImages = async () => {
+		if (isSaving) {
+			return
+		}
+
+		const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+
+		if (!permission.granted) {
+			showErrorFeedback(
+				'Permissao necessaria',
+				'Permita acesso as fotos para adicionar imagens.',
+			)
+			return
+		}
+
+		const result = await ImagePicker.launchImageLibraryAsync({
+			allowsMultipleSelection: true,
+			mediaTypes: ['images'],
+			quality: 0.8,
+			selectionLimit: 20,
+		})
+
+		if (result.canceled) {
+			return
+		}
+
+		setSelectedImages(
+			result.assets.slice(0, 20).map((asset, index) => {
+				const fallbackName = `guara-vivo-${index + 1}.jpg`
+				const uriName = asset.uri.split('/').pop()
+
+				return {
+					uri: asset.uri,
+					name: asset.fileName ?? uriName ?? fallbackName,
+					type: asset.mimeType ?? 'image/jpeg',
+				}
+			}),
+		)
+	}
+
+	const handleSave = async () => {
+		if (isSaving) {
+			return
+		}
+
+		if (selectedImages.length === 0) {
+			showErrorFeedback(
+				'Imagem obrigatoria',
+				'Adicione pelo menos uma imagem para salvar o registro.',
+			)
+			return
+		}
+
+		const apiBehaviors = behaviors
+			.map((behavior) => behaviorApiMap[behavior])
+			.filter((behavior): behavior is BirdBehavior => Boolean(behavior))
+
+		if (apiBehaviors.length === 0) {
+			showErrorFeedback(
+				'Comportamento invalido',
+				'Selecione um comportamento valido para enviar o registro.',
+			)
+			return
+		}
+
+		try {
+			setIsSaving(true)
+
+			const token = await getToken()
+
+			if (!token) {
+				showErrorFeedback('Sessao expirada', 'Entre novamente para enviar o registro.')
+				return
+			}
+
+			const permission = await Location.requestForegroundPermissionsAsync()
+
+			if (!permission.granted) {
+				showErrorFeedback(
+					'Permissao necessaria',
+					'Permita acesso a localizacao para enviar o registro.',
+				)
+				return
+			}
+
+			const position = await Location.getCurrentPositionAsync({
+				accuracy: Location.Accuracy.Balanced,
+			})
+
+			await uploadRecord({
+				behavior: apiBehaviors,
+				dateTime: selectedAt,
+				images: selectedImages,
+				latitude: position.coords.latitude,
+				longitude: position.coords.longitude,
+				token,
+			})
+
+			setSelectedImages([])
+			setBehaviors([])
+			setSelectedAt(new Date())
+			setShowDatePicker(false)
+			setShowTimePicker(false)
+			setFeedback({
+				title: 'Registro enviado',
+				message: 'Registro enviado para processamento com sucesso.',
+				iconName: 'checkmark-circle-outline',
+				iconColor: colors.secondary,
+			})
+		} catch {
+			showErrorFeedback(
+				'Falha no envio',
+				'Nao foi possivel enviar o registro. Tente novamente.',
+			)
+		} finally {
+			setIsSaving(false)
+		}
 	}
 
 	const handleDateChange = (event: DateTimePickerEvent, date?: Date) => {
@@ -75,7 +220,11 @@ export function RegisterScreen({
 	}
 
 	const handleCancel = () => {
-		setPhotos(0)
+		if (isSaving) {
+			return
+		}
+
+		setSelectedImages([])
 		setBehaviors([])
 		onNavigate('home')
 	}
@@ -104,7 +253,8 @@ export function RegisterScreen({
 						</View>
 
 						<Pressable
-							onPress={() => setPhotos((value) => value + 1)}
+							onPress={handlePickImages}
+							disabled={isSaving}
 							style={appStyles.registerDropZone}
 						>
 							<View style={appStyles.registerDropZoneIconWrap}>
@@ -117,6 +267,19 @@ export function RegisterScreen({
 								ou arraste e solte aqui
 							</Text>
 						</Pressable>
+
+						{selectedImages.length > 0 ? (
+							<View style={appStyles.registerImagePreviewGrid}>
+								{selectedImages.map((image) => (
+									<Image
+										key={image.uri}
+										source={{ uri: image.uri }}
+										style={appStyles.registerImagePreview}
+										resizeMode="cover"
+									/>
+								))}
+							</View>
+						) : null}
 					</View>
 
 					<View style={appStyles.registerSubsection}>
@@ -144,7 +307,8 @@ export function RegisterScreen({
 
 						<View style={appStyles.registerDateRow}>
 							<Pressable
-								onPress={() => setShowDatePicker(true)}
+								onPress={() => !isSaving && setShowDatePicker(true)}
+								disabled={isSaving}
 								style={appStyles.registerDateField}
 							>
 								<Text style={appStyles.registerDateFieldText}>
@@ -154,7 +318,8 @@ export function RegisterScreen({
 							</Pressable>
 
 							<Pressable
-								onPress={() => setShowTimePicker(true)}
+								onPress={() => !isSaving && setShowTimePicker(true)}
+								disabled={isSaving}
 								style={appStyles.registerDateField}
 							>
 								<Text style={appStyles.registerDateFieldText}>
@@ -183,15 +348,20 @@ export function RegisterScreen({
 
 					<View style={appStyles.registerActionsRow}>
 						<ActionButton
-							title="SALVAR REGISTRO"
+							title={isSaving ? 'ENVIANDO...' : 'SALVAR REGISTRO'}
 							onPress={handleSave}
+							disabled={isSaving}
 							fullWidth={false}
 							containerStyle={appStyles.registerSaveButton}
 							textStyle={appStyles.registerActionButtonLabel}
+							leftIcon={
+								isSaving ? <ActivityIndicator size="small" color="#FFFFFF" /> : null
+							}
 						/>
 						<ActionButton
 							title="CANCELAR"
 							onPress={handleCancel}
+							disabled={isSaving}
 							variant="secondary"
 							fullWidth={false}
 							containerStyle={appStyles.registerCancelButton}
@@ -200,6 +370,18 @@ export function RegisterScreen({
 					</View>
 				</View>
 			</ScrollView>
+
+			{feedback ? (
+				<FeedbackModal
+					visible
+					title={feedback.title}
+					message={feedback.message}
+					buttonLabel="OK"
+					iconName={feedback.iconName}
+					iconColor={feedback.iconColor}
+					onConfirm={() => setFeedback(null)}
+				/>
+			) : null}
 		</View>
 	)
 }

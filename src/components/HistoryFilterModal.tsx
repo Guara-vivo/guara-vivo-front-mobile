@@ -8,7 +8,7 @@ import {
 	View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { behaviorOptions } from '../data/mockRecords'
+import { behaviorOptions } from '../constants/behaviors'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 
