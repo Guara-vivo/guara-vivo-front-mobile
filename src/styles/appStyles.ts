@@ -692,7 +692,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		borderWidth: 0,
 		...unifiedShadow,
-		height: '95%',
+		height: '96%',
 	},
 	mapsLegendCard: {
 		padding: 12,
