@@ -14,6 +14,7 @@ export type UserRead = {
 
 export type LoginResponse = {
 	access_token: string
+	refresh_token: string
 	token_type: 'bearer'
 	user: UserRead
 }
@@ -29,6 +30,11 @@ export type RecordRead = {
 	status: RecordStatus
 }
 
+export type RecordSummaryRead = RecordRead & {
+	analysis_id: number | null
+	ibis_quantity: number | null
+}
+
 export type AnalysisRead = {
 	id: number
 	ibis_quantity: number
@@ -41,6 +47,11 @@ export type IbisRead = {
 	color: string
 	age_group: string
 	analysis_id: number
+}
+
+export type RecordDetailRead = RecordRead & {
+	analysis: AnalysisRead | null
+	ibis: IbisRead[]
 }
 
 export type ReactNativeFile = {

@@ -10,7 +10,7 @@ import {
 	View,
 	Animated,
 } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import {
 	formatDate,

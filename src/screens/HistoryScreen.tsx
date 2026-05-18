@@ -14,7 +14,7 @@ import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
-import { colors, spacing } from '../constants/theme'
+import { colors } from '../constants/theme'
 import useHistoryFilters from '../hooks/useHistoryFilters'
 import usePullRefreshAnimation from '../hooks/usePullRefreshAnimation'
 import {

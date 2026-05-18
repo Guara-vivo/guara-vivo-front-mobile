@@ -1,26 +1,23 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { apiFetch } from './apiClient'
+import {
+	clearTokens,
+	getAccessToken,
+	getRefreshToken,
+	saveAccessToken,
+	saveTokens,
+} from './tokenStorage'
 import type { LoginResponse, UserRead } from '../types/api'
 
-const TOKEN_KEY = 'guara_vivo_access_token'
-
 export async function saveToken(token: string) {
-	const normalizedToken = token.trim()
-
-	if (!normalizedToken) {
-		throw new Error('Missing access token')
-	}
-
-	await AsyncStorage.setItem(TOKEN_KEY, normalizedToken)
+	await saveAccessToken(token)
 }
 
 export async function getToken() {
-	const token = await AsyncStorage.getItem(TOKEN_KEY)
-	return token?.trim() || null
+	return getAccessToken()
 }
 
 export async function clearToken() {
-	await AsyncStorage.removeItem(TOKEN_KEY)
+	await clearTokens()
 }
 
 export async function login(
@@ -34,7 +31,10 @@ export async function login(
 	})
 	const result = (await response.json()) as LoginResponse
 
-	await saveToken(result.access_token)
+	await saveTokens({
+		accessToken: result.access_token,
+		refreshToken: result.refresh_token,
+	})
 	return result
 }
 
@@ -62,6 +62,20 @@ export async function restoreSession() {
 }
 
 export async function logout() {
+	const refreshToken = await getRefreshToken()
+
+	if (refreshToken) {
+		try {
+			await apiFetch('/users/logout', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ refresh_token: refreshToken }),
+			})
+		} catch {
+			// Local logout must still clear stored credentials.
+		}
+	}
+
 	await clearToken()
 }
 

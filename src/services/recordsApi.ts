@@ -4,7 +4,9 @@ import type {
 	BirdBehavior,
 	IbisRead,
 	ReactNativeFile,
+	RecordDetailRead,
 	RecordRead,
+	RecordSummaryRead,
 } from '../types/api'
 import type { RecordItem } from '../types/records'
 
@@ -35,6 +37,47 @@ export function mapRecordReadToRecordItem(
 		status: record.status,
 		user_id: record.user_id,
 	}
+}
+
+export function mapRecordSummaryToRecordItem(
+	record: RecordSummaryRead,
+): RecordItem {
+	return {
+		...mapRecordReadToRecordItem(record),
+		ibis_quantity: record.ibis_quantity ?? 0,
+	}
+}
+
+export function mapRecordDetailToRecordItem(
+	record: RecordDetailRead,
+): RecordItem {
+	return {
+		...mapRecordReadToRecordItem(record, record.analysis),
+		ibis_quantity: record.analysis?.ibis_quantity ?? 0,
+	}
+}
+
+export async function getRecordSummaries(
+	token: string,
+	skip = 0,
+	limit = 100,
+): Promise<RecordSummaryRead[]> {
+	const response = await apiFetch(`/records/summary?skip=${skip}&limit=${limit}`, {
+		headers: { Authorization: `Bearer ${token}` },
+	})
+
+	return response.json() as Promise<RecordSummaryRead[]>
+}
+
+export async function getRecordDetail(
+	token: string,
+	recordId: number,
+): Promise<RecordDetailRead> {
+	const response = await apiFetch(`/records/${recordId}/detail`, {
+		headers: { Authorization: `Bearer ${token}` },
+	})
+
+	return response.json() as Promise<RecordDetailRead>
 }
 
 export async function getRecords(
@@ -137,8 +180,12 @@ export default {
 	getAnalysisIbis,
 	getIbis,
 	getRecord,
+	getRecordDetail,
 	getRecordAnalysis,
+	getRecordSummaries,
 	getRecords,
+	mapRecordDetailToRecordItem,
 	mapRecordReadToRecordItem,
+	mapRecordSummaryToRecordItem,
 	uploadRecord,
 }

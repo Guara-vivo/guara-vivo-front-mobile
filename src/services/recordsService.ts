@@ -11,12 +11,10 @@ import {
 	setCachedRecords,
 } from './recordsCache'
 import {
-	getAnalysisIbis,
-	getAnalyses,
-	getRecord,
-	getRecordAnalysis,
-	getRecords,
-	mapRecordReadToRecordItem,
+	getRecordDetail,
+	getRecordSummaries,
+	mapRecordDetailToRecordItem,
+	mapRecordSummaryToRecordItem,
 } from './recordsApi'
 import type { IbisRead } from '../types/api'
 import type { RecordItem } from '../types/records'
@@ -61,15 +59,8 @@ async function loadRecords(): Promise<RecordItem[]> {
 		throw new Error('Missing access token')
 	}
 
-	const records = await getRecords(token)
-	const analyses = await getAnalyses(token)
-
-	const items = records.map((record) =>
-		mapRecordReadToRecordItem(
-			record,
-			analyses.find((analysis) => analysis.recorder_id === record.id),
-		),
-	)
+	const records = await getRecordSummaries(token)
+	const items = records.map(mapRecordSummaryToRecordItem)
 
 	setCachedRecords(items)
 	return items
@@ -110,13 +101,11 @@ async function loadRecordDetail(
 		throw new Error('Missing access token')
 	}
 
-	const record = await getRecord(token, recordId)
-	const analysis = await getRecordAnalysis(token, recordId)
-	const ibis = analysis ? await getAnalysisIbis(token, analysis.id) : []
+	const record = await getRecordDetail(token, recordId)
 
 	const detail = {
-		...mapRecordReadToRecordItem(record, analysis),
-		ibis,
+		...mapRecordDetailToRecordItem(record),
+		ibis: record.ibis,
 	}
 
 	setCachedRecordDetail(detail)
