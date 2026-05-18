@@ -1,4 +1,4 @@
-# 📘 Opencode Agent Instructions for pi_namorada_linda
+# 📘 Opencode Agent Instructions for guara-vivo-front-mobile
 
 ## 🚀 Core Workflow
 
