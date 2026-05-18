@@ -128,7 +128,6 @@ export function HistoryScreen({
 							progressViewOffset={-50}
 						/>
 					}
-					ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
 					ListHeaderComponent={
 						<ScreenCard style={appStyles.historySearchCard}>
 							<View style={appStyles.historySearchInputWrap}>
