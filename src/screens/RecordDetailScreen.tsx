@@ -4,11 +4,13 @@ import {
 	ActivityIndicator,
 	Image,
 	Pressable,
+	RefreshControl,
 	ScrollView,
 	Text,
 	View,
+	Animated,
 } from 'react-native'
-import { colors } from '../constants/theme'
+import { colors, spacing } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import {
 	formatDate,
@@ -17,8 +19,11 @@ import {
 } from '../utils/recordFormatters'
 import type { ScreenId } from '../types/navigation'
 import { Header } from '../components/Header'
+import usePullRefreshAnimation from '../hooks/usePullRefreshAnimation'
 import {
 	fetchRecordDetail,
+	getCachedRecordDetailSnapshot,
+	isRecordDetailCacheFresh,
 	type RecordDetailItem,
 } from '../services/recordsService'
 
@@ -29,8 +34,14 @@ export function RecordDetailScreen({
 	onNavigate: (screen: ScreenId) => void
 	recordId?: number
 }) {
-	const [record, setRecord] = useState<RecordDetailItem | undefined>()
-	const [isLoading, setIsLoading] = useState(true)
+	const cachedRecord = recordId
+		? getCachedRecordDetailSnapshot(recordId)
+		: undefined
+	const [record, setRecord] = useState<RecordDetailItem | undefined>(cachedRecord)
+	const [isLoading, setIsLoading] = useState(!cachedRecord)
+	const [isRefreshing, setIsRefreshing] = useState(false)
+	const { animatedPullStyle, handlePullScroll } =
+		usePullRefreshAnimation(isRefreshing)
 
 	useEffect(() => {
 		let mounted = true
@@ -43,8 +54,22 @@ export function RecordDetailScreen({
 			}
 		}
 
-		setIsLoading(true)
-		fetchRecordDetail(recordId)
+		const cached = getCachedRecordDetailSnapshot(recordId)
+		const hasCachedRecord = Boolean(cached)
+
+		if (cached) {
+			setRecord(cached)
+		}
+
+		if (hasCachedRecord && isRecordDetailCacheFresh(recordId)) {
+			setIsLoading(false)
+			return () => {
+				mounted = false
+			}
+		}
+
+		setIsLoading(!hasCachedRecord)
+		fetchRecordDetail(recordId, { force: hasCachedRecord })
 			.then((item) => {
 				if (mounted) {
 					setRecord(item)
@@ -52,11 +77,11 @@ export function RecordDetailScreen({
 			})
 			.catch(() => {
 				if (mounted) {
-					setRecord(undefined)
+					setRecord(cached)
 				}
 			})
 			.finally(() => {
-				if (mounted) {
+				if (mounted && !hasCachedRecord) {
 					setIsLoading(false)
 				}
 			})
@@ -65,6 +90,24 @@ export function RecordDetailScreen({
 			mounted = false
 		}
 	}, [recordId])
+
+	const handleRefresh = async () => {
+		if (!recordId) {
+			return
+		}
+
+		setIsRefreshing(true)
+
+		try {
+			const item = await fetchRecordDetail(recordId, { force: true })
+			setRecord(item)
+		} catch {
+			setRecord((current) => current)
+		} finally {
+			setIsRefreshing(false)
+			setIsLoading(false)
+		}
+	}
 
 	if (isLoading) {
 		return (
@@ -145,10 +188,22 @@ export function RecordDetailScreen({
 				}
 			/>
 
-			<ScrollView
-				style={appStyles.screen}
-				contentContainerStyle={appStyles.recordDetailContent}
-			>
+			<Animated.View style={[appStyles.screen, animatedPullStyle]}>
+				<ScrollView
+					style={appStyles.screen}
+					contentContainerStyle={appStyles.recordDetailContent}
+					onScroll={handlePullScroll}
+					scrollEventThrottle={16}
+					refreshControl={
+						<RefreshControl
+							refreshing={isRefreshing}
+							onRefresh={handleRefresh}
+							colors={[colors.secondary]}
+							tintColor={colors.secondary}
+							progressViewOffset={-50}
+						/>
+					}
+				>
 				<View style={appStyles.recordDetailCard}>
 					<View style={appStyles.recordDetailHeaderRow}>
 						<Text
@@ -265,7 +320,8 @@ export function RecordDetailScreen({
 							: 'Sem observacoes da API.'}
 					</Text>
 				</View>
-			</ScrollView>
+				</ScrollView>
+			</Animated.View>
 		</View>
 	)
 }

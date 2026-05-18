@@ -7,14 +7,21 @@ import {
 	Text,
 	TextInput,
 	FlatList,
+	RefreshControl,
+	Animated,
 } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
-import { colors } from '../constants/theme'
+import { colors, spacing } from '../constants/theme'
 import useHistoryFilters from '../hooks/useHistoryFilters'
-import { fetchRecords } from '../services/recordsService'
+import usePullRefreshAnimation from '../hooks/usePullRefreshAnimation'
+import {
+	fetchRecords,
+	getCachedRecordsSnapshot,
+	isRecordsCacheFresh,
+} from '../services/recordsService'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
 import type { RecordItem } from '../types/records'
@@ -26,16 +33,26 @@ export function HistoryScreen({
 	onNavigate: (screen: ScreenId) => void
 	onOpenRecord: (recordId: number) => void
 }) {
-	const [records, setRecords] = useState<RecordItem[]>([])
-	const [isLoading, setIsLoading] = useState(true)
+	const cachedRecords = getCachedRecordsSnapshot()
+	const [records, setRecords] = useState<RecordItem[]>(cachedRecords ?? [])
+	const [isLoading, setIsLoading] = useState(!cachedRecords)
+	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [loadError, setLoadError] = useState(false)
+	const { animatedPullStyle, handlePullScroll } =
+		usePullRefreshAnimation(isRefreshing)
 
 	useEffect(() => {
 		let mounted = true
+		const cached = getCachedRecordsSnapshot()
+		const hasCachedRecords = Boolean(cached)
 
-		setIsLoading(true)
+		if (cached) {
+			setRecords(cached)
+		}
+
+		setIsLoading(!hasCachedRecords)
 		setLoadError(false)
-		fetchRecords()
+		fetchRecords({ force: hasCachedRecords && !isRecordsCacheFresh() })
 			.then((items) => {
 				if (mounted) {
 					setRecords(items)
@@ -43,11 +60,11 @@ export function HistoryScreen({
 			})
 			.catch(() => {
 				if (mounted) {
-					setLoadError(true)
+					setLoadError(!hasCachedRecords)
 				}
 			})
 			.finally(() => {
-				if (mounted) {
+				if (mounted && !hasCachedRecords) {
 					setIsLoading(false)
 				}
 			})
@@ -56,6 +73,21 @@ export function HistoryScreen({
 			mounted = false
 		}
 	}, [])
+
+	const handleRefresh = async () => {
+		setIsRefreshing(true)
+		setLoadError(false)
+
+		try {
+			const items = await fetchRecords({ force: true })
+			setRecords(items)
+		} catch {
+			setLoadError(records.length === 0)
+		} finally {
+			setIsRefreshing(false)
+			setIsLoading(false)
+		}
+	}
 
 	const {
 		searchTerm,
@@ -80,53 +112,66 @@ export function HistoryScreen({
 	return (
 		<View style={appStyles.historyScreen}>
 			<Header title="Histórico" />
-			<FlatList
-				contentContainerStyle={appStyles.historyContent}
-				data={filteredRecords}
-				keyExtractor={(item) => String(item.id)}
-				ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
-				ListHeaderComponent={
-					<ScreenCard style={appStyles.historySearchCard}>
-						<View style={appStyles.historySearchInputWrap}>
-							<Ionicons name="search-outline" size={19} color="#5C8BD6" />
-							<TextInput
-								value={searchTerm}
-								onChangeText={setSearchTerm}
-								placeholder="Buscar por local, data..."
-								placeholderTextColor="#8E8E96"
-								style={appStyles.historySearchInput}
-							/>
-						</View>
+			<Animated.View style={[appStyles.screen, animatedPullStyle]}>
+				<FlatList
+					contentContainerStyle={appStyles.historyContent}
+					data={filteredRecords}
+					keyExtractor={(item) => String(item.id)}
+					onScroll={handlePullScroll}
+					scrollEventThrottle={16}
+					refreshControl={
+						<RefreshControl
+							refreshing={isRefreshing}
+							onRefresh={handleRefresh}
+							colors={[colors.secondary]}
+							tintColor={colors.secondary}
+							progressViewOffset={-50}
+						/>
+					}
+					ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
+					ListHeaderComponent={
+						<ScreenCard style={appStyles.historySearchCard}>
+							<View style={appStyles.historySearchInputWrap}>
+								<Ionicons name="search-outline" size={19} color="#5C8BD6" />
+								<TextInput
+									value={searchTerm}
+									onChangeText={setSearchTerm}
+									placeholder="Buscar por local, data..."
+									placeholderTextColor="#8E8E96"
+									style={appStyles.historySearchInput}
+								/>
+							</View>
 
-						<Pressable
-							onPress={openFilters}
-							disabled={isLoading}
-							style={[
-								appStyles.historyFilterButton,
-								isLoading && appStyles.historyFilterButtonDisabled,
-							]}
-						>
-							<Ionicons name="funnel-outline" size={17} color="#FFFFFF" />
-							<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
-						</Pressable>
-					</ScreenCard>
-				}
-				ListEmptyComponent={
-					<View style={appStyles.historyEmptyWrap}>
-						{isLoading ? (
-							<ActivityIndicator
-								color={colors.muted}
-								size="small"
-								style={appStyles.historyLoadingIcon}
-							/>
-						) : null}
-						<Text style={appStyles.historyEmptyText}>{emptyMessage}</Text>
-					</View>
-				}
-				renderItem={({ item }: { item: RecordItem }) => (
-					<HistoryRecordCard item={item} onOpenRecord={onOpenRecord} />
-				)}
-			/>
+							<Pressable
+								onPress={openFilters}
+								disabled={isLoading}
+								style={[
+									appStyles.historyFilterButton,
+									isLoading && appStyles.historyFilterButtonDisabled,
+								]}
+							>
+								<Ionicons name="funnel-outline" size={17} color="#FFFFFF" />
+								<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
+							</Pressable>
+						</ScreenCard>
+					}
+					ListEmptyComponent={
+						<View style={appStyles.historyEmptyWrap}>
+							{isLoading ? (
+								<ActivityIndicator
+									color={colors.muted}
+									size="small"
+									style={appStyles.historyLoadingIcon}
+								/>
+							) : null}
+							<Text style={appStyles.historyEmptyText}>{emptyMessage}</Text>
+						</View>
+					}
+					renderItem={({ item }: { item: RecordItem }) => (
+						<HistoryRecordCard item={item} onOpenRecord={onOpenRecord} />
+					)}
+				/>
+			</Animated.View>
 
 			<HistoryFilterModal
 				visible={isFilterOpen}

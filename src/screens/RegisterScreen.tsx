@@ -13,6 +13,7 @@ import { ActionButton } from '../components/common'
 import RegisterBehaviorList from '../components/RegisterBehaviorList'
 import { colors } from '../constants/theme'
 import { getToken } from '../services/authService'
+import { invalidateRecordsCache } from '../services/recordsService'
 import { uploadRecord } from '../services/recordsApi'
 import { appStyles } from '../styles/appStyles'
 import type { BirdBehavior, ReactNativeFile } from '../types/api'
@@ -188,6 +189,7 @@ export function RegisterScreen({
 				longitude: position.coords.longitude,
 				token,
 			})
+			invalidateRecordsCache()
 
 			setSelectedImages([])
 			setBehaviors([])
