@@ -24,6 +24,8 @@ const behaviorApiMap: Partial<Record<string, BirdBehavior>> = {
 	Voando: 'voando',
 }
 
+const pressFeedbackDelayMs = 80
+
 type RegisterFeedback = {
 	title: string
 	message: string
@@ -42,6 +44,7 @@ export function RegisterScreen({
 	const [showDatePicker, setShowDatePicker] = useState(false)
 	const [showTimePicker, setShowTimePicker] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
+	const [isDropZonePressed, setIsDropZonePressed] = useState(false)
 	const [feedback, setFeedback] = useState<RegisterFeedback | null>(null)
 	const behaviorOrder = [
 		'Em cio',
@@ -79,6 +82,10 @@ export function RegisterScreen({
 			return
 		}
 
+		setIsDropZonePressed(true)
+		await new Promise((resolve) => setTimeout(resolve, pressFeedbackDelayMs))
+		setIsDropZonePressed(false)
+
 		const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
 		if (!permission.granted) {
@@ -111,6 +118,16 @@ export function RegisterScreen({
 					type: asset.mimeType ?? 'image/jpeg',
 				}
 			}),
+		)
+	}
+
+	const handleRemoveImage = async (imageUri: string) => {
+		if (isSaving) {
+			return
+		}
+
+		setSelectedImages((current) =>
+			current.filter((image) => image.uri !== imageUri),
 		)
 	}
 
@@ -255,7 +272,10 @@ export function RegisterScreen({
 						<Pressable
 							onPress={handlePickImages}
 							disabled={isSaving}
-							style={appStyles.registerDropZone}
+							style={[
+								appStyles.registerDropZone,
+								isDropZonePressed && appStyles.registerDropZonePressed,
+							]}
 						>
 							<View style={appStyles.registerDropZoneIconWrap}>
 								<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
@@ -263,20 +283,29 @@ export function RegisterScreen({
 							<Text style={appStyles.registerDropZoneTitle}>
 								Clique para adicionar fotos
 							</Text>
-							<Text style={appStyles.registerDropZoneText}>
-								ou arraste e solte aqui
-							</Text>
 						</Pressable>
 
 						{selectedImages.length > 0 ? (
 							<View style={appStyles.registerImagePreviewGrid}>
 								{selectedImages.map((image) => (
-									<Image
-										key={image.uri}
-										source={{ uri: image.uri }}
-										style={appStyles.registerImagePreview}
-										resizeMode="cover"
-									/>
+									<View key={image.uri} style={appStyles.registerImagePreviewWrap}>
+										<Image
+											source={{ uri: image.uri }}
+											style={appStyles.registerImagePreview}
+											resizeMode="cover"
+										/>
+										<Pressable
+											onPress={() => handleRemoveImage(image.uri)}
+											disabled={isSaving}
+											hitSlop={8}
+											style={({ pressed }) => [
+												appStyles.registerImageRemoveButton,
+												pressed && appStyles.registerImageRemoveButtonPressed,
+											]}
+										>
+											<Ionicons name="close" size={14} color="#FFFFFF" />
+										</Pressable>
+									</View>
 								))}
 							</View>
 						) : null}

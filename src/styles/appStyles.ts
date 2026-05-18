@@ -486,6 +486,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: 16,
 		gap: spacing.md,
 	},
+	registerDropZonePressed: {
+		backgroundColor: colors.splash,
+		opacity: 0.1,
+		transform: [{ scale: 0.99 }],
+	},
 	registerDropZoneIconWrap: {
 		width: 48,
 		height: 48,
@@ -507,11 +512,33 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		flexWrap: 'wrap',
 		gap: 8,
 	},
+	registerImagePreviewWrap: {
+		position: 'relative',
+		width: 72,
+		height: 72,
+	},
 	registerImagePreview: {
 		width: 72,
 		height: 72,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.border,
+	},
+	registerImageRemoveButton: {
+		position: 'absolute',
+		top: -6,
+		right: -6,
+		width: 24,
+		height: 24,
+		borderRadius: radius.pill,
+		backgroundColor: colors.primary,
+		alignItems: 'center',
+		justifyContent: 'center',
+		borderWidth: 2,
+		borderColor: colors.surface,
+	},
+	registerImageRemoveButtonPressed: {
+		opacity: 0.8,
+		transform: [{ scale: 0.96 }],
 	},
 	registerBehaviorList: {
 		gap: spacing.md,
