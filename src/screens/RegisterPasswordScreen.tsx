@@ -1,14 +1,9 @@
 import React, { useState } from 'react'
-import {
-	Alert,
-	Pressable,
-	ScrollView,
-	Text,
-	TextInput,
-	View,
-} from 'react-native'
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
+import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
 
@@ -23,15 +18,26 @@ export function RegisterPasswordScreen({
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+	const [feedback, setFeedback] = useState<{
+		title: string
+		message: string
+	} | null>(null)
+
+	const showErrorFeedback = (title: string, message: string) => {
+		setFeedback({ title, message })
+	}
 
 	const handleFinish = () => {
 		if (password.length < 6) {
-			Alert.alert('Senha fraca', 'Use pelo menos 6 caracteres.')
+			showErrorFeedback('Senha fraca', 'Use pelo menos 6 caracteres.')
 			return
 		}
 
 		if (password !== confirmPassword) {
-			Alert.alert('Senhas diferentes', 'A confirmacao nao confere com a senha.')
+			showErrorFeedback(
+				'Senhas diferentes',
+				'A confirmacao nao confere com a senha.',
+			)
 			return
 		}
 
@@ -118,6 +124,18 @@ export function RegisterPasswordScreen({
 					/>
 				</View>
 			</ScrollView>
+
+			{feedback ? (
+				<FeedbackModal
+					visible
+					title={feedback.title}
+					message={feedback.message}
+					buttonLabel="OK"
+					iconName="alert-circle-outline"
+					iconColor={colors.primary}
+					onConfirm={() => setFeedback(null)}
+				/>
+			) : null}
 		</View>
 	)
 }

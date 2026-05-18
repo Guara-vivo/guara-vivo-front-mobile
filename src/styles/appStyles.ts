@@ -184,7 +184,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	loginPasswordRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'space-between',
+    justifyContent: 'space-between',
+  },
+	loginPasswordInput: {
+		flex: 1,
+		minHeight: 36,
 	},
 	loginEyeButton: {
 		width: 28,

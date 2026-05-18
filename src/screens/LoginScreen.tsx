@@ -8,7 +8,9 @@ import {
 	View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
+import { colors } from '../constants/theme'
 import { login } from '../services/authService'
 import { appStyles } from '../styles/appStyles'
 import type { UserRead } from '../types/api'
@@ -25,12 +27,20 @@ export function LoginScreen({
 	const [password, setPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
+	const [feedback, setFeedback] = useState<{
+		title: string
+		message: string
+	} | null>(null)
+
+	const showErrorFeedback = (title: string, message: string) => {
+		setFeedback({ title, message })
+	}
 
 	const handleLogin = async () => {
 		if (!email || !password) {
-			Alert.alert(
+			showErrorFeedback(
 				'Campos obrigatorios',
-				'Preencha email e senha para continuar.',
+				'Preencha e-mail e senha para continuar.',
 			)
 			return
 		}
@@ -41,10 +51,7 @@ export function LoginScreen({
 			onSuccess(response.user)
 			onNavigate('home')
 		} catch {
-			Alert.alert(
-				'Falha no login',
-				'Confira e-mail, senha e se a API esta acessivel.',
-			)
+			showErrorFeedback('Falha no login', 'Confira e-mail e senha e tente novamente.')
 		} finally {
 			setIsLoading(false)
 		}
@@ -93,7 +100,7 @@ export function LoginScreen({
 								autoCapitalize="none"
 								editable={!isLoading}
 								placeholderTextColor="#AEB4BF"
-								style={appStyles.loginInput}
+								style={[appStyles.loginInput, appStyles.loginPasswordInput]}
 							/>
 							<Pressable
 								onPress={() => setShowPassword((current) => !current)}
@@ -132,6 +139,18 @@ export function LoginScreen({
 					/>
 				</View>
 			</ScrollView>
+
+			{feedback ? (
+				<FeedbackModal
+					visible
+					title={feedback.title}
+					message={feedback.message}
+					buttonLabel="OK"
+					iconName="alert-circle-outline"
+					iconColor={colors.primary}
+					onConfirm={() => setFeedback(null)}
+				/>
+			) : null}
 		</View>
 	)
 }

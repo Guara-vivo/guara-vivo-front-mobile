@@ -1,14 +1,9 @@
 import React, { useState } from 'react'
-import {
-	Alert,
-	Pressable,
-	ScrollView,
-	Text,
-	TextInput,
-	View,
-} from 'react-native'
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
+import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
 
@@ -18,6 +13,10 @@ export function RegisterEmailScreen({
 	onNavigate: (screen: ScreenId) => void
 }) {
 	const [email, setEmail] = useState('')
+	const [feedback, setFeedback] = useState<{
+		title: string
+		message: string
+	} | null>(null)
 
 	return (
 		<View style={appStyles.registerAccountScreen}>
@@ -55,10 +54,10 @@ export function RegisterEmailScreen({
 						title="CONTINUAR"
 						onPress={() => {
 							if (!email) {
-								Alert.alert(
-									'Campo obrigatorio',
-									'Informe um e-mail para continuar.',
-								)
+								setFeedback({
+									title: 'Campo obrigatorio',
+									message: 'Informe um e-mail para continuar.',
+								})
 								return
 							}
 							onNavigate('register-password')
@@ -68,6 +67,18 @@ export function RegisterEmailScreen({
 					/>
 				</View>
 			</ScrollView>
+
+			{feedback ? (
+				<FeedbackModal
+					visible
+					title={feedback.title}
+					message={feedback.message}
+					buttonLabel="OK"
+					iconName="alert-circle-outline"
+					iconColor={colors.primary}
+					onConfirm={() => setFeedback(null)}
+				/>
+			) : null}
 		</View>
 	)
 }
