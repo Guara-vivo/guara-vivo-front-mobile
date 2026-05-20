@@ -1550,11 +1550,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	recordDetailObservationText: {
-		color: colors.text,
-		fontSize: 15,
-		lineHeight: 23,
-	},
 	profileScreen: {
 		flex: 1,
 		backgroundColor: colors.background,

@@ -172,6 +172,13 @@ export function RecordDetailScreen({
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'individuo' : 'individuos'}`
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
 	const locationLabel = formatLocationLabel(record.latitude, record.longitude)
+	
+	const statusLabels: Record<string, string> = {
+		pending: 'Pendente',
+		processing: 'Em analise',
+		completed: 'Concluida',
+		failed: 'Falhou',
+	}
 
 	return (
 		<View style={appStyles.recordDetailScreen}>
@@ -254,9 +261,9 @@ export function RecordDetailScreen({
 							<Ionicons name="eye-outline" size={18} color="#F2201F" />
 							<View style={appStyles.recordDetailInfoTextWrap}>
 								<Text style={appStyles.recordDetailInfoLabel}>
-									STATUS
+									STATUS ANALISE
 								</Text>
-								<Text style={appStyles.recordDetailValue}>{record.status}</Text>
+								<Text style={appStyles.recordDetailValue}>{record.status ? statusLabels[record.status] ?? record.status : 'N/A'}</Text>
 							</View>
 						</View>
 					</View>
@@ -310,15 +317,6 @@ export function RecordDetailScreen({
 							)
 						})}
 					</View>
-				</View>
-
-				<View style={appStyles.recordDetailCard}>
-					<Text style={appStyles.recordDetailSectionTitle}>OBSERVACOES</Text>
-					<Text style={appStyles.recordDetailObservationText}>
-						{record.status
-							? `Status do processamento: ${record.status}.`
-							: 'Sem observacoes da API.'}
-					</Text>
 				</View>
 				</ScrollView>
 			</Animated.View>
