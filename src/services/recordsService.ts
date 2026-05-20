@@ -16,12 +16,7 @@ import {
 	mapRecordDetailToRecordItem,
 	mapRecordSummaryToRecordItem,
 } from './recordsApi'
-import type { IbisRead } from '../types/api'
-import type { RecordItem } from '../types/records'
-
-export type RecordDetailItem = RecordItem & {
-	ibis?: IbisRead[]
-}
+import type { RecordItem, RecordDetailItem } from '../types/records'
 
 type FetchOptions = {
 	force?: boolean
@@ -103,10 +98,7 @@ async function loadRecordDetail(
 
 	const record = await getRecordDetail(token, recordId)
 
-	const detail = {
-		...mapRecordDetailToRecordItem(record),
-		ibis: record.ibis,
-	}
+	const detail: RecordDetailItem = mapRecordDetailToRecordItem(record)
 
 	setCachedRecordDetail(detail)
 	return detail
@@ -118,6 +110,7 @@ export {
 	invalidateRecordsCache,
 	isRecordDetailCacheFresh,
 	isRecordsCacheFresh,
+	type RecordDetailItem,
 }
 
 export default { fetchRecordDetail, fetchRecords }

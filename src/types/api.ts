@@ -47,11 +47,25 @@ export type IbisRead = {
 	color: string
 	age_group: string
 	analysis_id: number
+	analysis_image_id?: number | null
+	raw_detection?: string | null
+}
+
+export type AnalysisImageRead = {
+	id: number
+	analysis_id: number
+	record_id: number
+	image_index: number
+	image_url: string
+	ibis_quantity: number
+	raw_result?: string | null
+	created_at: string
 }
 
 export type RecordDetailRead = RecordRead & {
 	analysis: AnalysisRead | null
 	ibis: IbisRead[]
+	image_analyses: AnalysisImageRead[]
 }
 
 export type ReactNativeFile = {

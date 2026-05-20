@@ -26,6 +26,7 @@ import {
 	isRecordDetailCacheFresh,
 	type RecordDetailItem,
 } from '../services/recordsService'
+import RecordImageDetailModal from '../components/RecordImageDetailModal'
 
 export function RecordDetailScreen({
 	onNavigate,
@@ -40,6 +41,7 @@ export function RecordDetailScreen({
 	const [record, setRecord] = useState<RecordDetailItem | undefined>(cachedRecord)
 	const [isLoading, setIsLoading] = useState(!cachedRecord)
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 	const { animatedPullStyle, handlePullScroll } =
 		usePullRefreshAnimation(isRefreshing)
 
@@ -102,7 +104,7 @@ export function RecordDetailScreen({
 			const item = await fetchRecordDetail(recordId, { force: true })
 			setRecord(item)
 		} catch {
-			setRecord((current) => current)
+			setRecord((current: RecordDetailItem | undefined) => current)
 		} finally {
 			setIsRefreshing(false)
 			setIsLoading(false)
@@ -301,12 +303,17 @@ export function RecordDetailScreen({
 							const imageUri = imageUris[index]
 
 							return imageUri ? (
-								<Image
+								<Pressable
 									key={imageUri}
+									onPress={() => setSelectedImageIndex(index)}
+									style={appStyles.recordDetailImagePressable}
+								>
+								<Image
 									source={{ uri: imageUri }}
-									style={appStyles.recordDetailImagePlaceholder}
+									style={appStyles.recordDetailImage}
 									resizeMode="cover"
 								/>
+								</Pressable>
 							) : (
 								<View
 									key={`img-${index}`}
@@ -320,6 +327,17 @@ export function RecordDetailScreen({
 				</View>
 				</ScrollView>
 			</Animated.View>
+
+			{selectedImageIndex !== null && record && (
+				<RecordImageDetailModal
+					visible={true}
+					imageIndex={selectedImageIndex}
+					imageUri={record.images?.[selectedImageIndex] ?? ''}
+					totalImages={imageSlots}
+					onClose={() => setSelectedImageIndex(null)}
+					record={record}
+				/>
+			)}
 		</View>
 	)
 }

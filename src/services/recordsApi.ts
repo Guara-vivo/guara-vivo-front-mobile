@@ -8,7 +8,7 @@ import type {
 	RecordRead,
 	RecordSummaryRead,
 } from '../types/api'
-import type { RecordItem } from '../types/records'
+import type { RecordDetailItem, RecordItem } from '../types/records'
 
 const behaviorLabels: Record<BirdBehavior, string> = {
 	'alimentando-se': 'Alimentando',
@@ -50,10 +50,47 @@ export function mapRecordSummaryToRecordItem(
 
 export function mapRecordDetailToRecordItem(
 	record: RecordDetailRead,
-): RecordItem {
+): RecordDetailItem {
 	return {
 		...mapRecordReadToRecordItem(record, record.analysis),
 		ibis_quantity: record.analysis?.ibis_quantity ?? 0,
+		image_analyses: record.image_analyses.map((img) => {
+			// Filter ibis detections for this specific image
+			const detections = record.ibis.filter(
+				(ibis) => ibis.analysis_image_id === img.id
+			)
+
+			return {
+				id: img.id,
+				image_index: img.image_index,
+				image_url: img.image_url,
+				ibis_quantity: img.ibis_quantity,
+				created_at: img.created_at,
+				raw_result: img.raw_result,
+				detections: detections.map((ibis) => {
+					// Parse raw_detection if available
+					let parsed_detection = null
+					if (ibis.raw_detection) {
+						try {
+							parsed_detection =
+								typeof ibis.raw_detection === 'string'
+									? JSON.parse(ibis.raw_detection)
+									: ibis.raw_detection
+						} catch {
+							parsed_detection = null
+						}
+					}
+
+					return {
+						id: ibis.id,
+						color: ibis.color,
+						age_group: ibis.age_group,
+						analysis_image_id: ibis.analysis_image_id,
+						raw_detection: parsed_detection,
+					}
+				}),
+			}
+		}),
 	}
 }
 

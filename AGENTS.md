@@ -43,6 +43,9 @@
 - **API URL:** `src/services/apiClient.ts` define a base URL por plataforma. Android usa o IP local configurado para acessar a API na rede.
 - **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts`. `apiFetch` renova token automaticamente em `401` usando `POST /users/refresh` e repete a requisição original.
 - **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`.
+- **Record Detail Modal:** `src/components/RecordImageDetailModal.tsx` shows per-image analysis with image preview, analysis status, technical accuracy summary, and per-individual detection details.
+- **Per-image detections:** `RecordDetailItem.image_analyses` contains `detections` filtered by `analysis_image_id`; preserve `raw_detection` from the API to display `cor`, `fase_vida`, and `acuracia` fields.
+- **Accuracy fields:** The modal expects `raw_detection.acuracia.deteccao_yolo`, `classificacao_guara`, `classificacao_cor`, and `classificacao_fase_vida` as decimal values and formats them as percentages.
 - **Cache:** `src/services/recordsCache.ts` mantém cache em memória de histórico e detalhes. Invalide com `invalidateRecordsCache()` após upload ou mudanças nos registros.
 
 ## Performance Optimization Guidelines
@@ -152,3 +155,6 @@ const [state, dispatch] = useReducer(reducer, {
 - Added lightweight frontend cache for records and record details with request deduplication.
 - History and record detail screens use backend aggregate endpoints (`/records/summary`, `/records/{id}/detail`) and support pull-to-refresh.
 - Added animated pull-to-refresh movement via `usePullRefreshAnimation` while keeping native `RefreshControl`.
+- Added clickable record detail images with `RecordImageDetailModal`.
+- Added per-image technical summary and per-individual detection details for plumage, life stage, and accuracy percentages.
+- Preserved `raw_detection` in record detail mapping so the modal can render identifier metadata without extra API calls.
