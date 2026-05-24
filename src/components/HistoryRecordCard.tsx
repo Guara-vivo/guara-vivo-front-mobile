@@ -5,6 +5,7 @@ import {
 	formatDate,
 	formatLocationLabel,
 	formatTime,
+	formatAnalysisStatus,
 } from '../utils/recordFormatters'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
@@ -49,14 +50,21 @@ export function HistoryRecordCard({
 				</Text>
 			</View>
 
-			<View style={appStyles.historyRecordInfoRow}>
-				<Ionicons name="eye-outline" size={14} color="#F2201F" />
-				<Text style={appStyles.historyRecordInfoText}>
-					Tamanho do grupo: {item.ibis_quantity}
-				</Text>
-			</View>
+		<View style={appStyles.historyRecordInfoRow}>
+			<Ionicons name="eye-outline" size={14} color="#F2201F" />
+			<Text style={appStyles.historyRecordInfoText}>
+				Tamanho do grupo: {item.ibis_quantity}
+			</Text>
+		</View>
 
-			<View style={appStyles.historyTagRow}>
+		<View style={appStyles.historyRecordInfoRow}>
+			<Ionicons name="search-circle-outline" size={14} color="#5C8BD6" />
+			<Text style={appStyles.historyRecordInfoText}>
+				Análise: {formatAnalysisStatus(item.status)}
+			</Text>
+		</View>
+
+		<View style={appStyles.historyTagRow}>
 				{behaviorTags.map((tag) => (
 					<View key={`${item.id}-${tag}`} style={appStyles.historyTagChip}>
 						<Text style={appStyles.historyTagChipText}>{tag}</Text>
