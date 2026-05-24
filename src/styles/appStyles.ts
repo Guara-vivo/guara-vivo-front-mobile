@@ -582,7 +582,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 42,
 		borderRadius: cornerRadius,
 		borderWidth: 1,
-		borderColor: colors.border,
+		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
 		flexDirection: 'row',
@@ -1434,7 +1434,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailContent: {
 		paddingHorizontal: screenGutter,
 		paddingTop: spacing.lg,
-		paddingBottom: spacing.lg,
+		paddingBottom: screenBottomPadding,
 		gap: spacing.lg,
 	},
 	recordDetailNotFoundWrap: {
@@ -1539,11 +1539,13 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailImageGrid: {
 		flexDirection: 'row',
+		flexWrap: 'wrap',
 		gap: 12,
+		justifyContent: 'flex-start',
 	},
 	recordDetailImagePlaceholder: {
-		flex: 1,
-		minHeight: 76,
+		width: 72,
+		height: 72,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.border,
 		alignItems: 'center',
@@ -1706,7 +1708,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 42,
 		borderRadius: cornerRadius,
 		borderWidth: 1,
-		borderColor: colors.border,
+		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
 		paddingHorizontal: 10,
 		color: colors.text,
@@ -2120,8 +2122,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	recordDetailImagePressable: {
-		flex: 1,
-		minHeight: 76,
+		width: 72,
+		height: 72,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.border,
 		overflow: 'hidden',
