@@ -6,12 +6,23 @@ import {
 } from './tokenStorage'
 import type { LoginResponse } from '../types/api'
 
-export const API_URL =
-	Platform.select({
-		android: 'http://192.168.18.145:8001',
-		ios: 'http://localhost:8001',
-		default: 'http://localhost:8001',
-	}) ?? 'http://localhost:8001'
+const DEV_API_URL = Platform.select({
+	android: 'http://192.168.18.145:8001',
+	ios: 'http://localhost:8001',
+	default: 'http://localhost:8001',
+})
+
+export const API_URL = __DEV__
+	? (process.env.EXPO_PUBLIC_API_URL?.trim() || DEV_API_URL)
+	: (process.env.EXPO_PUBLIC_API_URL?.trim() || '')
+
+// Validate HTTPS in production
+if (!__DEV__ && (!API_URL || API_URL.startsWith('http://'))) {
+	throw new Error(
+		'API_URL must be set and use HTTPS in production. ' +
+			'Set EXPO_PUBLIC_API_URL environment variable with an HTTPS URL.',
+	)
+}
 
 export class ApiError extends Error {
 	status: number
