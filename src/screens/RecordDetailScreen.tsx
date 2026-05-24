@@ -174,13 +174,6 @@ export function RecordDetailScreen({
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'individuo' : 'individuos'}`
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
 	const locationLabel = formatLocationLabel(record.latitude, record.longitude)
-	
-	const statusLabels: Record<string, string> = {
-		pending: 'Pendente',
-		processing: 'Em analise',
-		completed: 'Concluida',
-		failed: 'Falhou',
-	}
 
 	return (
 		<View style={appStyles.recordDetailScreen}>
@@ -256,16 +249,6 @@ export function RecordDetailScreen({
 							<View style={appStyles.recordDetailInfoTextWrap}>
 								<Text style={appStyles.recordDetailInfoLabel}>QUANTIDADE</Text>
 								<Text style={appStyles.recordDetailValue}>{quantityLabel}</Text>
-							</View>
-						</View>
-
-						<View style={appStyles.recordDetailInfoRow}>
-							<Ionicons name="eye-outline" size={18} color="#F2201F" />
-							<View style={appStyles.recordDetailInfoTextWrap}>
-								<Text style={appStyles.recordDetailInfoLabel}>
-									STATUS ANALISE
-								</Text>
-								<Text style={appStyles.recordDetailValue}>{record.status ? statusLabels[record.status] ?? record.status : 'N/A'}</Text>
 							</View>
 						</View>
 					</View>
