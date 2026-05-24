@@ -169,44 +169,6 @@ export function RecordImageDetailModal({
 							</Text>
 						</View>
 
-						{/* Analysis Status */}
-						<View style={appStyles.recordImageModalSection}>
-							<View style={appStyles.recordImageModalSectionTitleRow}>
-								<Ionicons
-									name="pulse-outline"
-									size={16}
-									color={getStatusColor(record.status)}
-								/>
-								<Text style={appStyles.recordImageModalSectionTitle}>
-									STATUS DA ANÁLISE
-								</Text>
-							</View>
-
-							<View
-								style={[
-									appStyles.recordImageModalStatusBadge,
-									{
-										backgroundColor:
-											getStatusColor(record.status) + '20',
-										borderColor: getStatusColor(record.status),
-									},
-								]}
-							>
-								<Text
-									style={[
-										appStyles.recordImageModalStatusText,
-										{
-											color: getStatusColor(record.status),
-										},
-									]}
-								>
-									{statusLabels[record.status ?? 'pending'] ??
-										record.status ??
-										'N/A'}
-								</Text>
-							</View>
-						</View>
-
 						{/* Summary of Detections */}
 						{imageAnalysis && summary && (
 							<View style={appStyles.recordImageModalSection}>
