@@ -130,10 +130,6 @@ export function MapLibreMapView({ selectedLayer, records }: Props) {
 					latitudeDelta: 0.01,
 					longitudeDelta: 0.01,
 				}}
-				onRegionChangeComplete={(e) => {
-					// Atualiza o estado do centro do mapa se necessário
-					setMapCenter({ lat: e.latitude, lng: e.longitude })
-				}}
 			>
 				{markers}
 			</MapView>
