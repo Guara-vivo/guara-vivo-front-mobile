@@ -12,6 +12,7 @@ import Header from '../components/Header'
 import { ActionButton } from '../components/common'
 import RegisterBehaviorList from '../components/RegisterBehaviorList'
 import { colors } from '../constants/theme'
+import { behaviorOptions } from '../constants/behaviors'
 import { getToken } from '../services/authService'
 import { invalidateRecordsCache } from '../services/recordsService'
 import { uploadRecord } from '../services/recordsApi'
@@ -47,13 +48,6 @@ export function RegisterScreen({
 	const [isSaving, setIsSaving] = useState(false)
 	const [isDropZonePressed, setIsDropZonePressed] = useState(false)
 	const [feedback, setFeedback] = useState<RegisterFeedback | null>(null)
-	const behaviorOrder = [
-		'Em cio',
-		'Ninhando',
-		'Alimentando',
-		'Voando',
-		'Pousado',
-	]
 
 	const selectedDate = selectedAt.toLocaleDateString('pt-BR')
 	const selectedTime = selectedAt.toLocaleTimeString('pt-BR', {
@@ -322,7 +316,7 @@ export function RegisterScreen({
 						</View>
 
 						<RegisterBehaviorList
-							behaviorOrder={behaviorOrder}
+							behaviorOrder={behaviorOptions}
 							behaviors={behaviors}
 							toggleBehavior={toggleBehavior}
 						/>
@@ -345,7 +339,7 @@ export function RegisterScreen({
 								<Text style={appStyles.registerDateFieldText}>
 									{selectedDate}
 								</Text>
-								<Ionicons name="calendar-outline" size={16} color="#1A1A1A" />
+								<Ionicons name="calendar-outline" size={16} color="#125ED0" />
 							</Pressable>
 
 							<Pressable
@@ -356,7 +350,7 @@ export function RegisterScreen({
 								<Text style={appStyles.registerDateFieldText}>
 									{selectedTime}
 								</Text>
-								<Ionicons name="time-outline" size={16} color="#1A1A1A" />
+								<Ionicons name="time-outline" size={16} color="#125ED0" />
 							</Pressable>
 						</View>
 
