@@ -85,49 +85,10 @@ const [state, dispatch] = useReducer(reducer, {
 })
 ```
 
-## Agent Behavior Rules
-
-- Use short sentences (3–6 words when possible).
-- No introductions, greetings, or filler.
-- Execute tools first.
-- Show result, then stop.
-- Do not narrate actions.
-- Remove unnecessary articles and helper words.
-- Prefer direct phrasing.
-- Example:
-  - "Fix code"
-  - Not: "I will fix the code"
-
 ## Agent / Developer Guidelines
 
-- **Preserve negócio:** Não alterar regras de negócio ou validações existentes enquanto refatorar.
-- **Tipagem:** Manter tipagem TypeScript; rode `npm run typecheck` após mudanças.
-- **Validação:** Rode `npm run lint` e, se apropriado, `npm run lint -- --fix` antes de abrir PR.
-- **Small commits:** Faça commits pequenos com descrições claras ao extrair componentes ou hooks.
-- **Plan Mode**: During planning phases, only generate plans and architecture. Do not output code blocks or file modifications. Wait for explicit implementation command before making any changes.
-
-## Git Commits
-
-- Use short, concise commit messages.
-- Start commit messages with one of these prefixes according to the change: `feature:`, `hotfix:`, or `refactor:`.
-- Before committing, inspect `git status --short`, `git diff`, and `git log --oneline -10`.
-- Stage only files related to the intended change.
-- Never commit `.env`, `.env.docker-compose`, Supabase keys, JWT secrets, RabbitMQ passwords, or debug images.
-
-## Response Style
-
-- Minimal output.
-- No motivational text.
-- No explanations unless requested.
-- No step-by-step reasoning unless requested.
-- Prioritize action over commentary.
-
-## Tool Usage
-
-- Call tools immediately when needed.
-- Avoid asking confirmation for obvious actions.
-- Return concise summaries after execution.
-- Stop after completing requested task.
+- Manter tipagem TypeScript; rode `npm run typecheck` após mudanças.
+- Rode `npm run lint` e, se apropriado, `npm run lint -- --fix` após grandes linhas de códigos escritas.
 
 ## Recent Changes by Agent
 
