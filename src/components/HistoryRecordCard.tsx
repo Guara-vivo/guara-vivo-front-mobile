@@ -58,7 +58,7 @@ export function HistoryRecordCard({
 		</View>
 
 		<View style={appStyles.historyRecordInfoRow}>
-			<Ionicons name="search-circle-outline" size={14} color="#5C8BD6" />
+			<Ionicons name="search-circle-outline" size={14} color="#F2201F" />
 			<Text style={appStyles.historyRecordInfoText}>
 				Análise: {formatAnalysisStatus(item.status)}
 			</Text>
