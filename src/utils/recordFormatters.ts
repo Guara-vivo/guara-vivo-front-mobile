@@ -23,3 +23,14 @@ export function formatTime(dateString: string) {
 export function formatLocationLabel(latitude: number, longitude: number) {
 	return `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
 }
+
+export function formatAnalysisStatus(status?: string): string {
+	const statusLabels: Record<string, string> = {
+		pending: 'Pendente',
+		processing: 'Em análise',
+		completed: 'Concluída',
+		failed: 'Falhou',
+	}
+	
+	return statusLabels[status ?? 'pending'] ?? status ?? 'Pendente'
+}
