@@ -38,16 +38,16 @@
 - **Expo Setup:** O app usa `expo-font`, `expo-location` e `expo-image-picker` no `app.json`. Localização centraliza o mapa e envia coordenadas no registro; image picker seleciona fotos do avistamento.
 - **Platform:** `app.json` define orientação portrait, tema claro, suporte a tablet no iOS e adaptive icon no Android.
 - **Scripts Atuais:** Use `npm start`, `npm run lint`, `npm run lint:fix` e `npm run typecheck`.
-- **Mapa:** O mapa já remove POIs comerciais, usa marcadores personalizados neutros e exibe badge de contagem por camada.
-- **Map Layers:** `all` mostra o total visível, `feeding` mostra pontos vermelhos e `nests` mostra casas azuis.
-- **API URL:** `src/services/apiClient.ts` define a base URL por plataforma. Android usa o IP local configurado para acessar a API na rede.
-- **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts`. `apiFetch` renova token automaticamente em `401` usando `POST /users/refresh` e repete a requisição original.
-- **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`.
+- **Mapa:** Remove POIs comerciais, usa marcadores personalizados neutros, exibe badge de contagem. **Sem re-renders em pan/zoom** (otimização performance). Mapas carregados de `MAP_RECORDS` em dev.
+- **Map Layers:** `all` = total visível, `feeding` = pontos vermelhos (alimentação), `nests` = casas azuis (ninhos).
+- **API URL:** `src/services/apiClient.ts` usa `EXPO_PUBLIC_API_URL` (variável de ambiente). Em dev: fallback para `192.168.18.145:8001` (Android) ou `localhost:8001` (iOS). Em produção: requer HTTPS, erro se HTTP.
+- **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts` usando **Keychain (iOS)** e **Keystore (Android)** via `expo-secure-store`. Fallback automático de `AsyncStorage` para migração (apenas leitura). `apiFetch` renova token em `401` usando `POST /users/refresh` e repete requisição.
+- **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`. **Requests suportam AbortSignal** para cancelamento em unmount (economiza bateria/dados).
 - **Record Detail Modal:** `src/components/RecordImageDetailModal.tsx` shows per-image analysis with image preview, analysis status, technical accuracy summary, and per-individual detection details.
 - **Per-image detections:** `RecordDetailItem.image_analyses` contains `detections` filtered by `analysis_image_id`; preserve `raw_detection` from the API to display `cor`, `fase_vida`, and `acuracia` fields.
 - **Accuracy fields:** The modal expects `raw_detection.acuracia.deteccao_yolo`, `classificacao_guara`, `classificacao_cor`, and `classificacao_fase_vida` as decimal values and formats them as percentages.
-- **Cache:** `src/services/recordsCache.ts` mantém cache em memória de histórico e detalhes. Invalide com `invalidateRecordsCache()` após upload ou mudanças nos registros.
-  - **Important:** `/records/summary` (resumos) nunca devem ser salvos como detalhe completo. Apenas `/records/{id}/detail` (com `image_analyses`) deve ser cacheado como detalhe. O modal de análise de imagens usa `image_analyses` e mostraria "Aguardando análise..." se alimentado só com resumo.
+- **Cache:** `src/services/recordsCache.ts` mantém cache em memória (TTL: 5 minutos). Invalide com `invalidateRecordsCache()` após upload.
+  - ⚠️ **Importante:** `/records/summary` (resumos) NUNCA devem ser salvos como detalhe. Apenas `/records/{id}/detail` (com `image_analyses`) é cacheado como detalhe. Modal de análise usa `image_analyses` e mostraria erro se alimentado com resumo.
 
 ## Performance Optimization Guidelines
 
@@ -88,36 +88,41 @@ const [state, dispatch] = useReducer(reducer, {
 
 ## Agent / Developer Guidelines
 
-- Manter tipagem TypeScript; rode `npm run typecheck` após mudanças.
-- Rode `npm run lint` e, se apropriado, `npm run lint -- --fix` após grandes linhas de códigos escritas.
+- Manter tipagem TypeScript: `npm run typecheck` deve passar (strict mode ativo).
+- Lint: `npm run lint` deve passar. Use `npm run lint -- --fix` para auto-fix.
+- Saúde Expo: `npx expo-doctor` deve passar (warnings não-críticos são OK).
+- Auditar dependências: `npm audit --omit=dev` (11 vulnerabilidades moderadas em Expo 54; upgrade para 56 resolve).
 
-## Recent Changes by Agent
+## Implementation Status by Category
 
-- Implemented shared `Header` component in `src/components/Header.tsx` with a full-width blue bar, rounded top corners, uppercase white title, and optional right-side action.
-- Centralized the Header styling in `src/styles/appStyles.ts` using `appHeaderTitle` for the shared title and `headerRight` for trailing actions.
-- Standardized colors in `src/styles/appStyles.ts` to use `src/constants/theme.ts`.
-- Centralized shared base styles (`baseCard`, `basePrimaryButton`, `basePrimaryButtonLabel`) and added `palette` aliases.
-- Replaced hardcoded hex literals with existing theme tokens; did not add new tokens to `src/constants/theme.ts` (reverted prior additions).
-- Fixed syntax errors and balanced braces in `src/styles/appStyles.ts` that caused widespread type failures.
-- Restored `src/constants/theme.ts` to original token set (no new tokens added).
-- Ran `npm run typecheck` — passed.
-- Ran `npm run lint` — passed.
-- Created ErrorBoundary component for error handling.
-- Created Button reusable component to eliminate duplication.
-- Created usePasswordValidation hook with password complexity rules.
-- Moved hardcoded record details to recordDetails.ts.
-- Implemented password validation in ChangePasswordScreen.
-- Fixed TypeScript type issues throughout the codebase.
-- **Optimized list rendering:** Replaced nested ScrollView+FlatList with FlatList for HistoryScreen.
-- **Optimized state management:** Implemented useReducer for atomic state in ChangePasswordScreen and EditProfileScreen.
-- **React Native performance best practices:** ScrollView used for static content, FlatList for dynamic lists.
-- Integrated real API auth, token persistence, automatic refresh token flow, and API logout.
-- Removed mock records and mock record details from app runtime.
-- Added real image selection with `expo-image-picker`, image previews, remove buttons, upload loading feedback, and cache invalidation after successful upload.
-- Added lightweight frontend cache for records and record details with request deduplication.
-- History and record detail screens use backend aggregate endpoints (`/records/summary`, `/records/{id}/detail`) and support pull-to-refresh.
-- Added animated pull-to-refresh movement via `usePullRefreshAnimation` while keeping native `RefreshControl`.
-- Added clickable record detail images with `RecordImageDetailModal`.
-- Added per-image technical summary and per-individual detection details for plumage, life stage, and accuracy percentages.
-- Preserved `raw_detection` in record detail mapping so the modal can render identifier metadata without extra API calls.
-- **Fixed image analysis modal:** Corrected cache logic to always load full detail (`/records/{id}/detail`) before showing image analysis modal; prevents showing "Aguardando análise..." with completed analyses.
+### 🔐 Security (Recent)
+- **API HTTPS enforcement:** `EXPO_PUBLIC_API_URL` obrigatório em produção. `apiClient.ts` bloqueia HTTP com erro claro.
+- **Secure token storage:** `expo-secure-store` (Keychain/Keystore) implementado. `AsyncStorage` é fallback de migração apenas.
+- **Error logging:** Condicionado a `__DEV__`. Produção não expõe detalhes sensíveis.
+
+### 🚀 Performance (Recent)
+- **Map optimization:** Removido `onRegionChangeComplete` que causava re-renders em pan/zoom.
+- **Request cancellation:** `AbortController` suporta `signal` em `apiFetch()`, cancelando requests em unmount.
+- **Date validation:** Parser rejeita overflow (`32/01`, `30/02`, etc.) no histórico.
+
+### ✨ Code Quality (Recent)
+- **Type safety:** Todas instâncias de `any` removidas. Tipagem concreto (`HistoryFilterState`, `React.ErrorInfo`, `IoniconName`).
+- **Error handling:** `ErrorBoundary` com logs seguros.
+- **Modular architecture:** Componentes < 300 linhas. Hooks, Services, Screens bem separados.
+
+### 📋 Previous Features
+- Shared `Header` component with blue bar, uppercase title, optional right action.
+- Centralized styles em `appStyles.ts` + `theme.ts`.
+- `Button` component reusável (elimina duplicação).
+- `usePasswordValidation` hook com regras de complexidade.
+- Real API auth com token refresh automático.
+- Real image selection + upload com `expo-image-picker`.
+- Pull-to-refresh animado via `usePullRefreshAnimation`.
+- Cache em memória para records/details com deduplicação.
+- Clickable record images com `RecordImageDetailModal`.
+- Per-image analysis summary + per-individual detection details.
+
+### ⚠️ Known Issues & Next Steps
+- **11 dependency vulnerabilities (Expo 54):** Requerem upgrade para Expo 56.0.4.
+- **2 unused variables (RecordImageDetailModal):** Cleanup opcional.
+- **1 metro.config.js warning:** Não-crítico; atualizar para extends `expo/metro-config` se necessário.
