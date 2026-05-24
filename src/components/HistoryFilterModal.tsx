@@ -11,15 +11,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { behaviorOptions } from '../constants/behaviors'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
-
-interface HistoryFilterState {
-	fromDate: string
-	toDate: string
-	location: string
-	minQuantity: string
-	maxQuantity: string
-	behaviors: string[]
-}
+import type { HistoryFilterState } from '../hooks/useHistoryFilters'
 
 type HistoryFilterField =
 	| 'fromDate'
@@ -92,7 +84,7 @@ export function HistoryFilterModal({
 									<TextInput
 										value={draftFilters.fromDate}
 										onChangeText={(value) =>
-											setDraftFilters((current: any) => ({
+											setDraftFilters((current: HistoryFilterState) => ({
 												...current,
 												fromDate: value,
 											}))
@@ -120,7 +112,7 @@ export function HistoryFilterModal({
 									<TextInput
 										value={draftFilters.toDate}
 										onChangeText={(value) =>
-											setDraftFilters((current: any) => ({
+											setDraftFilters((current: HistoryFilterState) => ({
 												...current,
 												toDate: value,
 											}))
@@ -147,7 +139,7 @@ export function HistoryFilterModal({
 							<TextInput
 								value={draftFilters.location}
 								onChangeText={(value) =>
-									setDraftFilters((current: any) => ({
+									setDraftFilters((current: HistoryFilterState) => ({
 										...current,
 										location: value,
 									}))
@@ -185,7 +177,7 @@ export function HistoryFilterModal({
 								<TextInput
 									value={draftFilters.minQuantity}
 									onChangeText={(value) =>
-										setDraftFilters((current: any) => ({
+										setDraftFilters((current: HistoryFilterState) => ({
 											...current,
 											minQuantity: value,
 										}))
@@ -209,7 +201,7 @@ export function HistoryFilterModal({
 								<TextInput
 									value={draftFilters.maxQuantity}
 									onChangeText={(value) =>
-										setDraftFilters((current: any) => ({
+										setDraftFilters((current: HistoryFilterState) => ({
 											...current,
 											maxQuantity: value,
 										}))

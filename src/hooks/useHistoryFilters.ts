@@ -6,7 +6,7 @@ import {
 } from '../utils/recordFormatters'
 import type { RecordItem } from '../types/records'
 
-type HistoryFilters = {
+export type HistoryFilterState = {
 	fromDate: string
 	toDate: string
 	location: string
@@ -15,7 +15,7 @@ type HistoryFilters = {
 	behaviors: string[]
 }
 
-const defaultFilters: HistoryFilters = {
+const defaultFilters: HistoryFilterState = {
 	fromDate: '',
 	toDate: '',
 	location: '',
@@ -60,9 +60,9 @@ export function useHistoryFilters(records: RecordItem[]) {
 	const [searchTerm, setSearchTerm] = useState('')
 	const [isFilterOpen, setIsFilterOpen] = useState(false)
 	const [appliedFilters, setAppliedFilters] =
-		useState<HistoryFilters>(defaultFilters)
+		useState<HistoryFilterState>(defaultFilters)
 	const [draftFilters, setDraftFilters] =
-		useState<HistoryFilters>(defaultFilters)
+		useState<HistoryFilterState>(defaultFilters)
 
 	const toggleBehaviorFilter = (behavior: string) => {
 		setDraftFilters((current) => ({

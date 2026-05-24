@@ -8,6 +8,8 @@ import { appStyles } from '../styles/appStyles'
 import { MAP_RECORDS } from '../config/map'
 import type { ScreenId } from '../types/navigation'
 
+type IoniconName = React.ComponentProps<typeof Ionicons>['name']
+
 export function MapsScreen({
 	onNavigate,
 }: {
@@ -17,10 +19,10 @@ export function MapsScreen({
 		'all' | 'feeding' | 'nests'
 	>('all')
 
-	const layerButtons = [
-		{ id: 'all' as const, label: 'TODOS', icon: 'layers-outline' as const },
-		{ id: 'feeding' as const, label: 'ALIMENTAÇÃO', icon: 'fish' as const },
-		{ id: 'nests' as const, label: 'NINHOS', icon: 'home' as const },
+	const layerButtons: { id: 'all' | 'feeding' | 'nests'; label: string; icon: IoniconName }[] = [
+		{ id: 'all' as const, label: 'TODOS', icon: 'layers-outline' },
+		{ id: 'feeding' as const, label: 'ALIMENTAÇÃO', icon: 'fish' },
+		{ id: 'nests' as const, label: 'NINHOS', icon: 'home' },
 	]
 
 	return (
@@ -60,7 +62,7 @@ export function MapsScreen({
 										/>
 									) : (
 										<Ionicons
-											name={item.icon as any}
+											name={item.icon}
 											size={15}
 											color={active ? '#FFFFFF' : '#2F6FE4'}
 											style={appStyles.mapsFilterButtonIcon}
