@@ -47,6 +47,7 @@
 - **Per-image detections:** `RecordDetailItem.image_analyses` contains `detections` filtered by `analysis_image_id`; preserve `raw_detection` from the API to display `cor`, `fase_vida`, and `acuracia` fields.
 - **Accuracy fields:** The modal expects `raw_detection.acuracia.deteccao_yolo`, `classificacao_guara`, `classificacao_cor`, and `classificacao_fase_vida` as decimal values and formats them as percentages.
 - **Cache:** `src/services/recordsCache.ts` mantém cache em memória de histórico e detalhes. Invalide com `invalidateRecordsCache()` após upload ou mudanças nos registros.
+  - **Important:** `/records/summary` (resumos) nunca devem ser salvos como detalhe completo. Apenas `/records/{id}/detail` (com `image_analyses`) deve ser cacheado como detalhe. O modal de análise de imagens usa `image_analyses` e mostraria "Aguardando análise..." se alimentado só com resumo.
 
 ## Performance Optimization Guidelines
 
@@ -119,3 +120,4 @@ const [state, dispatch] = useReducer(reducer, {
 - Added clickable record detail images with `RecordImageDetailModal`.
 - Added per-image technical summary and per-individual detection details for plumage, life stage, and accuracy percentages.
 - Preserved `raw_detection` in record detail mapping so the modal can render identifier metadata without extra API calls.
+- **Fixed image analysis modal:** Corrected cache logic to always load full detail (`/records/{id}/detail`) before showing image analysis modal; prevents showing "Aguardando análise..." with completed analyses.

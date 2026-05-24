@@ -1,8 +1,9 @@
 import type { IbisRead } from '../types/api'
-import type { RecordItem } from '../types/records'
+import type { RecordItem, ImageAnalysisItem } from '../types/records'
 
 export type CachedRecordDetail = RecordItem & {
 	ibis?: IbisRead[]
+	image_analyses?: ImageAnalysisItem[]
 }
 
 const RECORDS_CACHE_TTL_MS = 60 * 1000
@@ -34,26 +35,40 @@ export function getFreshCachedRecords() {
 export function setCachedRecords(records: RecordItem[]) {
 	recordsCache = { data: records, timestamp: Date.now() }
 
-	for (const record of records) {
-		setCachedRecordDetail(record)
-	}
+	// Do NOT cache records from /records/summary as "full details"
+	// They lack image_analyses and will show "Aguardando análise..." incorrectly.
+	// Only cache full records from /records/{id}/detail endpoint.
 }
 
 export function getCachedRecordDetailSnapshot(recordId: number) {
 	const cached = detailCache.get(recordId)?.data
 
-	if (cached) {
+	// Only return cache if it has image_analyses (is a full detail, not summary)
+	if (cached && cached.image_analyses) {
 		return cached
 	}
 
-	return recordsCache?.data.find((record) => record.id === recordId)
+	// Return summary-level record only if fresh; don't confuse with full detail
+	const fromSummary = recordsCache?.data.find((record) => record.id === recordId)
+	if (fromSummary && isRecordsCacheFresh()) {
+		return fromSummary
+	}
+	
+	return undefined
 }
 
 export function isRecordDetailCacheFresh(recordId: number) {
 	const cached = detailCache.get(recordId)
-	return cached
-		? isFresh(cached.timestamp, RECORD_DETAIL_CACHE_TTL_MS)
-		: isRecordsCacheFresh()
+	
+	// Cache is fresh only if:
+	// 1. We have a specific detail cache entry (from /records/{id}/detail)
+	// 2. AND it has image_analyses (means it's a full detail, not a summary)
+	// 3. AND the timestamp is within TTL
+	if (cached && cached.data.image_analyses) {
+		return isFresh(cached.timestamp, RECORD_DETAIL_CACHE_TTL_MS)
+	}
+	
+	return false
 }
 
 export function getFreshCachedRecordDetail(recordId: number) {
