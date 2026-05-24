@@ -27,6 +27,7 @@ const detailRequests = new Map<number, Promise<RecordDetailItem | undefined>>()
 
 export async function fetchRecords(
 	options: FetchOptions = {},
+	signal?: AbortSignal,
 ): Promise<RecordItem[]> {
 	if (!options.force) {
 		const cached = getFreshCachedRecords()
@@ -40,21 +41,21 @@ export async function fetchRecords(
 		return recordsRequest
 	}
 
-	recordsRequest = loadRecords().finally(() => {
+	recordsRequest = loadRecords(signal).finally(() => {
 		recordsRequest = null
 	})
 
 	return recordsRequest
 }
 
-async function loadRecords(): Promise<RecordItem[]> {
+async function loadRecords(signal?: AbortSignal): Promise<RecordItem[]> {
 	const token = await getToken()
 
 	if (!token) {
 		throw new Error('Missing access token')
 	}
 
-	const records = await getRecordSummaries(token)
+	const records = await getRecordSummaries(token, 0, 100, signal)
 	const items = records.map(mapRecordSummaryToRecordItem)
 
 	setCachedRecords(items)
@@ -64,6 +65,7 @@ async function loadRecords(): Promise<RecordItem[]> {
 export async function fetchRecordDetail(
 	recordId: number,
 	options: FetchOptions = {},
+	signal?: AbortSignal,
 ): Promise<RecordDetailItem | undefined> {
 	if (!options.force) {
 		const cached = getFreshCachedRecordDetail(recordId)
@@ -79,7 +81,7 @@ export async function fetchRecordDetail(
 		return activeRequest
 	}
 
-	const request = loadRecordDetail(recordId).finally(() => {
+	const request = loadRecordDetail(recordId, signal).finally(() => {
 		detailRequests.delete(recordId)
 	})
 	detailRequests.set(recordId, request)
@@ -89,6 +91,7 @@ export async function fetchRecordDetail(
 
 async function loadRecordDetail(
 	recordId: number,
+	signal?: AbortSignal,
 ): Promise<RecordDetailItem | undefined> {
 	const token = await getToken()
 
@@ -96,7 +99,7 @@ async function loadRecordDetail(
 		throw new Error('Missing access token')
 	}
 
-	const record = await getRecordDetail(token, recordId)
+	const record = await getRecordDetail(token, recordId, signal)
 
 	const detail: RecordDetailItem = mapRecordDetailToRecordItem(record)
 

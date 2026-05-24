@@ -46,6 +46,7 @@ export function RecordDetailScreen({
 		usePullRefreshAnimation(isRefreshing)
 
 	useEffect(() => {
+		const controller = new AbortController()
 		let mounted = true
 
 		if (!recordId) {
@@ -53,6 +54,7 @@ export function RecordDetailScreen({
 			setIsLoading(false)
 			return () => {
 				mounted = false
+				controller.abort()
 			}
 		}
 
@@ -67,18 +69,19 @@ export function RecordDetailScreen({
 			setIsLoading(false)
 			return () => {
 				mounted = false
+				controller.abort()
 			}
 		}
 
 		setIsLoading(!hasCachedRecord)
-		fetchRecordDetail(recordId, { force: hasCachedRecord })
+		fetchRecordDetail(recordId, { force: hasCachedRecord }, controller.signal)
 			.then((item) => {
 				if (mounted) {
 					setRecord(item)
 				}
 			})
-			.catch(() => {
-				if (mounted) {
+			.catch((error) => {
+				if (mounted && error.name !== 'AbortError') {
 					setRecord(cached)
 				}
 			})
@@ -90,6 +93,7 @@ export function RecordDetailScreen({
 
 		return () => {
 			mounted = false
+			controller.abort()
 		}
 	}, [recordId])
 

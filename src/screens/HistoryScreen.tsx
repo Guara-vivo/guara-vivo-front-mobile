@@ -42,6 +42,7 @@ export function HistoryScreen({
 		usePullRefreshAnimation(isRefreshing)
 
 	useEffect(() => {
+		const controller = new AbortController()
 		let mounted = true
 		const cached = getCachedRecordsSnapshot()
 		const hasCachedRecords = Boolean(cached)
@@ -52,14 +53,17 @@ export function HistoryScreen({
 
 		setIsLoading(!hasCachedRecords)
 		setLoadError(false)
-		fetchRecords({ force: hasCachedRecords && !isRecordsCacheFresh() })
+		fetchRecords(
+			{ force: hasCachedRecords && !isRecordsCacheFresh() },
+			controller.signal,
+		)
 			.then((items) => {
 				if (mounted) {
 					setRecords(items)
 				}
 			})
-			.catch(() => {
-				if (mounted) {
+			.catch((error) => {
+				if (mounted && error.name !== 'AbortError') {
 					setLoadError(!hasCachedRecords)
 				}
 			})
@@ -71,6 +75,7 @@ export function HistoryScreen({
 
 		return () => {
 			mounted = false
+			controller.abort()
 		}
 	}, [])
 

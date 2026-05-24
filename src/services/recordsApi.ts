@@ -98,9 +98,11 @@ export async function getRecordSummaries(
 	token: string,
 	skip = 0,
 	limit = 100,
+	signal?: AbortSignal,
 ): Promise<RecordSummaryRead[]> {
 	const response = await apiFetch(`/records/summary?skip=${skip}&limit=${limit}`, {
 		headers: { Authorization: `Bearer ${token}` },
+		signal,
 	})
 
 	return response.json() as Promise<RecordSummaryRead[]>
@@ -109,9 +111,11 @@ export async function getRecordSummaries(
 export async function getRecordDetail(
 	token: string,
 	recordId: number,
+	signal?: AbortSignal,
 ): Promise<RecordDetailRead> {
 	const response = await apiFetch(`/records/${recordId}/detail`, {
 		headers: { Authorization: `Bearer ${token}` },
+		signal,
 	})
 
 	return response.json() as Promise<RecordDetailRead>
