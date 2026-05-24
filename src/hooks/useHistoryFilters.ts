@@ -36,7 +36,14 @@ function parseInputDate(value: string) {
 	const year = Number(match[3])
 	const parsed = new Date(year, month - 1, day, 0, 0, 0, 0)
 
-	if (Number.isNaN(parsed.getTime())) {
+	// Validate that the parsed date components match the original values
+	// (rejects overflow like 32/01 → February)
+	if (
+		Number.isNaN(parsed.getTime()) ||
+		parsed.getDate() !== day ||
+		parsed.getMonth() !== month - 1 ||
+		parsed.getFullYear() !== year
+	) {
 		return null
 	}
 
