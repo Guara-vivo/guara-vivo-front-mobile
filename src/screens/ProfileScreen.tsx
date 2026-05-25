@@ -1,8 +1,9 @@
-import React from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import React, { useState } from 'react'
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import Header from '../components/Header'
 import { appStyles } from '../styles/appStyles'
+import { colors } from '../constants/theme'
 import type { UserRead } from '../types/api'
 import type { ScreenId } from '../types/navigation'
 
@@ -17,6 +18,16 @@ export function ProfileScreen({
 }) {
 	const displayName = user?.name ?? 'Usuario Guara Vivo'
 	const displayEmail = user?.email ?? 'Sessao local'
+	const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+	const handleLogoutPress = async () => {
+		setIsLoggingOut(true)
+		try {
+			await onLogout()
+		} finally {
+			setIsLoggingOut(false)
+		}
+	}
 
 	return (
 		<View style={appStyles.profileScreen}>
@@ -72,16 +83,31 @@ export function ProfileScreen({
 						<Text style={appStyles.profileMenuItemText}>Sobre o app</Text>
 					</Pressable>
 
-					<Pressable onPress={onLogout} style={appStyles.profileMenuItem}>
-						<Ionicons name="log-out-outline" size={19} color="#F2201F" />
-						<Text style={appStyles.profileMenuItemTextLogout}>
-							Sair da conta
-						</Text>
-					</Pressable>
+				<Pressable
+					onPress={handleLogoutPress}
+					disabled={isLoggingOut}
+					style={appStyles.profileMenuItem}
+				>
+					<Ionicons name="log-out-outline" size={19} color="#F2201F" />
+					<Text style={appStyles.profileMenuItemTextLogout}>
+						Sair da conta
+					</Text>
+				</Pressable>
 				</View>
-			</ScrollView>
-		</View>
-	)
+		</ScrollView>
+
+		{isLoggingOut && (
+			<View style={appStyles.logoutOverlayContainer}>
+				<View style={appStyles.logoutOverlayCard}>
+					<ActivityIndicator size="large" color={colors.primary} />
+					<Text style={appStyles.logoutOverlayText}>
+						Saindo da conta...
+					</Text>
+				</View>
+			</View>
+		)}
+	</View>
+)
 }
 
 export default ProfileScreen
