@@ -24,6 +24,7 @@ const behaviorApiMap: Partial<Record<string, BirdBehavior>> = {
 	Alimentando: 'alimentando-se',
 	Ninhando: 'ninhando',
 	Voando: 'voando',
+	Vocalizando: 'vocalizando',
 }
 
 const pressFeedbackDelayMs = 80
