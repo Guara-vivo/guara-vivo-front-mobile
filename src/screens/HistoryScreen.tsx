@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import {
 	ActivityIndicator,
@@ -112,6 +112,17 @@ export function HistoryScreen({
 		filteredRecords,
 		setIsFilterOpen,
 	} = useHistoryFilters(records)
+
+	const orderedRecords = useMemo(() => {
+		if (sortOrder === 'desc') {
+			return [...filteredRecords].sort(
+				(a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+			)
+		}
+		return [...filteredRecords].sort(
+			(a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
+		)
+	}, [filteredRecords, sortOrder])
 
 	const emptyMessage = isLoading
 		? 'Carregando registros...'
