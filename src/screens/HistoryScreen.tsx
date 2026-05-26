@@ -136,7 +136,7 @@ export function HistoryScreen({
 			<Animated.View style={[appStyles.screen, animatedPullStyle]}>
 				<FlatList
 					contentContainerStyle={appStyles.historyContent}
-					data={filteredRecords}
+					data={orderedRecords}
 					keyExtractor={(item) => String(item.id)}
 					onScroll={handlePullScroll}
 					scrollEventThrottle={16}
