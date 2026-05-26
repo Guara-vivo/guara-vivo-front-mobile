@@ -173,6 +173,20 @@ export function HistoryScreen({
 								<Ionicons name="funnel-outline" size={17} color="#FFFFFF" />
 								<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
 							</Pressable>
+
+							<Pressable
+								onPress={toggleSortOrder}
+								disabled={isLoading}
+								style={[
+									appStyles.historyFilterButton,
+									isLoading && appStyles.historyFilterButtonDisabled,
+								]}
+							>
+								<Ionicons name="swap-vertical" size={17} color="#FFFFFF" />
+								<Text style={appStyles.historyFilterButtonText}>
+									{sortOrder === 'desc' ? 'MAIS RECENTES' : 'MAIS ANTIGOS'}
+								</Text>
+							</Pressable>
 						</ScreenCard>
 					}
 					ListEmptyComponent={
