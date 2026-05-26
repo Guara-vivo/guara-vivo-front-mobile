@@ -38,6 +38,7 @@ export function HistoryScreen({
 	const [isLoading, setIsLoading] = useState(!cachedRecords)
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [loadError, setLoadError] = useState(false)
+	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 	const { animatedPullStyle, handlePullScroll } =
 		usePullRefreshAnimation(isRefreshing)
 
@@ -92,6 +93,10 @@ export function HistoryScreen({
 			setIsRefreshing(false)
 			setIsLoading(false)
 		}
+	}
+
+	const toggleSortOrder = () => {
+		setSortOrder((current) => (current === 'desc' ? 'asc' : 'desc'))
 	}
 
 	const {
