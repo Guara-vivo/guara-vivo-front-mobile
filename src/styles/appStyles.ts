@@ -1188,7 +1188,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordInfoRow: {
 		flexDirection: 'row',
-		alignItems: 'center',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
 		gap: 6,
 	},
 	historyRecordInfoText: {
@@ -2250,5 +2251,43 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 11,
 		fontWeight: '700',
 		color: '#125ED0',
+	},
+	zoneActionButtonRow: {
+		flexDirection: 'row',
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
+		gap: spacing.sm,
+	},
+	zoneAddButton: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: spacing.sm,
+		minHeight: 44,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
+		backgroundColor: colors.primary,
+		borderRadius: cornerRadius,
+		...unifiedShadow,
+	},
+	zoneAddButtonText: {
+		color: '#FFFFFF',
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	zoneErrorBanner: {
+		marginHorizontal: spacing.md,
+		marginVertical: spacing.sm,
+		padding: spacing.md,
+		backgroundColor: '#FFEBEE',
+		borderRadius: cornerRadius,
+		borderLeftWidth: 4,
+		borderLeftColor: '#E53935',
+	},
+	zoneErrorText: {
+		color: '#C62828',
+		fontSize: 13,
+		fontWeight: '500',
 	},
 })
