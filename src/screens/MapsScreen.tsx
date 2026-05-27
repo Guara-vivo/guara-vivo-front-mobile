@@ -6,11 +6,10 @@ import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { appStyles } from '../styles/appStyles'
-import { MAP_RECORDS, MAP_CENTER } from '../config/map'
+import { MAP_RECORDS } from '../config/map'
 import type { ScreenId } from '../types/navigation'
 import type { MapZoneRead, MapZoneType } from '../types/api'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
-import { getUserId } from '../utils/getUserId'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -26,6 +25,8 @@ export function MapsScreen({
 	const [zonesError, setZonesError] = useState<string | null>(null)
 	const [showZoneModal, setShowZoneModal] = useState(false)
 	const [creatingZone, setCreatingZone] = useState(false)
+	const [selectionMode, setSelectionMode] = useState(false)
+	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
 
 	const layerButtons: { id: 'all' | 'feeding' | 'nests'; label: string; icon: IoniconName }[] = [
 		{ id: 'all' as const, label: 'TODOS', icon: 'layers-outline' },
@@ -57,19 +58,33 @@ export function MapsScreen({
 		}
 	}, [])
 
+	const handleMapPress = (lat: number, lng: number) => {
+		if (!selectionMode) return
+		setSelectedCoords({ lat, lng })
+		setShowZoneModal(true)
+	}
+
 	const handleCreateZone = async (type: MapZoneType, radius_meters: number) => {
+		if (!selectedCoords) return
+
 		try {
 			setCreatingZone(true)
-			const userId = await getUserId()
-			const newZone = await createMapZone(type, MAP_CENTER.lat, MAP_CENTER.lng, radius_meters, userId)
+			const newZone = await createMapZone(type, selectedCoords.lat, selectedCoords.lng, radius_meters)
 			setZones((prev) => [newZone, ...prev])
 			setShowZoneModal(false)
+			setSelectionMode(false)
+			setSelectedCoords(null)
 		} catch (error) {
 			console.error('[MapsScreen] Failed to create zone:', error)
 			setZonesError(error instanceof Error ? error.message : 'Erro ao criar área')
 		} finally {
 			setCreatingZone(false)
 		}
+	}
+
+	const handleCancelModal = () => {
+		setShowZoneModal(false)
+		// Keep selection mode and coords in case user wants to select different point
 	}
 
 	return (
@@ -130,14 +145,32 @@ export function MapsScreen({
 				</ScreenCard>
 
 				<View style={appStyles.zoneActionButtonRow}>
-					<Pressable
-						style={appStyles.zoneAddButton}
-						onPress={() => setShowZoneModal(true)}
-						disabled={creatingZone}
-					>
-						<Ionicons name="add-circle" size={18} color="#FFFFFF" />
-						<Text style={appStyles.zoneAddButtonText}>Adicionar Área</Text>
-					</Pressable>
+					{selectionMode ? (
+						<>
+							<View style={appStyles.zoneSelectionIndicator}>
+								<Ionicons name="information-circle-outline" size={16} color="#2F6FE4" />
+								<Text style={appStyles.zoneSelectionText}>Toque no mapa para escolher</Text>
+							</View>
+							<Pressable
+								style={appStyles.zoneCancelButton}
+								onPress={() => {
+									setSelectionMode(false)
+									setSelectedCoords(null)
+								}}
+							>
+								<Text style={appStyles.zoneCancelButtonText}>Cancelar</Text>
+							</Pressable>
+						</>
+					) : (
+						<Pressable
+							style={appStyles.zoneAddButton}
+							onPress={() => setSelectionMode(true)}
+							disabled={creatingZone}
+						>
+							<Ionicons name="add-circle" size={18} color="#FFFFFF" />
+							<Text style={appStyles.zoneAddButtonText}>Adicionar Área</Text>
+						</Pressable>
+					)}
 				</View>
 
 				{zonesError && (
@@ -151,6 +184,7 @@ export function MapsScreen({
 						selectedLayer={selectedLayer}
 						records={MAP_RECORDS}
 						zones={zones}
+						onMapPress={selectionMode ? handleMapPress : undefined}
 					/>
 				</ScreenCard>
 			</View>
@@ -158,7 +192,7 @@ export function MapsScreen({
 			<MapZoneSelectionModal
 				visible={showZoneModal}
 				onConfirm={handleCreateZone}
-				onCancel={() => setShowZoneModal(false)}
+				onCancel={handleCancelModal}
 			/>
 		</View>
 	)

@@ -2290,6 +2290,42 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		fontWeight: '500',
 	},
+	// Zone Selection Mode Styles
+	zoneSelectionIndicator: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: spacing.sm,
+		minHeight: 44,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
+		backgroundColor: '#E3F2FD',
+		borderRadius: cornerRadius,
+		borderWidth: 1,
+		borderColor: colors.primary,
+	} as ViewStyle,
+	zoneSelectionText: {
+		color: colors.primary,
+		fontSize: 13,
+		fontWeight: '600',
+	} as TextStyle,
+	zoneCancelButton: {
+		minHeight: 44,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm,
+		borderRadius: cornerRadius,
+		borderWidth: 1,
+		borderColor: colors.border,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.splash,
+	} as ViewStyle,
+	zoneCancelButtonText: {
+		color: colors.text,
+		fontSize: 13,
+		fontWeight: '600',
+	} as TextStyle,
 	// Zone Modal Styles
 	zoneModalOverlay: {
 		flex: 1,

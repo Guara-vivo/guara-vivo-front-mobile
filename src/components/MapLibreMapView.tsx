@@ -11,9 +11,10 @@ type Props = {
 	selectedLayer: MapLayerId
 	records: MapRecord[]
 	zones: MapZoneRead[]
+	onMapPress?: (lat: number, lng: number) => void
 }
 
-export function MapLibreMapView({ selectedLayer, records, zones }: Props) {
+export function MapLibreMapView({ selectedLayer, records, zones, onMapPress }: Props) {
 	const [mapCenter, setMapCenter] = useState(MAP_CENTER)
 	const [locationReady, setLocationReady] = useState(false)
 
@@ -112,7 +113,6 @@ export function MapLibreMapView({ selectedLayer, records, zones }: Props) {
 
 	const zoneCircles = zones.map((zone) => {
 		const circleColor = zone.type === 'nest' ? '#2F6FE4' : '#E53935'
-		const circleFillOpacity = 0.15
 		const circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
 
 		return (
@@ -152,6 +152,11 @@ export function MapLibreMapView({ selectedLayer, records, zones }: Props) {
 					longitude: mapCenter.lng,
 					latitudeDelta: 0.01,
 					longitudeDelta: 0.01,
+				}}
+				onPress={(e) => {
+					if (onMapPress) {
+						onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
+					}
 				}}
 			>
 				{zoneCircles}

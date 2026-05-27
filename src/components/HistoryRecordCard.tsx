@@ -32,7 +32,7 @@ export function HistoryRecordCard({
 				</View>
 
 				<View style={appStyles.historyRecordDateRow}>
-					<Ionicons name="calendar-outline" size={14} color="#5C8BD6" />
+					<Ionicons name="calendar-outline" size={18} color="#5C8BD6" />
 					<Text style={appStyles.historyRecordDateText}>
 						{formatDate(item.datetime)}
 					</Text>
@@ -44,21 +44,21 @@ export function HistoryRecordCard({
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>
-				<Ionicons name="location-outline" size={14} color="#F2201F" />
+				<Ionicons name="location-outline" size={18} color="#F2201F" />
 				<Text style={appStyles.historyRecordInfoText}>
 					{formatLocationLabel(item.latitude, item.longitude)}
 				</Text>
 			</View>
 
 		<View style={appStyles.historyRecordInfoRow}>
-			<Ionicons name="eye-outline" size={14} color="#F2201F" />
+			<Ionicons name="eye-outline" size={18} color="#F2201F" />
 			<Text style={appStyles.historyRecordInfoText}>
 				Tamanho do grupo: {item.ibis_quantity}
 			</Text>
 		</View>
 
 		<View style={appStyles.historyRecordInfoRow}>
-			<Ionicons name="search-circle-outline" size={14} color="#F2201F" />
+			<Ionicons name="search-circle-outline" size={18} color="#F2201F" />
 			<Text style={appStyles.historyRecordInfoText}>
 				Status: {formatAnalysisStatus(item.status)}
 			</Text>

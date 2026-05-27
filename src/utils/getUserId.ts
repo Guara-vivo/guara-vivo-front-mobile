@@ -10,10 +10,15 @@ export async function getUserId(): Promise<number> {
 		if (parts.length !== 3) throw new Error('Invalid token format')
 
 		const payload = JSON.parse(atob(parts[1]))
-		const userId = payload.sub // JWT 'sub' claim is user_id
+		const userIdStr = payload.sub // JWT 'sub' claim is user_id as string
 
-		if (!userId || typeof userId !== 'number') {
-			throw new Error('Invalid user_id in token')
+		if (!userIdStr) {
+			throw new Error('Missing user_id in token')
+		}
+
+		const userId = parseInt(userIdStr, 10)
+		if (isNaN(userId)) {
+			throw new Error('Invalid user_id format in token')
 		}
 
 		return userId
