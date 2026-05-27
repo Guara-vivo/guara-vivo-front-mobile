@@ -19,6 +19,18 @@ export type LoginResponse = {
 	user: UserRead
 }
 
+export type MapZoneType = 'feeding' | 'nest'
+
+export type MapZoneRead = {
+	id: number
+	type: MapZoneType
+	latitude: number
+	longitude: number
+	radius_meters: number
+	user_id: number
+	created_at: string
+}
+
 export type RecordRead = {
 	id: number
 	images: string[]
