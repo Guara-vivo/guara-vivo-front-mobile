@@ -96,9 +96,9 @@ export function MapsScreen({
 			setCreatingZone(true)
 			const newZone = await createMapZone(type, selectedCoords.lat, selectedCoords.lng, radius_meters)
 			setZones((prev) => [newZone, ...prev])
-			setShowZoneModal(false)
 			setSelectionMode(false)
 			setSelectedCoords(null)
+			setShowZoneModal(false)
 		} catch (error) {
 			console.error('[MapsScreen] Failed to create zone:', error)
 			setZonesError(error instanceof Error ? error.message : 'Erro ao criar área')
@@ -173,9 +173,7 @@ export function MapsScreen({
 					{selectionMode ? (
 						<>
 							<View style={appStyles.zoneSelectionIndicator}>
-								<Ionicons name="information-circle-outline" size={16} color="#2F6FE4" />
-								<Text style={appStyles.zoneSelectionText}>Toque no mapa para escolher</Text>
-							</View>
+								<Text style={appStyles.zoneSelectionText}>Toque no mapa para escolher a área</Text>
 							<Pressable
 								style={appStyles.zoneCancelButton}
 								onPress={() => {
@@ -185,6 +183,7 @@ export function MapsScreen({
 							>
 								<Text style={appStyles.zoneCancelButtonText}>Cancelar</Text>
 							</Pressable>
+							</View>
 						</>
 					) : (
 						<Pressable
@@ -221,11 +220,12 @@ export function MapsScreen({
 			</ScreenCard>
 			</View>
 
-			<MapZoneSelectionModal
-				visible={showZoneModal}
-				onConfirm={handleCreateZone}
-				onCancel={handleCancelModal}
-			/>
+		<MapZoneSelectionModal
+			visible={showZoneModal}
+			onConfirm={handleCreateZone}
+			onCancel={handleCancelModal}
+			isSubmitting={creatingZone}
+		/>
 		</View>
 	)
 }

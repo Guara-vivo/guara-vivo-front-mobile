@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, Modal, TouchableOpacity } from 'react-native'
+import { View, Text, Modal, TouchableOpacity, ActivityIndicator } from 'react-native'
 import Slider from '@react-native-community/slider'
 import { MapZoneType } from '../types/api'
 import { appStyles } from '../styles/appStyles'
@@ -8,21 +8,20 @@ interface MapZoneSelectionModalProps {
 	visible: boolean
 	onConfirm: (type: MapZoneType, radius_meters: number) => void
 	onCancel: () => void
+	isSubmitting?: boolean
 }
 
 export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 	visible,
 	onConfirm,
 	onCancel,
+	isSubmitting = false,
 }) => {
 	const [zoneType, setZoneType] = useState<MapZoneType>('feeding')
 	const [radius, setRadius] = useState(50)
 
 	const handleConfirm = () => {
 		onConfirm(zoneType, radius)
-		// Reset state for next use
-		setZoneType('feeding')
-		setRadius(50)
 	}
 
 	const handleCancel = () => {
@@ -38,67 +37,87 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 				<View style={appStyles.zoneModalContent}>
 					<Text style={appStyles.zoneModalTitle}>Adicionar Área</Text>
 
-					<Text style={appStyles.zoneModalLabel}>Tipo</Text>
-					<View style={appStyles.zoneTypeButtonContainer}>
-						<TouchableOpacity
+				<Text style={appStyles.zoneModalLabel}>Tipo</Text>
+				<View style={appStyles.zoneTypeButtonContainer}>
+					<TouchableOpacity
+						style={[
+							appStyles.zoneTypeButton,
+							zoneType === 'feeding' && appStyles.zoneTypeButtonActive,
+							isSubmitting && appStyles.zoneModalDisabled,
+						]}
+						onPress={() => setZoneType('feeding')}
+						disabled={isSubmitting}
+					>
+						<Text
 							style={[
-								appStyles.zoneTypeButton,
-								zoneType === 'feeding' && appStyles.zoneTypeButtonActive,
+								appStyles.zoneTypeButtonText,
+								zoneType === 'feeding' && appStyles.zoneTypeButtonTextActive,
 							]}
-							onPress={() => setZoneType('feeding')}
 						>
-							<Text
-								style={[
-									appStyles.zoneTypeButtonText,
-									zoneType === 'feeding' && appStyles.zoneTypeButtonTextActive,
-								]}
-							>
-								Alimentação
-							</Text>
-						</TouchableOpacity>
+							Alimentação
+						</Text>
+					</TouchableOpacity>
 
-						<TouchableOpacity
+					<TouchableOpacity
+						style={[
+							appStyles.zoneTypeButton,
+							zoneType === 'nest' && appStyles.zoneTypeButtonActive,
+							isSubmitting && appStyles.zoneModalDisabled,
+						]}
+						onPress={() => setZoneType('nest')}
+						disabled={isSubmitting}
+					>
+						<Text
 							style={[
-								appStyles.zoneTypeButton,
-								zoneType === 'nest' && appStyles.zoneTypeButtonActive,
+								appStyles.zoneTypeButtonText,
+								zoneType === 'nest' && appStyles.zoneTypeButtonTextActive,
 							]}
-							onPress={() => setZoneType('nest')}
 						>
-							<Text
-								style={[
-									appStyles.zoneTypeButtonText,
-									zoneType === 'nest' && appStyles.zoneTypeButtonTextActive,
-								]}
-							>
-								Ninho
-							</Text>
-						</TouchableOpacity>
-					</View>
+							Ninho
+						</Text>
+					</TouchableOpacity>
+				</View>
 
-					<Text style={appStyles.zoneModalLabel}>Raio: {radius}m</Text>
-					<Slider
-						style={appStyles.zoneSlider}
-						minimumValue={10}
-						maximumValue={5000}
-						value={radius}
-						onValueChange={setRadius}
-						step={10}
-					/>
+				<Text style={appStyles.zoneModalLabel}>Raio: {radius}m</Text>
+				<Slider
+					style={[
+						appStyles.zoneSlider,
+						isSubmitting && appStyles.zoneModalDisabled,
+					]}
+					minimumValue={10}
+					maximumValue={5000}
+					value={radius}
+					onValueChange={setRadius}
+					step={10}
+					disabled={isSubmitting}
+				/>
 
-					<View style={appStyles.zoneModalButtonContainer}>
-						<TouchableOpacity
-							style={appStyles.zoneModalCancelButton}
-							onPress={handleCancel}
-						>
-							<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={appStyles.zoneModalConfirmButton}
-							onPress={handleConfirm}
-						>
+				<View style={appStyles.zoneModalButtonContainer}>
+					<TouchableOpacity
+						style={[
+							appStyles.zoneModalCancelButton,
+							isSubmitting && appStyles.zoneModalDisabled,
+						]}
+						onPress={handleCancel}
+						disabled={isSubmitting}
+					>
+						<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={[
+							appStyles.zoneModalConfirmButton,
+							isSubmitting && appStyles.zoneModalConfirmButtonDisabled,
+						]}
+						onPress={handleConfirm}
+						disabled={isSubmitting}
+					>
+						{isSubmitting ? (
+							<ActivityIndicator size="small" color="#FFFFFF" />
+						) : (
 							<Text style={appStyles.zoneModalConfirmButtonText}>Confirmar</Text>
-						</TouchableOpacity>
-					</View>
+						)}
+					</TouchableOpacity>
+				</View>
 				</View>
 			</View>
 		</Modal>
