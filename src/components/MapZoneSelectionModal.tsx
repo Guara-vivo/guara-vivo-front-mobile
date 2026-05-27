@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { View, Text, Modal, TouchableOpacity, ActivityIndicator } from 'react-native'
+import { Picker } from '@react-native-picker/picker'
 import Slider from '@react-native-community/slider'
-import { MapZoneType } from '../types/api'
+import type { MapZoneType } from '../types/api'
 import { appStyles } from '../styles/appStyles'
 
 interface MapZoneSelectionModalProps {
@@ -38,44 +39,23 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 					<Text style={appStyles.zoneModalTitle}>Adicionar Área</Text>
 
 				<Text style={appStyles.zoneModalLabel}>Tipo</Text>
-				<View style={appStyles.zoneTypeButtonContainer}>
-					<TouchableOpacity
+				<View style={appStyles.zoneSelectContainer}>
+					<View
 						style={[
-							appStyles.zoneTypeButton,
-							zoneType === 'feeding' && appStyles.zoneTypeButtonActive,
+							appStyles.zonePickerContainer,
 							isSubmitting && appStyles.zoneModalDisabled,
 						]}
-						onPress={() => setZoneType('feeding')}
-						disabled={isSubmitting}
 					>
-						<Text
-							style={[
-								appStyles.zoneTypeButtonText,
-								zoneType === 'feeding' && appStyles.zoneTypeButtonTextActive,
-							]}
+						<Picker
+							selectedValue={zoneType}
+							onValueChange={(value) => setZoneType(value as MapZoneType)}
+							enabled={!isSubmitting}
+							style={appStyles.zonePicker}
 						>
-							Alimentação
-						</Text>
-					</TouchableOpacity>
-
-					<TouchableOpacity
-						style={[
-							appStyles.zoneTypeButton,
-							zoneType === 'nest' && appStyles.zoneTypeButtonActive,
-							isSubmitting && appStyles.zoneModalDisabled,
-						]}
-						onPress={() => setZoneType('nest')}
-						disabled={isSubmitting}
-					>
-						<Text
-							style={[
-								appStyles.zoneTypeButtonText,
-								zoneType === 'nest' && appStyles.zoneTypeButtonTextActive,
-							]}
-						>
-							Ninho
-						</Text>
-					</TouchableOpacity>
+							<Picker.Item label="Alimentação" value="feeding" />
+							<Picker.Item label="Ninho" value="nest" />
+						</Picker>
+					</View>
 				</View>
 
 				<Text style={appStyles.zoneModalLabel}>Raio: {radius}m</Text>
@@ -85,7 +65,7 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 						isSubmitting && appStyles.zoneModalDisabled,
 					]}
 					minimumValue={10}
-					maximumValue={5000}
+					maximumValue={500}
 					value={radius}
 					onValueChange={setRadius}
 					step={10}

@@ -2378,6 +2378,21 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	zoneTypeButtonTextActive: {
 		color: colors.surface,
 	} as TextStyle,
+	zoneSelectContainer: {
+		marginBottom: spacing.lg,
+	} as ViewStyle,
+	zonePickerContainer: {
+		minHeight: 52,
+		borderRadius: cornerRadius,
+		borderWidth: 1,
+		borderColor: colors.border,
+		backgroundColor: colors.surface,
+		overflow: 'hidden',
+	} as ViewStyle,
+	zonePicker: {
+		color: colors.text,
+		backgroundColor: colors.surface,
+	} as ViewStyle,
 	zoneSlider: {
 		height: 40,
 		marginVertical: spacing.md,

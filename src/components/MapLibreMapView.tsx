@@ -1,14 +1,16 @@
-import MapView, { Circle, Marker, type Region } from 'react-native-maps'
+import MapView, { Circle, type Region } from 'react-native-maps'
 import * as Location from 'expo-location'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { MAP_CENTER } from '../config/map'
 import type { MapLayerId } from '../config/map'
 import type { MapZoneRead } from '../types/api'
-import type { RecordItem } from '../types/records'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const MAP_REGION_DELTA = 0.01
 const CAMERA_ANIMATION_DURATION_MS = 250
+const LOCATION_TIMEOUT_MS = 2000
+const MAP_CAMERA_STORAGE_KEY = 'guara_vivo:last_map_camera_region'
 const DEFAULT_REGION: Region = {
 	latitude: MAP_CENTER.lat,
 	longitude: MAP_CENTER.lng,
@@ -16,17 +18,48 @@ const DEFAULT_REGION: Region = {
 	longitudeDelta: MAP_REGION_DELTA,
 }
 
+function parseStoredRegion(value: string | null): Region | null {
+	if (!value) {
+		return null
+	}
+
+	try {
+		const region = JSON.parse(value) as Partial<Region>
+		const values = [
+			region.latitude,
+			region.longitude,
+			region.latitudeDelta,
+			region.longitudeDelta,
+		]
+
+		if (values.every((item) => typeof item === 'number' && Number.isFinite(item))) {
+			return {
+				latitude: region.latitude as number,
+				longitude: region.longitude as number,
+				latitudeDelta: region.latitudeDelta as number,
+				longitudeDelta: region.longitudeDelta as number,
+			}
+		}
+	} catch {
+		return null
+	}
+
+	return null
+}
+
 type Props = {
 	selectedLayer: MapLayerId
-	records: RecordItem[]
-	recordsLoading: boolean
 	zones: MapZoneRead[]
 	onMapPress?: (lat: number, lng: number) => void
 }
 
-export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones, onMapPress }: Props) {
+export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
+	const locationTimedOutRef = useRef(false)
+	const userMovedMapRef = useRef(false)
+	const [initialRegion, setInitialRegion] = useState<Region>(DEFAULT_REGION)
+	const [initialRegionReady, setInitialRegionReady] = useState(false)
 	const [cameraTargetRegion, setCameraTargetRegion] = useState<Region>(DEFAULT_REGION)
 	const [hasLocationTarget, setHasLocationTarget] = useState(false)
 	const [locationReady, setLocationReady] = useState(false)
@@ -36,12 +69,44 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 	useEffect(() => {
 		let isMounted = true
 
+		AsyncStorage.getItem(MAP_CAMERA_STORAGE_KEY)
+			.then((value) => {
+				if (!isMounted) {
+					return
+				}
+
+				const storedRegion = parseStoredRegion(value)
+				setInitialRegion(storedRegion ?? DEFAULT_REGION)
+			})
+			.catch(() => {})
+			.finally(() => {
+				if (isMounted) {
+					setInitialRegionReady(true)
+				}
+			})
+
+		return () => {
+			isMounted = false
+		}
+	}, [])
+
+	useEffect(() => {
+		let isMounted = true
+		const locationTimeout = setTimeout(() => {
+			locationTimedOutRef.current = true
+
+			if (isMounted) {
+				setLocationReady(true)
+			}
+		}, LOCATION_TIMEOUT_MS)
+
 		const loadCurrentLocation = async () => {
 			try {
 				const permission = await Location.requestForegroundPermissionsAsync()
 
 				if (!permission.granted) {
 					if (isMounted) {
+						clearTimeout(locationTimeout)
 						setLocationReady(true)
 					}
 					return
@@ -51,7 +116,8 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 					accuracy: Location.Accuracy.Balanced,
 				})
 
-				if (isMounted) {
+				if (isMounted && !locationTimedOutRef.current) {
+					clearTimeout(locationTimeout)
 					setCameraTargetRegion({
 						latitude: position.coords.latitude,
 						longitude: position.coords.longitude,
@@ -63,6 +129,7 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				}
 			} catch {
 				if (isMounted) {
+					clearTimeout(locationTimeout)
 					setLocationReady(true)
 				}
 			}
@@ -72,19 +139,20 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 
 		return () => {
 			isMounted = false
+			clearTimeout(locationTimeout)
 		}
 	}, [])
 
 	useEffect(() => {
 		let cameraFallback: ReturnType<typeof setTimeout> | undefined
 
-		if (!mapReady || !locationReady || cameraInitializedRef.current) {
+		if (!initialRegionReady || !mapReady || !locationReady || cameraInitializedRef.current) {
 			return undefined
 		}
 
 		cameraInitializedRef.current = true
 
-		if (!hasLocationTarget) {
+		if (!hasLocationTarget || userMovedMapRef.current) {
 			setCameraReady(true)
 			return undefined
 		}
@@ -99,44 +167,21 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				clearTimeout(cameraFallback)
 			}
 		}
-	}, [cameraTargetRegion, hasLocationTarget, locationReady, mapReady])
+	}, [cameraTargetRegion, hasLocationTarget, initialRegionReady, locationReady, mapReady])
 
-	const visibleRecords = useMemo(() => records.filter((record) => {
-		const behavior = String(record.flock_size || '').toLowerCase()
-
+	const visibleZones = useMemo(() => zones.filter((zone) => {
 		if (selectedLayer === 'all') {
-			return behavior.includes('ninh') || behavior.includes('aliment')
+			return true
 		}
 
 		if (selectedLayer === 'feeding') {
-			return behavior.includes('aliment')
+			return zone.type === 'feeding'
 		}
 
-		return behavior.includes('ninh')
-	}), [records, selectedLayer])
+		return zone.type === 'nest'
+	}), [selectedLayer, zones])
 
-	const markers = useMemo(() => visibleRecords.map((record) => {
-		const behavior = String(record.flock_size || '').toLowerCase()
-		const isNest = behavior.includes('ninh')
-		const markerColor = isNest ? '#2F6FE4' : '#E53935'
-
-		return (
-			<Marker
-				key={record.id}
-				coordinate={{
-					latitude: record.latitude,
-					longitude: record.longitude,
-				}}
-				onPress={() => {
-					// Adicionar lógica de popover/info aqui
-				}}
-				pinColor={markerColor}
-				tracksViewChanges={false}
-			/>
-		)
-	}), [visibleRecords])
-
-	const zoneCircles = useMemo(() => zones.map((zone) => {
+	const zoneCircles = useMemo(() => visibleZones.map((zone) => {
 		const circleColor = zone.type === 'nest' ? '#2f6ee43a' : '#e5383556'
 		const circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
 
@@ -154,52 +199,55 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				zIndex={-1}
 			/>
 		)
-	}), [zones])
+	}), [visibleZones])
 
-	const visibleCount = visibleRecords.length
-	const loadingText =
-		!mapReady || !cameraReady
-			? 'Preparando mapa...'
-			: records.length > 0
-				? 'Atualizando pontos...'
-				: 'Carregando pontos...'
-	const showRecordsLoading = recordsLoading || !mapReady || !cameraReady
+	const visibleCount = visibleZones.length
+	const showMapLoading = !initialRegionReady || !mapReady || !cameraReady
 	const badgeText =
 		selectedLayer === 'all'
-			? 'registros'
+			? 'áreas'
 			: selectedLayer === 'feeding'
 				? 'alimentação'
 				: 'ninhos'
 
 	return (
 		<View style={styles.container}>
-			<MapView
-				ref={mapRef}
-				style={styles.mapView}
-				onMapReady={() => setMapReady(true)}
-				onRegionChangeComplete={() => {
-					if (cameraInitializedRef.current && !cameraReady) {
-						setCameraReady(true)
-					}
-				}}
-				showsPointsOfInterest={false}
-				showsIndoors={false}
-				showsBuildings={false}
-				customMapStyle={mapStyle}
-				initialRegion={DEFAULT_REGION}
-				onPress={(e) => {
-					if (onMapPress) {
-						onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
-					}
-				}}
-			>
-				{zoneCircles}
-				{markers}
-			</MapView>
-			{showRecordsLoading ? (
+			{initialRegionReady ? (
+				<MapView
+					ref={mapRef}
+					style={styles.mapView}
+					onMapReady={() => setMapReady(true)}
+					onPanDrag={() => {
+						userMovedMapRef.current = true
+					}}
+					onRegionChangeComplete={(region) => {
+						void AsyncStorage.setItem(
+							MAP_CAMERA_STORAGE_KEY,
+							JSON.stringify(region),
+						).catch(() => {})
+
+						if (cameraInitializedRef.current && !cameraReady) {
+							setCameraReady(true)
+						}
+					}}
+					showsPointsOfInterest={false}
+					showsIndoors={false}
+					showsBuildings={false}
+					customMapStyle={mapStyle}
+					initialRegion={initialRegion}
+					onPress={(e) => {
+						if (onMapPress) {
+							onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
+						}
+					}}
+				>
+					{zoneCircles}
+				</MapView>
+			) : null}
+			{showMapLoading ? (
 				<View pointerEvents="none" style={styles.recordsLoadingOverlay}>
 					<ActivityIndicator size="large" color="#1A1A1A" />
-					<Text style={styles.loadingText}>{loadingText}</Text>
+					<Text style={styles.loadingText}>Preparando mapa...</Text>
 				</View>
 			) : null}
 			<View style={styles.countBadge}>
