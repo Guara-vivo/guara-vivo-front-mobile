@@ -10,6 +10,16 @@ export type MapRecord = {
   user_id: number;
 };
 
+export type MapZone = {
+  id: number;
+  type: 'feeding' | 'nest';
+  latitude: number;
+  longitude: number;
+  radius_meters: number;
+  user_id: number;
+  created_at: string;
+};
+
 export const MAP_CENTER = {
   lat: -24.4968,
   lng: -47.8425,
@@ -53,6 +63,45 @@ export const MAP_RECORDS: MapRecord[] = [
     behavior: 'Alimentando',
     date_time: '2026-05-09T11:20:00Z',
     user_id: 12,
+  },
+];
+
+export const MAP_ZONES: MapZone[] = [
+  {
+    id: 1,
+    type: 'nest',
+    latitude: -24.4959,
+    longitude: -47.8431,
+    radius_meters: 200,
+    user_id: 12,
+    created_at: '2026-05-01T10:00:00Z',
+  },
+  {
+    id: 2,
+    type: 'nest',
+    latitude: -24.4974,
+    longitude: -47.8418,
+    radius_meters: 250,
+    user_id: 12,
+    created_at: '2026-05-02T10:00:00Z',
+  },
+  {
+    id: 3,
+    type: 'feeding',
+    latitude: -24.4948,
+    longitude: -47.8409,
+    radius_meters: 300,
+    user_id: 12,
+    created_at: '2026-05-03T10:00:00Z',
+  },
+  {
+    id: 4,
+    type: 'feeding',
+    latitude: -24.4983,
+    longitude: -47.8442,
+    radius_meters: 280,
+    user_id: 12,
+    created_at: '2026-05-04T10:00:00Z',
   },
 ];
 

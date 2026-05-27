@@ -1,17 +1,19 @@
-import MapView, { Marker } from 'react-native-maps'
+import MapView, { Marker, Circle } from 'react-native-maps'
 import * as Location from 'expo-location'
 import { StyleSheet, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { MAP_CENTER } from '../config/map'
 import type { MapLayerId, MapRecord } from '../config/map'
+import type { MapZoneRead } from '../types/api'
 import { useEffect, useState } from 'react'
 
 type Props = {
 	selectedLayer: MapLayerId
 	records: MapRecord[]
+	zones: MapZoneRead[]
 }
 
-export function MapLibreMapView({ selectedLayer, records }: Props) {
+export function MapLibreMapView({ selectedLayer, records, zones }: Props) {
 	const [mapCenter, setMapCenter] = useState(MAP_CENTER)
 	const [locationReady, setLocationReady] = useState(false)
 
@@ -108,6 +110,27 @@ export function MapLibreMapView({ selectedLayer, records }: Props) {
 		)
 	})
 
+	const zoneCircles = zones.map((zone) => {
+		const circleColor = zone.type === 'nest' ? '#2F6FE4' : '#E53935'
+		const circleFillOpacity = 0.15
+		const circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
+
+		return (
+			<Circle
+				key={zone.id}
+				center={{
+					latitude: zone.latitude,
+					longitude: zone.longitude,
+				}}
+				radius={zone.radius_meters}
+				strokeColor={circleStrokeColor}
+				strokeWidth={2}
+				fillColor={circleColor}
+				zIndex={-1}
+			/>
+		)
+	})
+
 	const visibleCount = visibleRecords.length
 	const badgeText =
 		selectedLayer === 'all'
@@ -131,6 +154,7 @@ export function MapLibreMapView({ selectedLayer, records }: Props) {
 					longitudeDelta: 0.01,
 				}}
 			>
+				{zoneCircles}
 				{markers}
 			</MapView>
 			<View style={styles.countBadge}>

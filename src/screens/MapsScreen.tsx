@@ -5,7 +5,7 @@ import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { appStyles } from '../styles/appStyles'
-import { MAP_RECORDS } from '../config/map'
+import { MAP_RECORDS, MAP_ZONES } from '../config/map'
 import type { ScreenId } from '../types/navigation'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
@@ -86,6 +86,7 @@ export function MapsScreen({
 					<MapLibreMapView
 						selectedLayer={selectedLayer}
 						records={MAP_RECORDS}
+						zones={MAP_ZONES}
 					/>
 				</ScreenCard>
 			</View>
