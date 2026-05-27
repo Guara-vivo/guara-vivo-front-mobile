@@ -6,10 +6,11 @@ import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { appStyles } from '../styles/appStyles'
-import { MAP_RECORDS } from '../config/map'
 import type { ScreenId } from '../types/navigation'
 import type { MapZoneRead, MapZoneType } from '../types/api'
+import type { RecordItem } from '../types/records'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
+import { fetchRecords } from '../services/recordsService'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -23,6 +24,9 @@ export function MapsScreen({
 	>('all')
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
+	const [records, setRecords] = useState<RecordItem[]>([])
+	const [recordsLoading, setRecordsLoading] = useState(true)
+	const [recordsError, setRecordsError] = useState<string | null>(null)
 	const [showZoneModal, setShowZoneModal] = useState(false)
 	const [creatingZone, setCreatingZone] = useState(false)
 	const [selectionMode, setSelectionMode] = useState(false)
@@ -36,6 +40,7 @@ export function MapsScreen({
 
 	useEffect(() => {
 		let isMounted = true
+		const abortController = new AbortController()
 
 		const loadZones = async () => {
 			try {
@@ -51,10 +56,30 @@ export function MapsScreen({
 			}
 		}
 
+		const loadRecords = async () => {
+			try {
+				setRecordsError(null)
+				const apiRecords = await fetchRecords({}, abortController.signal)
+				if (isMounted) {
+					setRecords(apiRecords)
+				}
+			} catch (error) {
+				if (isMounted && !(error instanceof Error && error.name === 'AbortError')) {
+					setRecordsError(error instanceof Error ? error.message : 'Erro ao carregar registros')
+				}
+			} finally {
+				if (isMounted) {
+					setRecordsLoading(false)
+				}
+			}
+		}
+
 		loadZones()
+		loadRecords()
 
 		return () => {
 			isMounted = false
+			abortController.abort()
 		}
 	}, [])
 
@@ -179,14 +204,21 @@ export function MapsScreen({
 					</View>
 				)}
 
-				<ScreenCard style={appStyles.mapsMapCard}>
-					<MapLibreMapView
-						selectedLayer={selectedLayer}
-						records={MAP_RECORDS}
-						zones={zones}
-						onMapPress={selectionMode ? handleMapPress : undefined}
-					/>
-				</ScreenCard>
+			{recordsError && (
+				<View style={appStyles.zoneErrorBanner}>
+					<Text style={appStyles.zoneErrorText}>{recordsError}</Text>
+				</View>
+			)}
+
+			<ScreenCard style={appStyles.mapsMapCard}>
+				<MapLibreMapView
+					selectedLayer={selectedLayer}
+					records={records}
+					recordsLoading={recordsLoading}
+					zones={zones}
+					onMapPress={selectionMode ? handleMapPress : undefined}
+				/>
+			</ScreenCard>
 			</View>
 
 			<MapZoneSelectionModal

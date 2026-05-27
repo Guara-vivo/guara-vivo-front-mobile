@@ -1,20 +1,22 @@
 import MapView, { Marker, Circle } from 'react-native-maps'
 import * as Location from 'expo-location'
-import { StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { MAP_CENTER } from '../config/map'
-import type { MapLayerId, MapRecord } from '../config/map'
+import type { MapLayerId } from '../config/map'
 import type { MapZoneRead } from '../types/api'
+import type { RecordItem } from '../types/records'
 import { useEffect, useState } from 'react'
 
 type Props = {
 	selectedLayer: MapLayerId
-	records: MapRecord[]
+	records: RecordItem[]
+	recordsLoading: boolean
 	zones: MapZoneRead[]
 	onMapPress?: (lat: number, lng: number) => void
 }
 
-export function MapLibreMapView({ selectedLayer, records, zones, onMapPress }: Props) {
+export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones, onMapPress }: Props) {
 	const [mapCenter, setMapCenter] = useState(MAP_CENTER)
 	const [locationReady, setLocationReady] = useState(false)
 
@@ -58,7 +60,7 @@ export function MapLibreMapView({ selectedLayer, records, zones, onMapPress }: P
 	}, [])
 
 	const visibleRecords = records.filter((record) => {
-		const behavior = String(record.behavior || '').toLowerCase()
+		const behavior = String(record.flock_size || '').toLowerCase()
 
 		if (selectedLayer === 'all') {
 			return behavior.includes('ninh') || behavior.includes('aliment')
@@ -72,7 +74,7 @@ export function MapLibreMapView({ selectedLayer, records, zones, onMapPress }: P
 	})
 
 	const markers = visibleRecords.map((record) => {
-		const behavior = String(record.behavior || '').toLowerCase()
+		const behavior = String(record.flock_size || '').toLowerCase()
 		const isNest = behavior.includes('ninh')
 		const isFeeding = behavior.includes('aliment')
 		const markerColor = isNest ? '#2F6FE4' : '#E53935'
@@ -83,8 +85,8 @@ export function MapLibreMapView({ selectedLayer, records, zones, onMapPress }: P
 			<Marker
 				key={record.id}
 				coordinate={{
-					latitude: record.latitude_camera,
-					longitude: record.longitude_camera,
+					latitude: record.latitude,
+					longitude: record.longitude,
 				}}
 				onPress={() => {
 					// Adicionar lógica de popover/info aqui
@@ -162,6 +164,12 @@ export function MapLibreMapView({ selectedLayer, records, zones, onMapPress }: P
 				{zoneCircles}
 				{markers}
 			</MapView>
+			{recordsLoading ? (
+				<View pointerEvents="none" style={styles.recordsLoadingOverlay}>
+					<ActivityIndicator size="large" color="#2F6FE4" />
+					<Text style={styles.loadingText}>Carregando pontos...</Text>
+				</View>
+			) : null}
 			<View style={styles.countBadge}>
 				<Text style={styles.countBadgeValue}>{visibleCount}</Text>
 				<Text style={styles.countBadgeLabel}>{badgeText}</Text>
@@ -187,6 +195,19 @@ const styles = StyleSheet.create({
 	loadingOverlay: {
 		...StyleSheet.absoluteFillObject,
 		backgroundColor: 'rgba(244, 245, 247, 0.2)',
+	},
+	recordsLoadingOverlay: {
+		...StyleSheet.absoluteFillObject,
+		backgroundColor: 'rgba(244, 245, 247, 0.5)',
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexDirection: 'column',
+		gap: 16,
+	},
+	loadingText: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#2F6FE4',
 	},
 	customMarker: {
 		width: 22,
