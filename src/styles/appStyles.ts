@@ -2274,7 +2274,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	zoneAddButtonText: {
 		color: '#FFFFFF',
 		fontSize: 14,
-		fontWeight: '600',
 	},
 	zoneErrorBanner: {
 		marginHorizontal: spacing.md,
@@ -2288,7 +2287,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	zoneErrorText: {
 		color: '#C62828',
 		fontSize: 13,
-		fontWeight: '500',
 	},
 	// Zone Selection Mode Styles
 	zoneSelectionIndicator: {
@@ -2325,7 +2323,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	zoneCancelButtonText: {
 		color: colors.surface,
 		fontSize: 13,
-		fontWeight: '600',
 	} as TextStyle,
 	// Zone Modal Styles
 	zoneModalOverlay: {
@@ -2367,23 +2364,19 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: spacing.md,
 		paddingHorizontal: spacing.md,
 		borderRadius: cornerRadius,
-		borderWidth: 2,
-		borderColor: colors.border,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.splash,
+		backgroundColor: colors.primary,
 	} as ViewStyle,
 	zoneTypeButtonActive: {
-		backgroundColor: colors.primary,
-		borderColor: colors.primary,
+		backgroundColor: colors.splash,
 	} as ViewStyle,
 	zoneTypeButtonText: {
-		fontSize: 13,
-		fontWeight: '600',
-		color: colors.text,
+		fontSize: 12,
+		color: colors.surface,
 	} as TextStyle,
 	zoneTypeButtonTextActive: {
-		color: '#FFFFFF',
+		color: colors.surface,
 	} as TextStyle,
 	zoneSlider: {
 		height: 40,
@@ -2399,16 +2392,14 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: spacing.md,
 		paddingHorizontal: spacing.md,
 		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.border,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.splash,
+    backgroundColor: colors.secondary,
+    ...unifiedShadow,
 	} as ViewStyle,
 	zoneModalCancelButtonText: {
 		fontSize: 14,
-		fontWeight: '600',
-		color: colors.text,
+		color: colors.surface,
 	} as TextStyle,
 	zoneModalConfirmButton: {
 		flex: 1,
@@ -2422,8 +2413,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	} as ViewStyle,
 	zoneModalConfirmButtonText: {
 		fontSize: 14,
-		fontWeight: '600',
-		color: '#FFFFFF',
+		color: colors.surface,
 	} as TextStyle,
 	zoneModalDisabled: {
 		opacity: 0.6,

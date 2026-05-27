@@ -10,7 +10,7 @@ import type { ScreenId } from '../types/navigation'
 import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { RecordItem } from '../types/records'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
-import { fetchRecords } from '../services/recordsService'
+import { fetchRecords, getCachedRecordsSnapshot } from '../services/recordsService'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -24,7 +24,7 @@ export function MapsScreen({
 	>('all')
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
-	const [records, setRecords] = useState<RecordItem[]>([])
+	const [records, setRecords] = useState<RecordItem[]>(() => getCachedRecordsSnapshot() ?? [])
 	const [recordsLoading, setRecordsLoading] = useState(true)
 	const [recordsError, setRecordsError] = useState<string | null>(null)
 	const [showZoneModal, setShowZoneModal] = useState(false)
@@ -57,9 +57,16 @@ export function MapsScreen({
 		}
 
 		const loadRecords = async () => {
+			const cachedRecords = getCachedRecordsSnapshot()
+
+			if (cachedRecords && isMounted) {
+				setRecords(cachedRecords)
+			}
+
 			try {
 				setRecordsError(null)
-				const apiRecords = await fetchRecords({}, abortController.signal)
+				setRecordsLoading(true)
+				const apiRecords = await fetchRecords({ force: true }, abortController.signal)
 				if (isMounted) {
 					setRecords(apiRecords)
 				}
@@ -191,7 +198,7 @@ export function MapsScreen({
 							onPress={() => setSelectionMode(true)}
 							disabled={creatingZone}
 						>
-							<Ionicons name="add-circle" size={18} color="#FFFFFF" />
+							<Ionicons name="add-circle-outline" size={18} color="#FFFFFF" />
 							<Text style={appStyles.zoneAddButtonText}>Adicionar Área</Text>
 						</Pressable>
 					)}

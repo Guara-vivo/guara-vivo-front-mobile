@@ -1,12 +1,20 @@
-import MapView, { Marker, Circle } from 'react-native-maps'
+import MapView, { Circle, Marker, type Region } from 'react-native-maps'
 import * as Location from 'expo-location'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { MAP_CENTER } from '../config/map'
 import type { MapLayerId } from '../config/map'
 import type { MapZoneRead } from '../types/api'
 import type { RecordItem } from '../types/records'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
+const MAP_REGION_DELTA = 0.01
+const CAMERA_ANIMATION_DURATION_MS = 250
+const DEFAULT_REGION: Region = {
+	latitude: MAP_CENTER.lat,
+	longitude: MAP_CENTER.lng,
+	latitudeDelta: MAP_REGION_DELTA,
+	longitudeDelta: MAP_REGION_DELTA,
+}
 
 type Props = {
 	selectedLayer: MapLayerId
@@ -17,8 +25,13 @@ type Props = {
 }
 
 export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones, onMapPress }: Props) {
-	const [mapCenter, setMapCenter] = useState(MAP_CENTER)
+	const mapRef = useRef<MapView>(null)
+	const cameraInitializedRef = useRef(false)
+	const [cameraTargetRegion, setCameraTargetRegion] = useState<Region>(DEFAULT_REGION)
+	const [hasLocationTarget, setHasLocationTarget] = useState(false)
 	const [locationReady, setLocationReady] = useState(false)
+	const [mapReady, setMapReady] = useState(false)
+	const [cameraReady, setCameraReady] = useState(false)
 
 	useEffect(() => {
 		let isMounted = true
@@ -39,10 +52,13 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				})
 
 				if (isMounted) {
-					setMapCenter({
-						lat: position.coords.latitude,
-						lng: position.coords.longitude,
+					setCameraTargetRegion({
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude,
+						latitudeDelta: MAP_REGION_DELTA,
+						longitudeDelta: MAP_REGION_DELTA,
 					})
+					setHasLocationTarget(true)
 					setLocationReady(true)
 				}
 			} catch {
@@ -59,7 +75,33 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 		}
 	}, [])
 
-	const visibleRecords = records.filter((record) => {
+	useEffect(() => {
+		let cameraFallback: ReturnType<typeof setTimeout> | undefined
+
+		if (!mapReady || !locationReady || cameraInitializedRef.current) {
+			return undefined
+		}
+
+		cameraInitializedRef.current = true
+
+		if (!hasLocationTarget) {
+			setCameraReady(true)
+			return undefined
+		}
+
+		mapRef.current?.animateToRegion(cameraTargetRegion, CAMERA_ANIMATION_DURATION_MS)
+		cameraFallback = setTimeout(() => {
+			setCameraReady(true)
+		}, CAMERA_ANIMATION_DURATION_MS)
+
+		return () => {
+			if (cameraFallback) {
+				clearTimeout(cameraFallback)
+			}
+		}
+	}, [cameraTargetRegion, hasLocationTarget, locationReady, mapReady])
+
+	const visibleRecords = useMemo(() => records.filter((record) => {
 		const behavior = String(record.flock_size || '').toLowerCase()
 
 		if (selectedLayer === 'all') {
@@ -71,15 +113,12 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 		}
 
 		return behavior.includes('ninh')
-	})
+	}), [records, selectedLayer])
 
-	const markers = visibleRecords.map((record) => {
+	const markers = useMemo(() => visibleRecords.map((record) => {
 		const behavior = String(record.flock_size || '').toLowerCase()
 		const isNest = behavior.includes('ninh')
-		const isFeeding = behavior.includes('aliment')
 		const markerColor = isNest ? '#2F6FE4' : '#E53935'
-		const markerIcon = isNest ? 'home' : 'fish'
-		const markerDotSize = isFeeding ? 18 : 11
 
 		return (
 			<Marker
@@ -91,30 +130,14 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				onPress={() => {
 					// Adicionar lógica de popover/info aqui
 				}}
-			>
-				<View style={styles.customMarker}>
-					{markerIcon ? (
-						<Ionicons name={markerIcon} size={20} color={markerColor} />
-					) : (
-						<View
-							style={[
-								styles.markerDot,
-								{
-									width: markerDotSize,
-									height: markerDotSize,
-									borderRadius: markerDotSize,
-									backgroundColor: markerColor,
-								},
-							]}
-						/>
-					)}
-				</View>
-			</Marker>
+				pinColor={markerColor}
+				tracksViewChanges={false}
+			/>
 		)
-	})
+	}), [visibleRecords])
 
-	const zoneCircles = zones.map((zone) => {
-		const circleColor = zone.type === 'nest' ? '#2F6FE4' : '#E53935'
+	const zoneCircles = useMemo(() => zones.map((zone) => {
+		const circleColor = zone.type === 'nest' ? '#2f6ee43a' : '#e5383556'
 		const circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
 
 		return (
@@ -131,9 +154,16 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				zIndex={-1}
 			/>
 		)
-	})
+	}), [zones])
 
 	const visibleCount = visibleRecords.length
+	const loadingText =
+		!mapReady || !cameraReady
+			? 'Preparando mapa...'
+			: records.length > 0
+				? 'Atualizando pontos...'
+				: 'Carregando pontos...'
+	const showRecordsLoading = recordsLoading || !mapReady || !cameraReady
 	const badgeText =
 		selectedLayer === 'all'
 			? 'registros'
@@ -144,17 +174,19 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 	return (
 		<View style={styles.container}>
 			<MapView
+				ref={mapRef}
 				style={styles.mapView}
+				onMapReady={() => setMapReady(true)}
+				onRegionChangeComplete={() => {
+					if (cameraInitializedRef.current && !cameraReady) {
+						setCameraReady(true)
+					}
+				}}
 				showsPointsOfInterest={false}
 				showsIndoors={false}
 				showsBuildings={false}
 				customMapStyle={mapStyle}
-				initialRegion={{
-					latitude: mapCenter.lat,
-					longitude: mapCenter.lng,
-					latitudeDelta: 0.01,
-					longitudeDelta: 0.01,
-				}}
+				initialRegion={DEFAULT_REGION}
 				onPress={(e) => {
 					if (onMapPress) {
 						onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
@@ -164,10 +196,10 @@ export function MapLibreMapView({ selectedLayer, records, recordsLoading, zones,
 				{zoneCircles}
 				{markers}
 			</MapView>
-			{recordsLoading ? (
+			{showRecordsLoading ? (
 				<View pointerEvents="none" style={styles.recordsLoadingOverlay}>
-					<ActivityIndicator size="large" color="#2F6FE4" />
-					<Text style={styles.loadingText}>Carregando pontos...</Text>
+					<ActivityIndicator size="large" color="#1A1A1A" />
+					<Text style={styles.loadingText}>{loadingText}</Text>
 				</View>
 			) : null}
 			<View style={styles.countBadge}>
@@ -206,21 +238,7 @@ const styles = StyleSheet.create({
 	},
 	loadingText: {
 		fontSize: 14,
-		fontWeight: '600',
-		color: '#2F6FE4',
-	},
-	customMarker: {
-		width: 22,
-		height: 22,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
-	markerDot: {
-		width: 11,
-		height: 11,
-		borderRadius: 11,
-		borderWidth: 2,
-		borderColor: '#FFFFFF',
+		color: '#717182',
 	},
 	countBadge: {
 		position: 'absolute',
