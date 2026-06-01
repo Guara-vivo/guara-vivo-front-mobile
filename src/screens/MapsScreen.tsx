@@ -215,9 +215,6 @@ export function MapsScreen({
 								size={18}
 								color="#FFFFFF"
 							/>
-							<Text style={appStyles.mapAreaButtonText}>
-								{selectionMode ? 'Cancelar' : 'Área'}
-							</Text>
 						</Pressable>
 						<Pressable
 							onPress={handleReloadZones}

@@ -731,23 +731,16 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: 8,
 	},
 	mapAreaButton: {
-		minHeight: 44,
-		paddingHorizontal: 12,
+		width: 44,
+		height: 44,
 		borderRadius: 22,
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
-		flexDirection: 'row',
-		gap: 5,
 		...unifiedShadow,
 	},
 	mapAreaButtonCancel: {
 		backgroundColor: colors.primary,
-	},
-	mapAreaButtonText: {
-		color: colors.surface,
-		fontSize: 12,
-		fontWeight: '700',
 	},
 	mapReloadButton: {
 		width: 44,
