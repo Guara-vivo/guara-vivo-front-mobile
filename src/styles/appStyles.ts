@@ -2267,7 +2267,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 44,
 		paddingHorizontal: spacing.md,
 		paddingVertical: spacing.sm,
-		backgroundColor: colors.primary,
+		backgroundColor: colors.secondary,
 		borderRadius: cornerRadius,
 		...unifiedShadow,
 	},
@@ -2409,7 +2409,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		alignItems: 'center',
 		justifyContent: 'center',
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.primary,
     ...unifiedShadow,
 	} as ViewStyle,
 	zoneModalCancelButtonText: {
@@ -2423,7 +2423,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.primary,
+		backgroundColor: colors.secondary,
 		...unifiedShadow,
 	} as ViewStyle,
 	zoneModalConfirmButtonText: {
