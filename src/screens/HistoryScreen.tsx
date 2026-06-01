@@ -8,7 +8,6 @@ import {
 	TextInput,
 	FlatList,
 	RefreshControl,
-	Animated,
 } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
@@ -16,7 +15,6 @@ import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
 import { colors } from '../constants/theme'
 import useHistoryFilters from '../hooks/useHistoryFilters'
-import usePullRefreshAnimation from '../hooks/usePullRefreshAnimation'
 import {
 	fetchRecords,
 	getCachedRecordsSnapshot,
@@ -39,8 +37,6 @@ export function HistoryScreen({
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [loadError, setLoadError] = useState(false)
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-	const { animatedPullStyle, handlePullScroll } =
-		usePullRefreshAnimation(isRefreshing)
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -133,20 +129,17 @@ export function HistoryScreen({
 	return (
 		<View style={appStyles.historyScreen}>
 			<Header title="Histórico" />
-			<Animated.View style={[appStyles.screen, animatedPullStyle]}>
+			<View style={appStyles.screen}>
 				<FlatList
 					contentContainerStyle={appStyles.historyContent}
 					data={orderedRecords}
 					keyExtractor={(item) => String(item.id)}
-					onScroll={handlePullScroll}
-					scrollEventThrottle={16}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefreshing}
 							onRefresh={handleRefresh}
 							colors={[colors.secondary]}
 							tintColor={colors.secondary}
-							progressViewOffset={-50}
 						/>
 					}
 					ListHeaderComponent={
@@ -205,7 +198,7 @@ export function HistoryScreen({
 						<HistoryRecordCard item={item} onOpenRecord={onOpenRecord} />
 					)}
 				/>
-			</Animated.View>
+			</View>
 
 			<HistoryFilterModal
 				visible={isFilterOpen}

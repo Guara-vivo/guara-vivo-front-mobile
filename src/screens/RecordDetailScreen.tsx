@@ -8,7 +8,6 @@ import {
 	ScrollView,
 	Text,
 	View,
-	Animated,
 } from 'react-native'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
@@ -19,7 +18,6 @@ import {
 } from '../utils/recordFormatters'
 import type { ScreenId } from '../types/navigation'
 import { Header } from '../components/Header'
-import usePullRefreshAnimation from '../hooks/usePullRefreshAnimation'
 import {
 	fetchRecordDetail,
 	getCachedRecordDetailSnapshot,
@@ -42,8 +40,6 @@ export function RecordDetailScreen({
 	const [isLoading, setIsLoading] = useState(!cachedRecord)
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
-	const { animatedPullStyle, handlePullScroll } =
-		usePullRefreshAnimation(isRefreshing)
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -194,19 +190,17 @@ export function RecordDetailScreen({
 				}
 			/>
 
-			<Animated.View style={[appStyles.screen, animatedPullStyle]}>
+			<View style={appStyles.screen}>
 				<ScrollView
 					style={appStyles.screen}
 					contentContainerStyle={appStyles.recordDetailContent}
-					onScroll={handlePullScroll}
-					scrollEventThrottle={16}
+					alwaysBounceVertical
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefreshing}
 							onRefresh={handleRefresh}
 							colors={[colors.secondary]}
 							tintColor={colors.secondary}
-							progressViewOffset={-50}
 						/>
 					}
 				>
@@ -311,9 +305,9 @@ export function RecordDetailScreen({
 							)
 						})}
 					</View>
-				</View>
+					</View>
 				</ScrollView>
-			</Animated.View>
+			</View>
 
 			{selectedImageIndex !== null && record && (
 				<RecordImageDetailModal
