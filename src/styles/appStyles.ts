@@ -2428,6 +2428,40 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		marginTop: spacing.md,
 		marginBottom: spacing.sm,
 	} as TextStyle,
+	zoneDetailInfoList: {
+		gap: spacing.sm,
+		marginBottom: spacing.lg,
+	} as ViewStyle,
+	zoneDetailInfoRow: {
+		paddingVertical: spacing.sm,
+		paddingHorizontal: spacing.md,
+		borderRadius: cornerRadius,
+		backgroundColor: colors.splash,
+		gap: 4,
+	} as ViewStyle,
+	zoneDetailInfoLabel: {
+		color: colors.muted,
+		fontSize: 11,
+		textTransform: 'uppercase',
+	} as TextStyle,
+	zoneDetailInfoValue: {
+		color: colors.text,
+		fontSize: 14,
+		fontWeight: '700',
+	} as TextStyle,
+	zoneDetailDeleteButton: {
+		flex: 1,
+		minHeight: 48,
+		borderRadius: cornerRadius,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.primary,
+		...unifiedShadow,
+	} as ViewStyle,
+	zoneDetailDeleteButtonText: {
+		fontSize: 14,
+		color: colors.surface,
+	} as TextStyle,
 	zoneTypeButtonContainer: {
 		flexDirection: 'row',
 		gap: spacing.md,

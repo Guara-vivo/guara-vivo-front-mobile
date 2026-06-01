@@ -4,11 +4,12 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
+import { MapZoneDetailModal } from '../components/MapZoneDetailModal'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
 import type { MapZoneRead, MapZoneType } from '../types/api'
-import { getMapZones, createMapZone } from '../services/mapZonesApi'
+import { getMapZones, createMapZone, deleteMapZone } from '../services/mapZonesApi'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
@@ -24,7 +25,9 @@ export function MapsScreen({
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
 	const [showZoneModal, setShowZoneModal] = useState(false)
+	const [selectedZone, setSelectedZone] = useState<MapZoneRead | null>(null)
 	const [creatingZone, setCreatingZone] = useState(false)
+	const [deletingZone, setDeletingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
 	const [lastUpdatedNow, setLastUpdatedNow] = useState(() => new Date())
@@ -90,6 +93,36 @@ export function MapsScreen({
 		if (!selectionMode) return
 		setSelectedCoords({ lat, lng })
 		setShowZoneModal(true)
+	}
+
+	const handleZonePress = (zone: MapZoneRead) => {
+		setSelectedZone(zone)
+	}
+
+	const handleCloseZoneDetail = () => {
+		if (deletingZone) {
+			return
+		}
+
+		setSelectedZone(null)
+	}
+
+	const handleDeleteZone = async () => {
+		if (!selectedZone) {
+			return
+		}
+
+		try {
+			setDeletingZone(true)
+			setZonesError(null)
+			await deleteMapZone(selectedZone.id)
+			setZones((prev) => prev.filter((zone) => zone.id !== selectedZone.id))
+			setSelectedZone(null)
+		} catch (error) {
+			setZonesError(error instanceof Error ? error.message : 'Erro ao excluir área')
+		} finally {
+			setDeletingZone(false)
+		}
 	}
 
 	const handleCreateZone = async (type: MapZoneType, radius_meters: number) => {
@@ -183,6 +216,7 @@ export function MapsScreen({
 					selectedLayer={selectedLayer}
 					zones={zones}
 					onMapPress={selectionMode ? handleMapPress : undefined}
+					onZonePress={!selectionMode ? handleZonePress : undefined}
 				/>
 				{selectionMode ? (
 					<View style={appStyles.mapSelectionInstructionOverlay}>
@@ -243,6 +277,13 @@ export function MapsScreen({
 			onConfirm={handleCreateZone}
 			onCancel={handleCancelModal}
 			isSubmitting={creatingZone}
+		/>
+		<MapZoneDetailModal
+			visible={Boolean(selectedZone)}
+			zone={selectedZone}
+			isDeleting={deletingZone}
+			onClose={handleCloseZoneDetail}
+			onDelete={handleDeleteZone}
 		/>
 		</View>
 	)

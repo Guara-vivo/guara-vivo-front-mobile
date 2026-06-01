@@ -10,7 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 const MAP_REGION_DELTA = 0.01
 const CAMERA_ANIMATION_DURATION_MS = 250
-const LOCATION_TIMEOUT_MS = 2000
+const LOCATION_TIMEOUT_MS = 5000
 const MAP_CAMERA_STORAGE_KEY = 'guara_vivo:last_map_camera_region'
 const DEFAULT_REGION: Region = {
 	latitude: MAP_CENTER.lat,
@@ -52,9 +52,10 @@ type Props = {
 	selectedLayer: MapLayerId
 	zones: MapZoneRead[]
 	onMapPress?: (lat: number, lng: number) => void
+	onZonePress?: (zone: MapZoneRead) => void
 }
 
-export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
+export function MapLibreMapView({ selectedLayer, zones, onMapPress, onZonePress }: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
 	const locationTimedOutRef = useRef(false)
@@ -202,6 +203,26 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
 		)
 	}), [visibleZones])
 
+	const zonePressMarkers = useMemo(() => {
+		if (!onZonePress) {
+			return null
+		}
+
+		return visibleZones.map((zone) => (
+			<Marker
+				key={`zone-press-${zone.id}`}
+				coordinate={{
+					latitude: zone.latitude,
+					longitude: zone.longitude,
+				}}
+				onPress={() => onZonePress(zone)}
+				anchor={{ x: 0.5, y: 0.5 }}
+			>
+				<View style={styles.zonePressMarker} />
+			</Marker>
+		))
+	}, [onZonePress, visibleZones])
+
 	const visibleCount = visibleZones.length
 	const showMapLoading = !initialRegionReady || !mapReady || !cameraReady
 	const badgeText =
@@ -243,6 +264,7 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
 					}}
 				>
 					{zoneCircles}
+					{zonePressMarkers}
 					{hasLocationTarget && (
 						<Marker
 							coordinate={{
@@ -328,6 +350,12 @@ const styles = StyleSheet.create({
 		color: '#6B7280',
 		fontSize: 11,
 		fontWeight: '700',
+	},
+	zonePressMarker: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: 'rgba(255, 255, 255, 0.01)',
 	},
 	userMarkerContainer: {
 		width: 54,
