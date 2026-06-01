@@ -243,6 +243,22 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
 					}}
 				>
 					{zoneCircles}
+					{hasLocationTarget && (
+						<Marker
+							coordinate={{
+								latitude: cameraTargetRegion.latitude,
+								longitude: cameraTargetRegion.longitude,
+							}}
+							title="Sua Localização"
+							description="Localização atual"
+						>
+							<View style={styles.userMarkerContainer}>
+								<View style={styles.userMarkerCircle}>
+									<Ionicons name="navigate" size={20} color="#FFFFFF" />
+								</View>
+							</View>
+						</Marker>
+					)}
 				</MapView>
 			) : null}
 			{showMapLoading ? (
