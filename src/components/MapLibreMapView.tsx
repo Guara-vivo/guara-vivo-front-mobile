@@ -312,6 +312,27 @@ const styles = StyleSheet.create({
 		fontSize: 11,
 		fontWeight: '700',
 	},
+	userMarkerContainer: {
+		width: 44,
+		height: 44,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	userMarkerCircle: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: '#F2201F',
+		borderWidth: 3,
+		borderColor: '#FFFFFF',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#F2201F',
+		shadowOpacity: 0.4,
+		shadowOffset: { width: 0, height: 2 },
+		shadowRadius: 8,
+		elevation: 5,
+	},
 })
 
 const mapStyle = [
