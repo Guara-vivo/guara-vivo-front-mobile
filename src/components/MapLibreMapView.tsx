@@ -6,6 +6,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { MAP_CENTER } from '../config/map'
 import type { MapLayerId } from '../config/map'
 import type { MapZoneRead } from '../types/api'
+import { colors } from '../constants/theme'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const MAP_REGION_DELTA = 0.01
@@ -53,9 +54,16 @@ type Props = {
 	zones: MapZoneRead[]
 	onMapPress?: (lat: number, lng: number) => void
 	onZonePress?: (zone: MapZoneRead) => void
+	selectedZoneId?: number | null
 }
 
-export function MapLibreMapView({ selectedLayer, zones, onMapPress, onZonePress }: Props) {
+export function MapLibreMapView({
+	selectedLayer,
+	zones,
+	onMapPress,
+	onZonePress,
+	selectedZoneId,
+}: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
 	const locationTimedOutRef = useRef(false)
@@ -184,8 +192,22 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress, onZonePress 
 	}), [selectedLayer, zones])
 
 	const zoneCircles = useMemo(() => visibleZones.map((zone) => {
-		const circleColor = zone.type === 'nest' ? '#2f6ee43a' : '#e5383556'
-		const circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
+		const hasSelectedZone = selectedZoneId !== null && selectedZoneId !== undefined
+		const selected = zone.id === selectedZoneId
+		const circleColor = hasSelectedZone
+			? selected
+				? `${colors.secondaryLight}66`
+				: 'rgba(107, 114, 128, 0.18)'
+			: zone.type === 'nest'
+				? '#2f6ee43a'
+				: '#e5383556'
+		const circleStrokeColor = hasSelectedZone
+			? selected
+				? colors.secondaryLight
+				: 'rgba(107, 114, 128, 0.36)'
+			: zone.type === 'nest'
+				? 'rgba(47, 111, 228, 0.4)'
+				: 'rgba(229, 57, 53, 0.4)'
 
 		return (
 			<Circle
@@ -201,7 +223,7 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress, onZonePress 
 				zIndex={-1}
 			/>
 		)
-	}), [visibleZones])
+	}), [selectedZoneId, visibleZones])
 
 	const zonePressMarkers = useMemo(() => {
 		if (!onZonePress) {
@@ -365,12 +387,13 @@ const styles = StyleSheet.create({
 		width: 32,
 		height: 32,
 		borderRadius: 22,
-		backgroundColor: '#125ED0',
-		borderWidth: 3,
-		borderColor: '#FFFFFF',
-		alignItems: 'center',
+		backgroundColor: colors.secondary,
+		borderWidth: 1,
+		borderColor: colors.surface,
+    alignItems: 'center',
+    padding: 3,
 		justifyContent: 'center',
-		shadowColor: '#125ED0',
+		shadowColor: colors.secondary,
 		shadowOpacity: 0.4,
 		shadowOffset: { width: 0, height: 2 },
 		shadowRadius: 8,

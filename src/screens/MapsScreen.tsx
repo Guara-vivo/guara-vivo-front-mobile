@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
-import { MapZoneDetailModal } from '../components/MapZoneDetailModal'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
@@ -13,6 +12,24 @@ import { getMapZones, createMapZone, deleteMapZone } from '../services/mapZonesA
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
+
+function formatZoneType(type: MapZoneType) {
+	return type === 'feeding' ? 'Alimentação' : 'Ninho'
+}
+
+function formatZoneDate(value: string) {
+	const date = new Date(value)
+
+	if (Number.isNaN(date.getTime())) {
+		return value
+	}
+
+	return date.toLocaleDateString('pt-BR', {
+		day: '2-digit',
+		month: '2-digit',
+		year: 'numeric',
+	})
+}
 
 export function MapsScreen({
 	onNavigate,
@@ -26,6 +43,7 @@ export function MapsScreen({
 	const [zonesError, setZonesError] = useState<string | null>(null)
 	const [showZoneModal, setShowZoneModal] = useState(false)
 	const [selectedZone, setSelectedZone] = useState<MapZoneRead | null>(null)
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 	const [creatingZone, setCreatingZone] = useState(false)
 	const [deletingZone, setDeletingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
@@ -104,7 +122,20 @@ export function MapsScreen({
 			return
 		}
 
+		setShowDeleteConfirm(false)
 		setSelectedZone(null)
+	}
+
+	const handleOpenDeleteConfirm = () => {
+		setShowDeleteConfirm(true)
+	}
+
+	const handleCloseDeleteConfirm = () => {
+		if (deletingZone) {
+			return
+		}
+
+		setShowDeleteConfirm(false)
 	}
 
 	const handleDeleteZone = async () => {
@@ -117,8 +148,10 @@ export function MapsScreen({
 			setZonesError(null)
 			await deleteMapZone(selectedZone.id)
 			setZones((prev) => prev.filter((zone) => zone.id !== selectedZone.id))
+			setShowDeleteConfirm(false)
 			setSelectedZone(null)
 		} catch (error) {
+			setShowDeleteConfirm(false)
 			setZonesError(error instanceof Error ? error.message : 'Erro ao excluir área')
 		} finally {
 			setDeletingZone(false)
@@ -132,6 +165,7 @@ export function MapsScreen({
 			setCreatingZone(true)
 			const newZone = await createMapZone(type, selectedCoords.lat, selectedCoords.lng, radius_meters)
 			setZones((prev) => [newZone, ...prev])
+			setSelectedZone(null)
 			setSelectionMode(false)
 			setSelectedCoords(null)
 			setShowZoneModal(false)
@@ -217,6 +251,7 @@ export function MapsScreen({
 					zones={zones}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 					onZonePress={!selectionMode ? handleZonePress : undefined}
+					selectedZoneId={selectedZone?.id ?? null}
 				/>
 				{selectionMode ? (
 					<View style={appStyles.mapSelectionInstructionOverlay}>
@@ -269,6 +304,47 @@ export function MapsScreen({
 						<Text style={appStyles.mapReloadText}>{lastUpdatedLabel}</Text>
 					</View>
 				</View>
+				{selectedZone ? (
+					<View style={appStyles.mapZoneInfoCard}>
+						<View style={appStyles.mapZoneInfoHeader}>
+							<View>
+								<Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
+								<Text style={appStyles.mapZoneInfoTitle}>{formatZoneType(selectedZone.type)}</Text>
+							</View>
+							<View style={appStyles.mapZoneInfoHeaderActions}>
+								<Pressable
+									onPress={handleOpenDeleteConfirm}
+									disabled={deletingZone}
+									hitSlop={8}
+									style={appStyles.mapZoneInfoDeleteIconButton}
+								>
+									<Ionicons name="trash-outline" size={17} color="#FFFFFF" />
+								</Pressable>
+								<Pressable
+									onPress={handleCloseZoneDetail}
+									disabled={deletingZone}
+									hitSlop={8}
+									style={appStyles.mapZoneInfoCloseButton}
+								>
+									<Ionicons name="close" size={18} color="#FFFFFF" />
+								</Pressable>
+							</View>
+						</View>
+						<View style={appStyles.mapZoneInfoGrid}>
+							<View style={appStyles.mapZoneInfoMetric}>
+								<Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
+								<Text style={appStyles.mapZoneInfoValue}>{selectedZone.radius_meters} m</Text>
+							</View>
+							<View style={appStyles.mapZoneInfoMetric}>
+								<Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
+								<Text style={appStyles.mapZoneInfoValue}>{formatZoneDate(selectedZone.created_at)}</Text>
+							</View>
+						</View>
+						<Text style={appStyles.mapZoneInfoCoordinates}>
+							{selectedZone.latitude.toFixed(5)}, {selectedZone.longitude.toFixed(5)}
+						</Text>
+					</View>
+				) : null}
 			</ScreenCard>
 			</View>
 
@@ -278,13 +354,42 @@ export function MapsScreen({
 			onCancel={handleCancelModal}
 			isSubmitting={creatingZone}
 		/>
-		<MapZoneDetailModal
-			visible={Boolean(selectedZone)}
-			zone={selectedZone}
-			isDeleting={deletingZone}
-			onClose={handleCloseZoneDetail}
-			onDelete={handleDeleteZone}
-		/>
+		<Modal visible={showDeleteConfirm} transparent animationType="fade">
+			<View style={appStyles.zoneModalOverlay}>
+				<View style={appStyles.zoneDeleteConfirmContent}>
+					<Text style={appStyles.zoneModalTitle}>Excluir área?</Text>
+					<Text style={appStyles.zoneDeleteConfirmText}>
+						Essa ação não pode ser desfeita.
+					</Text>
+					<View style={appStyles.zoneModalButtonContainer}>
+						<Pressable
+							style={[
+								appStyles.zoneDeleteConfirmCancelButton,
+								deletingZone && appStyles.zoneModalDisabled,
+							]}
+							onPress={handleCloseDeleteConfirm}
+							disabled={deletingZone}
+						>
+							<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
+						</Pressable>
+						<Pressable
+							style={[
+								appStyles.zoneDeleteConfirmButton,
+								deletingZone && appStyles.zoneModalConfirmButtonDisabled,
+							]}
+							onPress={handleDeleteZone}
+							disabled={deletingZone}
+						>
+							{deletingZone ? (
+								<ActivityIndicator size="small" color="#FFFFFF" />
+							) : (
+								<Text style={appStyles.zoneDeleteConfirmButtonText}>Excluir</Text>
+							)}
+						</Pressable>
+					</View>
+				</View>
+			</View>
+		</Modal>
 		</View>
 	)
 }
