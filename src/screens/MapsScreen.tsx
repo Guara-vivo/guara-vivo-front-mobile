@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
@@ -9,6 +9,7 @@ import { appStyles } from '../styles/appStyles'
 import type { ScreenId } from '../types/navigation'
 import type { MapZoneRead, MapZoneType } from '../types/api'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
+import { formatLastUpdatedAt } from '../utils/timeFormatters'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -24,6 +25,9 @@ export function MapsScreen({
 	const [zonesError, setZonesError] = useState<string | null>(null)
 	const [showZoneModal, setShowZoneModal] = useState(false)
 	const [creatingZone, setCreatingZone] = useState(false)
+	const [isReloading, setIsReloading] = useState(false)
+	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
+	const [lastUpdatedNow, setLastUpdatedNow] = useState(() => new Date())
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
 
@@ -33,29 +37,54 @@ export function MapsScreen({
 		{ id: 'nests' as const, label: 'NINHOS', icon: 'home' },
 	]
 
-	useEffect(() => {
-		let isMounted = true
-
-		const loadZones = async () => {
-			try {
-				setZonesError(null)
-				const data = await getMapZones()
-				if (isMounted) {
-					setZones(data)
-				}
-			} catch (error) {
-				if (isMounted) {
-					setZonesError(error instanceof Error ? error.message : 'Erro ao carregar áreas')
-				}
+	const loadZones = useCallback(async (signal?: AbortSignal) => {
+		try {
+			setZonesError(null)
+			const data = await getMapZones(signal)
+			setZones(data)
+			setLastUpdatedAt(new Date())
+		} catch (error) {
+			if (error instanceof Error && error.name === 'AbortError') {
+				return
 			}
-		}
 
-		loadZones()
-
-		return () => {
-			isMounted = false
+			setZonesError(error instanceof Error ? error.message : 'Erro ao carregar áreas')
 		}
 	}, [])
+
+	useEffect(() => {
+		const controller = new AbortController()
+
+		void loadZones(controller.signal)
+
+		return () => {
+			controller.abort()
+		}
+	}, [loadZones])
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setLastUpdatedNow(new Date())
+		}, 60000)
+
+		return () => clearInterval(interval)
+	}, [])
+
+	const handleReloadZones = async () => {
+		if (isReloading) {
+			return
+		}
+
+		setIsReloading(true)
+
+		try {
+			await loadZones()
+		} finally {
+			setIsReloading(false)
+		}
+	}
+
+	const lastUpdatedLabel = formatLastUpdatedAt(lastUpdatedAt, lastUpdatedNow)
 
 	const handleMapPress = (lat: number, lng: number) => {
 		if (!selectionMode) return
@@ -183,6 +212,25 @@ export function MapsScreen({
 					zones={zones}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 				/>
+				<View style={appStyles.mapReloadOverlay}>
+					<Pressable
+						onPress={handleReloadZones}
+						disabled={isReloading}
+						style={[
+							appStyles.mapReloadButton,
+							isReloading && appStyles.mapReloadButtonDisabled,
+						]}
+					>
+						{isReloading ? (
+							<ActivityIndicator size="small" color="#FFFFFF" />
+						) : (
+							<Ionicons name="refresh" size={22} color="#FFFFFF" />
+						)}
+					</Pressable>
+					<View style={appStyles.mapReloadTextPill}>
+						<Text style={appStyles.mapReloadText}>{lastUpdatedLabel}</Text>
+					</View>
+				</View>
 			</ScreenCard>
 			</View>
 
