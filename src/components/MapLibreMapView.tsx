@@ -252,11 +252,11 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
 							title="Sua Localização"
 							description="Localização atual"
 						>
-							<View style={styles.userMarkerContainer}>
-								<View style={styles.userMarkerCircle}>
-									<Ionicons name="navigate" size={20} color="#FFFFFF" />
-								</View>
+						<View style={styles.userMarkerContainer}>
+							<View style={styles.userMarkerCircle}>
+								<Ionicons name="navigate" size={28} color="#125ED0" />
 							</View>
+						</View>
 						</Marker>
 					)}
 				</MapView>
