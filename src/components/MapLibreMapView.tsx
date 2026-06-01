@@ -254,7 +254,7 @@ export function MapLibreMapView({ selectedLayer, zones, onMapPress }: Props) {
 						>
 						<View style={styles.userMarkerContainer}>
 							<View style={styles.userMarkerCircle}>
-								<Ionicons name="navigate" size={28} color="#FFFFFF" />
+								<Ionicons name="navigate" size={24} color="#FFFFFF" />
 							</View>
 						</View>
 						</Marker>
@@ -330,14 +330,12 @@ const styles = StyleSheet.create({
 		fontWeight: '700',
 	},
 	userMarkerContainer: {
-		width: 44,
-		height: 44,
-		alignItems: 'center',
-		justifyContent: 'center',
+		width: 54,
+		height: 54,
 	},
 	userMarkerCircle: {
-		width: 44,
-		height: 44,
+		width: 32,
+		height: 32,
 		borderRadius: 22,
 		backgroundColor: '#125ED0',
 		borderWidth: 3,

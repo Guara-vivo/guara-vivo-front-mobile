@@ -694,7 +694,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		borderWidth: 0,
 		...unifiedShadow,
-		height: '87%',
+		height: '96%',
 	},
 	mapReloadOverlay: {
 		position: 'absolute',
