@@ -384,15 +384,14 @@ export function RegisterScreen({
 								isSaving ? <ActivityIndicator size="small" color="#FFFFFF" /> : null
 							}
 						/>
-						<ActionButton
-							title="CANCELAR"
-							onPress={handleCancel}
-							disabled={isSaving}
-							variant="secondary"
-							fullWidth={false}
-							containerStyle={appStyles.registerCancelButton}
-							textStyle={appStyles.registerActionButtonLabel}
-						/>
+					<ActionButton
+						title="CANCELAR"
+						onPress={handleCancel}
+						disabled={isSaving}
+						fullWidth={false}
+						containerStyle={appStyles.registerCancelButton}
+						textStyle={appStyles.registerActionButtonLabel}
+					/>
 					</View>
 				</View>
 			</ScrollView>

@@ -601,11 +601,13 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	registerSaveButton: {
 		flex: 1,
 		minHeight: 44,
+		backgroundColor: colors.secondary,
 		...unifiedShadow,
 	},
 	registerCancelButton: {
 		flex: 1,
 		minHeight: 44,
+		backgroundColor: colors.primary,
 		...unifiedShadow,
 	},
 	registerActionButtonLabel: {
@@ -671,8 +673,8 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: 5,
 	},
 	mapsFilterButtonActive: {
-		backgroundColor: colors.primary,
-		borderColor: colors.primary,
+		backgroundColor: colors.secondary,
+		borderColor: colors.secondary,
 	},
 	mapsFilterButtonIcon: {
 		marginTop: -1,
@@ -2318,7 +2320,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		borderColor: colors.border,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.secondary,
+		backgroundColor: colors.primary,
 	} as ViewStyle,
 	zoneCancelButtonText: {
 		color: colors.surface,
