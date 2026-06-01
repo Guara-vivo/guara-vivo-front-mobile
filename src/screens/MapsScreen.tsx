@@ -172,34 +172,6 @@ export function MapsScreen({
 					</View>
 				</ScreenCard>
 
-				<View style={appStyles.zoneActionButtonRow}>
-					{selectionMode ? (
-						<>
-							<View style={appStyles.zoneSelectionIndicator}>
-								<Text style={appStyles.zoneSelectionText}>Toque no mapa para escolher a área</Text>
-							<Pressable
-								style={appStyles.zoneCancelButton}
-								onPress={() => {
-									setSelectionMode(false)
-									setSelectedCoords(null)
-								}}
-							>
-								<Text style={appStyles.zoneCancelButtonText}>Cancelar</Text>
-							</Pressable>
-							</View>
-						</>
-					) : (
-						<Pressable
-							style={appStyles.zoneAddButton}
-							onPress={() => setSelectionMode(true)}
-							disabled={creatingZone}
-						>
-							<Ionicons name="add-circle-outline" size={18} color="#FFFFFF" />
-							<Text style={appStyles.zoneAddButtonText}>Adicionar Área</Text>
-						</Pressable>
-					)}
-				</View>
-
 				{zonesError && (
 					<View style={appStyles.zoneErrorBanner}>
 						<Text style={appStyles.zoneErrorText}>{zonesError}</Text>
@@ -212,21 +184,56 @@ export function MapsScreen({
 					zones={zones}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 				/>
+				{selectionMode ? (
+					<View style={appStyles.mapSelectionInstructionOverlay}>
+						<Text style={appStyles.mapSelectionInstructionText}>
+							Toque no mapa para escolher a área
+						</Text>
+					</View>
+				) : null}
 				<View style={appStyles.mapReloadOverlay}>
-					<Pressable
-						onPress={handleReloadZones}
-						disabled={isReloading}
-						style={[
-							appStyles.mapReloadButton,
-							isReloading && appStyles.mapReloadButtonDisabled,
-						]}
-					>
-						{isReloading ? (
-							<ActivityIndicator size="small" color="#FFFFFF" />
-						) : (
-							<Ionicons name="refresh" size={22} color="#FFFFFF" />
-						)}
-					</Pressable>
+					<View style={appStyles.mapTopRightActions}>
+						<Pressable
+							onPress={() => {
+								if (selectionMode) {
+									setSelectionMode(false)
+									setSelectedCoords(null)
+									return
+								}
+
+								setSelectionMode(true)
+							}}
+							disabled={creatingZone}
+							style={[
+								appStyles.mapAreaButton,
+								selectionMode && appStyles.mapAreaButtonCancel,
+								creatingZone && appStyles.mapReloadButtonDisabled,
+							]}
+						>
+							<Ionicons
+								name={selectionMode ? 'close' : 'add'}
+								size={18}
+								color="#FFFFFF"
+							/>
+							<Text style={appStyles.mapAreaButtonText}>
+								{selectionMode ? 'Cancelar' : 'Área'}
+							</Text>
+						</Pressable>
+						<Pressable
+							onPress={handleReloadZones}
+							disabled={isReloading}
+							style={[
+								appStyles.mapReloadButton,
+								isReloading && appStyles.mapReloadButtonDisabled,
+							]}
+						>
+							{isReloading ? (
+								<ActivityIndicator size="small" color="#FFFFFF" />
+							) : (
+								<Ionicons name="refresh" size={22} color="#FFFFFF" />
+							)}
+						</Pressable>
+					</View>
 					<View style={appStyles.mapReloadTextPill}>
 						<Text style={appStyles.mapReloadText}>{lastUpdatedLabel}</Text>
 					</View>
