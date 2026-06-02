@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
 	Modal,
 	Pressable,
@@ -7,10 +7,13 @@ import {
 	View,
 	Image,
 } from 'react-native'
+import Svg, { Rect } from 'react-native-svg'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import type { DetectionItem, RecordDetailItem } from '../types/records'
+
+const BBOX_COLORS = ['#E91E63', '#2196F3', '#4CAF50', '#FFC107', '#9C27B0', '#FF5722', '#00BCD4', '#8BC34A']
 
 interface RecordImageDetailModalProps {
 	visible: boolean
@@ -37,6 +40,17 @@ export function RecordImageDetailModal({
 	onClose,
 	record,
 }: RecordImageDetailModalProps) {
+	const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null)
+	const [containerSize, setContainerSize] = useState<{ width: number; height: number } | null>(null)
+
+	useEffect(() => {
+		if (imageUri) {
+			Image.getSize(imageUri, (width, height) => {
+				setImageSize({ width, height })
+			})
+		}
+	}, [imageUri])
+
 	const imageAnalysis = record.image_analyses?.[imageIndex]
 	
 	const statusLabels: Record<string, string> = {
@@ -144,13 +158,71 @@ export function RecordImageDetailModal({
 						contentContainerStyle={appStyles.recordImageModalContent}
 					>
 						{/* Image Preview */}
-						<View style={appStyles.recordImageModalImageContainer}>
+						<View 
+							style={appStyles.recordImageModalImageContainer}
+							onLayout={(e) => {
+								const { width, height } = e.nativeEvent.layout
+								setContainerSize({ width, height })
+							}}
+						>
 							{imageUri ? (
-								<Image
-									source={{ uri: imageUri }}
-									style={appStyles.recordImageModalImage}
-									resizeMode="contain"
-								/>
+								<>
+									<Image
+										source={{ uri: imageUri }}
+										style={appStyles.recordImageModalImage}
+										resizeMode="contain"
+									/>
+									{imageSize && containerSize && imageAnalysis?.detections && (
+										<Svg
+											style={{
+												position: 'absolute',
+												top: 0,
+												left: 0,
+												width: containerSize.width,
+												height: containerSize.height,
+												pointerEvents: 'none',
+											}}
+										>
+											{imageAnalysis.detections.map((detection: DetectionItem, idx: number) => {
+												// Extract bbox from raw_detection if available
+												// Assuming raw_detection is a JSON string and contains bbox_xyxy
+												let bbox: [number, number, number, number] | null = null
+												try {
+													if (typeof detection.raw_detection === 'string') {
+														const parsed = JSON.parse(detection.raw_detection)
+														bbox = parsed.bbox_xyxy
+													} else if (detection.raw_detection && typeof detection.raw_detection === 'object') {
+														bbox = (detection.raw_detection as any).bbox_xyxy
+													}
+												} catch (e) {
+													console.error('Error parsing bbox', e)
+												}
+
+												if (!bbox) return null
+
+												const escala = Math.min(
+													containerSize.width / imageSize.width,
+													containerSize.height / imageSize.height
+												)
+												const offsetX = (containerSize.width - imageSize.width * escala) / 2
+												const offsetY = (containerSize.height - imageSize.height * escala) / 2
+
+												return (
+													<Rect
+														key={detection.id}
+														x={bbox[0] * escala + offsetX}
+														y={bbox[1] * escala + offsetY}
+														width={(bbox[2] - bbox[0]) * escala}
+														height={(bbox[3] - bbox[1]) * escala}
+														stroke={BBOX_COLORS[idx % BBOX_COLORS.length]}
+														strokeWidth={2}
+														fill="none"
+													/>
+												)
+											})}
+										</Svg>
+									)}
+								</>
 							) : (
 								<View style={appStyles.recordImageModalImagePlaceholder}>
 									<Ionicons
@@ -329,44 +401,48 @@ export function RecordImageDetailModal({
 										}
 									>
 										{imageAnalysis.detections.map(
-											(detection: DetectionItem, idx: number) => (
-												<View
-													key={detection.id}
-													style={
-														appStyles.recordImageModalIbisItemExpanded
-													}
-												>
-													<View
-														style={
-															appStyles.recordImageModalIbisHeader
-														}
-													>
-														<View
+															(detection: DetectionItem, idx: number) => (
+																<View
+																	key={detection.id}
+																	style={[
+																		appStyles.recordImageModalIbisItemExpanded,
+																		{ borderLeftColor: BBOX_COLORS[idx % BBOX_COLORS.length], borderLeftWidth: 4 }
+																	]}
+																>
+																	<View
+
 															style={
-																appStyles.recordImageModalIbisColorBadge
+																appStyles.recordImageModalIbisHeader
 															}
 														>
-															<Ionicons
-																name="ellipse"
-																size={14}
-																color="#FFFFFF"
-															/>
-														</View>
-														<View
-															style={
-																appStyles.recordImageModalIbisInfo
-															}
-														>
-															<Text
+															<View
+																style={[
+																	appStyles.recordImageModalIbisColorBadge,
+																	{ backgroundColor: BBOX_COLORS[idx % BBOX_COLORS.length] }
+																]}
+															>
+																<Ionicons
+																	name="ellipse"
+																	size={14}
+																	color="#FFFFFF"
+																/>
+															</View>
+															<View
 																style={
-																	appStyles.recordImageModalIbisIndex
+																	appStyles.recordImageModalIbisInfo
 																}
 															>
-																Indivíduo{' '}
-																{idx + 1}
-															</Text>
+																<Text
+																	style={
+																		appStyles.recordImageModalIbisIndex
+																	}
+																>
+																	Indivíduo{' '}
+																	{idx + 1}
+																</Text>
+															</View>
 														</View>
-													</View>
+
 
 													<View
 														style={
