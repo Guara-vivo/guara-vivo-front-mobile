@@ -134,55 +134,24 @@ export function ScreenHeader({
 	)
 }
 
-export function BottomNavigation({
-	currentScreen,
-	onNavigate,
+export function ScreenHeader({
+	title,
+	subtitle,
+	onBack,
 }: {
-	currentScreen: ScreenId
-	onNavigate: (screen: ScreenId) => void
+	title: string
+	subtitle?: string
+	onBack: () => void
 }) {
-	const items: {
-		id: ScreenId
-		label: string
-		icon: keyof typeof Ionicons.glyphMap
-	}[] = [
-		{ id: 'home', label: 'Início', icon: 'home-outline' },
-		{ id: 'register', label: 'Registrar', icon: 'location-outline' },
-		{ id: 'maps', label: 'Mapas', icon: 'map-outline' },
-		{ id: 'history', label: 'Histórico', icon: 'list-outline' },
-		{ id: 'profile', label: 'Perfil', icon: 'person-outline' },
-	]
-
 	return (
-		<View style={appStyles.bottomNav}>
-			{items.map((item) => {
-				const active = currentScreen === item.id
-				return (
-					<Pressable
-						key={item.id}
-						onPress={() => onNavigate(item.id)}
-						style={[
-							appStyles.bottomNavItem,
-							active && appStyles.bottomNavItemActive,
-						]}
-					>
-						<Ionicons
-							name={item.icon}
-							size={23}
-							color={active ? colors.surface : '#8A8D95'}
-							style={appStyles.bottomNavIcon}
-						/>
-						<Text
-							style={[
-								appStyles.bottomNavLabel,
-								active && appStyles.bottomNavLabelActive,
-							]}
-						>
-							{item.label}
-						</Text>
-					</Pressable>
-				)
-			})}
+		<View style={appStyles.headerWrap}>
+			<Pressable onPress={onBack} style={appStyles.backButton}>
+				<Text style={appStyles.backButtonText}>Voltar</Text>
+			</Pressable>
+			<Text style={appStyles.headerTitle}>{title}</Text>
+			{subtitle ? (
+				<Text style={appStyles.headerSubtitle}>{subtitle}</Text>
+			) : null}
 		</View>
 	)
 }
