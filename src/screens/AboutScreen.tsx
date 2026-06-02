@@ -8,6 +8,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
+const aboutLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
 
 export function AboutScreen() {
 	const navigation = useNavigation<NavigationProp>()

@@ -69,34 +69,3 @@ export function HomeScreen() {
 }
 
 export default HomeScreen
-
-					rightIcon={<Ionicons name="arrow-forward" size={24} color="#F1F1F1" />}
-				/>
-
-				<View style={appStyles.homeShortcutRow}>
-					<Pressable
-						onPress={() => onNavigate('maps')}
-						style={appStyles.homeShortcutCard}
-					>
-						<View style={appStyles.homeShortcutIconBox}>
-							<Ionicons name="map-outline" size={30} color="#125ED0" />
-						</View>
-						<Text style={appStyles.homeShortcutLabel}>VER MAPAS</Text>
-					</Pressable>
-
-					<Pressable
-						onPress={() => onNavigate('history')}
-						style={appStyles.homeShortcutCard}
-					>
-						<View style={appStyles.homeShortcutIconBox}>
-							<Ionicons name="list-outline" size={30} color="#125ED0" />
-						</View>
-						<Text style={appStyles.homeShortcutLabel}>HISTÓRICO</Text>
-					</Pressable>
-				</View>
-			</ScrollView>
-		</View>
-	)
-}
-
-export default HomeScreen

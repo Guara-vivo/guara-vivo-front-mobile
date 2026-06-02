@@ -196,16 +196,6 @@ export function ChangePasswordScreen() {
 								CANCELAR
 							</Text>
 						</Pressable>
-
-
-						<Pressable
-							onPress={() => onNavigate('profile')}
-							style={appStyles.changePasswordSecondaryAction}
-						>
-							<Text style={appStyles.changePasswordSecondaryActionText}>
-								CANCELAR
-							</Text>
-						</Pressable>
 					</View>
 				</View>
 			</ScrollView>

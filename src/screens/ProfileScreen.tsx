@@ -14,30 +14,24 @@ type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
 export function ProfileScreen({
 	user,
+	onLogoutSuccess,
 }: {
 	user: UserRead | null
+	onLogoutSuccess: () => void
 }) {
 	const navigation = useNavigation<NavigationProp>()
 	const displayName = user?.name ?? 'Usuario Guara Vivo'
 	const displayEmail = user?.email ?? 'Sessao local'
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
-	const [isAuthenticated, setIsAuthenticated] = useState(true) // Simplified for logout logic
-	const [currentUser, setCurrentUser] = useState(user)
 
 	const handleLogoutPress = async () => {
 		setIsLoggingOut(true)
 		try {
 			await logout()
-			// RootNavigator will automatically switch to AuthStack when isAuthenticated becomes false
-			// but since we are managing auth state in GuaraVivoApp, we need to trigger that.
-			// For now, we'll rely on the App's state management if it's provided via context or similar.
-			// Since we are not using a global state manager yet, we'll let the App handle it 
-			// if we had a way to call a global logout.
+			onLogoutSuccess()
 		} finally {
 			setIsLoggingOut(false)
 		}
-	}
-
 	}
 
 	return (
@@ -94,31 +88,31 @@ export function ProfileScreen({
 						<Text style={appStyles.profileMenuItemText}>Sobre o app</Text>
 					</Pressable>
 
-				<Pressable
-					onPress={handleLogoutPress}
-					disabled={isLoggingOut}
-					style={appStyles.profileMenuItem}
-				>
-					<Ionicons name="log-out-outline" size={19} color="#F2201F" />
-					<Text style={appStyles.profileMenuItemTextLogout}>
-						Sair da conta
-					</Text>
-				</Pressable>
+					<Pressable
+						onPress={handleLogoutPress}
+						disabled={isLoggingOut}
+						style={appStyles.profileMenuItem}
+					>
+						<Ionicons name="log-out-outline" size={19} color="#F2201F" />
+						<Text style={appStyles.profileMenuItemTextLogout}>
+							Sair da conta
+						</Text>
+					</Pressable>
 				</View>
-		</ScrollView>
+			</ScrollView>
 
-		{isLoggingOut && (
-			<View style={appStyles.logoutOverlayContainer}>
-				<View style={appStyles.logoutOverlayCard}>
-					<ActivityIndicator size="large" color={colors.primary} />
-					<Text style={appStyles.logoutOverlayText}>
-						Saindo da conta...
-					</Text>
+			{isLoggingOut && (
+				<View style={appStyles.logoutOverlayContainer}>
+					<View style={appStyles.logoutOverlayCard}>
+						<ActivityIndicator size="large" color={colors.primary} />
+						<Text style={appStyles.logoutOverlayText}>
+							Saindo da conta...
+						</Text>
+					</View>
 				</View>
-			</View>
-		)}
-	</View>
-)
+			)}
+		</View>
+	)
 }
 
 export default ProfileScreen

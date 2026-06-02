@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 import Svg, { Rect } from 'react-native-svg'
 import { Ionicons } from '@expo/vector-icons'
-import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import type { DetectionItem, RecordDetailItem } from '../types/records'
 
@@ -53,25 +52,6 @@ export function RecordImageDetailModal({
 
 	const imageAnalysis = record.image_analyses?.[imageIndex]
 	
-	const statusLabels: Record<string, string> = {
-		pending: 'Pendente',
-		processing: 'Em análise',
-		completed: 'Concluída',
-		failed: 'Falhou',
-	}
-
-	const statusColors: Record<string, string> = {
-		pending: '#F2A71B',
-		processing: '#125ED0',
-		completed: '#00A651',
-		failed: '#F2201F',
-	}
-
-	const getStatusColor = (status?: string) => {
-		if (!status) return colors.border
-		return statusColors[status] ?? colors.border
-	}
-
 	// Calculate accuracy summary for all detections in this image
 	const calculateSummary = (): AccuracySummary | null => {
 		if (!imageAnalysis?.detections || imageAnalysis.detections.length === 0) {

@@ -1,9 +1,7 @@
 import React from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
 
 type ActionButtonProps = {
 	title: string
@@ -110,28 +108,6 @@ export function ScreenCard({
 	style?: object
 }) {
 	return <View style={[appStyles.card, style]}>{children}</View>
-}
-
-export function ScreenHeader({
-	title,
-	subtitle,
-	onBack,
-}: {
-	title: string
-	subtitle?: string
-	onBack: () => void
-}) {
-	return (
-		<View style={appStyles.headerWrap}>
-			<Pressable onPress={onBack} style={appStyles.backButton}>
-				<Text style={appStyles.backButtonText}>Voltar</Text>
-			</Pressable>
-			<Text style={appStyles.headerTitle}>{title}</Text>
-			{subtitle ? (
-				<Text style={appStyles.headerSubtitle}>{subtitle}</Text>
-			) : null}
-		</View>
-	)
 }
 
 export function ScreenHeader({

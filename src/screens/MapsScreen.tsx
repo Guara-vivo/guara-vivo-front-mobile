@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
 import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
@@ -8,14 +7,18 @@ import { MapLibreMapView } from '../components/MapLibreMapView'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { appStyles } from '../styles/appStyles'
 import type { MapZoneRead, MapZoneType } from '../types/api'
-import type { MainTabParamList } from '../types/navigation'
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import type { MapLayerId } from '../config/map'
 import { getMapZones, createMapZone, deleteMapZone } from '../services/mapZonesApi'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 
-type NavigationProp = BottomTabNavigationProp<MainTabParamList>
-
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
+type LayerButton = { id: MapLayerId; label: string; icon: IoniconName }
+
+const LAYER_BUTTONS: LayerButton[] = [
+	{ id: 'all', label: 'TODOS', icon: 'layers-outline' },
+	{ id: 'feeding', label: 'ALIMENTAÇÃO', icon: 'fish' },
+	{ id: 'nests', label: 'NINHOS', icon: 'home' },
+]
 
 function formatZoneType(type: MapZoneType) {
 	return type === 'feeding' ? 'Alimentação' : 'Ninho'
@@ -36,10 +39,7 @@ function formatZoneDate(value: string) {
 }
 
 export function MapsScreen() {
-	const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>()
-	const [selectedLayer, setSelectedLayer] = useState<
-		'all' | 'feeding' | 'nests'
-	>('all')
+	const [selectedLayer, setSelectedLayer] = useState<MapLayerId>('all')
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
 	const [isZonesLoading, setIsZonesLoading] = useState(true)
@@ -53,12 +53,6 @@ export function MapsScreen() {
 	const [lastUpdatedNow, setLastUpdatedNow] = useState(() => new Date())
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
-
-	const layerButtons: { id: 'all' | 'feeding' | 'nests'; label: string; icon: IoniconName }[] = [
-		{ id: 'all' as const, label: 'TODOS', icon: 'layers-outline' },
-		{ id: 'feeding' as const, label: 'ALIMENTAÇÃO', icon: 'fish' },
-		{ id: 'nests' as const, label: 'NINHOS', icon: 'home' },
-	]
 
 	const loadZones = useCallback(async (signal?: AbortSignal) => {
 		try {
@@ -111,6 +105,20 @@ export function MapsScreen() {
 	}
 
 	const lastUpdatedLabel = formatLastUpdatedAt(lastUpdatedAt, lastUpdatedNow)
+
+	const handleSelectLayer = (layerId: MapLayerId) => {
+		setSelectedLayer(layerId)
+	}
+
+	const handleToggleSelectionMode = () => {
+		if (selectionMode) {
+			setSelectionMode(false)
+			setSelectedCoords(null)
+			return
+		}
+
+		setSelectionMode(true)
+	}
 
 	const handleMapPress = (lat: number, lng: number) => {
 		if (!selectionMode) return
@@ -198,13 +206,13 @@ export function MapsScreen() {
 					</View>
 
 					<View style={appStyles.mapsFilterRow}>
-						{layerButtons.map((item) => {
+						{LAYER_BUTTONS.map((item) => {
 							const active = selectedLayer === item.id
 
 							return (
 								<Pressable
 									key={item.id}
-									onPress={() => setSelectedLayer(item.id)}
+									onPress={() => handleSelectLayer(item.id)}
 									style={[
 										appStyles.mapsFilterButton,
 										active && appStyles.mapsFilterButtonActive,
@@ -269,15 +277,7 @@ export function MapsScreen() {
 				<View style={appStyles.mapReloadOverlay}>
 					<View style={appStyles.mapTopRightActions}>
 						<Pressable
-							onPress={() => {
-								if (selectionMode) {
-									setSelectionMode(false)
-									setSelectedCoords(null)
-									return
-								}
-
-								setSelectionMode(true)
-							}}
+							onPress={handleToggleSelectionMode}
 							disabled={creatingZone}
 							style={[
 								appStyles.mapAreaButton,
