@@ -98,23 +98,27 @@ export function RegisterScreen({
 			quality: 0.8,
 			selectionLimit: 20,
 		})
-
 		if (result.canceled) {
 			return
 		}
 
-		setSelectedImages(
-			result.assets.slice(0, 20).map((asset, index) => {
-				const fallbackName = `guara-vivo-${index + 1}.jpg`
-				const uriName = asset.uri.split('/').pop()
+		const newImages = result.assets.map((asset, index) => {
+			const fallbackName = `guara-vivo-${index + 1}.jpg`
+			const uriName = asset.uri.split('/').pop()
 
-				return {
-					uri: asset.uri,
-					name: asset.fileName ?? uriName ?? fallbackName,
-					type: asset.mimeType ?? 'image/jpeg',
-				}
-			}),
-		)
+			return {
+				uri: asset.uri,
+				name: asset.fileName ?? uriName ?? fallbackName,
+				type: asset.mimeType ?? 'image/jpeg',
+			}
+		})
+
+		setSelectedImages((current) => {
+			const existingUris = new Set(current.map((img) => img.uri))
+			const uniqueNewImages = newImages.filter((img) => !existingUris.has(img.uri))
+			
+			return [...current, ...uniqueNewImages].slice(0, 20)
+		})
 	}
 
 	const handleRemoveImage = async (imageUri: string) => {
