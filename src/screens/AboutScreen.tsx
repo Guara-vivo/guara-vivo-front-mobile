@@ -1,31 +1,31 @@
 import React from 'react'
 import { ScrollView, Image, Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
+import type { RootStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 
-const aboutLogo = require('../assets/images/Logo Fonte Clara.png')
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
-export function AboutScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+export function AboutScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	return (
-    <View style={appStyles.profileScreen}>
-            <Header
-              title="Sobre o App"
-              leftIcon={
-                <Pressable
-                  onPress={() => onNavigate('profile')}
-                  hitSlop={8}
-                  style={appStyles.headerActionButton}
-                >
-                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-                </Pressable>
-              }
-            />
+		<View style={appStyles.profileScreen}>
+			<Header
+				title="Sobre o App"
+				leftIcon={
+					<Pressable
+						onPress={() => navigation.goBack()}
+						hitSlop={8}
+						style={appStyles.headerActionButton}
+					>
+						<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+					</Pressable>
+				}
+			/>
+
 
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}

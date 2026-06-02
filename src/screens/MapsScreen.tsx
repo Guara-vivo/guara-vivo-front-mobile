@@ -1,15 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
 import type { MapZoneRead, MapZoneType } from '../types/api'
+import type { MainTabParamList } from '../types/navigation'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { getMapZones, createMapZone, deleteMapZone } from '../services/mapZonesApi'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
+
+type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 
@@ -31,11 +35,8 @@ function formatZoneDate(value: string) {
 	})
 }
 
-export function MapsScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+export function MapsScreen() {
+	const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>()
 	const [selectedLayer, setSelectedLayer] = useState<
 		'all' | 'feeding' | 'nests'
 	>('all')

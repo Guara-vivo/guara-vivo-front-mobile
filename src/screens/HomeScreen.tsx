@@ -1,17 +1,19 @@
 import React from 'react'
 import { ScrollView, Image, Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { ActionButton } from '../components/common'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
+import type { MainTabParamList } from '../types/navigation'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+
+type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
 const homeLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
 
-export function HomeScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+export function HomeScreen() {
+	const navigation = useNavigation<NavigationProp>()
+
 	return (
 		<View style={appStyles.homeScreen}>
 			<ScrollView
@@ -31,12 +33,43 @@ export function HomeScreen({
 
 				<ActionButton
 					title="NOVO REGISTRO"
-					onPress={() => onNavigate('register')}
+					onPress={() => navigation.navigate('Register')}
 					containerStyle={appStyles.homePrimaryButton}
 					textStyle={appStyles.homePrimaryButtonLabel}
 					leftIcon={
 						<Ionicons name="location-outline" size={26} color="#F1F1F1" />
 					}
+					rightIcon={<Ionicons name="arrow-forward" size={24} color="#F1F1F1" />}
+				/>
+
+				<View style={appStyles.homeShortcutRow}>
+					<Pressable
+						onPress={() => navigation.navigate('Maps')}
+						style={appStyles.homeShortcutCard}
+					>
+						<View style={appStyles.homeShortcutIconBox}>
+							<Ionicons name="map-outline" size={30} color="#125ED0" />
+						</View>
+						<Text style={appStyles.homeShortcutLabel}>VER MAPAS</Text>
+					</Pressable>
+
+					<Pressable
+						onPress={() => navigation.navigate('History')}
+						style={appStyles.homeShortcutCard}
+					>
+						<View style={appStyles.homeShortcutIconBox}>
+							<Ionicons name="list-outline" size={30} color="#125ED0" />
+						</View>
+						<Text style={appStyles.homeShortcutLabel}>HISTÓRICO</Text>
+					</Pressable>
+				</View>
+			</ScrollView>
+		</View>
+	)
+}
+
+export default HomeScreen
+
 					rightIcon={<Ionicons name="arrow-forward" size={24} color="#F1F1F1" />}
 				/>
 

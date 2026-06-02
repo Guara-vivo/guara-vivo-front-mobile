@@ -1,9 +1,13 @@
 import React, { useReducer } from 'react'
 import { ScrollView, Pressable, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
+import type { RootStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
 type EditProfileState = {
 	name: string
@@ -28,11 +32,8 @@ function editProfileReducer(
 	}
 }
 
-export function EditProfileScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+export function EditProfileScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	const [state, dispatch] = useReducer(editProfileReducer, {
 		name: 'Joao da Silva Goulard',
 		email: 'joaosgoulard@email.com',
@@ -40,18 +41,19 @@ export function EditProfileScreen({
 
 	return (
 		<View style={appStyles.profileScreen}>
-			<Header
-				title="Editar Perfil"
-				leftIcon={
-					<Pressable
-						onPress={() => onNavigate('profile')}
-						hitSlop={8}
-						style={appStyles.headerActionButton}
-					>
-						<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-					</Pressable>
-				}
-			/>
+				<Header
+					title="Editar Perfil"
+					leftIcon={
+						<Pressable
+							onPress={() => navigation.goBack()}
+							hitSlop={8}
+							style={appStyles.headerActionButton}
+						>
+							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						</Pressable>
+					}
+				/>
+
 			<ScrollView contentContainerStyle={appStyles.profileContent}>
 				<View style={appStyles.changePasswordCard}>
 					<Text style={appStyles.changePasswordLabel}>NOME</Text>
@@ -79,13 +81,22 @@ export function EditProfileScreen({
 
 					<View style={appStyles.changePasswordActionsRow}>
 						<Pressable
-							onPress={() => onNavigate('profile')}
+							onPress={() => navigation.goBack()}
 							style={appStyles.changePasswordPrimaryAction}
 						>
 							<Text style={appStyles.changePasswordPrimaryActionText}>
 								SALVAR
 							</Text>
 						</Pressable>
+						<Pressable
+							onPress={() => navigation.goBack()}
+							style={appStyles.changePasswordSecondaryAction}
+						>
+							<Text style={appStyles.changePasswordSecondaryActionText}>
+								CANCELAR
+							</Text>
+						</Pressable>
+
 
 						<Pressable
 							onPress={() => onNavigate('profile')}

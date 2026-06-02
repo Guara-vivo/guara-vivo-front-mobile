@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
+import type { RootStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 
-export function NotificationsScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>
+
+export function NotificationsScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	const [newRecords, setNewRecords] = useState(true)
 	const [mapUpdates, setMapUpdates] = useState(false)
 	const [monthlyReport, setMonthlyReport] = useState(true)
@@ -17,18 +18,19 @@ export function NotificationsScreen({
 
 	return (
     <View style={appStyles.profileScreen}>
-            <Header
-              title="Notificacoes"
-              leftIcon={
-                <Pressable
-                  onPress={() => onNavigate('profile')}
-                  hitSlop={8}
-                  style={appStyles.headerActionButton}
-                >
-                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-                </Pressable>
-              }
-            />
+				<Header
+					title="Notificacoes"
+					leftIcon={
+						<Pressable
+							onPress={() => navigation.goBack()}
+							hitSlop={8}
+							style={appStyles.headerActionButton}
+						>
+							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						</Pressable>
+					}
+				/>
+
 
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}

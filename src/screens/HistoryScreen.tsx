@@ -9,6 +9,7 @@ import {
 	FlatList,
 	RefreshControl,
 } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
@@ -21,22 +22,21 @@ import {
 	isRecordsCacheFresh,
 } from '../services/recordsService'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
 import type { RecordItem } from '../types/records'
+import type { MainTabParamList } from '../types/navigation'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 
-export function HistoryScreen({
-	onNavigate,
-	onOpenRecord,
-}: {
-	onNavigate: (screen: ScreenId) => void
-	onOpenRecord: (recordId: number) => void
-}) {
+type NavigationProp = BottomTabNavigationProp<MainTabParamList>
+
+export function HistoryScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	const cachedRecords = getCachedRecordsSnapshot()
 	const [records, setRecords] = useState<RecordItem[]>(cachedRecords ?? [])
 	const [isLoading, setIsLoading] = useState(!cachedRecords)
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [loadError, setLoadError] = useState(false)
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -119,6 +119,10 @@ export function HistoryScreen({
 			(a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
 		)
 	}, [filteredRecords, sortOrder])
+	
+	const openRecord = (recordId: number) => {
+		navigation.navigate('RecordDetail', { recordId })
+	}
 
 	const emptyMessage = isLoading
 		? 'Carregando registros...'
@@ -195,10 +199,11 @@ export function HistoryScreen({
 						</View>
 					}
 					renderItem={({ item }: { item: RecordItem }) => (
-						<HistoryRecordCard item={item} onOpenRecord={onOpenRecord} />
+						<HistoryRecordCard item={item} onOpenRecord={openRecord} />
 					)}
 				/>
 			</View>
+
 
 			<HistoryFilterModal
 				visible={isFilterOpen}

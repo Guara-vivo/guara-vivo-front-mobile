@@ -8,11 +8,15 @@ import {
 	View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
 import { usePasswordValidation } from '../hooks/usePasswordValidation'
-
-import type { ScreenId } from '../types/navigation'
+import type { RootStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>
+
 
 type ChangePasswordState = {
 	currentPassword: string
@@ -53,11 +57,8 @@ function changePasswordReducer(
 	}
 }
 
-export function ChangePasswordScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+export function ChangePasswordScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	const [state, dispatch] = useReducer(
 		changePasswordReducer,
 		{
@@ -70,23 +71,25 @@ export function ChangePasswordScreen({
 		},
 	)
 
+
 	const { message: passwordHint } = usePasswordValidation()
 
 	return (
     <View style={appStyles.profileScreen}>
       
-      <Header
-              title="Editar Senha"
-              leftIcon={
-                <Pressable
-                  onPress={() => onNavigate('profile')}
-                  hitSlop={8}
-                  style={appStyles.headerActionButton}
-                >
-                  <Ionicons name="chevron-back" size={24} color="#FFFFFF" />
-                </Pressable>
-              }
-            />
+				<Header
+					title="Editar Senha"
+					leftIcon={
+						<Pressable
+							onPress={() => navigation.goBack()}
+							hitSlop={8}
+							style={appStyles.headerActionButton}
+						>
+							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						</Pressable>
+					}
+				/>
+
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
 			>
@@ -177,7 +180,7 @@ export function ChangePasswordScreen({
 									'Senha atualizada',
 									'Sua senha foi alterada com sucesso.',
 								)
-								onNavigate('profile')
+								navigation.goBack()
 							}}
 							style={appStyles.changePasswordPrimaryAction}
 						>
@@ -185,6 +188,15 @@ export function ChangePasswordScreen({
 								ALTERAR SENHA
 							</Text>
 						</Pressable>
+						<Pressable
+							onPress={() => navigation.goBack()}
+							style={appStyles.changePasswordSecondaryAction}
+						>
+							<Text style={appStyles.changePasswordSecondaryActionText}>
+								CANCELAR
+							</Text>
+						</Pressable>
+
 
 						<Pressable
 							onPress={() => onNavigate('profile')}

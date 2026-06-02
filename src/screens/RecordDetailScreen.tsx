@@ -9,6 +9,7 @@ import {
 	Text,
 	View,
 } from 'react-native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import {
@@ -16,7 +17,6 @@ import {
 	formatLocationLabel,
 	formatTime,
 } from '../utils/recordFormatters'
-import type { ScreenId } from '../types/navigation'
 import { Header } from '../components/Header'
 import {
 	fetchRecordDetail,
@@ -25,14 +25,16 @@ import {
 	type RecordDetailItem,
 } from '../services/recordsService'
 import RecordImageDetailModal from '../components/RecordImageDetailModal'
+import type { RootStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
-export function RecordDetailScreen({
-	onNavigate,
-	recordId = 0,
-}: {
-	onNavigate: (screen: ScreenId) => void
-	recordId?: number
-}) {
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>
+
+export function RecordDetailScreen() {
+	const navigation = useNavigation<NavigationProp>()
+	const route = useRoute<{ params: { recordId: number } }>()
+	const recordId = route.params?.recordId
+
 	const cachedRecord = recordId
 		? getCachedRecordDetailSnapshot(recordId)
 		: undefined
@@ -118,7 +120,7 @@ export function RecordDetailScreen({
 					title="Detalhes do Registro"
 					leftIcon={
 						<Pressable
-							onPress={() => onNavigate('history')}
+							onPress={() => navigation.goBack()}
 							hitSlop={8}
 							style={appStyles.headerActionButton}
 						>
@@ -147,7 +149,7 @@ export function RecordDetailScreen({
 					title="Detalhes do Registro"
 					leftIcon={
 						<Pressable
-							onPress={() => onNavigate('history')}
+							onPress={() => navigation.goBack()}
 							hitSlop={8}
 							style={appStyles.headerActionButton}
 						>
@@ -181,7 +183,7 @@ export function RecordDetailScreen({
 				title="Detalhes do Registro"
 				leftIcon={
 					<Pressable
-						onPress={() => onNavigate('history')}
+						onPress={() => navigation.goBack()}
 						hitSlop={8}
 						style={appStyles.headerActionButton}
 					>
