@@ -298,7 +298,7 @@ export function MapLibreMapView({
 						>
 						<View style={styles.userMarkerContainer}>
 							<View style={styles.userMarkerCircle}>
-								<Ionicons name="navigate" size={24} color="#FFFFFF" />
+								<Ionicons name="navigate" size={16} color="#FFFFFF" />
 							</View>
 						</View>
 						</Marker>
@@ -384,8 +384,8 @@ const styles = StyleSheet.create({
 		height: 54,
 	},
 	userMarkerCircle: {
-		width: 32,
-		height: 32,
+		width: 24,
+		height: 24,
 		borderRadius: 22,
 		backgroundColor: colors.secondary,
 		borderWidth: 1,
