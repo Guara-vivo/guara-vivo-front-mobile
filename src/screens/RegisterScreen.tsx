@@ -4,13 +4,13 @@ import DateTimePicker, {
 	type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
 import { Image, Pressable, ScrollView, Text, View } from 'react-native'
 import FeedbackModal from '../components/FeedbackModal'
 import Header from '../components/Header'
 import { ActionButton } from '../components/common'
-import RegisterBehaviorList from '../components/RegisterBehaviorList'
 import { colors } from '../constants/theme'
 import { behaviorOptions } from '../constants/behaviors'
 import { getToken } from '../services/authService'
@@ -18,7 +18,10 @@ import { invalidateRecordsCache } from '../services/recordsService'
 import { uploadRecord } from '../services/recordsApi'
 import { appStyles } from '../styles/appStyles'
 import type { BirdBehavior, ReactNativeFile } from '../types/api'
-import type { ScreenId } from '../types/navigation'
+import type { MainTabParamList } from '../types/navigation'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+
+type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
 const behaviorApiMap: Partial<Record<string, BirdBehavior>> = {
 	Alimentando: 'alimentando-se',
@@ -36,11 +39,9 @@ type RegisterFeedback = {
 	iconColor: string
 }
 
-export function RegisterScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+
+export function RegisterScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	const [selectedImages, setSelectedImages] = useState<ReactNativeFile[]>([])
 	const [behaviors, setBehaviors] = useState<string[]>([])
 	const [selectedAt, setSelectedAt] = useState(new Date())
@@ -244,7 +245,7 @@ export function RegisterScreen({
 
 		setSelectedImages([])
 		setBehaviors([])
-		onNavigate('home')
+		navigation.navigate('Home')
 	}
 
 	return (
