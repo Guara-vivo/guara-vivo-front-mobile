@@ -55,6 +55,7 @@ type Props = {
 	onMapPress?: (lat: number, lng: number) => void
 	onZonePress?: (zone: MapZoneRead) => void
 	selectedZoneId?: number | null
+	isLoadingData?: boolean
 }
 
 export function MapLibreMapView({
@@ -63,6 +64,7 @@ export function MapLibreMapView({
 	onMapPress,
 	onZonePress,
 	selectedZoneId,
+	isLoadingData = false,
 }: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
@@ -246,7 +248,7 @@ export function MapLibreMapView({
 	}, [onZonePress, visibleZones])
 
 	const visibleCount = visibleZones.length
-	const showMapLoading = !initialRegionReady || !mapReady || !cameraReady
+	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
 	const badgeText =
 		selectedLayer === 'all'
 			? 'áreas'

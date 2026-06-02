@@ -41,6 +41,7 @@ export function MapsScreen({
 	>('all')
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
+	const [isZonesLoading, setIsZonesLoading] = useState(true)
 	const [showZoneModal, setShowZoneModal] = useState(false)
 	const [selectedZone, setSelectedZone] = useState<MapZoneRead | null>(null)
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -60,6 +61,7 @@ export function MapsScreen({
 
 	const loadZones = useCallback(async (signal?: AbortSignal) => {
 		try {
+			setIsZonesLoading(true)
 			setZonesError(null)
 			const data = await getMapZones(signal)
 			setZones(data)
@@ -70,6 +72,8 @@ export function MapsScreen({
 			}
 
 			setZonesError(error instanceof Error ? error.message : 'Erro ao carregar áreas')
+		} finally {
+			setIsZonesLoading(false)
 		}
 	}, [])
 
@@ -252,6 +256,7 @@ export function MapsScreen({
 					onMapPress={selectionMode ? handleMapPress : undefined}
 					onZonePress={!selectionMode ? handleZonePress : undefined}
 					selectedZoneId={selectedZone?.id ?? null}
+					isLoadingData={isZonesLoading}
 				/>
 				{selectionMode ? (
 					<View style={appStyles.mapSelectionInstructionOverlay}>
