@@ -1,32 +1,43 @@
 import React, { useState } from 'react'
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import Header from '../components/Header'
 import { appStyles } from '../styles/appStyles'
 import { colors } from '../constants/theme'
 import type { UserRead } from '../types/api'
-import type { ScreenId } from '../types/navigation'
+import type { MainTabParamList } from '../types/navigation'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { logout } from '../services/authService'
+
+type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
 export function ProfileScreen({
-	onNavigate,
-	onLogout,
 	user,
 }: {
-	onNavigate: (screen: ScreenId) => void
-	onLogout: () => void | Promise<void>
 	user: UserRead | null
 }) {
+	const navigation = useNavigation<NavigationProp>()
 	const displayName = user?.name ?? 'Usuario Guara Vivo'
 	const displayEmail = user?.email ?? 'Sessao local'
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
+	const [isAuthenticated, setIsAuthenticated] = useState(true) // Simplified for logout logic
+	const [currentUser, setCurrentUser] = useState(user)
 
 	const handleLogoutPress = async () => {
 		setIsLoggingOut(true)
 		try {
-			await onLogout()
+			await logout()
+			// RootNavigator will automatically switch to AuthStack when isAuthenticated becomes false
+			// but since we are managing auth state in GuaraVivoApp, we need to trigger that.
+			// For now, we'll rely on the App's state management if it's provided via context or similar.
+			// Since we are not using a global state manager yet, we'll let the App handle it 
+			// if we had a way to call a global logout.
 		} finally {
 			setIsLoggingOut(false)
 		}
+	}
+
 	}
 
 	return (
@@ -45,7 +56,7 @@ export function ProfileScreen({
 					<Text style={appStyles.profileHeroEmail}>{displayEmail}</Text>
 
 					<Pressable
-						onPress={() => onNavigate('edit-profile')}
+						onPress={() => navigation.navigate('EditProfile')}
 						style={appStyles.profileEditButton}
 					>
 						<Text style={appStyles.profileEditButtonText}>EDITAR</Text>
@@ -56,7 +67,7 @@ export function ProfileScreen({
 					<Text style={appStyles.profileMenuTitle}>CONFIGURACOES</Text>
 
 					<Pressable
-						onPress={() => onNavigate('change-password')}
+						onPress={() => navigation.navigate('ChangePassword')}
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons name="lock-closed-outline" size={19} color="#125ED0" />
@@ -64,7 +75,7 @@ export function ProfileScreen({
 					</Pressable>
 
 					<Pressable
-						onPress={() => onNavigate('notifications')}
+						onPress={() => navigation.navigate('Notifications')}
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons name="notifications-outline" size={19} color="#125ED0" />
@@ -72,7 +83,7 @@ export function ProfileScreen({
 					</Pressable>
 
 					<Pressable
-						onPress={() => onNavigate('about')}
+						onPress={() => navigation.navigate('About')}
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons
