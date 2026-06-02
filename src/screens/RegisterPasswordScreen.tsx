@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
+import type { AuthStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+
+type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
 export function RegisterPasswordScreen({
-	onNavigate,
 	onSuccess,
 }: {
-	onNavigate: (screen: ScreenId) => void
 	onSuccess: () => void
 }) {
+	const navigation = useNavigation<NavigationProp>()
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
@@ -42,7 +45,7 @@ export function RegisterPasswordScreen({
 		}
 
 		onSuccess()
-		onNavigate('home')
+		// Navigation is now handled by RootNavigator reacting to isAuthenticated
 	}
 
 	return (
@@ -54,7 +57,7 @@ export function RegisterPasswordScreen({
 			>
 				<View style={appStyles.registerHeaderRow}>
 					<Pressable
-						onPress={() => onNavigate('register-email')}
+						onPress={() => navigation.goBack()}
 						style={appStyles.registerBackButton}
 					>
 						<Ionicons name="chevron-back" size={24} color="#1A1A1A" />

@@ -8,21 +8,24 @@ import {
 	View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { login } from '../services/authService'
 import { appStyles } from '../styles/appStyles'
 import type { UserRead } from '../types/api'
-import type { ScreenId } from '../types/navigation'
+import type { AuthStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+
+type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
 export function LoginScreen({
-	onNavigate,
 	onSuccess,
 }: {
-	onNavigate: (screen: ScreenId) => void
 	onSuccess: (user: UserRead) => void
 }) {
+	const navigation = useNavigation<NavigationProp>()
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
@@ -49,7 +52,7 @@ export function LoginScreen({
 			setIsLoading(true)
 			const response = await login(email.trim(), password)
 			onSuccess(response.user)
-			onNavigate('home')
+			// Navigation is now handled by RootNavigator reacting to isAuthenticated
 		} catch {
 			showErrorFeedback('Falha no login', 'Confira e-mail e senha e tente novamente.')
 		} finally {
@@ -66,7 +69,7 @@ export function LoginScreen({
 			>
 				<View style={appStyles.loginHeaderRow}>
 					<Pressable
-						onPress={() => onNavigate('welcome')}
+						onPress={() => navigation.goBack()}
 						hitSlop={10}
 						style={appStyles.loginBackButton}
 					>

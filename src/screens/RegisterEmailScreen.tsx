@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
-import type { ScreenId } from '../types/navigation'
+import type { AuthStackParamList } from '../types/navigation'
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
-export function RegisterEmailScreen({
-	onNavigate,
-}: {
-	onNavigate: (screen: ScreenId) => void
-}) {
+type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
+
+export function RegisterEmailScreen() {
+	const navigation = useNavigation<NavigationProp>()
 	const [email, setEmail] = useState('')
 	const [feedback, setFeedback] = useState<{
 		title: string
@@ -26,12 +27,13 @@ export function RegisterEmailScreen({
 				keyboardShouldPersistTaps="handled"
 			>
 				<View style={appStyles.registerHeaderRow}>
-					<Pressable
-						onPress={() => onNavigate('welcome')}
-						style={appStyles.registerBackButton}
-					>
-						<Ionicons name="chevron-back" size={24} color="#1A1A1A" />
-					</Pressable>
+						<Pressable
+							onPress={() => navigation.goBack()}
+							style={appStyles.registerBackButton}
+						>
+							<Ionicons name="chevron-back" size={24} color="#1A1A1A" />
+						</Pressable>
+
 					<Text style={appStyles.registerHeaderTitle}>Crie sua conta</Text>
 				</View>
 
@@ -50,21 +52,22 @@ export function RegisterEmailScreen({
 				</View>
 
 				<View style={appStyles.authButtonWrap}>
-					<ActionButton
-						title="CONTINUAR"
-						onPress={() => {
-							if (!email) {
-								setFeedback({
-									title: 'Campo obrigatorio',
-									message: 'Informe um e-mail para continuar.',
-								})
-								return
-							}
-							onNavigate('register-password')
-						}}
-						containerStyle={appStyles.authPrimaryButton}
-						textStyle={appStyles.authPrimaryButtonText}
-					/>
+						<ActionButton
+							title="CONTINUAR"
+							onPress={() => {
+								if (!email) {
+									setFeedback({
+										title: 'Campo obrigatorio',
+										message: 'Informe um e-mail para continuar.',
+									})
+									return
+								}
+								navigation.navigate('RegisterPassword')
+							}}
+							containerStyle={appStyles.authPrimaryButton}
+							textStyle={appStyles.authPrimaryButtonText}
+						/>
+
 				</View>
 			</ScrollView>
 
