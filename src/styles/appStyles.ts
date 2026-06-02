@@ -93,6 +93,9 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		width: 300,
 		height: 240,
 	},
+	splashLoadingIndicator: {
+		marginTop: spacing.lg,
+	},
 	welcomeLogo: {
 		width: '80%',
 		maxWidth: 320,

@@ -6,6 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { colors } from './constants/theme'
 import { restoreSession } from './services/authService'
 import { RootNavigator } from './navigation/RootNavigator'
+import { SplashScreen } from './screens/SplashScreen'
 import { appStyles } from './styles/appStyles'
 import type { UserRead } from './types/api'
 
@@ -50,10 +51,14 @@ export default function GuaraVivoApp() {
 	}
 
 	const renderScreen = () => {
+		if (!isSessionReady) {
+			return <SplashScreen isLoading />
+		}
+
 		return (
 			<NavigationContainer>
 				<RootNavigator
-					isAuthenticated={isSessionReady && isAuthenticated}
+					isAuthenticated={isAuthenticated}
 					currentUser={currentUser}
 					onAuthSuccess={handleAuthSuccess}
 					onLogoutSuccess={handleLogoutSuccess}
