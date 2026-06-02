@@ -194,20 +194,20 @@ export function MapLibreMapView({
 	const zoneCircles = useMemo(() => visibleZones.map((zone) => {
 		const hasSelectedZone = selectedZoneId !== null && selectedZoneId !== undefined
 		const selected = zone.id === selectedZoneId
-		const circleColor = hasSelectedZone
-			? selected
-				? `${colors.secondaryLight}66`
-				: 'rgba(107, 114, 128, 0.18)'
-			: zone.type === 'nest'
-				? '#2f6ee43a'
-				: '#e5383556'
-		const circleStrokeColor = hasSelectedZone
-			? selected
-				? colors.secondaryLight
-				: 'rgba(107, 114, 128, 0.36)'
-			: zone.type === 'nest'
-				? 'rgba(47, 111, 228, 0.4)'
-				: 'rgba(229, 57, 53, 0.4)'
+		
+		let circleColor: string
+		let circleStrokeColor: string
+
+		if (!hasSelectedZone) {
+			circleColor = zone.type === 'nest' ? '#2f6ee43a' : '#e5383556'
+			circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
+		} else if (selected) {
+			circleColor = zone.type === 'nest' ? '#2f6ee466' : '#e5383566'
+			circleStrokeColor = zone.type === 'nest' ? '#2f6ee4' : '#e53835'
+		} else {
+			circleColor = 'rgba(107, 114, 128, 0.18)'
+			circleStrokeColor = 'rgba(107, 114, 128, 0.36)'
+		}
 
 		return (
 			<Circle

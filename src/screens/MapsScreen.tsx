@@ -296,7 +296,7 @@ export function MapsScreen({
 							{isReloading ? (
 								<ActivityIndicator size="small" color="#FFFFFF" />
 							) : (
-								<Ionicons name="refresh" size={22} color="#FFFFFF" />
+								<Ionicons name="refresh" size={18} color="#FFFFFF" />
 							)}
 						</Pressable>
 					</View>
