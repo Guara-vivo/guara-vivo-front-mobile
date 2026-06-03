@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import {
 	ActivityIndicator,
+	FlatList,
 	Image,
+	type NativeScrollEvent,
+	type NativeSyntheticEvent,
 	Pressable,
 	RefreshControl,
 	ScrollView,
@@ -42,6 +45,44 @@ export function RecordDetailScreen() {
 	const [isLoading, setIsLoading] = useState(!cachedRecord)
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+	const [activeImageIndex, setActiveImageIndex] = useState(0)
+	const [carouselWidth, setCarouselWidth] = useState(0)
+	const carouselRef = useRef<FlatList<string | null>>(null)
+	const imageCount = record?.images?.length ?? 0
+
+	useEffect(() => {
+		if (imageCount === 0) {
+			setActiveImageIndex(0)
+			return
+		}
+
+		setActiveImageIndex((current) => Math.min(current, imageCount - 1))
+	}, [imageCount])
+
+	const handleCarouselScrollEnd = (
+		event: NativeSyntheticEvent<NativeScrollEvent>,
+	) => {
+		if (carouselWidth === 0 || imageCount === 0) {
+			return
+		}
+
+		const nextIndex = Math.round(
+			event.nativeEvent.contentOffset.x / carouselWidth,
+		)
+		setActiveImageIndex(Math.min(Math.max(nextIndex, 0), imageCount - 1))
+	}
+
+	const handleCarouselArrowPress = (nextIndex: number) => {
+		if (carouselWidth === 0 || nextIndex < 0 || nextIndex >= imageCount) {
+			return
+		}
+
+		setActiveImageIndex(nextIndex)
+		carouselRef.current?.scrollToOffset({
+			offset: nextIndex * carouselWidth,
+			animated: true,
+		})
+	}
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -172,6 +213,7 @@ export function RecordDetailScreen() {
 		.filter(Boolean)
 	const imageUris = record.images ?? []
 	const imageSlots = imageUris.length
+	const carouselImages: (string | null)[] = imageSlots > 0 ? imageUris : [null]
 
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'guará' : 'guarás'}`
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
@@ -206,6 +248,97 @@ export function RecordDetailScreen() {
 						/>
 					}
 				>
+				<View style={appStyles.recordDetailCard}>
+					<View style={appStyles.recordDetailSectionTitleRow}>
+						<Ionicons name="camera-outline" size={16} color="#125ED0" />
+						<Text style={appStyles.recordDetailSectionTitle}>
+							IMAGENS ({imageSlots})
+						</Text>
+					</View>
+
+					<View
+						style={appStyles.recordDetailImageCarousel}
+						onLayout={(event) => {
+							setCarouselWidth(event.nativeEvent.layout.width)
+						}}
+					>
+						<FlatList
+							ref={carouselRef}
+							data={carouselImages}
+							style={appStyles.recordDetailCarouselList}
+							horizontal
+							pagingEnabled
+							initialNumToRender={1}
+							showsHorizontalScrollIndicator={false}
+							bounces={imageSlots > 1}
+							onMomentumScrollEnd={handleCarouselScrollEnd}
+							keyExtractor={(imageUri, index) => `${imageUri ?? 'img'}-${index}`}
+							renderItem={({ item: imageUri, index }) => (
+								<View
+									style={[
+										appStyles.recordDetailCarouselSlide,
+										{ width: carouselWidth || 1 },
+									]}
+								>
+									{imageUri ? (
+										<Pressable
+											onPress={() => setSelectedImageIndex(index)}
+											style={appStyles.recordDetailCarouselImagePressable}
+										>
+											<Image
+												source={{ uri: imageUri }}
+												style={appStyles.recordDetailCarouselImage}
+												resizeMode="cover"
+											/>
+										</Pressable>
+									) : (
+										<View style={appStyles.recordDetailCarouselPlaceholder}>
+											<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
+											<Text style={appStyles.recordDetailEmptyText}>
+												Nenhuma imagem disponivel.
+											</Text>
+										</View>
+									)}
+								</View>
+							)}
+						/>
+
+						{imageSlots > 1 && activeImageIndex > 0 && (
+							<Pressable
+								onPress={() => handleCarouselArrowPress(activeImageIndex - 1)}
+								accessibilityRole="button"
+								accessibilityLabel="Imagem anterior"
+								style={[
+									appStyles.recordDetailCarouselArrow,
+									appStyles.recordDetailCarouselArrowLeft,
+								]}
+							>
+								<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+							</Pressable>
+						)}
+
+						{imageSlots > 1 && activeImageIndex < imageSlots - 1 && (
+							<Pressable
+								onPress={() => handleCarouselArrowPress(activeImageIndex + 1)}
+								accessibilityRole="button"
+								accessibilityLabel="Proxima imagem"
+								style={[
+									appStyles.recordDetailCarouselArrow,
+									appStyles.recordDetailCarouselArrowRight,
+								]}
+							>
+								<Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+							</Pressable>
+						)}
+					</View>
+
+					{imageSlots > 0 && (
+						<Text style={appStyles.recordDetailCarouselCounter}>
+							Imagem {activeImageIndex + 1} de {imageSlots}
+						</Text>
+					)}
+				</View>
+
 				<View style={appStyles.recordDetailCard}>
 					<View style={appStyles.recordDetailHeaderRow}>
 						<Text
@@ -273,41 +406,6 @@ export function RecordDetailScreen() {
 					</View>
 				</View>
 
-				<View style={appStyles.recordDetailCard}>
-					<View style={appStyles.recordDetailSectionTitleRow}>
-						<Ionicons name="camera-outline" size={16} color="#125ED0" />
-						<Text style={appStyles.recordDetailSectionTitle}>
-							IMAGENS ({imageSlots})
-						</Text>
-					</View>
-
-					<View style={appStyles.recordDetailImageGrid}>
-						{Array.from({ length: imageSlots }).map((_, index) => {
-							const imageUri = imageUris[index]
-
-							return imageUri ? (
-								<Pressable
-									key={imageUri}
-									onPress={() => setSelectedImageIndex(index)}
-									style={appStyles.recordDetailImagePressable}
-								>
-								<Image
-									source={{ uri: imageUri }}
-									style={appStyles.recordDetailImage}
-									resizeMode="cover"
-								/>
-								</Pressable>
-							) : (
-								<View
-									key={`img-${index}`}
-									style={appStyles.recordDetailImagePlaceholder}
-								>
-									<Ionicons name="camera-outline" size={26} color="#8FB0F4" />
-								</View>
-							)
-						})}
-					</View>
-					</View>
 				</ScrollView>
 			</View>
 

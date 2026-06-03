@@ -1664,6 +1664,61 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	recordDetailImageCarousel: {
+		width: '100%',
+		aspectRatio: 1.05,
+		overflow: 'hidden',
+		position: 'relative',
+	},
+	recordDetailCarouselList: {
+		width: '100%',
+		height: '100%',
+	},
+	recordDetailCarouselSlide: {
+		height: '100%',
+	},
+	recordDetailCarouselImagePressable: {
+		width: '100%',
+		height: '100%',
+		borderRadius: cornerRadius,
+		backgroundColor: colors.border,
+		overflow: 'hidden',
+	},
+	recordDetailCarouselImage: {
+		width: '100%',
+		height: '100%',
+	},
+	recordDetailCarouselPlaceholder: {
+		width: '100%',
+		height: '100%',
+		borderRadius: cornerRadius,
+		backgroundColor: colors.border,
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: spacing.sm,
+	},
+	recordDetailCarouselCounter: {
+		color: colors.muted,
+		fontSize: 13,
+		textAlign: 'center',
+	},
+	recordDetailCarouselArrow: {
+		position: 'absolute',
+		top: '50%',
+		width: 42,
+		height: 42,
+		borderRadius: 21,
+		backgroundColor: 'rgba(117, 117, 117, 0.47)',
+		alignItems: 'center',
+		justifyContent: 'center',
+		transform: [{ translateY: -21 }],
+	},
+	recordDetailCarouselArrowLeft: {
+		left: 12,
+	},
+	recordDetailCarouselArrowRight: {
+		right: 12,
+	},
 	profileScreen: {
 		flex: 1,
 		backgroundColor: colors.background,
