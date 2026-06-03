@@ -1,28 +1,48 @@
-import React from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
-	Modal,
 	Pressable,
-	ScrollView,
 	Text,
-	TextInput,
 	View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import {
+	BottomSheetBackdrop,
+	BottomSheetModal,
+	BottomSheetScrollView,
+	BottomSheetTextInput,
+	type BottomSheetBackdropProps,
+} from '@gorhom/bottom-sheet'
 import { behaviorOptions } from '../constants/behaviors'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import type { HistoryFilterState } from '../hooks/useHistoryFilters'
 
-type HistoryFilterField =
-	| 'fromDate'
-	| 'toDate'
-	| 'location'
-	| 'minQuantity'
-	| 'maxQuantity'
-	| null
+type HistoryFilterSection = 'period' | 'location' | 'quantity' | 'behaviors'
+
+type SectionHeaderProps = {
+	iconName: React.ComponentProps<typeof Ionicons>['name']
+	title: string
+	isOpen: boolean
+	onPress: () => void
+}
+
+function SectionHeader({ iconName, title, isOpen, onPress }: SectionHeaderProps) {
+	return (
+		<Pressable onPress={onPress} style={appStyles.historyFilterSectionHeader}>
+			<View style={appStyles.historyFilterSectionTitleRow}>
+				<Ionicons name={iconName} size={15} color="#F2201F" />
+				<Text style={appStyles.historyFilterSectionTitle}>{title}</Text>
+			</View>
+			<Ionicons
+				name={isOpen ? 'chevron-up' : 'chevron-down'}
+				size={18}
+				color={colors.text}
+			/>
+		</Pressable>
+	)
+}
 
 export function HistoryFilterModal({
-	visible,
 	draftFilters,
 	setDraftFilters,
 	toggleBehaviorFilter,
@@ -30,7 +50,6 @@ export function HistoryFilterModal({
 	clearFilters,
 	onClose,
 }: {
-	visible: boolean
 	draftFilters: HistoryFilterState
 	setDraftFilters: React.Dispatch<React.SetStateAction<HistoryFilterState>>
 	toggleBehaviorFilter: (behavior: string) => void
@@ -38,50 +57,80 @@ export function HistoryFilterModal({
 	clearFilters: () => void
 	onClose: () => void
 }) {
-	const [focusedField, setFocusedField] =
-		React.useState<HistoryFilterField>(null)
+	const bottomSheetRef = useRef<BottomSheetModal>(null)
+	const [openSections, setOpenSections] = useState<Record<HistoryFilterSection, boolean>>({
+		period: false,
+		location: false,
+		quantity: false,
+		behaviors: false,
+	})
+
+	useEffect(() => {
+		bottomSheetRef.current?.present()
+	}, [])
+
+	const toggleSection = (section: HistoryFilterSection) => {
+		setOpenSections((current) => ({
+			...current,
+			[section]: !current[section],
+		}))
+	}
+
+	const renderBackdrop = useCallback(
+		(props: BottomSheetBackdropProps) => (
+			<BottomSheetBackdrop
+				{...props}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.5}
+				pressBehavior="close"
+			/>
+		),
+		[],
+	)
 
 	return (
-		<Modal
-			visible={visible}
-			transparent
-			animationType="fade"
-			onRequestClose={onClose}
+		<BottomSheetModal
+			ref={bottomSheetRef}
+			snapPoints={['88%']}
+			enableDynamicSizing={false}
+			enablePanDownToClose
+			stackBehavior="push"
+			backdropComponent={renderBackdrop}
+			backgroundStyle={appStyles.historyBottomSheetBackground}
+			handleIndicatorStyle={appStyles.historyBottomSheetIndicator}
+			onChange={(index) => {
+				if (index === -1) {
+					onClose()
+				}
+			}}
 		>
-			<View style={appStyles.historyModalBackdrop}>
-				<View style={appStyles.historyModalCard}>
-					<View style={appStyles.historyModalHeader}>
-						<Text style={appStyles.historyModalTitle}>FILTROS</Text>
-						<Pressable onPress={onClose}>
-							<Ionicons name="close" size={22} color="#1A1A1A" />
-						</Pressable>
-					</View>
+			<View style={appStyles.historyModalHeader}>
+				<Text style={appStyles.historyModalTitle}>FILTROS</Text>
+			</View>
 
-					<ScrollView contentContainerStyle={appStyles.historyModalContent}>
+			<BottomSheetScrollView
+				contentContainerStyle={appStyles.historyModalContent}
+				keyboardShouldPersistTaps="handled"
+			>
 						<View style={appStyles.historyFilterSection}>
-							<View style={appStyles.historyFilterSectionTitleRow}>
-								<Ionicons name="calendar-outline" size={15} color="#F2201F" />
-								<Text style={appStyles.historyFilterSectionTitle}>PERÍODO</Text>
-							</View>
+							<SectionHeader
+								iconName="calendar-outline"
+								title="PERÍODO"
+								isOpen={openSections.period}
+								onPress={() => toggleSection('period')}
+							/>
 
-							<View style={appStyles.historyDateLabelsRow}>
-								<Text style={appStyles.historySmallLabel}>De</Text>
-								<Text style={appStyles.historySmallLabel}>Até</Text>
-							</View>
+							{openSections.period ? (
+								<>
+									<View style={appStyles.historyDateLabelsRow}>
+										<Text style={appStyles.historySmallLabel}>De</Text>
+										<Text style={appStyles.historySmallLabel}>Até</Text>
+									</View>
 
-							<View style={appStyles.historyDateRow}>
-								<View
-									style={[
-										appStyles.historyDateInputWrap,
-										{
-											borderColor:
-												focusedField === 'fromDate'
-													? colors.secondaryLight
-													: colors.border,
-										},
-									]}
-								>
-									<TextInput
+					<View style={appStyles.historyDateRow}>
+								<View style={appStyles.historyDateInputWrap}>
+									<BottomSheetTextInput
 										value={draftFilters.fromDate}
 										onChangeText={(value) =>
 											setDraftFilters((current: HistoryFilterState) => ({
@@ -89,8 +138,6 @@ export function HistoryFilterModal({
 												fromDate: value,
 											}))
 										}
-										onFocus={() => setFocusedField('fromDate')}
-										onBlur={() => setFocusedField(null)}
 										placeholder="dd/mm/aaaa"
 										placeholderTextColor="#6B6B74"
 										style={appStyles.historyDateInput}
@@ -98,18 +145,8 @@ export function HistoryFilterModal({
 									<Ionicons name="calendar-outline" size={14} color="#1A1A1A" />
 								</View>
 
-								<View
-									style={[
-										appStyles.historyDateInputWrap,
-										{
-											borderColor:
-												focusedField === 'toDate'
-													? colors.secondaryLight
-													: colors.border,
-										},
-									]}
-								>
-									<TextInput
+								<View style={appStyles.historyDateInputWrap}>
+									<BottomSheetTextInput
 										value={draftFilters.toDate}
 										onChangeText={(value) =>
 											setDraftFilters((current: HistoryFilterState) => ({
@@ -117,26 +154,27 @@ export function HistoryFilterModal({
 												toDate: value,
 											}))
 										}
-										onFocus={() => setFocusedField('toDate')}
-										onBlur={() => setFocusedField(null)}
 										placeholder="dd/mm/aaaa"
 										placeholderTextColor="#6B6B74"
 										style={appStyles.historyDateInput}
 									/>
 									<Ionicons name="calendar-outline" size={14} color="#1A1A1A" />
 								</View>
-							</View>
+									</View>
+								</>
+							) : null}
 						</View>
 
 						<View style={appStyles.historyFilterSection}>
-							<View style={appStyles.historyFilterSectionTitleRow}>
-								<Ionicons name="location-outline" size={15} color="#F2201F" />
-								<Text style={appStyles.historyFilterSectionTitle}>
-									LOCALIZAÇÃO
-								</Text>
-							</View>
+							<SectionHeader
+								iconName="location-outline"
+								title="LOCALIZAÇÃO"
+								isOpen={openSections.location}
+								onPress={() => toggleSection('location')}
+							/>
 
-							<TextInput
+							{openSections.location ? (
+							<BottomSheetTextInput
 								value={draftFilters.location}
 								onChangeText={(value) =>
 									setDraftFilters((current: HistoryFilterState) => ({
@@ -144,37 +182,30 @@ export function HistoryFilterModal({
 										location: value,
 									}))
 								}
-								onFocus={() => setFocusedField('location')}
-								onBlur={() => setFocusedField(null)}
 								placeholder="Ex: -24.4959, -47.8431"
 								placeholderTextColor="#8E8E96"
-								style={[
-									appStyles.historySingleInput,
-									{
-										borderColor:
-											focusedField === 'location'
-												? colors.secondaryLight
-												: colors.border,
-									},
-								]}
+								style={appStyles.historySingleInput}
 							/>
+							) : null}
 						</View>
 
 						<View style={appStyles.historyFilterSection}>
-							<View style={appStyles.historyFilterSectionTitleRow}>
-								<Ionicons name="people-outline" size={15} color="#F2201F" />
-								<Text style={appStyles.historyFilterSectionTitle}>
-									QUANTIDADE DE INDIVÍDUOS
-								</Text>
-							</View>
+							<SectionHeader
+								iconName="people-outline"
+								title="QUANTIDADE DE INDIVÍDUOS"
+								isOpen={openSections.quantity}
+								onPress={() => toggleSection('quantity')}
+							/>
 
-							<View style={appStyles.historyDateLabelsRow}>
-								<Text style={appStyles.historySmallLabel}>Mínimo</Text>
-								<Text style={appStyles.historySmallLabel}>Máximo</Text>
-							</View>
+							{openSections.quantity ? (
+								<>
+									<View style={appStyles.historyDateLabelsRow}>
+										<Text style={appStyles.historySmallLabel}>Mínimo</Text>
+										<Text style={appStyles.historySmallLabel}>Máximo</Text>
+									</View>
 
-							<View style={appStyles.historyDateRow}>
-								<TextInput
+									<View style={appStyles.historyDateRow}>
+								<BottomSheetTextInput
 									value={draftFilters.minQuantity}
 									onChangeText={(value) =>
 										setDraftFilters((current: HistoryFilterState) => ({
@@ -182,23 +213,13 @@ export function HistoryFilterModal({
 											minQuantity: value,
 										}))
 									}
-									onFocus={() => setFocusedField('minQuantity')}
-									onBlur={() => setFocusedField(null)}
 									placeholder="Min"
 									placeholderTextColor="#6B6B74"
 									keyboardType="numeric"
-									style={[
-										appStyles.historyHalfInput,
-										{
-											borderColor:
-												focusedField === 'minQuantity'
-													? colors.secondaryLight
-													: colors.border,
-										},
-									]}
+									style={appStyles.historyHalfInput}
 								/>
 
-								<TextInput
+								<BottomSheetTextInput
 									value={draftFilters.maxQuantity}
 									onChangeText={(value) =>
 										setDraftFilters((current: HistoryFilterState) => ({
@@ -206,30 +227,26 @@ export function HistoryFilterModal({
 											maxQuantity: value,
 										}))
 									}
-									onFocus={() => setFocusedField('maxQuantity')}
-									onBlur={() => setFocusedField(null)}
 									placeholder="Max"
 									placeholderTextColor="#6B6B74"
 									keyboardType="numeric"
-									style={[
-										appStyles.historyHalfInput,
-										{
-											borderColor:
-												focusedField === 'maxQuantity'
-													? colors.secondaryLight
-													: colors.border,
-										},
-									]}
+									style={appStyles.historyHalfInput}
 								/>
-							</View>
+									</View>
+								</>
+							) : null}
 						</View>
 
 						<View style={appStyles.historyFilterSection}>
-							<Text style={appStyles.historyFilterSectionTitle}>
-								COMPORTAMENTOS
-							</Text>
+							<SectionHeader
+								iconName="walk-outline"
+								title="COMPORTAMENTOS"
+								isOpen={openSections.behaviors}
+								onPress={() => toggleSection('behaviors')}
+							/>
 
-							<View style={appStyles.historyBehaviorList}>
+							{openSections.behaviors ? (
+								<View style={appStyles.historyBehaviorList}>
 								{behaviorOptions.map((behavior) => {
 									const active = draftFilters.behaviors.includes(behavior)
 
@@ -260,8 +277,9 @@ export function HistoryFilterModal({
 									)
 								})}
 							</View>
+							) : null}
 						</View>
-					</ScrollView>
+					</BottomSheetScrollView>
 
 					<View style={appStyles.historyModalActions}>
 						<Pressable
@@ -280,9 +298,7 @@ export function HistoryFilterModal({
 							</Text>
 						</Pressable>
 					</View>
-				</View>
-			</View>
-		</Modal>
+		</BottomSheetModal>
 	)
 }
 

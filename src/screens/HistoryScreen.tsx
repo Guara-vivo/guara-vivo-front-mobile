@@ -205,15 +205,16 @@ export function HistoryScreen() {
 			</View>
 
 
-			<HistoryFilterModal
-				visible={isFilterOpen}
-				draftFilters={draftFilters}
-				setDraftFilters={setDraftFilters}
-				toggleBehaviorFilter={toggleBehaviorFilter}
-				applyFilters={applyFilters}
-				clearFilters={clearFilters}
-				onClose={() => setIsFilterOpen(false)}
-			/>
+			{isFilterOpen ? (
+				<HistoryFilterModal
+					draftFilters={draftFilters}
+					setDraftFilters={setDraftFilters}
+					toggleBehaviorFilter={toggleBehaviorFilter}
+					applyFilters={applyFilters}
+					clearFilters={clearFilters}
+					onClose={() => setIsFilterOpen(false)}
+				/>
+			) : null}
 		</View>
 	)
 }
