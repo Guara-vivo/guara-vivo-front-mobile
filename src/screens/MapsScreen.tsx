@@ -125,7 +125,9 @@ export function MapsScreen() {
 	const handleMapPress = (lat: number, lng: number) => {
 		if (!selectionMode) return
 		setSelectedCoords({ lat, lng })
-		setShowZoneModal(true)
+		setTimeout(() => {
+			setShowZoneModal(true)
+		}, 50)
 	}
 
 	const handleZonePress = (zone: MapZoneRead) => {
@@ -356,18 +358,20 @@ export function MapsScreen() {
 			</ScreenCard>
 			</View>
 
-		<MapZoneSelectionModal
-			visible={showZoneModal}
-			onConfirm={handleCreateZone}
-			onCancel={handleCancelModal}
-			isSubmitting={creatingZone}
-		/>
-		<MapZoneDeleteConfirmSheet
-			visible={showDeleteConfirm}
-			onConfirm={handleDeleteZone}
-			onCancel={handleCloseDeleteConfirm}
-			isDeleting={deletingZone}
-		/>
+		{showZoneModal && (
+			<MapZoneSelectionModal
+				onConfirm={handleCreateZone}
+				onCancel={handleCancelModal}
+				isSubmitting={creatingZone}
+			/>
+		)}
+		{showDeleteConfirm && (
+			<MapZoneDeleteConfirmSheet
+				onConfirm={handleDeleteZone}
+				onCancel={handleCloseDeleteConfirm}
+				isDeleting={deletingZone}
+			/>
+		)}
 		</View>
 	)
 }

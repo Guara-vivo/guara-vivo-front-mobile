@@ -4,14 +4,12 @@ import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/
 import { appStyles } from '../styles/appStyles'
 
 interface MapZoneDeleteConfirmSheetProps {
-	visible: boolean
 	onConfirm: () => void
 	onCancel: () => void
 	isDeleting: boolean
 }
 
 export function MapZoneDeleteConfirmSheet({
-	visible,
 	onConfirm,
 	onCancel,
 	isDeleting,
@@ -19,12 +17,8 @@ export function MapZoneDeleteConfirmSheet({
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
 
 	useEffect(() => {
-		if (visible) {
-			bottomSheetRef.current?.present()
-		} else {
-			bottomSheetRef.current?.dismiss()
-		}
-	}, [visible])
+		bottomSheetRef.current?.present()
+	}, [])
 
 	const renderBackdrop = useCallback(
 		(props: any) => (

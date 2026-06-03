@@ -5,17 +5,14 @@ import Slider from '@react-native-community/slider'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type { MapZoneType } from '../types/api'
 import { appStyles } from '../styles/appStyles'
-import { colors } from '../constants/theme'
 
 interface MapZoneSelectionModalProps {
-	visible: boolean
 	onConfirm: (type: MapZoneType, radius_meters: number) => void
 	onCancel: () => void
 	isSubmitting?: boolean
 }
 
 export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
-	visible,
 	onConfirm,
 	onCancel,
 	isSubmitting = false,
@@ -25,12 +22,8 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
 
 	useEffect(() => {
-		if (visible) {
-			bottomSheetRef.current?.present()
-		} else {
-			bottomSheetRef.current?.dismiss()
-		}
-	}, [visible])
+		bottomSheetRef.current?.present()
+	}, [])
 
 	const handleConfirm = () => {
 		onConfirm(zoneType, radius)
@@ -58,19 +51,20 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 	return (
 		<BottomSheetModal
 			ref={bottomSheetRef}
-			snapPoints={['50%']}
+			snapPoints={['58%']}
 			enableDynamicSizing={false}
 			enablePanDownToClose={!isSubmitting}
+			stackBehavior="push"
 			onChange={(index) => {
-				if (index === -1 && visible) {
+				if (index === -1) {
 					onCancel()
 				}
 			}}
 			backdropComponent={renderBackdrop}
-			backgroundStyle={appStyles.zoneModalContent}
-			handleIndicatorStyle={{ backgroundColor: colors.border }}
+			backgroundStyle={appStyles.zoneBottomSheetBackground}
+			handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
 		>
-			<BottomSheetView style={[appStyles.zoneModalContent, { width: '100%', maxWidth: '100%', marginHorizontal: 0 }]}>
+			<BottomSheetView style={appStyles.zoneBottomSheetContent}>
 				<Text style={appStyles.zoneModalTitle}>Adicionar Área</Text>
 
 				<Text style={appStyles.zoneModalLabel}>Tipo</Text>
