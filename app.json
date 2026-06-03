@@ -11,9 +11,12 @@
     "ios": {
       "supportsTablet": true
     },
+    "icon": "./src/assets/images/icon.png",
     "android": {
+      "package": "com.guaravivo.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E8F1FC"
+        "foregroundImage": "./src/assets/images/adaptive_icon.png",
+        "backgroundColor": "#F1F1F1"
       }
     },
     "plugins": [
