@@ -2209,6 +2209,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		overflow: 'hidden',
+		position: 'relative',
 	},
 	recordImageModalImage: {
 		width: '100%',
@@ -2220,6 +2221,23 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.background,
+	},
+	recordImageModalArrow: {
+		position: 'absolute',
+		top: '50%',
+		width: 42,
+		height: 42,
+		borderRadius: 21,
+		backgroundColor: 'rgba(117, 117, 117, 0.47)',
+		alignItems: 'center',
+		justifyContent: 'center',
+		transform: [{ translateY: -21 }],
+	},
+	recordImageModalArrowLeft: {
+		left: 12,
+	},
+	recordImageModalArrowRight: {
+		right: 12,
 	},
 	recordImageModalIndexBadge: {
 		alignSelf: 'center',

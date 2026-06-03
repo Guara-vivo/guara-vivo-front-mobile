@@ -20,6 +20,7 @@ interface RecordImageDetailModalProps {
 	imageUri: string
 	totalImages: number
 	onClose: () => void
+	onImageChange?: (nextIndex: number) => void
 	record: RecordDetailItem
 }
 
@@ -37,20 +38,40 @@ export function RecordImageDetailModal({
 	imageUri,
 	totalImages,
 	onClose,
+	onImageChange,
 	record,
 }: RecordImageDetailModalProps) {
 	const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null)
 	const [containerSize, setContainerSize] = useState<{ width: number; height: number } | null>(null)
 
 	useEffect(() => {
+		let mounted = true
+		setImageSize(null)
+
 		if (imageUri) {
-			Image.getSize(imageUri, (width, height) => {
-				setImageSize({ width, height })
-			})
+			Image.getSize(
+				imageUri,
+				(width, height) => {
+					if (mounted) {
+						setImageSize({ width, height })
+					}
+				},
+				() => {
+					if (mounted) {
+						setImageSize(null)
+					}
+				},
+			)
+		}
+
+		return () => {
+			mounted = false
 		}
 	}, [imageUri])
 
 	const imageAnalysis = record.image_analyses?.[imageIndex]
+	const canGoPrevious = imageIndex > 0
+	const canGoNext = imageIndex < totalImages - 1
 	
 	// Calculate accuracy summary for all detections in this image
 	const calculateSummary = (): AccuracySummary | null => {
@@ -114,6 +135,14 @@ export function RecordImageDetailModal({
 			chick: 'Filhote',
 		}
 		return stageMap[stage.toLowerCase()] || stage
+	}
+
+	const handleImageChange = (nextIndex: number) => {
+		if (nextIndex < 0 || nextIndex >= totalImages) {
+			return
+		}
+
+		onImageChange?.(nextIndex)
 	}
 
 	return (
@@ -211,6 +240,34 @@ export function RecordImageDetailModal({
 										color="#8FB0F4"
 									/>
 								</View>
+							)}
+
+							{totalImages > 1 && canGoPrevious && onImageChange && (
+								<Pressable
+									onPress={() => handleImageChange(imageIndex - 1)}
+									accessibilityRole="button"
+									accessibilityLabel="Imagem anterior"
+									style={[
+										appStyles.recordImageModalArrow,
+										appStyles.recordImageModalArrowLeft,
+									]}
+								>
+									<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+								</Pressable>
+							)}
+
+							{totalImages > 1 && canGoNext && onImageChange && (
+								<Pressable
+									onPress={() => handleImageChange(imageIndex + 1)}
+									accessibilityRole="button"
+									accessibilityLabel="Proxima imagem"
+									style={[
+										appStyles.recordImageModalArrow,
+										appStyles.recordImageModalArrowRight,
+									]}
+								>
+									<Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+								</Pressable>
 							)}
 						</View>
 

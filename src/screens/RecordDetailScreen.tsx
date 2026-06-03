@@ -416,6 +416,7 @@ export function RecordDetailScreen() {
 					imageUri={record.images?.[selectedImageIndex] ?? ''}
 					totalImages={imageSlots}
 					onClose={() => setSelectedImageIndex(null)}
+					onImageChange={setSelectedImageIndex}
 					record={record}
 				/>
 			)}
