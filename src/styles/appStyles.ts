@@ -2381,11 +2381,19 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 	},
 	// Zone Modal Styles
-	zoneModalOverlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		justifyContent: 'center',
-		alignItems: 'center',
+	zoneBottomSheetBackground: {
+		backgroundColor: colors.surface,
+		borderTopLeftRadius: 24,
+		borderTopRightRadius: 24,
+	} as ViewStyle,
+	zoneBottomSheetIndicator: {
+		backgroundColor: colors.border,
+		width: 42,
+	} as ViewStyle,
+	zoneBottomSheetContent: {
+		paddingHorizontal: spacing.lg,
+		paddingTop: spacing.sm,
+		paddingBottom: spacing.xl,
 	} as ViewStyle,
 	zoneModalContent: {
 		backgroundColor: colors.surface,
