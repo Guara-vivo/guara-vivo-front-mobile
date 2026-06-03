@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
+import { MapZoneDeleteConfirmSheet } from '../components/MapZoneDeleteConfirmSheet'
+
 import { appStyles } from '../styles/appStyles'
 import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { MapLayerId } from '../config/map'
@@ -360,42 +362,12 @@ export function MapsScreen() {
 			onCancel={handleCancelModal}
 			isSubmitting={creatingZone}
 		/>
-		<Modal visible={showDeleteConfirm} transparent animationType="fade">
-			<View style={appStyles.zoneModalOverlay}>
-				<View style={appStyles.zoneDeleteConfirmContent}>
-					<Text style={appStyles.zoneModalTitle}>Excluir área?</Text>
-					<Text style={appStyles.zoneDeleteConfirmText}>
-						Essa ação não pode ser desfeita.
-					</Text>
-					<View style={appStyles.zoneModalButtonContainer}>
-						<Pressable
-							style={[
-								appStyles.zoneDeleteConfirmCancelButton,
-								deletingZone && appStyles.zoneModalDisabled,
-							]}
-							onPress={handleCloseDeleteConfirm}
-							disabled={deletingZone}
-						>
-							<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
-						</Pressable>
-						<Pressable
-							style={[
-								appStyles.zoneDeleteConfirmButton,
-								deletingZone && appStyles.zoneModalConfirmButtonDisabled,
-							]}
-							onPress={handleDeleteZone}
-							disabled={deletingZone}
-						>
-							{deletingZone ? (
-								<ActivityIndicator size="small" color="#FFFFFF" />
-							) : (
-								<Text style={appStyles.zoneDeleteConfirmButtonText}>Excluir</Text>
-							)}
-						</Pressable>
-					</View>
-				</View>
-			</View>
-		</Modal>
+		<MapZoneDeleteConfirmSheet
+			visible={showDeleteConfirm}
+			onConfirm={handleDeleteZone}
+			onCancel={handleCloseDeleteConfirm}
+			isDeleting={deletingZone}
+		/>
 		</View>
 	)
 }
