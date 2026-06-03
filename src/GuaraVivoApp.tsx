@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { PortalProvider } from '@gorhom/portal'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { NavigationContainer } from '@react-navigation/native'
+
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { colors } from './constants/theme'
 import { restoreSession } from './services/authService'
@@ -75,11 +79,20 @@ export default function GuaraVivoApp() {
 	]
 
 	return (
-		<ErrorBoundary>
-			<SafeAreaView style={safeAreaStyle}>
-				<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />
-				{renderScreen()}
-			</SafeAreaView>
-		</ErrorBoundary>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<SafeAreaProvider>
+				<PortalProvider>
+					<BottomSheetModalProvider>
+						<ErrorBoundary>
+							<SafeAreaView style={safeAreaStyle}>
+								<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />
+								{renderScreen()}
+							</SafeAreaView>
+						</ErrorBoundary>
+					</BottomSheetModalProvider>
+				</PortalProvider>
+			</SafeAreaProvider>
+		</GestureHandlerRootView>
 	)
+
 }
