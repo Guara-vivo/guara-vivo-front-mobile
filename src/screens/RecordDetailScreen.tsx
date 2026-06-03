@@ -173,7 +173,7 @@ export function RecordDetailScreen() {
 	const imageUris = record.images ?? []
 	const imageSlots = imageUris.length
 
-	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'individuo' : 'individuos'}`
+	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'guará' : 'guarás'}`
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
 	const locationLabel = formatLocationLabel(record.latitude, record.longitude)
 

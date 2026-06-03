@@ -417,7 +417,7 @@ export function RecordImageDetailModal({
 																		appStyles.recordImageModalIbisIndex
 																	}
 																>
-																	Indivíduo{' '}
+																	Guará{' '}
 																	{idx + 1}
 																</Text>
 															</View>

@@ -706,7 +706,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapSelectionInstructionText: {
 		color: colors.text,
 		fontSize: 12,
-		fontWeight: '700',
 		lineHeight: 16,
 	},
 	mapTopRightActions: {
@@ -749,7 +748,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapReloadText: {
 		color: colors.text,
 		fontSize: 10,
-		fontWeight: '700',
 	},
 	mapZoneInfoCard: {
 		position: 'absolute',
@@ -780,12 +778,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: 10,
 		textTransform: 'uppercase',
-		fontWeight: '700',
 	},
 	mapZoneInfoTitle: {
 		color: colors.secondary,
 		fontSize: 16,
-		fontWeight: '800',
 	},
 	mapZoneInfoCloseButton: {
 		width: 30,
@@ -822,7 +818,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapZoneInfoValue: {
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '800',
 	},
 	mapZoneInfoCoordinates: {
 		color: colors.muted,
@@ -982,7 +977,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
     marginLeft: spacing.md,
 		fontSize: 20,
 		lineHeight: 22,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	headerRight: {
@@ -1373,7 +1367,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyModalTitle: {
 		color: colors.secondary,
 		fontSize: 22,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	historyModalContent: {
@@ -1813,7 +1806,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	logoutOverlayText: {
 		color: colors.text,
 		fontSize: 16,
-		fontWeight: '500',
 		textAlign: 'center',
 	},
 	changePasswordCard: {
@@ -2146,7 +2138,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalTitle: {
 		color: colors.secondary,
 		fontSize: 18,
-		fontWeight: '800',
 		textTransform: 'uppercase',
 	},
 	recordImageModalContent: {
@@ -2198,7 +2189,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalSectionTitle: {
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '700',
 		textTransform: 'uppercase',
 	},
 	recordImageModalStatusBadge: {
@@ -2209,7 +2199,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalStatusText: {
 		fontSize: 13,
-		fontWeight: '600',
 		textTransform: 'uppercase',
 	},
 	recordImageModalIbisList: {
@@ -2239,7 +2228,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalIbisIndex: {
 		color: colors.text,
 		fontSize: 13,
-		fontWeight: '600',
 	},
 	recordImageModalIbisDetail: {
 		color: colors.muted,
@@ -2277,7 +2265,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalCloseButtonText: {
 		color: colors.surface,
 		fontSize: 13,
-		fontWeight: '600',
 		textTransform: 'uppercase',
 	},
 	recordDetailImagePressable: {
@@ -2312,13 +2299,11 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalAccuracyLabel: {
 		fontSize: 11,
 		color: colors.muted,
-		fontWeight: '500',
 		marginBottom: 4,
 		textAlign: 'center',
 	},
 	recordImageModalAccuracyValue: {
 		fontSize: 14,
-		fontWeight: '700',
 		color: colors.secondary,
 	},
 	recordImageModalIbisItemExpanded: {
@@ -2347,12 +2332,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalDetailLabel: {
 		fontSize: 12,
 		color: colors.muted,
-		fontWeight: '500',
 	},
 	recordImageModalDetailValue: {
 		fontSize: 12,
 		color: colors.secondary,
-		fontWeight: '600',
 	},
 	recordImageModalAccuraciesContainer: {
 		flexDirection: 'row',
@@ -2376,12 +2359,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalAccuracySmallLabel: {
 		fontSize: 10,
 		color: '#666666',
-		fontWeight: '500',
 		marginBottom: 2,
 	},
 	recordImageModalAccuracySmallValue: {
 		fontSize: 11,
-		fontWeight: '700',
 		color: '#125ED0',
 	},
 	zoneErrorBanner: {
@@ -2432,7 +2413,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	} as ViewStyle,
 	zoneModalTitle: {
 		fontSize: 18,
-		fontWeight: '700',
 		color: colors.text,
 		marginBottom: spacing.lg,
 		textAlign: 'center',
@@ -2446,7 +2426,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	} as TextStyle,
 	zoneModalLabel: {
 		fontSize: 13,
-		fontWeight: '600',
 		color: colors.text,
 		marginTop: spacing.md,
 		marginBottom: spacing.sm,
