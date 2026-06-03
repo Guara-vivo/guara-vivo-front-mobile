@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
-import { View, Text, Modal, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import Slider from '@react-native-community/slider'
+import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type { MapZoneType } from '../types/api'
 import { appStyles } from '../styles/appStyles'
+import { colors } from '../constants/theme'
 
 interface MapZoneSelectionModalProps {
 	visible: boolean
@@ -20,23 +22,56 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 }) => {
 	const [zoneType, setZoneType] = useState<MapZoneType>('feeding')
 	const [radius, setRadius] = useState(50)
+	const bottomSheetRef = useRef<BottomSheetModal>(null)
+
+	useEffect(() => {
+		if (visible) {
+			bottomSheetRef.current?.present()
+		} else {
+			bottomSheetRef.current?.dismiss()
+		}
+	}, [visible])
 
 	const handleConfirm = () => {
 		onConfirm(zoneType, radius)
 	}
 
 	const handleCancel = () => {
-		// Reset state
 		setZoneType('feeding')
 		setRadius(50)
 		onCancel()
 	}
 
+	const renderBackdrop = React.useCallback(
+		(props: any) => (
+			<BottomSheetBackdrop
+				{...props}
+				appearsOnIndex={0}
+				disappearsOnIndex={-1}
+				opacity={0.5}
+				pressBehavior={isSubmitting ? 'none' : 'close'}
+			/>
+		),
+		[isSubmitting],
+	)
+
 	return (
-		<Modal visible={visible} transparent animationType="fade">
-			<View style={appStyles.zoneModalOverlay}>
-				<View style={appStyles.zoneModalContent}>
-					<Text style={appStyles.zoneModalTitle}>Adicionar Área</Text>
+		<BottomSheetModal
+			ref={bottomSheetRef}
+			snapPoints={['50%']}
+			enableDynamicSizing={false}
+			enablePanDownToClose={!isSubmitting}
+			onChange={(index) => {
+				if (index === -1 && visible) {
+					onCancel()
+				}
+			}}
+			backdropComponent={renderBackdrop}
+			backgroundStyle={appStyles.zoneModalContent}
+			handleIndicatorStyle={{ backgroundColor: colors.border }}
+		>
+			<BottomSheetView style={[appStyles.zoneModalContent, { width: '100%', maxWidth: '100%', marginHorizontal: 0 }]}>
+				<Text style={appStyles.zoneModalTitle}>Adicionar Área</Text>
 
 				<Text style={appStyles.zoneModalLabel}>Tipo</Text>
 				<View style={appStyles.zoneSelectContainer}>
@@ -98,8 +133,7 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 						)}
 					</TouchableOpacity>
 				</View>
-				</View>
-			</View>
-		</Modal>
+			</BottomSheetView>
+		</BottomSheetModal>
 	)
 }
