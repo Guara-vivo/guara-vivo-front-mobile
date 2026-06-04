@@ -15,16 +15,14 @@ import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
 import { colors } from '../constants/theme'
+import { useRecordProgress } from '../contexts/RecordProgressContext'
 import useHistoryFilters from '../hooks/useHistoryFilters'
 import {
 	fetchRecords,
 	getCachedRecordsSnapshot,
 	isRecordsCacheFresh,
 } from '../services/recordsService'
-import {
-	subscribeRecordProgress,
-	type RecordProgressUpdate,
-} from '../services/recordProgressService'
+import type { RecordProgressUpdate } from '../services/recordProgressService'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 import type { MainTabParamList } from '../types/navigation'
@@ -63,6 +61,7 @@ function mergeProgressUpdates(
 
 export function HistoryScreen() {
 	const navigation = useNavigation<NavigationProp>()
+	const { addRecordProgressListener } = useRecordProgress()
 	const cachedRecords = getCachedRecordsSnapshot()
 	const [records, setRecords] = useState<RecordItem[]>(cachedRecords ?? [])
 	const [isLoading, setIsLoading] = useState(!cachedRecords)
@@ -119,30 +118,15 @@ export function HistoryScreen() {
 			return
 		}
 
-		let mounted = true
-		let unsubscribe: (() => void) | undefined
-
-		subscribeRecordProgress({
+		return addRecordProgressListener({
 			onSnapshot: (snapshot) => {
 				setRecords((current) => mergeProgressUpdates(current, snapshot))
 			},
 			onProgress: (progress) => {
 				setRecords((current) => mergeProgressUpdates(current, [progress]))
 			},
-		}).then((cleanup) => {
-			if (!mounted) {
-				cleanup()
-				return
-			}
-
-			unsubscribe = cleanup
 		})
-
-		return () => {
-			mounted = false
-			unsubscribe?.()
-		}
-	}, [hasActiveAnalysis])
+	}, [addRecordProgressListener, hasActiveAnalysis])
 
 
 	const handleRefresh = async () => {

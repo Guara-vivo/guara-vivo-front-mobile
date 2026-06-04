@@ -11,6 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 const MAP_REGION_DELTA = 0.01
 const CAMERA_ANIMATION_DURATION_MS = 250
+const CAMERA_STORAGE_DEBOUNCE_MS = 600
 const LOCATION_TIMEOUT_MS = 5000
 const MAP_CAMERA_STORAGE_KEY = 'guara_vivo:last_map_camera_region'
 const DEFAULT_REGION: Region = {
@@ -68,6 +69,7 @@ export function MapLibreMapView({
 }: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
+	const cameraStorageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const locationTimedOutRef = useRef(false)
 	const userMovedMapRef = useRef(false)
 	const [initialRegion, setInitialRegion] = useState<Region>(DEFAULT_REGION)
@@ -101,6 +103,27 @@ export function MapLibreMapView({
 			isMounted = false
 		}
 	}, [])
+
+	useEffect(() => {
+		return () => {
+			if (cameraStorageTimerRef.current) {
+				clearTimeout(cameraStorageTimerRef.current)
+			}
+		}
+	}, [])
+
+	const persistCameraRegion = (region: Region) => {
+		if (cameraStorageTimerRef.current) {
+			clearTimeout(cameraStorageTimerRef.current)
+		}
+
+		cameraStorageTimerRef.current = setTimeout(() => {
+			void AsyncStorage.setItem(
+				MAP_CAMERA_STORAGE_KEY,
+				JSON.stringify(region),
+			).catch(() => {})
+		}, CAMERA_STORAGE_DEBOUNCE_MS)
+	}
 
 	useEffect(() => {
 		let isMounted = true
@@ -267,10 +290,7 @@ export function MapLibreMapView({
 						userMovedMapRef.current = true
 					}}
 					onRegionChangeComplete={(region) => {
-						void AsyncStorage.setItem(
-							MAP_CAMERA_STORAGE_KEY,
-							JSON.stringify(region),
-						).catch(() => {})
+						persistCameraRegion(region)
 
 						if (cameraInitializedRef.current && !cameraReady) {
 							setCameraReady(true)

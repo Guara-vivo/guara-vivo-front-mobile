@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import Header from '../components/Header'
@@ -41,6 +41,7 @@ function formatZoneDate(value: string) {
 }
 
 export function MapsScreen() {
+	const selectionModalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const [selectedLayer, setSelectedLayer] = useState<MapLayerId>('all')
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
@@ -92,6 +93,14 @@ export function MapsScreen() {
 		return () => clearInterval(interval)
 	}, [])
 
+	useEffect(() => {
+		return () => {
+			if (selectionModalTimerRef.current) {
+				clearTimeout(selectionModalTimerRef.current)
+			}
+		}
+	}, [])
+
 	const handleReloadZones = async () => {
 		if (isReloading) {
 			return
@@ -125,8 +134,14 @@ export function MapsScreen() {
 	const handleMapPress = (lat: number, lng: number) => {
 		if (!selectionMode) return
 		setSelectedCoords({ lat, lng })
-		setTimeout(() => {
+
+		if (selectionModalTimerRef.current) {
+			clearTimeout(selectionModalTimerRef.current)
+		}
+
+		selectionModalTimerRef.current = setTimeout(() => {
 			setShowZoneModal(true)
+			selectionModalTimerRef.current = null
 		}, 50)
 	}
 

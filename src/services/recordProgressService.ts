@@ -24,12 +24,12 @@ type SubscribeRecordProgressParams = {
 const INITIAL_RECONNECT_DELAY_MS = 1000
 const MAX_RECONNECT_DELAY_MS = 30000
 const INACTIVITY_TIMEOUT_MS = 60000
+const RECORD_STATUSES: RecordStatus[] = ['pending', 'processing', 'completed', 'failed']
 
-function buildProgressWebSocketUrl(apiUrl: string, token: string) {
+function buildProgressWebSocketUrl(apiUrl: string) {
 	const url = new URL(apiUrl)
 	url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
 	url.pathname = `${url.pathname.replace(/\/$/, '')}/records/progress/ws`
-	url.searchParams.set('token', token)
 	return url.toString()
 }
 
@@ -39,10 +39,41 @@ function isProgressMessage(value: unknown): value is ProgressMessage {
 	}
 
 	const message = value as Partial<ProgressMessage>
+
+	if (message.type === 'heartbeat') {
+		return true
+	}
+
+	if (message.type === 'snapshot') {
+		return (
+			Array.isArray(message.records) &&
+			message.records.every(isRecordProgressUpdate)
+		)
+	}
+
+	if (message.type === 'progress') {
+		return isRecordProgressUpdate(message.record)
+	}
+
+	return false
+}
+
+function isRecordStatus(value: unknown): value is RecordStatus {
+	return typeof value === 'string' && RECORD_STATUSES.includes(value as RecordStatus)
+}
+
+function isRecordProgressUpdate(value: unknown): value is RecordProgressUpdate {
+	if (!value || typeof value !== 'object') {
+		return false
+	}
+
+	const record = value as Partial<RecordProgressUpdate>
 	return (
-		message.type === 'snapshot' ||
-		message.type === 'progress' ||
-		message.type === 'heartbeat'
+		typeof record.id === 'number' &&
+		Number.isFinite(record.id) &&
+		isRecordStatus(record.status) &&
+		typeof record.analysis_progress === 'number' &&
+		Number.isFinite(record.analysis_progress)
 	)
 }
 
@@ -116,7 +147,7 @@ export async function subscribeRecordProgress({
 		}
 
 		try {
-			socket = new WebSocket(buildProgressWebSocketUrl(apiUrl, token))
+			socket = new WebSocket(buildProgressWebSocketUrl(apiUrl))
 		} catch {
 			onError?.()
 			scheduleReconnect()
@@ -124,6 +155,7 @@ export async function subscribeRecordProgress({
 		}
 
 		socket.onopen = () => {
+			socket?.send(JSON.stringify({ type: 'auth', token }))
 			reconnectDelay = INITIAL_RECONNECT_DELAY_MS
 			resetInactivityTimer()
 			onOpen?.()
