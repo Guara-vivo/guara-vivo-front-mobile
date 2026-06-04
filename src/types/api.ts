@@ -40,6 +40,7 @@ export type RecordRead = {
 	date_time: string
 	user_id: number
 	status: RecordStatus
+	analysis_progress: number
 }
 
 export type RecordSummaryRead = RecordRead & {

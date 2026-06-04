@@ -7,6 +7,7 @@ export type RecordItem = {
 	datetime: string
 	images?: string[]
 	status?: 'pending' | 'processing' | 'completed' | 'failed'
+	analysis_progress: number
 	user_id?: number
 }
 

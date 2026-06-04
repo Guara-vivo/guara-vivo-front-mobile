@@ -5,16 +5,18 @@ import {
 	formatDate,
 	formatLocationLabel,
 	formatTime,
-	formatAnalysisStatus,
 } from '../utils/recordFormatters'
+import AnalysisProgressIndicator from './AnalysisProgressIndicator'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 
 export function HistoryRecordCard({
 	item,
+	analysisProgress,
 	onOpenRecord,
 }: {
 	item: RecordItem
+	analysisProgress: number
 	onOpenRecord: (id: number) => void
 }) {
 	const behaviorTags = String(item.flock_size)
@@ -25,22 +27,29 @@ export function HistoryRecordCard({
 	return (
 		<View style={appStyles.historyRecordCard}>
 			<View style={appStyles.historyRecordTopRow}>
-				<View style={appStyles.historyRecordIdBadge}>
-					<Text style={appStyles.historyRecordIdText}>
-						#{String(item.id).padStart(3, '0')}
-					</Text>
+				<View style={appStyles.historyRecordTopInfo}>
+					<View style={appStyles.historyRecordIdBadge}>
+						<Text style={appStyles.historyRecordIdText}>
+							#{String(item.id).padStart(3, '0')}
+						</Text>
+					</View>
+
+					<View style={appStyles.historyRecordDateRow}>
+						<Ionicons name="calendar-outline" size={18} color="#5C8BD6" />
+						<Text style={appStyles.historyRecordDateText}>
+							{formatDate(item.datetime)}
+						</Text>
+						<Text style={appStyles.historyRecordDateDot}>•</Text>
+						<Text style={appStyles.historyRecordDateText}>
+							{formatTime(item.datetime)}
+						</Text>
+					</View>
 				</View>
 
-				<View style={appStyles.historyRecordDateRow}>
-					<Ionicons name="calendar-outline" size={18} color="#5C8BD6" />
-					<Text style={appStyles.historyRecordDateText}>
-						{formatDate(item.datetime)}
-					</Text>
-					<Text style={appStyles.historyRecordDateDot}>•</Text>
-					<Text style={appStyles.historyRecordDateText}>
-						{formatTime(item.datetime)}
-					</Text>
-				</View>
+				<AnalysisProgressIndicator
+					progress={analysisProgress}
+					status={item.status}
+				/>
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>
@@ -50,21 +59,14 @@ export function HistoryRecordCard({
 				</Text>
 			</View>
 
-		<View style={appStyles.historyRecordInfoRow}>
-			<Ionicons name="eye-outline" size={18} color="#F2201F" />
-			<Text style={appStyles.historyRecordInfoText}>
-				Tamanho do grupo: {item.ibis_quantity}
-			</Text>
-		</View>
+			<View style={appStyles.historyRecordInfoRow}>
+				<Ionicons name="eye-outline" size={18} color="#F2201F" />
+				<Text style={appStyles.historyRecordInfoText}>
+					Tamanho do grupo: {item.ibis_quantity}
+				</Text>
+			</View>
 
-		<View style={appStyles.historyRecordInfoRow}>
-			<Ionicons name="search-circle-outline" size={18} color="#F2201F" />
-			<Text style={appStyles.historyRecordInfoText}>
-				Status: {formatAnalysisStatus(item.status)}
-			</Text>
-		</View>
-
-		<View style={appStyles.historyTagRow}>
+			<View style={appStyles.historyTagRow}>
 				{behaviorTags.map((tag) => (
 					<View key={`${item.id}-${tag}`} style={appStyles.historyTagChip}>
 						<Text style={appStyles.historyTagChipText}>{tag}</Text>

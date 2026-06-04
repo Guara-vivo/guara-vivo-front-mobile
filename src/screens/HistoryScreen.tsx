@@ -21,12 +21,45 @@ import {
 	getCachedRecordsSnapshot,
 	isRecordsCacheFresh,
 } from '../services/recordsService'
+import {
+	subscribeRecordProgress,
+	type RecordProgressUpdate,
+} from '../services/recordProgressService'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 import type { MainTabParamList } from '../types/navigation'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
+
+
+function isActiveAnalysisStatus(status?: RecordItem['status']) {
+	return !status || status === 'pending' || status === 'processing'
+}
+
+function mergeProgressUpdates(
+	records: RecordItem[],
+	updates: RecordProgressUpdate[],
+) {
+	if (updates.length === 0) {
+		return records
+	}
+
+	const updatesById = new Map(updates.map((update) => [update.id, update]))
+	return records.map((record) => {
+		const update = updatesById.get(record.id)
+
+		if (!update) {
+			return record
+		}
+
+		return {
+			...record,
+			status: update.status,
+			analysis_progress: update.analysis_progress,
+		}
+	})
+}
 
 export function HistoryScreen() {
 	const navigation = useNavigation<NavigationProp>()
@@ -75,6 +108,42 @@ export function HistoryScreen() {
 			controller.abort()
 		}
 	}, [])
+
+	const hasActiveAnalysis = useMemo(
+		() => records.some((record) => isActiveAnalysisStatus(record.status)),
+		[records],
+	)
+
+	useEffect(() => {
+		if (!hasActiveAnalysis) {
+			return
+		}
+
+		let mounted = true
+		let unsubscribe: (() => void) | undefined
+
+		subscribeRecordProgress({
+			onSnapshot: (snapshot) => {
+				setRecords((current) => mergeProgressUpdates(current, snapshot))
+			},
+			onProgress: (progress) => {
+				setRecords((current) => mergeProgressUpdates(current, [progress]))
+			},
+		}).then((cleanup) => {
+			if (!mounted) {
+				cleanup()
+				return
+			}
+
+			unsubscribe = cleanup
+		})
+
+		return () => {
+			mounted = false
+			unsubscribe?.()
+		}
+	}, [hasActiveAnalysis])
+
 
 	const handleRefresh = async () => {
 		setIsRefreshing(true)
@@ -199,7 +268,11 @@ export function HistoryScreen() {
 						</View>
 					}
 					renderItem={({ item }: { item: RecordItem }) => (
-						<HistoryRecordCard item={item} onOpenRecord={openRecord} />
+						<HistoryRecordCard
+							item={item}
+							analysisProgress={item.analysis_progress}
+							onOpenRecord={openRecord}
+						/>
 					)}
 				/>
 			</View>

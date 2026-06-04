@@ -1254,6 +1254,13 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordTopRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: spacing.sm,
+	},
+	historyRecordTopInfo: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
 		gap: spacing.sm,
 	},
 	historyRecordIdBadge: {
@@ -1270,6 +1277,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 12,
 	},
 	historyRecordDateRow: {
+		flexShrink: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 6,
@@ -1284,13 +1292,27 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordInfoRow: {
 		flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+		alignItems: 'center',
+		justifyContent: 'flex-start',
 		gap: 6,
 	},
 	historyRecordInfoText: {
 		color: colors.text,
 		fontSize: 12,
+	},
+	analysisProgressWrap: {
+		width: 38,
+		height: 38,
+		alignItems: 'center',
+		justifyContent: 'center',
+		flexShrink: 0,
+	},
+	analysisProgressText: {
+		position: 'absolute',
+		color: colors.text,
+		fontSize: 9,
+		lineHeight: 12,
+		textAlign: 'center',
 	},
 	historyTagRow: {
 		flexDirection: 'row',

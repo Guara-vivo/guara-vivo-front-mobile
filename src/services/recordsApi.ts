@@ -35,6 +35,7 @@ export function mapRecordReadToRecordItem(
 		datetime: record.date_time,
 		images: record.images,
 		status: record.status,
+		analysis_progress: record.analysis_progress ?? 0,
 		user_id: record.user_id,
 	}
 }
