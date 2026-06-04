@@ -11,6 +11,7 @@ export type RecordProgressUpdate = {
 type ProgressMessage =
 	| { type: 'snapshot'; records: RecordProgressUpdate[] }
 	| { type: 'progress'; record: RecordProgressUpdate }
+	| { type: 'heartbeat' }
 
 type SubscribeRecordProgressParams = {
 	onSnapshot: (records: RecordProgressUpdate[]) => void
@@ -19,6 +20,10 @@ type SubscribeRecordProgressParams = {
 	onClose?: () => void
 	onError?: () => void
 }
+
+const INITIAL_RECONNECT_DELAY_MS = 1000
+const MAX_RECONNECT_DELAY_MS = 30000
+const INACTIVITY_TIMEOUT_MS = 60000
 
 function buildProgressWebSocketUrl(apiUrl: string, token: string) {
 	const url = new URL(apiUrl)
@@ -34,7 +39,11 @@ function isProgressMessage(value: unknown): value is ProgressMessage {
 	}
 
 	const message = value as Partial<ProgressMessage>
-	return message.type === 'snapshot' || message.type === 'progress'
+	return (
+		message.type === 'snapshot' ||
+		message.type === 'progress' ||
+		message.type === 'heartbeat'
+	)
 }
 
 export async function subscribeRecordProgress({
@@ -44,47 +53,130 @@ export async function subscribeRecordProgress({
 	onClose,
 	onError,
 }: SubscribeRecordProgressParams) {
-	const token = await getAccessToken()
 	const apiUrl = API_URL
+	let socket: WebSocket | undefined
+	let reconnectDelay = INITIAL_RECONNECT_DELAY_MS
+	let reconnectTimer: ReturnType<typeof setTimeout> | undefined
+	let inactivityTimer: ReturnType<typeof setTimeout> | undefined
+	let isActive = true
 
-	if (!token || !apiUrl) {
+	if (!apiUrl) {
 		return () => {}
 	}
 
-	const socket = new WebSocket(buildProgressWebSocketUrl(apiUrl, token))
-
-	socket.onopen = () => {
-		onOpen?.()
-	}
-
-	socket.onmessage = (event) => {
-		try {
-			const message = JSON.parse(String(event.data))
-
-			if (!isProgressMessage(message)) {
-				return
-			}
-
-			if (message.type === 'snapshot') {
-				onSnapshot(message.records)
-				return
-			}
-
-			onProgress(message.record)
-		} catch {
-			// Ignore malformed progress events and keep the socket alive.
+	const clearReconnectTimer = () => {
+		if (reconnectTimer) {
+			clearTimeout(reconnectTimer)
+			reconnectTimer = undefined
 		}
 	}
 
-	socket.onerror = () => {
-		onError?.()
+	const clearInactivityTimer = () => {
+		if (inactivityTimer) {
+			clearTimeout(inactivityTimer)
+			inactivityTimer = undefined
+		}
 	}
 
-	socket.onclose = () => {
-		onClose?.()
+	const scheduleReconnect = () => {
+		if (!isActive || reconnectTimer) {
+			return
+		}
+
+		clearInactivityTimer()
+		const delay = reconnectDelay
+		reconnectDelay = Math.min(reconnectDelay * 2, MAX_RECONNECT_DELAY_MS)
+		reconnectTimer = setTimeout(() => {
+			reconnectTimer = undefined
+			void openSocket()
+		}, delay)
 	}
+
+	const resetInactivityTimer = () => {
+		clearInactivityTimer()
+		inactivityTimer = setTimeout(() => {
+			if (!isActive) {
+				return
+			}
+
+			if (socket && socket.readyState !== WebSocket.CLOSED) {
+				socket.close()
+				return
+			}
+
+			scheduleReconnect()
+		}, INACTIVITY_TIMEOUT_MS)
+	}
+
+	const openSocket = async () => {
+		const token = await getAccessToken()
+
+		if (!isActive || !token) {
+			return
+		}
+
+		try {
+			socket = new WebSocket(buildProgressWebSocketUrl(apiUrl, token))
+		} catch {
+			onError?.()
+			scheduleReconnect()
+			return
+		}
+
+		socket.onopen = () => {
+			reconnectDelay = INITIAL_RECONNECT_DELAY_MS
+			resetInactivityTimer()
+			onOpen?.()
+		}
+
+		socket.onmessage = (event) => {
+			resetInactivityTimer()
+
+			try {
+				const message = JSON.parse(String(event.data))
+
+				if (!isProgressMessage(message)) {
+					return
+				}
+
+				if (message.type === 'heartbeat') {
+					return
+				}
+
+				if (message.type === 'snapshot') {
+					onSnapshot(message.records)
+					return
+				}
+
+				onProgress(message.record)
+			} catch {
+				// Ignore malformed progress events and keep the socket alive.
+			}
+		}
+
+		socket.onerror = () => {
+			onError?.()
+			socket?.close()
+		}
+
+		socket.onclose = () => {
+			clearInactivityTimer()
+			onClose?.()
+			scheduleReconnect()
+		}
+	}
+
+	await openSocket()
 
 	return () => {
+		isActive = false
+		clearReconnectTimer()
+		clearInactivityTimer()
+
+		if (!socket || socket.readyState === WebSocket.CLOSED) {
+			return
+		}
+
 		socket.close()
 	}
 }
