@@ -1310,7 +1310,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	analysisProgressText: {
 		position: 'absolute',
 		color: colors.text,
-		fontSize: 9,
+		fontSize: 7,
 		lineHeight: 12,
 		textAlign: 'center',
 	},

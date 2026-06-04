@@ -10,8 +10,8 @@ type AnalysisProgressIndicatorProps = {
 	status?: RecordItem['status']
 }
 
-const SIZE = 36
-const STROKE_WIDTH = 6
+const SIZE = 30
+const STROKE_WIDTH = 5
 const RADIUS = (SIZE - STROKE_WIDTH) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
@@ -21,10 +21,10 @@ function getProgressColor(status?: RecordItem['status']) {
 	}
 
 	if (status === 'completed') {
-		return '#2E9D57'
+		return colors.secondary
 	}
 
-	return colors.secondary
+	return colors.muted
 }
 
 export function AnalysisProgressIndicator({
