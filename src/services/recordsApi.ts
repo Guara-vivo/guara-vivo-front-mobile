@@ -37,6 +37,7 @@ export function mapRecordReadToRecordItem(
 		status: record.status,
 		analysis_progress: record.analysis_progress ?? 0,
 		user_id: record.user_id,
+		map_zones: record.map_zones ?? [],
 	}
 }
 

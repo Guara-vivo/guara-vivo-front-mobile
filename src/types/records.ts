@@ -1,3 +1,5 @@
+import type { LinkedMapZoneRead } from './api'
+
 export type RecordItem = {
 	id: number
 	ibis_quantity: number
@@ -9,6 +11,7 @@ export type RecordItem = {
 	status?: 'pending' | 'processing' | 'completed' | 'failed'
 	analysis_progress: number
 	user_id?: number
+	map_zones: LinkedMapZoneRead[]
 }
 
 export type RawDetection = {

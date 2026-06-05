@@ -835,6 +835,10 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 16,
 	},
+	mapZoneInfoType: {
+		color: colors.muted,
+		fontSize: 12,
+	},
 	mapZoneInfoCloseButton: {
 		width: 30,
 		height: 30,
@@ -1349,6 +1353,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		gap: 6,
 	},
 	historyRecordInfoText: {
+		flex: 1,
 		color: colors.text,
 		fontSize: 12,
 	},

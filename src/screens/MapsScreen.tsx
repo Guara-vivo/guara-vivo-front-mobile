@@ -334,7 +334,8 @@ export function MapsScreen() {
 						<View style={appStyles.mapZoneInfoHeader}>
 							<View>
 								<Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
-								<Text style={appStyles.mapZoneInfoTitle}>{formatZoneType(selectedZone.type)}</Text>
+								<Text style={appStyles.mapZoneInfoTitle}>{selectedZone.name}</Text>
+								<Text style={appStyles.mapZoneInfoType}>{formatZoneType(selectedZone.type)}</Text>
 							</View>
 							<View style={appStyles.mapZoneInfoHeaderActions}>
 								<Pressable

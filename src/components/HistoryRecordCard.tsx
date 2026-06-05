@@ -23,6 +23,9 @@ export function HistoryRecordCard({
 		.split(',')
 		.map((t) => t.trim())
 		.filter(Boolean)
+	const areaLabel = item.map_zones.length
+		? item.map_zones.map((zone) => zone.name).join(' · ')
+		: 'Sem área'
 
 	return (
 		<View style={appStyles.historyRecordCard}>
@@ -57,6 +60,11 @@ export function HistoryRecordCard({
 				<Text style={appStyles.historyRecordInfoText}>
 					{formatLocationLabel(item.latitude, item.longitude)}
 				</Text>
+			</View>
+
+			<View style={appStyles.historyRecordInfoRow}>
+				<Ionicons name="map-outline" size={18} color="#F2201F" />
+				<Text style={appStyles.historyRecordInfoText}>{areaLabel}</Text>
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>

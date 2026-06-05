@@ -218,6 +218,9 @@ export function RecordDetailScreen() {
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'guará' : 'guarás'}`
 	const idLabel = `#${String(record.id).padStart(3, '0')}`
 	const locationLabel = formatLocationLabel(record.latitude, record.longitude)
+	const areaLabel = record.map_zones.length
+		? record.map_zones.map((zone) => zone.name).join(' · ')
+		: 'Sem área'
 
 	return (
 		<View style={appStyles.recordDetailScreen}>
@@ -374,6 +377,14 @@ export function RecordDetailScreen() {
 									Lat: {record.latitude.toFixed(4)} / Lng:{' '}
 									{record.longitude.toFixed(4)}
 								</Text>
+							</View>
+						</View>
+
+						<View style={appStyles.recordDetailInfoRow}>
+							<Ionicons name="map-outline" size={18} color="#F2201F" />
+							<View style={appStyles.recordDetailInfoTextWrap}>
+								<Text style={appStyles.recordDetailInfoLabel}>ÁREAS</Text>
+								<Text style={appStyles.recordDetailValue}>{areaLabel}</Text>
 							</View>
 						</View>
 
