@@ -3,7 +3,6 @@ import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import {
 	formatDate,
-	formatLocationLabel,
 	formatTime,
 } from '../utils/recordFormatters'
 import AnalysisProgressIndicator from './AnalysisProgressIndicator'
@@ -56,13 +55,6 @@ export function HistoryRecordCard({
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>
-				<Ionicons name="location-outline" size={18} color="#F2201F" />
-				<Text style={appStyles.historyRecordInfoText}>
-					{formatLocationLabel(item.latitude, item.longitude)}
-				</Text>
-			</View>
-
-			<View style={appStyles.historyRecordInfoRow}>
 				<Ionicons name="map-outline" size={18} color="#F2201F" />
 				<Text style={appStyles.historyRecordInfoText}>{areaLabel}</Text>
 			</View>
@@ -70,7 +62,7 @@ export function HistoryRecordCard({
 			<View style={appStyles.historyRecordInfoRow}>
 				<Ionicons name="eye-outline" size={18} color="#F2201F" />
 				<Text style={appStyles.historyRecordInfoText}>
-					Tamanho do grupo: {item.ibis_quantity}
+					{item.ibis_quantity} {item.ibis_quantity === 1 ? 'Guará' : 'Guarás'}
 				</Text>
 			</View>
 
