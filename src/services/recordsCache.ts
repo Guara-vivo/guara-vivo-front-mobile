@@ -1,5 +1,6 @@
 import type { IbisRead } from '../types/api'
 import type { RecordItem, ImageAnalysisItem } from '../types/records'
+import type { RecordProgressUpdate } from './recordProgressService'
 
 export type CachedRecordDetail = RecordItem & {
 	ibis?: IbisRead[]
@@ -92,6 +93,20 @@ export function setCachedRecordDetail(record: CachedRecordDetail) {
 		}
 
 		detailCache.delete(oldestKey)
+	}
+}
+
+export function updateCachedRecordProgress(update: RecordProgressUpdate) {
+	if (!recordsCache) return
+
+	const index = recordsCache.data.findIndex((r) => r.id === update.id)
+	if (index !== -1) {
+		const record = recordsCache.data[index]
+		recordsCache.data[index] = {
+			...record,
+			status: update.status,
+			analysis_progress: update.analysis_progress,
+		}
 	}
 }
 

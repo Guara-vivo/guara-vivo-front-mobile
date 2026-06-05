@@ -11,6 +11,7 @@ import {
 	subscribeRecordProgress,
 	type RecordProgressUpdate,
 } from '../services/recordProgressService'
+import { updateCachedRecordProgress } from '../services/recordsCache'
 import type { RecordStatus } from '../types/api'
 
 type RecordProgressListener = {
@@ -78,6 +79,7 @@ export function RecordProgressProvider({
 
 			records.forEach((record) => {
 				statusByRecordIdRef.current.set(record.id, record.status)
+				updateCachedRecordProgress(record)
 			})
 			hasSnapshotRef.current = true
 			notifyListenersSnapshot(records)
@@ -88,6 +90,7 @@ export function RecordProgressProvider({
 	const handleProgress = useCallback(
 		(record: RecordProgressUpdate) => {
 			statusByRecordIdRef.current.set(record.id, record.status)
+			updateCachedRecordProgress(record)
 
 			if (isFinalAnalysisStatus(record.status)) {
 				showAnalysisNotification({
