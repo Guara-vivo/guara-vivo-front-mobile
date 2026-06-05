@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import Svg, { Circle } from 'react-native-svg'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
@@ -47,33 +48,48 @@ export function AnalysisProgressIndicator({
 			accessibilityLabel={accessibilityLabel}
 			style={appStyles.analysisProgressWrap}
 		>
-			<Svg width={SIZE} height={SIZE}>
-				<Circle
-					cx={SIZE / 2}
-					cy={SIZE / 2}
-					r={RADIUS}
-					stroke={colors.border}
-					strokeWidth={STROKE_WIDTH}
-					fill="none"
-				/>
-				<Circle
-					cx={SIZE / 2}
-					cy={SIZE / 2}
-					r={RADIUS}
-					stroke={progressColor}
-					strokeWidth={STROKE_WIDTH}
-					fill="none"
-					strokeDasharray={`${CIRCUMFERENCE} ${CIRCUMFERENCE}`}
-					strokeDashoffset={strokeDashoffset}
-					strokeLinecap="round"
-					rotation="-90"
-					originX={SIZE / 2}
-					originY={SIZE / 2}
-				/>
-			</Svg>
-			<Text style={appStyles.analysisProgressText}>
-				{status === 'failed' ? '!' : `${normalizedProgress}%`}
-			</Text>
+			{status !== 'failed' && normalizedProgress !== 100 && (
+				<Svg width={SIZE} height={SIZE}>
+					<Circle
+						cx={SIZE / 2}
+						cy={SIZE / 2}
+						r={RADIUS}
+						stroke={colors.border}
+						strokeWidth={STROKE_WIDTH}
+						fill="none"
+					/>
+					<Circle
+						cx={SIZE / 2}
+						cy={SIZE / 2}
+						r={RADIUS}
+						stroke={progressColor}
+						strokeWidth={STROKE_WIDTH}
+						fill="none"
+						strokeDasharray={`${CIRCUMFERENCE} ${CIRCUMFERENCE}`}
+						strokeDashoffset={strokeDashoffset}
+						strokeLinecap="round"
+						rotation="-90"
+						originX={SIZE / 2}
+						originY={SIZE / 2}
+					/>
+				</Svg>
+			)}
+			<View
+				style={[
+					appStyles.analysisProgressText,
+					{ top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' },
+				]}
+			>
+				{status === 'failed' ? (
+					<Ionicons name="alert-circle" size={24} color={colors.primary} />
+				) : normalizedProgress === 100 ? (
+					<Ionicons name="checkmark-circle" size={24} color={colors.secondary} />
+				) : (
+					<Text style={appStyles.analysisProgressText}>
+						{`${normalizedProgress}%`}
+					</Text>
+				)}
+			</View>
 		</View>
 	)
 }
