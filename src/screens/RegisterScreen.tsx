@@ -266,12 +266,10 @@ export function RegisterScreen() {
 			return
 		}
 
-		setTempLocation(null)
 		setShowLocationPicker(true)
 	}
 
 	const closeLocationPicker = () => {
-		setTempLocation(null)
 		setShowLocationPicker(false)
 	}
 
@@ -281,7 +279,6 @@ export function RegisterScreen() {
 		}
 
 		setSelectedLocation(tempLocation)
-		setTempLocation(null)
 		setShowLocationPicker(false)
 	}
 
@@ -488,7 +485,11 @@ export function RegisterScreen() {
 					<View style={appStyles.registerActionsRow}>
 						<ActionButton
 							title={isSaving ? 'ENVIANDO...' : 'SALVAR REGISTRO'}
-							onPress={handleSave}
+              onPress={() => {
+                handleSave()
+               	setTempLocation(null)
+                }
+              }
 							disabled={isSaving}
 							fullWidth={false}
 							containerStyle={appStyles.registerSaveButton}
