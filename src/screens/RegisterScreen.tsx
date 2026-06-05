@@ -7,7 +7,8 @@ import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
-import { Image, Pressable, ScrollView, Text, View } from 'react-native'
+import { Image, Pressable, ScrollView, Text, View, StyleSheet } from 'react-native'
+import MapView, { Marker } from 'react-native-maps'
 import FeedbackModal from '../components/FeedbackModal'
 import Header from '../components/Header'
 import { RegisterBehaviorList } from '../components/RegisterBehaviorList'
@@ -48,8 +49,11 @@ export function RegisterScreen() {
 	const [behaviors, setBehaviors] = useState<string[]>([])
 	const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 	const [selectedTime, setSelectedTime] = useState<Date | null>(null)
+	const [selectedLocation, setSelectedLocation] = useState<{ latitude: number; longitude: number } | null>(null)
 	const [showDatePicker, setShowDatePicker] = useState(false)
 	const [showTimePicker, setShowTimePicker] = useState(false)
+	const [showLocationPicker, setShowLocationPicker] = useState(false)
+	const [tempLocation, setTempLocation] = useState<{ latitude: number; longitude: number } | null>(null)
 	const [isSaving, setIsSaving] = useState(false)
 	const [isPickingImages, setIsPickingImages] = useState(false)
 	const [isDropZonePressed, setIsDropZonePressed] = useState(false)
@@ -177,27 +181,39 @@ export function RegisterScreen() {
 				return
 			}
 
-			const permission = await Location.requestForegroundPermissionsAsync()
+			let latitude: number
+			let longitude: number
 
-			if (!permission.granted) {
-				showErrorFeedback(
-					'Permissao necessaria',
-					'Permita acesso a localizacao para enviar o registro.',
-				)
-				return
+			if (selectedLocation) {
+				latitude = selectedLocation.latitude
+				longitude = selectedLocation.longitude
+			} else {
+				const permission = await Location.requestForegroundPermissionsAsync()
+
+				if (!permission.granted) {
+					showErrorFeedback(
+						'Permissao necessaria',
+						'Permita acesso a localizacao para enviar o registro.',
+					)
+					setIsSaving(false)
+					return
+				}
+
+				const position = await Location.getCurrentPositionAsync({
+					accuracy: Location.Accuracy.Balanced,
+				})
+				latitude = position.coords.latitude
+				longitude = position.coords.longitude
 			}
 
-			const position = await Location.getCurrentPositionAsync({
-				accuracy: Location.Accuracy.Balanced,
-			})
 			const recordDateTime = composeRecordDateTime(selectedDate, selectedTime)
 
 			await uploadRecord({
 				behavior: apiBehaviors,
 				dateTime: recordDateTime,
 				images: selectedImages,
-				latitude: position.coords.latitude,
-				longitude: position.coords.longitude,
+				latitude,
+				longitude,
 				token,
 			})
 			invalidateRecordsCache()
@@ -206,8 +222,11 @@ export function RegisterScreen() {
 			setBehaviors([])
 			setSelectedDate(null)
 			setSelectedTime(null)
+			setSelectedLocation(null)
+			setTempLocation(null)
 			setShowDatePicker(false)
 			setShowTimePicker(false)
+			setShowLocationPicker(false)
 			setFeedback({
 				title: 'Registro enviado',
 				message: 'Registro enviado para processamento com sucesso.',
@@ -242,6 +261,35 @@ export function RegisterScreen() {
 		setSelectedTime(date)
 	}
 
+	const openLocationPicker = () => {
+		if (isSaving) {
+			return
+		}
+
+		setTempLocation(null)
+		setShowLocationPicker(true)
+	}
+
+	const closeLocationPicker = () => {
+		setTempLocation(null)
+		setShowLocationPicker(false)
+	}
+
+	const confirmLocationPicker = () => {
+		if (!tempLocation) {
+			return
+		}
+
+		setSelectedLocation(tempLocation)
+		setTempLocation(null)
+		setShowLocationPicker(false)
+	}
+
+	const clearSelectedLocation = () => {
+		setSelectedLocation(null)
+		setTempLocation(null)
+	}
+
 	const handleCancel = () => {
 		if (isSaving) {
 			return
@@ -251,6 +299,8 @@ export function RegisterScreen() {
 		setBehaviors([])
 		setSelectedDate(null)
 		setSelectedTime(null)
+		clearSelectedLocation()
+		setShowLocationPicker(false)
 		navigation.navigate('Home')
 	}
 
@@ -340,6 +390,44 @@ export function RegisterScreen() {
 
 					<View style={appStyles.registerSubsection}>
 						<View style={appStyles.registerSubTitleRow}>
+							<Ionicons name="location-outline" size={18} color="#F2201F" />
+							<Text style={appStyles.registerSubTitleText}>
+								LOCALIZAÇÃO DO AVISTAMENTO
+							</Text>
+						</View>
+
+						<View style={appStyles.registerDateRow}>
+							<View style={appStyles.registerDateField}>
+								<Pressable
+									onPress={openLocationPicker}
+									disabled={isSaving}
+									style={styles.locationFieldContent}
+								>
+									<Text
+										style={[
+											appStyles.registerDateFieldText,
+											!selectedLocation && appStyles.registerDateFieldPlaceholder,
+										]}
+									>
+										{selectedLocation ? 'Localização selecionada' : 'Localização atual do dispositivo'}
+									</Text>
+								</Pressable>
+								{!selectedLocation && <Ionicons name="map-outline" size={16} color="#125ED0" />}
+								{selectedLocation && (
+									<Pressable
+										onPress={clearSelectedLocation}
+										disabled={isSaving}
+										style={styles.locationClearButton}
+									>
+										<Ionicons name="close-circle" size={20} color={colors.primary} />
+									</Pressable>
+								)}
+							</View>
+						</View>
+					</View>
+
+					<View style={appStyles.registerSubsection}>
+						<View style={appStyles.registerSubTitleRow}>
 							<Ionicons name="calendar-outline" size={18} color="#F2201F" />
 							<Text style={appStyles.registerSubTitleText}>
 								DATA E HORA DO AVISTAMENTO
@@ -421,6 +509,44 @@ export function RegisterScreen() {
 				</View>
 			</ScrollView>
 
+			{showLocationPicker && (
+				<View style={styles.locationPickerOverlay}>
+					<MapView
+						style={styles.pickerMap}
+						initialRegion={{
+							latitude: -24.4959,
+							longitude: -47.8431,
+							latitudeDelta: 0.05,
+							longitudeDelta: 0.05,
+						}}
+						onPress={(e) => setTempLocation(e.nativeEvent.coordinate)}
+					>
+						{tempLocation && (
+							<Marker coordinate={tempLocation} />
+						)}
+					</MapView>
+					<View style={styles.pickerHeader}>
+						<Pressable
+							onPress={closeLocationPicker}
+							style={styles.pickerButton}
+						>
+							<Ionicons name="arrow-back" size={24} color={colors.text} />
+							<Text style={styles.pickerButtonText}>Voltar</Text>
+						</Pressable>
+						<Pressable
+							onPress={confirmLocationPicker}
+							disabled={!tempLocation}
+							style={[
+								styles.pickerButton,
+								!tempLocation && { opacity: 0.5 },
+							]}
+						>
+							<Text style={styles.pickerButtonConfirmText}>Confirmar Localização</Text>
+						</Pressable>
+					</View>
+				</View>
+			)}
+
 			{feedback ? (
 				<FeedbackModal
 					visible
@@ -435,5 +561,58 @@ export function RegisterScreen() {
 		</View>
 	)
 }
+
+const styles = StyleSheet.create({
+	locationFieldContent: {
+		flex: 1,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: 6,
+	},
+	locationClearButton: {
+		paddingLeft: 8,
+	},
+	locationPickerOverlay: {
+		...StyleSheet.absoluteFillObject,
+		zIndex: 1000,
+		backgroundColor: colors.background,
+	},
+	pickerMap: {
+		...StyleSheet.absoluteFillObject,
+	},
+	pickerHeader: {
+		position: 'absolute',
+		top: 50,
+		left: 0,
+		right: 0,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingHorizontal: 20,
+		zIndex: 1001,
+	},
+	pickerButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		backgroundColor: 'rgba(255, 255, 255, 0.9)',
+		paddingVertical: 8,
+		paddingHorizontal: 12,
+		borderRadius: 20,
+		gap: 4,
+		borderWidth: 1,
+		borderColor: colors.border,
+	},
+	pickerButtonText: {
+		color: colors.text,
+		fontSize: 14,
+		fontWeight: '600',
+	},
+	pickerButtonConfirmText: {
+		color: colors.secondary,
+		fontSize: 14,
+		fontWeight: '700',
+	},
+})
 
 export default RegisterScreen
