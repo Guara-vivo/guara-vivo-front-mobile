@@ -20,6 +20,7 @@ import { uploadRecord } from '../services/recordsApi'
 import { appStyles } from '../styles/appStyles'
 import type { BirdBehavior, ReactNativeFile } from '../types/api'
 import type { MainTabParamList } from '../types/navigation'
+import { composeRecordDateTime } from '../utils/registerDateTime'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
@@ -45,15 +46,17 @@ export function RegisterScreen() {
 	const navigation = useNavigation<NavigationProp>()
 	const [selectedImages, setSelectedImages] = useState<ReactNativeFile[]>([])
 	const [behaviors, setBehaviors] = useState<string[]>([])
-	const [selectedAt, setSelectedAt] = useState(new Date())
+	const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+	const [selectedTime, setSelectedTime] = useState<Date | null>(null)
 	const [showDatePicker, setShowDatePicker] = useState(false)
 	const [showTimePicker, setShowTimePicker] = useState(false)
 	const [isSaving, setIsSaving] = useState(false)
+	const [isPickingImages, setIsPickingImages] = useState(false)
 	const [isDropZonePressed, setIsDropZonePressed] = useState(false)
 	const [feedback, setFeedback] = useState<RegisterFeedback | null>(null)
 
-	const selectedDate = selectedAt.toLocaleDateString('pt-BR')
-	const selectedTime = selectedAt.toLocaleTimeString('pt-BR', {
+	const selectedDateLabel = selectedDate?.toLocaleDateString('pt-BR')
+	const selectedTimeLabel = selectedTime?.toLocaleTimeString('pt-BR', {
 		hour: '2-digit',
 		minute: '2-digit',
 	})
@@ -76,51 +79,57 @@ export function RegisterScreen() {
 	}
 
 	const handlePickImages = async () => {
-		if (isSaving) {
+		if (isSaving || isPickingImages) {
 			return
 		}
 
+		setIsPickingImages(true)
 		setIsDropZonePressed(true)
-		await new Promise((resolve) => setTimeout(resolve, pressFeedbackDelayMs))
-		setIsDropZonePressed(false)
+		try {
+			await new Promise((resolve) => setTimeout(resolve, pressFeedbackDelayMs))
+			setIsDropZonePressed(false)
 
-		const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+			const permission = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
-		if (!permission.granted) {
-			showErrorFeedback(
-				'Permissao necessaria',
-				'Permita acesso as fotos para adicionar imagens.',
-			)
-			return
-		}
-
-		const result = await ImagePicker.launchImageLibraryAsync({
-			allowsMultipleSelection: true,
-			mediaTypes: ['images'],
-			quality: 0.8,
-			selectionLimit: 20,
-		})
-		if (result.canceled) {
-			return
-		}
-
-		const newImages = result.assets.map((asset, index) => {
-			const fallbackName = `guara-vivo-${index + 1}.jpg`
-			const uriName = asset.uri.split('/').pop()
-
-			return {
-				uri: asset.uri,
-				name: asset.fileName ?? uriName ?? fallbackName,
-				type: asset.mimeType ?? 'image/jpeg',
+			if (!permission.granted) {
+				showErrorFeedback(
+					'Permissao necessaria',
+					'Permita acesso as fotos para adicionar imagens.',
+				)
+				return
 			}
-		})
 
-		setSelectedImages((current) => {
-			const existingUris = new Set(current.map((img) => img.uri))
-			const uniqueNewImages = newImages.filter((img) => !existingUris.has(img.uri))
-			
-			return [...current, ...uniqueNewImages].slice(0, 20)
-		})
+			const result = await ImagePicker.launchImageLibraryAsync({
+				allowsMultipleSelection: true,
+				mediaTypes: ['images'],
+				quality: 0.8,
+				selectionLimit: 20,
+			})
+			if (result.canceled) {
+				return
+			}
+
+			const newImages = result.assets.map((asset, index) => {
+				const fallbackName = `guara-vivo-${index + 1}.jpg`
+				const uriName = asset.uri.split('/').pop()
+
+				return {
+					uri: asset.uri,
+					name: asset.fileName ?? uriName ?? fallbackName,
+					type: asset.mimeType ?? 'image/jpeg',
+				}
+			})
+
+			setSelectedImages((current) => {
+				const existingUris = new Set(current.map((img) => img.uri))
+				const uniqueNewImages = newImages.filter((img) => !existingUris.has(img.uri))
+
+				return [...current, ...uniqueNewImages].slice(0, 20)
+			})
+		} finally {
+			setIsDropZonePressed(false)
+			setIsPickingImages(false)
+		}
 	}
 
 	const handleRemoveImage = async (imageUri: string) => {
@@ -181,10 +190,11 @@ export function RegisterScreen() {
 			const position = await Location.getCurrentPositionAsync({
 				accuracy: Location.Accuracy.Balanced,
 			})
+			const recordDateTime = composeRecordDateTime(selectedDate, selectedTime)
 
 			await uploadRecord({
 				behavior: apiBehaviors,
-				dateTime: selectedAt,
+				dateTime: recordDateTime,
 				images: selectedImages,
 				latitude: position.coords.latitude,
 				longitude: position.coords.longitude,
@@ -194,7 +204,8 @@ export function RegisterScreen() {
 
 			setSelectedImages([])
 			setBehaviors([])
-			setSelectedAt(new Date())
+			setSelectedDate(null)
+			setSelectedTime(null)
 			setShowDatePicker(false)
 			setShowTimePicker(false)
 			setFeedback({
@@ -219,11 +230,7 @@ export function RegisterScreen() {
 			return
 		}
 
-		setSelectedAt((current) => {
-			const next = new Date(current)
-			next.setFullYear(date.getFullYear(), date.getMonth(), date.getDate())
-			return next
-		})
+		setSelectedDate(date)
 	}
 
 	const handleTimeChange = (event: DateTimePickerEvent, date?: Date) => {
@@ -232,11 +239,7 @@ export function RegisterScreen() {
 			return
 		}
 
-		setSelectedAt((current) => {
-			const next = new Date(current)
-			next.setHours(date.getHours(), date.getMinutes(), 0, 0)
-			return next
-		})
+		setSelectedTime(date)
 	}
 
 	const handleCancel = () => {
@@ -246,6 +249,8 @@ export function RegisterScreen() {
 
 		setSelectedImages([])
 		setBehaviors([])
+		setSelectedDate(null)
+		setSelectedTime(null)
 		navigation.navigate('Home')
 	}
 
@@ -274,17 +279,21 @@ export function RegisterScreen() {
 
 						<Pressable
 							onPress={handlePickImages}
-							disabled={isSaving}
+							disabled={isSaving || isPickingImages}
 							style={[
 								appStyles.registerDropZone,
 								isDropZonePressed && appStyles.registerDropZonePressed,
 							]}
 						>
 							<View style={appStyles.registerDropZoneIconWrap}>
-								<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
+								{isPickingImages ? (
+									<ActivityIndicator size="large" color="#125ED0" />
+								) : (
+									<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
+								)}
 							</View>
 							<Text style={appStyles.registerDropZoneTitle}>
-								Clique para adicionar fotos
+								{isPickingImages ? 'Preparando imagens...' : 'Clique para adicionar fotos'}
 							</Text>
 						</Pressable>
 
@@ -343,8 +352,13 @@ export function RegisterScreen() {
 								disabled={isSaving}
 								style={appStyles.registerDateField}
 							>
-								<Text style={appStyles.registerDateFieldText}>
-									{selectedDate}
+								<Text
+									style={[
+										appStyles.registerDateFieldText,
+										!selectedDateLabel && appStyles.registerDateFieldPlaceholder,
+									]}
+								>
+									{selectedDateLabel ?? 'Insira a data...'}
 								</Text>
 								<Ionicons name="calendar-outline" size={16} color="#125ED0" />
 							</Pressable>
@@ -354,8 +368,13 @@ export function RegisterScreen() {
 								disabled={isSaving}
 								style={appStyles.registerDateField}
 							>
-								<Text style={appStyles.registerDateFieldText}>
-									{selectedTime}
+								<Text
+									style={[
+										appStyles.registerDateFieldText,
+										!selectedTimeLabel && appStyles.registerDateFieldPlaceholder,
+									]}
+								>
+									{selectedTimeLabel ?? 'Insira a hora...'}
 								</Text>
 								<Ionicons name="time-outline" size={16} color="#125ED0" />
 							</Pressable>
@@ -364,7 +383,7 @@ export function RegisterScreen() {
 						{showDatePicker ? (
 							<DateTimePicker
 								mode="date"
-								value={selectedAt}
+								value={selectedDate ?? new Date()}
 								onChange={handleDateChange}
 							/>
 						) : null}
@@ -372,7 +391,7 @@ export function RegisterScreen() {
 						{showTimePicker ? (
 							<DateTimePicker
 								mode="time"
-								value={selectedAt}
+								value={selectedTime ?? new Date()}
 								onChange={handleTimeChange}
 							/>
 						) : null}

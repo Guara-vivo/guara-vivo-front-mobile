@@ -645,6 +645,9 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 13,
 	},
+	registerDateFieldPlaceholder: {
+		color: colors.muted,
+	},
 	registerActionsRow: {
 		flexDirection: 'row',
 		gap: 12,
