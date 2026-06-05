@@ -5,6 +5,7 @@ import {
 	View,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { Picker } from '@react-native-picker/picker'
 import {
 	BottomSheetBackdrop,
 	BottomSheetModal,
@@ -15,7 +16,9 @@ import {
 import { behaviorOptions } from '../constants/behaviors'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
+import { getMapZones } from '../services/mapZonesApi'
 import type { HistoryFilterState } from '../hooks/useHistoryFilters'
+import type { MapZoneRead } from '../types/api'
 
 type HistoryFilterSection = 'period' | 'location' | 'quantity' | 'behaviors'
 
@@ -58,12 +61,25 @@ export function HistoryFilterModal({
 	onClose: () => void
 }) {
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
+	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [openSections, setOpenSections] = useState<Record<HistoryFilterSection, boolean>>({
 		period: false,
 		location: false,
 		quantity: false,
 		behaviors: false,
 	})
+
+	useEffect(() => {
+		const loadZones = async () => {
+			try {
+				const data = await getMapZones()
+				setZones(data)
+			} catch (error) {
+				console.error('[HistoryFilterModal] Failed to load zones:', error)
+			}
+		}
+		loadZones()
+	}, [])
 
 	useEffect(() => {
 		bottomSheetRef.current?.present()
@@ -174,18 +190,30 @@ export function HistoryFilterModal({
 							/>
 
 							{openSections.location ? (
-							<BottomSheetTextInput
-								value={draftFilters.location}
-								onChangeText={(value) =>
-									setDraftFilters((current: HistoryFilterState) => ({
-										...current,
-										location: value,
-									}))
-								}
-								placeholder="Ex: -24.4959, -47.8431"
-								placeholderTextColor="#8E8E96"
-								style={appStyles.historySingleInput}
-							/>
+								<View style={appStyles.zoneSelectContainer}>
+									<View
+										style={[
+											appStyles.zonePickerContainer,
+											{ backgroundColor: colors.surface },
+										]}
+									>
+										<Picker
+											selectedValue={draftFilters.location}
+											onValueChange={(value) =>
+												setDraftFilters((current: HistoryFilterState) => ({
+													...current,
+													location: value,
+												}))
+											}
+											style={appStyles.zonePicker}
+										>
+											<Picker.Item label="Todas as áreas" value="" />
+											{zones.map((zone) => (
+												<Picker.Item key={zone.id} label={zone.name} value={zone.name} />
+											))}
+										</Picker>
+									</View>
+								</View>
 							) : null}
 						</View>
 

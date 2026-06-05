@@ -118,6 +118,7 @@ export function useHistoryFilters(records: RecordItem[]) {
 			const behaviorTags = parseBehaviorTags(record.flock_size).map((tag) =>
 				tag.toLowerCase(),
 			)
+			const zoneNames = record.map_zones.map((zone) => zone.name.toLowerCase())
 
 			if (query) {
 				const searchableContent = [
@@ -127,6 +128,7 @@ export function useHistoryFilters(records: RecordItem[]) {
 					locationLabel,
 					record.flock_size,
 					String(record.ibis_quantity),
+					...zoneNames,
 				]
 					.join(' ')
 					.toLowerCase()
@@ -149,7 +151,7 @@ export function useHistoryFilters(records: RecordItem[]) {
 				}
 			}
 
-			if (locationQuery && !locationLabel.includes(locationQuery)) {
+			if (locationQuery && !zoneNames.includes(locationQuery)) {
 				return false
 			}
 
