@@ -268,6 +268,8 @@ export function RegisterScreen() {
 			return
 		}
 
+		setShowLocationPicker(true)
+
 		if (!locationFetchedRef.current) {
 			locationFetchedRef.current = true
 			try {
@@ -285,8 +287,6 @@ export function RegisterScreen() {
 				// location permission denied or unavailable, map uses default region
 			}
 		}
-
-		setShowLocationPicker(true)
 	}
 
 	const closeLocationPicker = () => {
