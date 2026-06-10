@@ -4,7 +4,7 @@ import { getAccessToken } from './tokenStorage'
 
 export async function getMapZones(signal?: AbortSignal): Promise<MapZoneRead[]> {
 	const token = await getAccessToken()
-	const response = await apiFetch('/map-zones', {
+	const response = await apiFetch('/map-zones/', {
 		method: 'GET',
 		headers: token ? { Authorization: `Bearer ${token}` } : {},
 		signal,
@@ -50,7 +50,7 @@ export async function createMapZone(
 		radius_meters,
 	}
 
-	const response = await apiFetch('/map-zones', {
+	const response = await apiFetch('/map-zones/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
