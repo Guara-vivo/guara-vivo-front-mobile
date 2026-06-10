@@ -1,17 +1,23 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import {
+	ActivityIndicator,
+	Pressable,
+	Text,
+	View,
+} from 'react-native'
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
-import { MapZoneDeleteConfirmSheet } from '../components/MapZoneDeleteConfirmSheet'
+import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 
 import { appStyles } from '../styles/appStyles'
 import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { MapLayerId } from '../config/map'
-import { getMapZones, createMapZone, deleteMapZone } from '../services/mapZonesApi'
+import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
+import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 type LayerButton = { id: MapLayerId; label: string; icon: IoniconName }
@@ -22,40 +28,25 @@ const LAYER_BUTTONS: LayerButton[] = [
 	{ id: 'nests', label: 'NINHOS', icon: 'home' },
 ]
 
-function formatZoneType(type: MapZoneType) {
-	return type === 'feeding' ? 'Alimentação' : 'Ninho'
-}
-
-function formatZoneDate(value: string) {
-	const date = new Date(value)
-
-	if (Number.isNaN(date.getTime())) {
-		return value
-	}
-
-	return date.toLocaleDateString('pt-BR', {
-		day: '2-digit',
-		month: '2-digit',
-		year: 'numeric',
-	})
-}
-
 export function MapsScreen() {
+	const ctx = useMapZoneDetail()
 	const selectionModalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const [selectedLayer, setSelectedLayer] = useState<MapLayerId>('all')
 	const [zones, setZones] = useState<MapZoneRead[]>([])
 	const [zonesError, setZonesError] = useState<string | null>(null)
 	const [isZonesLoading, setIsZonesLoading] = useState(true)
 	const [showZoneModal, setShowZoneModal] = useState(false)
-	const [selectedZone, setSelectedZone] = useState<MapZoneRead | null>(null)
-	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 	const [creatingZone, setCreatingZone] = useState(false)
-	const [deletingZone, setDeletingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
 	const [lastUpdatedNow, setLastUpdatedNow] = useState(() => new Date())
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
+
+	const visibleZoneRecords = useMemo(
+		() => getVisibleMapZoneRecords(ctx.zoneRecords),
+		[ctx.zoneRecords],
+	)
 
 	const loadZones = useCallback(async (signal?: AbortSignal) => {
 		try {
@@ -98,6 +89,7 @@ export function MapsScreen() {
 			if (selectionModalTimerRef.current) {
 				clearTimeout(selectionModalTimerRef.current)
 			}
+
 		}
 	}, [])
 
@@ -146,49 +138,14 @@ export function MapsScreen() {
 	}
 
 	const handleZonePress = (zone: MapZoneRead) => {
-		setSelectedZone(zone)
+		ctx.openSheet(zone)
 	}
 
-	const handleCloseZoneDetail = () => {
-		if (deletingZone) {
-			return
-		}
-
-		setShowDeleteConfirm(false)
-		setSelectedZone(null)
-	}
-
-	const handleOpenDeleteConfirm = () => {
-		setShowDeleteConfirm(true)
-	}
-
-	const handleCloseDeleteConfirm = () => {
-		if (deletingZone) {
-			return
-		}
-
-		setShowDeleteConfirm(false)
-	}
-
-	const handleDeleteZone = async () => {
-		if (!selectedZone) {
-			return
-		}
-
-		try {
-			setDeletingZone(true)
-			setZonesError(null)
-			await deleteMapZone(selectedZone.id)
-			setZones((prev) => prev.filter((zone) => zone.id !== selectedZone.id))
-			setShowDeleteConfirm(false)
-			setSelectedZone(null)
-		} catch (error) {
-			setShowDeleteConfirm(false)
-			setZonesError(error instanceof Error ? error.message : 'Erro ao excluir área')
-		} finally {
-			setDeletingZone(false)
-		}
-	}
+	useEffect(() => {
+		ctx.registerOnZoneDeleted((zoneId: number) => {
+			setZones((prev) => prev.filter((z) => z.id !== zoneId))
+		})
+	}, [ctx])
 
 	const handleCreateZone = async (type: MapZoneType, radius_meters: number) => {
 		if (!selectedCoords) return
@@ -197,7 +154,6 @@ export function MapsScreen() {
 			setCreatingZone(true)
 			const newZone = await createMapZone(type, selectedCoords.lat, selectedCoords.lng, radius_meters)
 			setZones((prev) => [newZone, ...prev])
-			setSelectedZone(null)
 			setSelectionMode(false)
 			setSelectedCoords(null)
 			setShowZoneModal(false)
@@ -281,9 +237,12 @@ export function MapsScreen() {
 				<MapLibreMapView
 					selectedLayer={selectedLayer}
 					zones={zones}
+					recordMarkers={visibleZoneRecords}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 					onZonePress={!selectionMode ? handleZonePress : undefined}
-					selectedZoneId={selectedZone?.id ?? null}
+					onRecordMarkerPress={!selectionMode ? ctx.onRecordMarkerPress : undefined}
+					selectedZoneId={ctx.selectedZone?.id ?? null}
+					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}
 				/>
 				{selectionMode ? (
@@ -329,48 +288,6 @@ export function MapsScreen() {
 						<Text style={appStyles.mapReloadText}>{lastUpdatedLabel}</Text>
 					</View>
 				</View>
-				{selectedZone ? (
-					<View style={appStyles.mapZoneInfoCard}>
-						<View style={appStyles.mapZoneInfoHeader}>
-							<View>
-								<Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
-								<Text style={appStyles.mapZoneInfoTitle}>{selectedZone.name}</Text>
-								<Text style={appStyles.mapZoneInfoType}>{formatZoneType(selectedZone.type)}</Text>
-							</View>
-							<View style={appStyles.mapZoneInfoHeaderActions}>
-								<Pressable
-									onPress={handleOpenDeleteConfirm}
-									disabled={deletingZone}
-									hitSlop={8}
-									style={appStyles.mapZoneInfoDeleteIconButton}
-								>
-									<Ionicons name="trash-outline" size={17} color="#FFFFFF" />
-								</Pressable>
-								<Pressable
-									onPress={handleCloseZoneDetail}
-									disabled={deletingZone}
-									hitSlop={8}
-									style={appStyles.mapZoneInfoCloseButton}
-								>
-									<Ionicons name="close" size={18} color="#FFFFFF" />
-								</Pressable>
-							</View>
-						</View>
-						<View style={appStyles.mapZoneInfoGrid}>
-							<View style={appStyles.mapZoneInfoMetric}>
-								<Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
-								<Text style={appStyles.mapZoneInfoValue}>{selectedZone.radius_meters} m</Text>
-							</View>
-							<View style={appStyles.mapZoneInfoMetric}>
-								<Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
-								<Text style={appStyles.mapZoneInfoValue}>{formatZoneDate(selectedZone.created_at)}</Text>
-							</View>
-						</View>
-						<Text style={appStyles.mapZoneInfoCoordinates}>
-							{selectedZone.latitude.toFixed(5)}, {selectedZone.longitude.toFixed(5)}
-						</Text>
-					</View>
-				) : null}
 			</ScreenCard>
 			</View>
 
@@ -379,13 +296,6 @@ export function MapsScreen() {
 				onConfirm={handleCreateZone}
 				onCancel={handleCancelModal}
 				isSubmitting={creatingZone}
-			/>
-		)}
-		{showDeleteConfirm && (
-			<MapZoneDeleteConfirmSheet
-				onConfirm={handleDeleteZone}
-				onCancel={handleCloseDeleteConfirm}
-				isDeleting={deletingZone}
 			/>
 		)}
 		</View>

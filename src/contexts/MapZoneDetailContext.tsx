@@ -28,6 +28,7 @@ interface MapZoneDetailContextType {
 	deleteZone: () => Promise<number | null>
 	registerScrollToRecord: (fn: (id: number) => void) => void
 	scrollToRecord: (recordId: number) => void
+	registerOnZoneDeleted: (fn: (zoneId: number) => void) => void
 }
 
 const MapZoneDetailContext = createContext<MapZoneDetailContextType | null>(null)
@@ -41,9 +42,14 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 	const [isDeleting, setIsDeleting] = useState(false)
 	const scrollToRecordRef = useRef<((id: number) => void) | null>(null)
+	const onZoneDeletedRef = useRef<((zoneId: number) => void) | null>(null)
 
 	const registerScrollToRecord = useCallback((fn: (id: number) => void) => {
 		scrollToRecordRef.current = fn
+	}, [])
+
+	const registerOnZoneDeleted = useCallback((fn: (zoneId: number) => void) => {
+		onZoneDeletedRef.current = fn
 	}, [])
 
 	const scrollToRecord = useCallback((recordId: number) => {
@@ -118,6 +124,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 		try {
 			await deleteMapZone(selectedZone.id)
 			const deletedId = selectedZone.id
+			onZoneDeletedRef.current?.(deletedId)
 			setSelectedZone(null)
 			setShowDeleteConfirm(false)
 			return deletedId
@@ -147,13 +154,14 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 			deleteZone,
 			registerScrollToRecord,
 			scrollToRecord,
+			registerOnZoneDeleted,
 		}),
 		[
 			selectedZone, zoneRecords, isZoneRecordsLoading, zoneRecordsError,
 			selectedRecordId, showDeleteConfirm, isDeleting,
 			openSheet, closeSheet, setSelectedRecordId, onRecordMarkerPress,
 			openDeleteConfirm, closeDeleteConfirm, deleteZone,
-			registerScrollToRecord, scrollToRecord,
+			registerScrollToRecord, scrollToRecord, registerOnZoneDeleted,
 		],
 	)
 
