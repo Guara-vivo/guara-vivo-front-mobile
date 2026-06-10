@@ -363,14 +363,15 @@ export function MapLibreMapView({
 					{zonePressMarkers}
 					{selectedRecordMarkers}
 					{hasLocationTarget && (
-						<Marker
-							coordinate={{
-								latitude: cameraTargetRegion.latitude,
-								longitude: cameraTargetRegion.longitude,
-							}}
-							title="Sua Localização"
-							description="Localização atual"
-						>
+                <Marker
+                    coordinate={{
+                        latitude: cameraTargetRegion.latitude,
+                        longitude: cameraTargetRegion.longitude,
+                    }}
+                    anchor={{ x: 0.5, y: 0.5 }}
+                    title="Sua Localização"
+                    description="Localização atual"
+                >
 						<View style={styles.userMarkerContainer}>
 							<View style={styles.userMarkerCircle}>
 								<Ionicons name="navigate" size={16} color="#FFFFFF" />
