@@ -2632,14 +2632,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		paddingTop: spacing.sm,
 		paddingBottom: spacing.xl,
 	} as ViewStyle,
-	mapZoneDeleteOverlay: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: 'rgba(0, 0, 0, 0.35)',
-		alignItems: 'center',
-		justifyContent: 'center',
-		padding: spacing.lg,
-		zIndex: 100,
-	} as ViewStyle,
 	zoneModalContent: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,

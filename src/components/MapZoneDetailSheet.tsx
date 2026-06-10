@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
+import { MapZoneDeleteConfirmSheet } from './MapZoneDeleteConfirmSheet'
 import { appStyles } from '../styles/appStyles'
 import { formatDate, formatTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
@@ -145,12 +146,6 @@ export function MapZoneDetailSheet() {
     }
   }, [ctx.selectedZone])
 
-  useEffect(() => {
-    if (ctx.showDeleteConfirm) {
-      bottomSheetRef.current?.snapToIndex(1)
-    }
-  }, [ctx.showDeleteConfirm])
-
   const handleSheetChange = useCallback(
     (index: number) => {
       setSnapIndex(index)
@@ -165,6 +160,7 @@ export function MapZoneDetailSheet() {
   }, [ctx])
 
   const handleDeletePress = useCallback(() => {
+    bottomSheetRef.current?.close()
     ctx.openDeleteConfirm()
   }, [ctx])
 
@@ -177,6 +173,7 @@ export function MapZoneDetailSheet() {
   }, [ctx])
 
   return (
+    <>
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={snapPoints}
@@ -291,40 +288,14 @@ export function MapZoneDetailSheet() {
           )}
       </View>
       </BottomSheetScrollView>
-      {ctx.showDeleteConfirm && (
-        <View style={appStyles.mapZoneDeleteOverlay}>
-          <Text style={appStyles.zoneModalTitle}>Excluir área?</Text>
-          <Text style={appStyles.zoneDeleteConfirmText}>
-            Essa ação não pode ser desfeita.
-          </Text>
-          <View style={appStyles.zoneModalButtonContainer}>
-            <Pressable
-              style={[
-                appStyles.zoneDeleteConfirmCancelButton,
-                ctx.isDeleting && appStyles.zoneModalDisabled,
-              ]}
-              onPress={ctx.closeDeleteConfirm}
-              disabled={ctx.isDeleting}
-            >
-              <Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
-            </Pressable>
-            <Pressable
-              style={[
-                appStyles.zoneDeleteConfirmButton,
-                ctx.isDeleting && appStyles.zoneModalConfirmButtonDisabled,
-              ]}
-              onPress={handleDeleteConfirm}
-              disabled={ctx.isDeleting}
-            >
-              {ctx.isDeleting ? (
-                <ActivityIndicator size="small" color="#FFFFFF" />
-              ) : (
-                <Text style={appStyles.zoneDeleteConfirmButtonText}>Excluir</Text>
-              )}
-            </Pressable>
-          </View>
-        </View>
-      )}
     </BottomSheet>
+      {ctx.showDeleteConfirm && (
+        <MapZoneDeleteConfirmSheet
+          onConfirm={handleDeleteConfirm}
+          onCancel={ctx.closeDeleteConfirm}
+          isDeleting={ctx.isDeleting}
+        />
+      )}
+    </>
   )
 }
