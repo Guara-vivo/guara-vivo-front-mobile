@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import { Portal } from '@gorhom/portal'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 import { MapZoneDeleteConfirmSheet } from './MapZoneDeleteConfirmSheet'
 import { appStyles } from '../styles/appStyles'
@@ -175,7 +176,7 @@ export function MapZoneDetailSheet() {
   if (!ctx.selectedZone) return null
 
   return (
-    <>
+    <Portal>
       <BottomSheet
         ref={bottomSheetRef}
         snapPoints={snapPoints}
@@ -289,6 +290,6 @@ export function MapZoneDetailSheet() {
           isDeleting={ctx.isDeleting}
         />
       )}
-    </>
+    </Portal>
   )
 }
