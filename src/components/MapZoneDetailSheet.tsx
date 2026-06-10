@@ -103,10 +103,10 @@ export function MapZoneDetailSheet() {
   const ctx = useMapZoneDetail()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const bottomSheetRef = useRef<BottomSheet>(null)
-  const recordListRef = useRef<ScrollView>(null)
+  const sheetScrollRef = useRef<ScrollView>(null)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
 
-  const snapPoints = ['25%', '80%']
+  const snapPoints = ['20%', '35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
   const handleOpenZoneRecord = useCallback(
@@ -126,13 +126,13 @@ export function MapZoneDetailSheet() {
   const scrollToRecordRow = useCallback((recordId: number) => {
     const y = recordRowYByIdRef.current[recordId]
     if (typeof y === 'number') {
-      recordListRef.current?.scrollTo({ y: Math.max(y - 8, 0), animated: true })
+      sheetScrollRef.current?.scrollTo({ y: Math.max(y - 8, 0), animated: true })
       return
     }
     setTimeout(() => {
       const nextY = recordRowYByIdRef.current[recordId]
       if (typeof nextY === 'number') {
-        recordListRef.current?.scrollTo({ y: Math.max(nextY - 8, 0), animated: true })
+        sheetScrollRef.current?.scrollTo({ y: Math.max(nextY - 8, 0), animated: true })
       }
     }, 80)
   }, [])
@@ -185,6 +185,7 @@ export function MapZoneDetailSheet() {
         handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
       >
         <BottomSheetScrollView
+          ref={sheetScrollRef}
           style={appStyles.zoneBottomSheetContent}
           showsVerticalScrollIndicator={false}
         >
@@ -257,12 +258,7 @@ export function MapZoneDetailSheet() {
                     {ctx.zoneRecordsError}
                   </Text>
                 ) : visibleZoneRecords.length > 0 ? (
-                  <ScrollView
-                    ref={recordListRef}
-                    style={appStyles.mapZoneRecordsList}
-                    nestedScrollEnabled
-                    showsVerticalScrollIndicator={false}
-                  >
+                  <View style={appStyles.mapZoneRecordsList}>
                     {visibleZoneRecords.map((record) => (
                       <ZoneRecordRow
                         key={record.id}
@@ -273,7 +269,7 @@ export function MapZoneDetailSheet() {
                         onLayout={handleRecordRowLayout}
                       />
                     ))}
-                  </ScrollView>
+                  </View>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
                     Nenhum registro com guarás identificados nesta área.
