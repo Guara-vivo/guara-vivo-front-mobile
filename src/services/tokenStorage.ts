@@ -19,25 +19,50 @@ function normalizeToken(token: string) {
  * If token exists in AsyncStorage, migrate it to SecureStore and remove from AsyncStorage.
  */
 async function readTokenFromStorage(key: string): Promise<string | null> {
+	let token: string | null = null
+
+	// Try SecureStore first
 	try {
-		// Try SecureStore first
-		let token = await SecureStore.getItemAsync(key)
+		token = await SecureStore.getItemAsync(key)
 		if (token) {
 			return token.trim() || null
 		}
+	} catch {
+		// SecureStore failed — fall through to AsyncStorage
+	}
 
-		// Fallback: AsyncStorage (migration path)
+	// Fallback: AsyncStorage
+	try {
 		token = await AsyncStorage.getItem(key)
-		if (token) {
-			// Migrate to SecureStore and remove from AsyncStorage
-			await SecureStore.setItemAsync(key, token)
-			await AsyncStorage.removeItem(key)
-			return token.trim() || null
-		}
-
-		return null
 	} catch {
 		return null
+	}
+
+	if (token) {
+		// Try to migrate to SecureStore, but keep AsyncStorage copy if migration fails
+		try {
+			await SecureStore.setItemAsync(key, token)
+			await AsyncStorage.removeItem(key)
+		} catch {
+			// Migration failed — AsyncStorage copy preserved
+		}
+
+		return token.trim() || null
+	}
+
+	return null
+}
+
+async function secureStoreSetItem(
+	key: string,
+	value: string,
+): Promise<boolean> {
+	try {
+		await SecureStore.setItemAsync(key, value)
+		return true
+	} catch {
+		await AsyncStorage.setItem(key, value)
+		return false
 	}
 }
 
@@ -48,19 +73,21 @@ export async function saveTokens(params: {
 	const access = normalizeToken(params.accessToken)
 	const refresh = normalizeToken(params.refreshToken)
 
-	await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, access)
-	await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refresh)
+	const secureAccessOk = await secureStoreSetItem(ACCESS_TOKEN_KEY, access)
+	const secureRefreshOk = await secureStoreSetItem(REFRESH_TOKEN_KEY, refresh)
 
-	// Clean up AsyncStorage (no longer used)
-	await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY])
+	if (secureAccessOk && secureRefreshOk) {
+		await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY])
+	}
 }
 
 export async function saveAccessToken(token: string) {
 	const normalized = normalizeToken(token)
-	await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, normalized)
+	const secureOk = await secureStoreSetItem(ACCESS_TOKEN_KEY, normalized)
 
-	// Clean up AsyncStorage
-	await AsyncStorage.removeItem(ACCESS_TOKEN_KEY)
+	if (secureOk) {
+		await AsyncStorage.removeItem(ACCESS_TOKEN_KEY)
+	}
 }
 
 export async function getAccessToken() {
