@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import BottomSheet from '@gorhom/bottom-sheet'
 import { Portal } from '@gorhom/portal'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 import { MapZoneDeleteConfirmSheet } from './MapZoneDeleteConfirmSheet'
@@ -106,7 +106,7 @@ export function MapZoneDetailSheet() {
   const sheetScrollRef = useRef<ScrollView>(null)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
 
-  const snapPoints = ['20%', '35%', '80%']
+  const snapPoints = ['35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
   const handleOpenZoneRecord = useCallback(
@@ -184,101 +184,102 @@ export function MapZoneDetailSheet() {
         backgroundStyle={appStyles.zoneBottomSheetBackground}
         handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
       >
-        <BottomSheetScrollView
-          ref={sheetScrollRef}
-          style={appStyles.zoneBottomSheetContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {ctx.selectedZone && (
-            <>
-              <View style={appStyles.mapZoneInfoHeader}>
-                <View>
-                  <Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
-                  <Text style={appStyles.mapZoneInfoTitle}>{ctx.selectedZone.name}</Text>
-                  <Text style={appStyles.mapZoneInfoType}>
-                    {formatZoneType(ctx.selectedZone.type)}
-                  </Text>
-                </View>
-                <View style={appStyles.mapZoneInfoHeaderActions}>
-                  <Pressable
-                    onPress={handleDeletePress}
-                    disabled={ctx.isDeleting}
-                    hitSlop={8}
-                    style={appStyles.mapZoneInfoDeleteIconButton}
-                  >
-                    <Ionicons name="trash-outline" size={17} color="#FFFFFF" />
-                  </Pressable>
-                  <Pressable
-                    onPress={handleCloseZoneDetail}
-                    disabled={ctx.isDeleting}
-                    hitSlop={8}
-                    style={appStyles.mapZoneInfoCloseButton}
-                  >
-                    <Ionicons name="close" size={18} color="#FFFFFF" />
-                  </Pressable>
-                </View>
-              </View>
-
-              <View style={appStyles.mapZoneInfoGrid}>
-                <View style={appStyles.mapZoneInfoMetric}>
-                  <Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
-                  <Text style={appStyles.mapZoneInfoValue}>
-                    {ctx.selectedZone.radius_meters} m
-                  </Text>
-                </View>
-                <View style={appStyles.mapZoneInfoMetric}>
-                  <Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
-                  <Text style={appStyles.mapZoneInfoValue}>
-                    {formatZoneDate(ctx.selectedZone.created_at)}
-                  </Text>
-                </View>
-              </View>
-
-              <Text style={appStyles.mapZoneInfoCoordinates}>
-                {ctx.selectedZone.latitude.toFixed(5)},{' '}
-                {ctx.selectedZone.longitude.toFixed(5)}
-              </Text>
-
-              <View style={appStyles.mapZoneRecordsSection}>
-                <View style={appStyles.mapZoneRecordsHeader}>
-                  <Text style={appStyles.mapZoneInfoLabel}>Registros na área</Text>
-                  <Text style={appStyles.mapZoneRecordsCount}>
-                    {visibleZoneRecords.length}
-                  </Text>
-                </View>
-                {ctx.isZoneRecordsLoading ? (
-                  <View style={appStyles.mapZoneRecordsStatusRow}>
-                    <ActivityIndicator size="small" color="#125ED0" />
-                    <Text style={appStyles.mapZoneRecordsStatusText}>
-                      Carregando registros...
+        <View style={appStyles.zoneBottomSheetContent}>
+          <ScrollView
+            ref={sheetScrollRef}
+            showsVerticalScrollIndicator={false}
+          >
+            {ctx.selectedZone && (
+              <>
+                <View style={appStyles.mapZoneInfoHeader}>
+                  <View>
+                    <Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
+                    <Text style={appStyles.mapZoneInfoTitle}>{ctx.selectedZone.name}</Text>
+                    <Text style={appStyles.mapZoneInfoType}>
+                      {formatZoneType(ctx.selectedZone.type)}
                     </Text>
                   </View>
-                ) : ctx.zoneRecordsError ? (
-                  <Text style={appStyles.mapZoneRecordsErrorText}>
-                    {ctx.zoneRecordsError}
-                  </Text>
-                ) : visibleZoneRecords.length > 0 ? (
-                  <View style={appStyles.mapZoneRecordsList}>
-                    {visibleZoneRecords.map((record) => (
-                      <ZoneRecordRow
-                        key={record.id}
-                        record={record}
-                        selected={ctx.selectedRecordId === record.id}
-                        onSelect={(id) => ctx.setSelectedRecordId(id)}
-                        onOpenDetails={handleOpenZoneRecord}
-                        onLayout={handleRecordRowLayout}
-                      />
-                    ))}
+                  <View style={appStyles.mapZoneInfoHeaderActions}>
+                    <Pressable
+                      onPress={handleDeletePress}
+                      disabled={ctx.isDeleting}
+                      hitSlop={8}
+                      style={appStyles.mapZoneInfoDeleteIconButton}
+                    >
+                      <Ionicons name="trash-outline" size={17} color="#FFFFFF" />
+                    </Pressable>
+                    <Pressable
+                      onPress={handleCloseZoneDetail}
+                      disabled={ctx.isDeleting}
+                      hitSlop={8}
+                      style={appStyles.mapZoneInfoCloseButton}
+                    >
+                      <Ionicons name="close" size={18} color="#FFFFFF" />
+                    </Pressable>
                   </View>
-                ) : (
-                  <Text style={appStyles.mapZoneRecordsStatusText}>
-                    Nenhum registro com guarás identificados nesta área.
-                  </Text>
-                )}
-              </View>
-            </>
-          )}
-        </BottomSheetScrollView>
+                </View>
+
+                <View style={appStyles.mapZoneInfoGrid}>
+                  <View style={appStyles.mapZoneInfoMetric}>
+                    <Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
+                    <Text style={appStyles.mapZoneInfoValue}>
+                      {ctx.selectedZone.radius_meters} m
+                    </Text>
+                  </View>
+                  <View style={appStyles.mapZoneInfoMetric}>
+                    <Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
+                    <Text style={appStyles.mapZoneInfoValue}>
+                      {formatZoneDate(ctx.selectedZone.created_at)}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={appStyles.mapZoneInfoCoordinates}>
+                  {ctx.selectedZone.latitude.toFixed(5)},{' '}
+                  {ctx.selectedZone.longitude.toFixed(5)}
+                </Text>
+
+                <View style={appStyles.mapZoneRecordsSection}>
+                  <View style={appStyles.mapZoneRecordsHeader}>
+                    <Text style={appStyles.mapZoneInfoLabel}>Registros na área</Text>
+                    <Text style={appStyles.mapZoneRecordsCount}>
+                      {visibleZoneRecords.length}
+                    </Text>
+                  </View>
+                  {ctx.isZoneRecordsLoading ? (
+                    <View style={appStyles.mapZoneRecordsStatusRow}>
+                      <ActivityIndicator size="small" color="#125ED0" />
+                      <Text style={appStyles.mapZoneRecordsStatusText}>
+                        Carregando registros...
+                      </Text>
+                    </View>
+                  ) : ctx.zoneRecordsError ? (
+                    <Text style={appStyles.mapZoneRecordsErrorText}>
+                      {ctx.zoneRecordsError}
+                    </Text>
+                  ) : visibleZoneRecords.length > 0 ? (
+                    <View style={appStyles.mapZoneRecordsList}>
+                      {visibleZoneRecords.map((record) => (
+                        <ZoneRecordRow
+                          key={record.id}
+                          record={record}
+                          selected={ctx.selectedRecordId === record.id}
+                          onSelect={(id) => ctx.setSelectedRecordId(id)}
+                          onOpenDetails={handleOpenZoneRecord}
+                          onLayout={handleRecordRowLayout}
+                        />
+                      ))}
+                    </View>
+                  ) : (
+                    <Text style={appStyles.mapZoneRecordsStatusText}>
+                      Nenhum registro com guarás identificados nesta área.
+                    </Text>
+                  )}
+                </View>
+              </>
+            )}
+          </ScrollView>
+        </View>
       </BottomSheet>
 
       {ctx.showDeleteConfirm && (
