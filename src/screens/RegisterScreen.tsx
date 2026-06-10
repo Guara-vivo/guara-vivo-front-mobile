@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { ActivityIndicator } from 'react-native'
 import DateTimePicker, {
 	type DateTimePickerEvent,
@@ -59,6 +59,7 @@ export function RegisterScreen() {
 	const [isPickingImages, setIsPickingImages] = useState(false)
 	const [isDropZonePressed, setIsDropZonePressed] = useState(false)
 	const [feedback, setFeedback] = useState<RegisterFeedback | null>(null)
+	const locationFetchedRef = useRef(false)
 
 	const selectedDateLabel = selectedDate?.toLocaleDateString('pt-BR')
 	const selectedTimeLabel = selectedTime?.toLocaleTimeString('pt-BR', {
@@ -267,19 +268,22 @@ export function RegisterScreen() {
 			return
 		}
 
-		try {
-			const { status } = await Location.requestForegroundPermissionsAsync()
-			if (status === 'granted') {
-				const position = await Location.getCurrentPositionAsync({
-					accuracy: Location.Accuracy.Balanced,
-				})
-				setUserLocation({
-					latitude: position.coords.latitude,
-					longitude: position.coords.longitude,
-				})
+		if (!locationFetchedRef.current) {
+			locationFetchedRef.current = true
+			try {
+				const { status } = await Location.requestForegroundPermissionsAsync()
+				if (status === 'granted') {
+					const position = await Location.getCurrentPositionAsync({
+						accuracy: Location.Accuracy.Balanced,
+					})
+					setUserLocation({
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude,
+					})
+				}
+			} catch {
+				// location permission denied or unavailable, map uses default region
 			}
-		} catch {
-			// location permission denied or unavailable, map uses default region
 		}
 
 		setShowLocationPicker(true)
