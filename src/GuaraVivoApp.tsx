@@ -13,6 +13,8 @@ import { colors } from './constants/theme'
 import { restoreSession } from './services/authService'
 import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
+import { MapZoneDetailProvider } from './contexts/MapZoneDetailContext'
+import { MapZoneDetailSheet } from './components/MapZoneDetailSheet'
 import { appStyles } from './styles/appStyles'
 import type { UserRead } from './types/api'
 import type { RootStackParamList } from './types/navigation'
@@ -78,12 +80,15 @@ export default function GuaraVivoApp() {
 			>
 				<RecordProgressProvider isEnabled={isAuthenticated}>
 					<NavigationContainer ref={navigationRef}>
-						<RootNavigator
-							isAuthenticated={isAuthenticated}
-							currentUser={currentUser}
-							onAuthSuccess={handleAuthSuccess}
-							onLogoutSuccess={handleLogoutSuccess}
-						/>
+						<MapZoneDetailProvider>
+							<RootNavigator
+								isAuthenticated={isAuthenticated}
+								currentUser={currentUser}
+								onAuthSuccess={handleAuthSuccess}
+								onLogoutSuccess={handleLogoutSuccess}
+							/>
+							<MapZoneDetailSheet />
+						</MapZoneDetailProvider>
 					</NavigationContainer>
 				</RecordProgressProvider>
 			</InAppNotificationProvider>
