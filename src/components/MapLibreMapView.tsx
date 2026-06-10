@@ -2,7 +2,7 @@ import MapView, { Circle, Marker, type Region } from 'react-native-maps'
 import { Ionicons } from '@expo/vector-icons'
 import * as Location from 'expo-location'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native'
 import { MAP_CENTER } from '../config/map'
 import type { MapLayerId } from '../config/map'
 import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
@@ -14,6 +14,7 @@ const CAMERA_ANIMATION_DURATION_MS = 250
 const CAMERA_STORAGE_DEBOUNCE_MS = 600
 const LOCATION_TIMEOUT_MS = 5000
 const MAP_CAMERA_STORAGE_KEY = 'guara_vivo:last_map_camera_region'
+const EMPTY_RECORD_MARKERS: MapZoneRecordRead[] = []
 const DEFAULT_REGION: Region = {
 	latitude: MAP_CENTER.lat,
 	longitude: MAP_CENTER.lng,
@@ -53,26 +54,33 @@ function parseStoredRegion(value: string | null): Region | null {
 type RecordMarkerProps = {
 	record: MapZoneRecordRead
 	focused: boolean
-	onPress: (recordId: number) => void
+	opacity: Animated.Value
+	onPress?: (recordId: number) => void
 }
 
-function RecordMarker({ record, focused, onPress }: RecordMarkerProps) {
+function RecordMarker({ record, focused, opacity, onPress }: RecordMarkerProps) {
 	return (
 		<Marker
 			coordinate={{
 				latitude: record.latitude_camera,
 				longitude: record.longitude_camera,
 			}}
-			onPress={() => onPress(record.id)}
+			onPress={onPress ? () => onPress(record.id) : undefined}
 			anchor={{ x: 0.5, y: 0.5 }}
 			zIndex={focused ? 201 : 200}
 		>
-			<View style={[styles.recordMarkerOuter, focused && styles.recordMarkerOuterFocused]}>
+			<Animated.View
+				style={[
+					styles.recordMarkerOuter,
+					focused ? styles.recordMarkerOuterFocused : null,
+					{ opacity },
+				]}
+			>
 				<View style={styles.recordMarkerInner}>
 					<Ionicons name="eye" size={12} color="#FFFFFF" />
 				</View>
 				<Text style={styles.recordMarkerText}>{record.ibis_quantity ?? 0}</Text>
-			</View>
+			</Animated.View>
 		</Marker>
 	)
 }
@@ -105,6 +113,9 @@ export function MapLibreMapView({
 	const cameraStorageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const locationTimedOutRef = useRef(false)
 	const userMovedMapRef = useRef(false)
+	const recordMarkerOpacity = useRef(new Animated.Value(0)).current
+	const recordMarkerFadeAnimationRef = useRef<Animated.CompositeAnimation | null>(null)
+	const visibleRecordMarkerCountRef = useRef(0)
 	const [initialRegion, setInitialRegion] = useState<Region>(DEFAULT_REGION)
 	const [initialRegionReady, setInitialRegionReady] = useState(false)
 	const [cameraTargetRegion, setCameraTargetRegion] = useState<Region>(DEFAULT_REGION)
@@ -112,6 +123,10 @@ export function MapLibreMapView({
 	const [locationReady, setLocationReady] = useState(false)
 	const [mapReady, setMapReady] = useState(false)
 	const [cameraReady, setCameraReady] = useState(false)
+	const [visibleRecordMarkers, setVisibleRecordMarkers] = useState<MapZoneRecordRead[]>([])
+	const activeRecordMarkers = onRecordMarkerPress ? recordMarkers : EMPTY_RECORD_MARKERS
+	const activeRecordMarkersRef = useRef(activeRecordMarkers)
+	activeRecordMarkersRef.current = activeRecordMarkers
 
 	useEffect(() => {
 		let isMounted = true
@@ -142,8 +157,62 @@ export function MapLibreMapView({
 			if (cameraStorageTimerRef.current) {
 				clearTimeout(cameraStorageTimerRef.current)
 			}
+
+			recordMarkerFadeAnimationRef.current?.stop()
 		}
 	}, [])
+
+	useEffect(() => {
+		const previousCount = visibleRecordMarkerCountRef.current
+
+		recordMarkerFadeAnimationRef.current?.stop()
+
+		if (activeRecordMarkers.length > 0) {
+			setVisibleRecordMarkers(activeRecordMarkers)
+			visibleRecordMarkerCountRef.current = activeRecordMarkers.length
+
+			if (previousCount === 0) {
+				recordMarkerOpacity.setValue(0)
+			}
+
+			const animation = Animated.timing(recordMarkerOpacity, {
+				toValue: 1,
+				duration: 150,
+				useNativeDriver: true,
+			})
+
+			recordMarkerFadeAnimationRef.current = animation
+			animation.start(({ finished }) => {
+				if (finished && recordMarkerFadeAnimationRef.current === animation) {
+					recordMarkerFadeAnimationRef.current = null
+				}
+			})
+			return
+		}
+
+		if (previousCount === 0) {
+			recordMarkerOpacity.setValue(0)
+			return
+		}
+
+		const animation = Animated.timing(recordMarkerOpacity, {
+			toValue: 0,
+			duration: 200,
+			useNativeDriver: true,
+		})
+
+		recordMarkerFadeAnimationRef.current = animation
+		animation.start(({ finished }) => {
+			if (finished && activeRecordMarkersRef.current.length === 0) {
+				visibleRecordMarkerCountRef.current = 0
+				setVisibleRecordMarkers([])
+			}
+
+			if (recordMarkerFadeAnimationRef.current === animation) {
+				recordMarkerFadeAnimationRef.current = null
+			}
+		})
+	}, [activeRecordMarkers, recordMarkerOpacity])
 
 	const persistCameraRegion = (region: Region) => {
 		if (cameraStorageTimerRef.current) {
@@ -305,11 +374,7 @@ export function MapLibreMapView({
 	}, [onZonePress, visibleZones])
 
 	const selectedRecordMarkers = useMemo(() => {
-		if (!onRecordMarkerPress) {
-			return null
-		}
-
-		return recordMarkers.map((record) => {
+		return visibleRecordMarkers.map((record) => {
 			const selected = record.id === selectedRecordId
 
 			return (
@@ -317,11 +382,12 @@ export function MapLibreMapView({
 					key={`record-marker-${record.id}`}
 					record={record}
 					focused={selected}
+					opacity={recordMarkerOpacity}
 					onPress={onRecordMarkerPress}
 				/>
 			)
 		})
-	}, [selectedRecordId, onRecordMarkerPress, recordMarkers])
+	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers])
 
 	const visibleCount = visibleZones.length
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady

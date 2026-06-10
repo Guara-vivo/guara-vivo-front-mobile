@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import {
   ActivityIndicator,
   Animated,
@@ -13,7 +13,6 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
-import { MapZoneDeleteConfirmSheet } from './MapZoneDeleteConfirmSheet'
 import { appStyles } from '../styles/appStyles'
 import { formatDate, formatTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
@@ -105,8 +104,8 @@ export function MapZoneDetailSheet() {
   const recordScrollRef = useRef<ScrollView>(null)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
   const RECORD_ROW_HEIGHT = 108
+  const recordListHeight = useRef(new Animated.Value(RECORD_ROW_HEIGHT)).current
 
-  const [snapIndex, setSnapIndex] = useState(-1)
   const snapPoints = ['35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
@@ -140,10 +139,14 @@ export function MapZoneDetailSheet() {
 
   const handleSheetChange = useCallback(
     (index: number) => {
-      setSnapIndex(index)
+      Animated.timing(recordListHeight, {
+        toValue: index <= 0 ? RECORD_ROW_HEIGHT : RECORD_ROW_HEIGHT * 4,
+        duration: 250,
+        useNativeDriver: false,
+      }).start()
       if (index === -1) ctx.closeSheet()
     },
-    [ctx],
+    [ctx, recordListHeight],
   )
 
   const handleCloseZoneDetail = useCallback(() => {
@@ -154,16 +157,8 @@ export function MapZoneDetailSheet() {
   const handleDeletePress = useCallback(() => {
     const zoneId = ctx.selectedZone?.id
     if (zoneId === undefined) return
-    bottomSheetRef.current?.close()
     ctx.openDeleteConfirm(zoneId)
-  }, [ctx])
-
-  const handleDeleteConfirm = useCallback(async () => {
-    try {
-      await ctx.deleteZone()
-    } catch {
-      // Error displayed by MapsScreen
-    }
+    bottomSheetRef.current?.close()
   }, [ctx])
 
   return (
@@ -248,30 +243,26 @@ export function MapZoneDetailSheet() {
                     {ctx.zoneRecordsError}
                   </Text>
                 ) : visibleZoneRecords.length > 0 ? (
-                  <ScrollView
-                    ref={recordScrollRef}
-                    snapToInterval={RECORD_ROW_HEIGHT}
-                    decelerationRate="fast"
-                    showsVerticalScrollIndicator={false}
-                    nestedScrollEnabled
-                    style={{
-                      height:
-                        snapIndex <= 0
-                          ? RECORD_ROW_HEIGHT
-                          : RECORD_ROW_HEIGHT * 4,
-                    }}
-                  >
-                    {visibleZoneRecords.map((record) => (
-                      <ZoneRecordRow
-                        key={record.id}
-                        record={record}
-                        selected={ctx.selectedRecordId === record.id}
-                        onSelect={(id) => ctx.setSelectedRecordId(id)}
-                        onOpenDetails={handleOpenZoneRecord}
-                        onLayout={handleRecordRowLayout}
-                      />
-                    ))}
-                  </ScrollView>
+                    <Animated.View style={{ height: recordListHeight }}>
+                    <ScrollView
+                      ref={recordScrollRef}
+                      snapToInterval={RECORD_ROW_HEIGHT}
+                      decelerationRate="fast"
+                      showsVerticalScrollIndicator={false}
+                      nestedScrollEnabled
+                    >
+                      {visibleZoneRecords.map((record) => (
+                        <ZoneRecordRow
+                          key={record.id}
+                          record={record}
+                          selected={ctx.selectedRecordId === record.id}
+                          onSelect={(id) => ctx.setSelectedRecordId(id)}
+                          onOpenDetails={handleOpenZoneRecord}
+                          onLayout={handleRecordRowLayout}
+                        />
+                      ))}
+                    </ScrollView>
+                    </Animated.View>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
                     Nenhum registro com guarás identificados nesta área.
@@ -283,13 +274,6 @@ export function MapZoneDetailSheet() {
       </View>
       </BottomSheetScrollView>
     </BottomSheet>
-      {ctx.showDeleteConfirm && (
-        <MapZoneDeleteConfirmSheet
-          onConfirm={handleDeleteConfirm}
-          onCancel={ctx.closeDeleteConfirm}
-          isDeleting={ctx.isDeleting}
-        />
-      )}
     </>
   )
 }

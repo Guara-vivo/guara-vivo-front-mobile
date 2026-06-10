@@ -17,6 +17,7 @@ import { appStyles } from '../styles/appStyles'
 import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { MapLayerId } from '../config/map'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
+import { invalidateRecordsCache } from '../services/recordsService'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 
@@ -165,6 +166,7 @@ export function MapsScreen() {
 		try {
 			setCreatingZone(true)
 			const newZone = await createMapZone(type, selectedCoords.lat, selectedCoords.lng, radius_meters)
+			invalidateRecordsCache()
 			setZones((prev) => [newZone, ...prev])
 			setSelectionMode(false)
 			setSelectedCoords(null)

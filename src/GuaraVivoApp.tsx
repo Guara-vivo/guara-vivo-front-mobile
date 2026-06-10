@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { StatusBar } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -15,15 +15,43 @@ import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
 import { MapZoneDetailProvider, useMapZoneDetail } from './contexts/MapZoneDetailContext'
 import { MapZoneDetailSheet } from './components/MapZoneDetailSheet'
+import { MapZoneDeleteConfirmSheet } from './components/MapZoneDeleteConfirmSheet'
 import { appStyles } from './styles/appStyles'
+import {
+	shouldRenderMapZoneDeleteConfirmSheet,
+	shouldRenderMapZoneDetailSheet,
+} from './utils/mapZoneDetailVisibility'
 import type { UserRead } from './types/api'
 import type { RootStackParamList } from './types/navigation'
 
 
 function MapZoneDetailSheetWrapper() {
 	const { selectedZone } = useMapZoneDetail()
-	if (!selectedZone) return null
+	if (!shouldRenderMapZoneDetailSheet(selectedZone)) return null
 	return <MapZoneDetailSheet />
+}
+
+
+function MapZoneDeleteConfirmSheetWrapper() {
+	const ctx = useMapZoneDetail()
+
+	const handleDeleteConfirm = useCallback(async () => {
+		try {
+			await ctx.deleteZone()
+		} catch {
+			// Error displayed by MapsScreen.
+		}
+	}, [ctx])
+
+	if (!shouldRenderMapZoneDeleteConfirmSheet(ctx.showDeleteConfirm)) return null
+
+	return (
+		<MapZoneDeleteConfirmSheet
+			onConfirm={handleDeleteConfirm}
+			onCancel={ctx.closeDeleteConfirm}
+			isDeleting={ctx.isDeleting}
+		/>
+	)
 }
 
 
@@ -95,6 +123,7 @@ export default function GuaraVivoApp() {
 								onLogoutSuccess={handleLogoutSuccess}
 							/>
 							<MapZoneDetailSheetWrapper />
+							<MapZoneDeleteConfirmSheetWrapper />
 						</MapZoneDetailProvider>
 					</NavigationContainer>
 				</RecordProgressProvider>
