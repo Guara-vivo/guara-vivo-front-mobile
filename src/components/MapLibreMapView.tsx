@@ -65,7 +65,7 @@ function RecordMarker({ record, focused, onPress }: RecordMarkerProps) {
 			}}
 			onPress={() => onPress(record.id)}
 			anchor={{ x: 0.5, y: 0.5 }}
-			zIndex={focused ? 9 : 8}
+			zIndex={focused ? 201 : 200}
 		>
 			<View style={[styles.recordMarkerOuter, focused && styles.recordMarkerOuterFocused]}>
 				<View style={styles.recordMarkerInner}>
@@ -297,6 +297,7 @@ export function MapLibreMapView({
 				}}
 				onPress={() => onZonePress(zone)}
 				anchor={{ x: 0.5, y: 0.5 }}
+				zIndex={0}
 			>
 				<View style={styles.zonePressMarker} />
 			</Marker>
@@ -454,17 +455,20 @@ const styles = StyleSheet.create({
 		height: 44,
 		borderRadius: 22,
 		backgroundColor: 'rgba(255, 255, 255, 0.01)',
+		zIndex: 0,
 	},
 	recordMarkerOuter: {
-		minWidth: 28,
-		height: 28,
-		borderRadius: 18,
-		paddingHorizontal: 4,
+		minWidth: 40,
+		height: 40,
+		borderRadius: 20,
+		paddingHorizontal: 6,
 		backgroundColor: 'rgba(242, 32, 31, 0.92)',
 		borderWidth: 2,
 		borderColor: '#FFFFFF',
 		alignItems: 'center',
 		justifyContent: 'center',
+		flexDirection: 'row',
+		gap: 2,
 		shadowColor: '#F2201F',
 		shadowOpacity: 0.25,
 		shadowOffset: { width: 0, height: 2 },
@@ -485,9 +489,9 @@ const styles = StyleSheet.create({
 	},
 	recordMarkerText: {
 		color: '#FFFFFF',
-		fontSize: 9,
+		fontSize: 11,
 		fontWeight: '900',
-		lineHeight: 10,
+		lineHeight: 13,
 	},
 	userMarkerContainer: {
 		width: 54,
