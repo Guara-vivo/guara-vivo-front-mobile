@@ -57,7 +57,7 @@ export function RegisterEmailScreen() {
 							onPress={() => {
 								if (!email) {
 									setFeedback({
-										title: 'Campo obrigatorio',
+										title: 'Campo obrigatório',
 										message: 'Informe um e-mail para continuar.',
 									})
 									return

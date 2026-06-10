@@ -53,7 +53,7 @@ export function InAppNotificationBanner({
 
 				<Pressable
 					accessibilityRole="button"
-					accessibilityLabel="Fechar notificacao"
+					accessibilityLabel="Fechar notificação"
 					hitSlop={8}
 					onPress={handleClose}
 					style={appStyles.inAppNotificationCloseButton}

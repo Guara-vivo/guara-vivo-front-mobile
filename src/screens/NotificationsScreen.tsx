@@ -19,7 +19,7 @@ export function NotificationsScreen() {
 	return (
     <View style={appStyles.profileScreen}>
 				<Header
-					title="Notificacoes"
+						title="Notificações"
 					leftIcon={
 						<Pressable
 							onPress={() => navigation.goBack()}
@@ -41,7 +41,7 @@ export function NotificationsScreen() {
 					<View style={appStyles.notificationsTitleRow}>
 						<Ionicons name="notifications-outline" size={17} color="#125ED0" />
 						<Text style={appStyles.notificationsTitle}>
-							PREFERENCIAS DE NOTIFICACAO
+							PREFERÊNCIAS DE NOTIFICAÇÃO
 						</Text>
 					</View>
 
@@ -51,7 +51,7 @@ export function NotificationsScreen() {
 								Novos Registros
 							</Text>
 							<Text style={appStyles.notificationsItemSubtitle}>
-								Receba notificacoes sobre novos avistamentos
+								Receba notificações sobre novos avistamentos
 							</Text>
 						</View>
 						<Switch
@@ -65,10 +65,10 @@ export function NotificationsScreen() {
 					<View style={appStyles.notificationsItem}>
 						<View style={appStyles.notificationsTextWrap}>
 							<Text style={appStyles.notificationsItemTitle}>
-								Atualizacoes de Mapas
+								Atualizações de Mapas
 							</Text>
 							<Text style={appStyles.notificationsItemSubtitle}>
-								Notifique quando houver mudancas nos mapas de calor
+								Notifique quando houver mudanças nos mapas de calor
 							</Text>
 						</View>
 						<Switch
@@ -82,10 +82,10 @@ export function NotificationsScreen() {
 					<View style={appStyles.notificationsItem}>
 						<View style={appStyles.notificationsTextWrap}>
 							<Text style={appStyles.notificationsItemTitle}>
-								Relatorio Mensal
+								Relatório Mensal
 							</Text>
 							<Text style={appStyles.notificationsItemSubtitle}>
-								Resumo mensal de atividades e estatisticas
+								Resumo mensal de atividades e estatísticas
 							</Text>
 						</View>
 						<Switch
@@ -102,7 +102,7 @@ export function NotificationsScreen() {
 								Alertas do Sistema
 							</Text>
 							<Text style={appStyles.notificationsItemSubtitle}>
-								Avisos importantes e atualizacoes do aplicativo
+								Avisos importantes e atualizações do aplicativo
 							</Text>
 						</View>
 						<Switch

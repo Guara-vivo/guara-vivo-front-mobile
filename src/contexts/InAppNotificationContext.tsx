@@ -47,7 +47,7 @@ function buildAnalysisNotification({
 		return {
 			recordId,
 			status,
-			title: 'Analise finalizada',
+			title: 'Análise finalizada',
 			message: `Registro #${String(recordId).padStart(3, '0')} pronto. Toque para ver os detalhes.`,
 			variant: 'success',
 		}
@@ -57,8 +57,8 @@ function buildAnalysisNotification({
 		return {
 			recordId,
 			status,
-			title: 'Analise falhou',
-			message: `Nao foi possivel analisar o registro #${String(recordId).padStart(3, '0')}. Toque para abrir.`,
+			title: 'Análise falhou',
+			message: `Não foi possível analisar o registro #${String(recordId).padStart(3, '0')}. Toque para abrir.`,
 			variant: 'error',
 		}
 	}

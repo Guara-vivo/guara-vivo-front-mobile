@@ -200,7 +200,7 @@ export function RecordDetailScreen() {
 				/>
 				<View style={appStyles.recordDetailNotFoundWrap}>
 					<Text style={appStyles.recordDetailEmptyText}>
-						Registro nao encontrado.
+						Registro não encontrado.
 					</Text>
 				</View>
 			</View>
@@ -298,7 +298,7 @@ export function RecordDetailScreen() {
 										<View style={appStyles.recordDetailCarouselPlaceholder}>
 											<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
 											<Text style={appStyles.recordDetailEmptyText}>
-												Nenhuma imagem disponivel.
+										Nenhuma imagem disponível.
 											</Text>
 										</View>
 									)}
@@ -350,7 +350,7 @@ export function RecordDetailScreen() {
 								appStyles.recordDetailInfoHeaderTitle,
 							]}
 						>
-							INFORMACOES GERAIS
+							INFORMAÇÕES GERAIS
 						</Text>
 						<View style={appStyles.recordDetailIdBadge}>
 							<Text style={appStyles.recordDetailIdText}>{idLabel}</Text>
@@ -371,7 +371,7 @@ export function RecordDetailScreen() {
 						<View style={appStyles.recordDetailInfoRow}>
 							<Ionicons name="location-outline" size={18} color="#F2201F" />
 							<View style={appStyles.recordDetailInfoTextWrap}>
-								<Text style={appStyles.recordDetailInfoLabel}>LOCALIZACAO</Text>
+								<Text style={appStyles.recordDetailInfoLabel}>LOCALIZAÇÃO</Text>
 								<Text style={appStyles.recordDetailValue}>{locationLabel}</Text>
 								<Text style={appStyles.recordDetailCoordinates}>
 									Lat: {record.latitude.toFixed(4)} / Lng:{' '}

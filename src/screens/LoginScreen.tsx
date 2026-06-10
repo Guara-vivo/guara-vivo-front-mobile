@@ -42,7 +42,7 @@ export function LoginScreen({
 	const handleLogin = async () => {
 		if (!email || !password) {
 			showErrorFeedback(
-				'Campos obrigatorios',
+				'Campos obrigatórios',
 				'Preencha e-mail e senha para continuar.',
 			)
 			return
@@ -120,13 +120,13 @@ export function LoginScreen({
 						<View style={appStyles.loginDivider} />
 					</View>
 
-					<Pressable
-						onPress={() =>
-							Alert.alert(
-								'Recuperacao',
-								'Fluxo de recuperacao entra na proxima etapa.',
-							)
-						}
+						<Pressable
+							onPress={() =>
+								Alert.alert(
+									'Recuperação',
+									'Fluxo de recuperação entra na próxima etapa.',
+								)
+							}
 					>
 						<Text style={appStyles.loginForgot}>Recuperar senha</Text>
 					</Pressable>

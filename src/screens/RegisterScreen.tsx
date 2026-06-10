@@ -99,8 +99,8 @@ export function RegisterScreen() {
 
 			if (!permission.granted) {
 				showErrorFeedback(
-					'Permissao necessaria',
-					'Permita acesso as fotos para adicionar imagens.',
+					'Permissão necessária',
+					'Permita acesso às fotos para adicionar imagens.',
 				)
 				return
 			}
@@ -155,7 +155,7 @@ export function RegisterScreen() {
 
 		if (selectedImages.length === 0) {
 			showErrorFeedback(
-				'Imagem obrigatoria',
+				'Imagem obrigatória',
 				'Adicione pelo menos uma imagem para salvar o registro.',
 			)
 			return
@@ -167,8 +167,8 @@ export function RegisterScreen() {
 
 		if (apiBehaviors.length === 0) {
 			showErrorFeedback(
-				'Comportamento invalido',
-				'Selecione um comportamento valido para enviar o registro.',
+				'Comportamento inválido',
+				'Selecione um comportamento válido para enviar o registro.',
 			)
 			return
 		}
@@ -179,7 +179,7 @@ export function RegisterScreen() {
 			const token = await getToken()
 
 			if (!token) {
-				showErrorFeedback('Sessao expirada', 'Entre novamente para enviar o registro.')
+				showErrorFeedback('Sessão expirada', 'Entre novamente para enviar o registro.')
 				return
 			}
 
@@ -194,8 +194,8 @@ export function RegisterScreen() {
 
 				if (!permission.granted) {
 					showErrorFeedback(
-						'Permissao necessaria',
-						'Permita acesso a localizacao para enviar o registro.',
+						'Permissão necessária',
+						'Permita acesso à localização para enviar o registro.',
 					)
 					setIsSaving(false)
 					return
@@ -238,7 +238,7 @@ export function RegisterScreen() {
 		} catch {
 			showErrorFeedback(
 				'Falha no envio',
-				'Nao foi possivel enviar o registro. Tente novamente.',
+				'Não foi possível enviar o registro. Tente novamente.',
 			)
 		} finally {
 			setIsSaving(false)

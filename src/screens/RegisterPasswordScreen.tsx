@@ -39,7 +39,7 @@ export function RegisterPasswordScreen({
 		if (password !== confirmPassword) {
 			showErrorFeedback(
 				'Senhas diferentes',
-				'A confirmacao nao confere com a senha.',
+				'A confirmação não confere com a senha.',
 			)
 			return
 		}

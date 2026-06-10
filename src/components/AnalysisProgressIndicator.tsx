@@ -38,8 +38,8 @@ export function AnalysisProgressIndicator({
 	const progressColor = getProgressColor(status)
 	const accessibilityLabel =
 		status === 'failed'
-			? 'Identificacao falhou'
-			: `Identificacao ${normalizedProgress}% concluida`
+			? 'Identificação falhou'
+			: `Identificação ${normalizedProgress}% concluída`
 
 	return (
 		<View

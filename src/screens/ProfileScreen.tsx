@@ -20,8 +20,8 @@ export function ProfileScreen({
 	onLogoutSuccess: () => void
 }) {
 	const navigation = useNavigation<NavigationProp>()
-	const displayName = user?.name ?? 'Usuario Guara Vivo'
-	const displayEmail = user?.email ?? 'Sessao local'
+	const displayName = user?.name ?? 'Usuário Guará Vivo'
+	const displayEmail = user?.email ?? 'Sessão local'
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
 
 	const handleLogoutPress = async () => {
@@ -58,7 +58,7 @@ export function ProfileScreen({
 				</View>
 
 				<View style={appStyles.profileMenuCard}>
-					<Text style={appStyles.profileMenuTitle}>CONFIGURACOES</Text>
+					<Text style={appStyles.profileMenuTitle}>CONFIGURAÇÕES</Text>
 
 					<Pressable
 						onPress={() => navigation.navigate('ChangePassword')}
@@ -73,7 +73,7 @@ export function ProfileScreen({
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons name="notifications-outline" size={19} color="#125ED0" />
-						<Text style={appStyles.profileMenuItemText}>Notificacoes</Text>
+						<Text style={appStyles.profileMenuItemText}>Notificações</Text>
 					</Pressable>
 
 					<Pressable

@@ -180,7 +180,7 @@ export function HistoryScreen() {
 	const emptyMessage = isLoading
 		? 'Carregando registros...'
 		: loadError
-			? 'Nao foi possivel carregar os registros.'
+			? 'Não foi possível carregar os registros.'
 			: 'Nenhum registro encontrado com os filtros atuais.'
 
 	return (

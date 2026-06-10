@@ -39,7 +39,7 @@ export function AboutScreen() {
 						resizeMode="contain"
 					/>
 					<Text style={appStyles.aboutAppName}>GUARAVIVO</Text>
-					<Text style={appStyles.aboutVersion}>Versao 1.0.0</Text>
+					<Text style={appStyles.aboutVersion}>Versão 1.0.0</Text>
 
 					<View style={appStyles.aboutSection}>
 						<View style={appStyles.aboutSectionTitleRow}>
@@ -51,10 +51,10 @@ export function AboutScreen() {
 							<Text style={appStyles.aboutSectionTitle}>SOBRE O PROJETO</Text>
 						</View>
 						<Text style={appStyles.aboutBodyText}>
-							Sistema de auxilio ao monitoramento e protecao do Guara na ARIE. O
-							aplicativo facilita o registro de avistamentos, analise de
-							comportamentos e geracao de mapas de concentracao para apoiar a
-							equipe de gestao no desenvolvimento de planos de manejo
+							Sistema de auxílio ao monitoramento e proteção do Guará na ARIE. O
+							aplicativo facilita o registro de avistamentos, análise de
+							comportamentos e geração de mapas de concentração para apoiar a
+							equipe de gestão no desenvolvimento de planos de manejo
 							eficientes.
 						</Text>
 					</View>
@@ -64,25 +64,25 @@ export function AboutScreen() {
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
 							<Text style={appStyles.aboutBodyText}>
-								Registro de avistamentos com analise IA
+								Registro de avistamentos com análise IA
 							</Text>
 						</View>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
 							<Text style={appStyles.aboutBodyText}>
-								Mapeamento de areas de alimentacao e ninhos
+								Mapeamento de áreas de alimentação e ninhos
 							</Text>
 						</View>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
 							<Text style={appStyles.aboutBodyText}>
-								Historico completo de registros
+								Histórico completo de registros
 							</Text>
 						</View>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
 							<Text style={appStyles.aboutBodyText}>
-								Visualizacao de rotas de voo
+								Visualização de rotas de voo
 							</Text>
 						</View>
 					</View>
@@ -90,13 +90,13 @@ export function AboutScreen() {
 					<View style={appStyles.aboutSection}>
 						<Text style={appStyles.aboutSectionTitle}>DESENVOLVEDORES</Text>
 						<Text style={appStyles.aboutBodyText}>
-							Desenvolvido para a ARIE - Area de Relevante Interesse Ecologico
+							Desenvolvido para a ARIE - Área de Relevante Interesse Ecológico
 						</Text>
 					</View>
 
 					<View style={appStyles.aboutFooterDivider} />
 					<Text style={appStyles.aboutFooterText}>
-						© 2026 GuaraVivo. Todos os direitos reservados.
+						© 2026 GuaráVivo. Todos os direitos reservados.
 					</Text>
 				</View>
 			</ScrollView>
