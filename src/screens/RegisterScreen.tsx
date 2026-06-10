@@ -54,6 +54,7 @@ export function RegisterScreen() {
 	const [showTimePicker, setShowTimePicker] = useState(false)
 	const [showLocationPicker, setShowLocationPicker] = useState(false)
 	const [tempLocation, setTempLocation] = useState<{ latitude: number; longitude: number } | null>(null)
+	const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null)
 	const [isSaving, setIsSaving] = useState(false)
 	const [isPickingImages, setIsPickingImages] = useState(false)
 	const [isDropZonePressed, setIsDropZonePressed] = useState(false)
@@ -261,9 +262,24 @@ export function RegisterScreen() {
 		setSelectedTime(date)
 	}
 
-	const openLocationPicker = () => {
+	const openLocationPicker = async () => {
 		if (isSaving) {
 			return
+		}
+
+		try {
+			const { status } = await Location.requestForegroundPermissionsAsync()
+			if (status === 'granted') {
+				const position = await Location.getCurrentPositionAsync({
+					accuracy: Location.Accuracy.Balanced,
+				})
+				setUserLocation({
+					latitude: position.coords.latitude,
+					longitude: position.coords.longitude,
+				})
+			}
+		} catch {
+			// location permission denied or unavailable, map uses default region
 		}
 
 		setShowLocationPicker(true)
@@ -514,7 +530,12 @@ export function RegisterScreen() {
 				<View style={styles.locationPickerOverlay}>
 					<MapView
 						style={styles.pickerMap}
-						initialRegion={{
+						initialRegion={userLocation ? {
+							latitude: userLocation.latitude,
+							longitude: userLocation.longitude,
+							latitudeDelta: 0.01,
+							longitudeDelta: 0.01,
+						} : {
 							latitude: -24.4959,
 							longitude: -47.8431,
 							latitudeDelta: 0.05,
@@ -522,6 +543,18 @@ export function RegisterScreen() {
 						}}
 						onPress={(e) => setTempLocation(e.nativeEvent.coordinate)}
 					>
+						{userLocation && (
+							<Marker
+								coordinate={userLocation}
+								anchor={{ x: 0.5, y: 0.5 }}
+							>
+								<View style={styles.userMarkerContainer}>
+									<View style={styles.userMarkerCircle}>
+										<Ionicons name="navigate" size={16} color="#FFFFFF" />
+									</View>
+								</View>
+							</Marker>
+						)}
 						{tempLocation && (
 							<Marker coordinate={tempLocation} />
 						)}
@@ -613,6 +646,26 @@ const styles = StyleSheet.create({
 		color: colors.secondary,
 		fontSize: 14,
 		fontWeight: '700',
+	},
+	userMarkerContainer: {
+		width: 54,
+		height: 54,
+	},
+	userMarkerCircle: {
+		width: 24,
+		height: 24,
+		borderRadius: 22,
+		backgroundColor: colors.secondary,
+		borderWidth: 1,
+		borderColor: colors.surface,
+		alignItems: 'center',
+		padding: 3,
+		justifyContent: 'center',
+		shadowColor: colors.secondary,
+		shadowOpacity: 0.4,
+		shadowOffset: { width: 0, height: 2 },
+		shadowRadius: 8,
+		elevation: 5,
 	},
 })
 
