@@ -142,12 +142,15 @@ export function MapsScreen() {
 		ctx.openSheet(zone)
 	}
 
+	const closeSheetRef = useRef(ctx.closeSheet)
+	closeSheetRef.current = ctx.closeSheet
+
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				ctx.closeSheet()
+				closeSheetRef.current()
 			}
-		}, [ctx]),
+		}, []),
 	)
 
 	useEffect(() => {
