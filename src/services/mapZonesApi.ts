@@ -1,4 +1,4 @@
-import { MapZoneRead, MapZoneType } from '../types/api'
+import type { MapZoneRead, MapZoneRecordRead, MapZoneType } from '../types/api'
 import { apiFetch } from './apiClient'
 import { getAccessToken } from './tokenStorage'
 
@@ -12,6 +12,24 @@ export async function getMapZones(signal?: AbortSignal): Promise<MapZoneRead[]> 
 
 	if (!response.ok) {
 		throw new Error(`Failed to fetch map zones: ${response.statusText}`)
+	}
+
+	return response.json()
+}
+
+export async function getMapZoneRecords(
+	zoneId: number,
+	signal?: AbortSignal,
+): Promise<MapZoneRecordRead[]> {
+	const token = await getAccessToken()
+	const response = await apiFetch(`/map-zones/${zoneId}/records`, {
+		method: 'GET',
+		headers: token ? { Authorization: `Bearer ${token}` } : {},
+		signal,
+	})
+
+	if (!response.ok) {
+		throw new Error(`Failed to fetch map zone records: ${response.statusText}`)
 	}
 
 	return response.json()

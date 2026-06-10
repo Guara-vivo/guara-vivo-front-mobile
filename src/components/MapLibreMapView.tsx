@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native'
 import { MAP_CENTER } from '../config/map'
 import type { MapLayerId } from '../config/map'
-import type { MapZoneRead } from '../types/api'
+import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
 import { colors } from '../constants/theme'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -50,21 +50,54 @@ function parseStoredRegion(value: string | null): Region | null {
 	return null
 }
 
+type RecordMarkerProps = {
+	record: MapZoneRecordRead
+	focused: boolean
+	onPress: (recordId: number) => void
+}
+
+function RecordMarker({ record, focused, onPress }: RecordMarkerProps) {
+	return (
+		<Marker
+			coordinate={{
+				latitude: record.latitude_camera,
+				longitude: record.longitude_camera,
+			}}
+			onPress={() => onPress(record.id)}
+			anchor={{ x: 0.5, y: 0.5 }}
+			zIndex={focused ? 9 : 8}
+		>
+			<View style={[styles.recordMarkerOuter, focused && styles.recordMarkerOuterFocused]}>
+				<View style={styles.recordMarkerInner}>
+					<Ionicons name="eye" size={12} color="#FFFFFF" />
+				</View>
+				<Text style={styles.recordMarkerText}>{record.ibis_quantity ?? 0}</Text>
+			</View>
+		</Marker>
+	)
+}
+
 type Props = {
 	selectedLayer: MapLayerId
 	zones: MapZoneRead[]
+	recordMarkers?: MapZoneRecordRead[]
 	onMapPress?: (lat: number, lng: number) => void
 	onZonePress?: (zone: MapZoneRead) => void
+	onRecordMarkerPress?: (recordId: number) => void
 	selectedZoneId?: number | null
+	selectedRecordId?: number | null
 	isLoadingData?: boolean
 }
 
 export function MapLibreMapView({
 	selectedLayer,
 	zones,
+	recordMarkers = [],
 	onMapPress,
 	onZonePress,
+	onRecordMarkerPress,
 	selectedZoneId,
+	selectedRecordId,
 	isLoadingData = false,
 }: Props) {
 	const mapRef = useRef<MapView>(null)
@@ -270,6 +303,25 @@ export function MapLibreMapView({
 		))
 	}, [onZonePress, visibleZones])
 
+	const selectedRecordMarkers = useMemo(() => {
+		if (!onRecordMarkerPress) {
+			return null
+		}
+
+		return recordMarkers.map((record) => {
+			const selected = record.id === selectedRecordId
+
+			return (
+				<RecordMarker
+					key={`record-marker-${record.id}`}
+					record={record}
+					focused={selected}
+					onPress={onRecordMarkerPress}
+				/>
+			)
+		})
+	}, [selectedRecordId, onRecordMarkerPress, recordMarkers])
+
 	const visibleCount = visibleZones.length
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
 	const badgeText =
@@ -309,6 +361,7 @@ export function MapLibreMapView({
 				>
 					{zoneCircles}
 					{zonePressMarkers}
+					{selectedRecordMarkers}
 					{hasLocationTarget && (
 						<Marker
 							coordinate={{
@@ -400,6 +453,40 @@ const styles = StyleSheet.create({
 		height: 44,
 		borderRadius: 22,
 		backgroundColor: 'rgba(255, 255, 255, 0.01)',
+	},
+	recordMarkerOuter: {
+		minWidth: 28,
+		height: 28,
+		borderRadius: 18,
+		paddingHorizontal: 4,
+		backgroundColor: 'rgba(242, 32, 31, 0.92)',
+		borderWidth: 2,
+		borderColor: '#FFFFFF',
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#F2201F',
+		shadowOpacity: 0.25,
+		shadowOffset: { width: 0, height: 2 },
+		shadowRadius: 6,
+		elevation: 5,
+	},
+	recordMarkerOuterFocused: {
+		backgroundColor: '#125ED0',
+		borderColor: '#FFFFFF',
+		shadowColor: '#125ED0',
+		shadowOpacity: 0.35,
+		shadowRadius: 8,
+		elevation: 8,
+	},
+	recordMarkerInner: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	recordMarkerText: {
+		color: '#FFFFFF',
+		fontSize: 9,
+		fontWeight: '900',
+		lineHeight: 10,
 	},
 	userMarkerContainer: {
 		width: 54,

@@ -955,7 +955,7 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 		marginTop: 2,
 	},
 	mapZoneRecordDetailsButton: {
-		alignSelf: 'flex-start',
+		alignSelf: 'flex-end',
 		marginTop: 6,
 		paddingHorizontal: 9,
 		paddingVertical: 5,
@@ -965,7 +965,6 @@ export const appStyles = StyleSheet.create<Record<string, any>>({
 	mapZoneRecordDetailsButtonText: {
 		color: colors.surface,
 		fontSize: 9,
-		fontWeight: '900',
 	},
 	gridCardTitle: {
 		color: colors.text,

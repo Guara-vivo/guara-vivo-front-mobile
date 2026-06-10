@@ -53,6 +53,10 @@ export type RecordSummaryRead = RecordRead & {
 	ibis_quantity: number | null
 }
 
+export type MapZoneRecordRead = RecordSummaryRead & {
+	author_name: string
+}
+
 export type AnalysisRead = {
 	id: number
 	ibis_quantity: number
