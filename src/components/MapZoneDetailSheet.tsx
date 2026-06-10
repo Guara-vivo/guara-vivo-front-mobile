@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Animated,
@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import BottomSheet from '@gorhom/bottom-sheet'
 import { Portal } from '@gorhom/portal'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 import { MapZoneDeleteConfirmSheet } from './MapZoneDeleteConfirmSheet'
@@ -107,6 +107,7 @@ export function MapZoneDetailSheet() {
   const recordRowYByIdRef = useRef<Record<number, number>>({})
   const RECORD_ROW_HEIGHT = 108
 
+  const [snapIndex, setSnapIndex] = useState(-1)
   const snapPoints = ['35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
@@ -148,6 +149,7 @@ export function MapZoneDetailSheet() {
 
   const handleSheetChange = useCallback(
     (index: number) => {
+      setSnapIndex(index)
       if (index === -1) ctx.closeSheet()
     },
     [ctx],
@@ -181,9 +183,8 @@ export function MapZoneDetailSheet() {
         backgroundStyle={appStyles.zoneBottomSheetBackground}
         handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
       >
-        <BottomSheetScrollView scrollEnabled={false}>
-          <View style={appStyles.zoneBottomSheetContent}>
-            {ctx.selectedZone && (
+        <View style={appStyles.zoneBottomSheetContent}>
+          {ctx.selectedZone && (
               <>
                 <View style={appStyles.mapZoneInfoHeader}>
                   <View>
@@ -258,6 +259,12 @@ export function MapZoneDetailSheet() {
                       decelerationRate="fast"
                       showsVerticalScrollIndicator={false}
                       nestedScrollEnabled
+                      style={{
+                        height:
+                          snapIndex <= 0
+                            ? RECORD_ROW_HEIGHT
+                            : RECORD_ROW_HEIGHT * 4,
+                      }}
                     >
                       {visibleZoneRecords.map((record) => (
                         <ZoneRecordRow
@@ -278,8 +285,7 @@ export function MapZoneDetailSheet() {
                 </View>
               </>
             )}
-          </View>
-        </BottomSheetScrollView>
+        </View>
       </BottomSheet>
 
       {ctx.showDeleteConfirm && (
