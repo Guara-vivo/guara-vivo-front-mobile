@@ -100,7 +100,6 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 
 	const closeSheet = useCallback(() => {
 		setSelectedZone(null)
-		setShowDeleteConfirm(false)
 		setIsDeleting(false)
 	}, [])
 
