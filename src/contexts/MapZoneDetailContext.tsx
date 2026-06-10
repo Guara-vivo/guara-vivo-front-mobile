@@ -23,7 +23,7 @@ interface MapZoneDetailContextType {
 	closeSheet: () => void
 	setSelectedRecordId: (id: number | null) => void
 	onRecordMarkerPress: (recordId: number) => void
-	openDeleteConfirm: () => void
+	openDeleteConfirm: (zoneId: number) => void
 	closeDeleteConfirm: () => void
 	deleteZone: () => Promise<number | null>
 	registerScrollToRecord: (fn: (id: number) => void) => void
@@ -43,6 +43,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 	const [isDeleting, setIsDeleting] = useState(false)
 	const scrollToRecordRef = useRef<((id: number) => void) | null>(null)
 	const onZoneDeletedRef = useRef<((zoneId: number) => void) | null>(null)
+	const deleteZoneIdRef = useRef<number | null>(null)
 
 	const registerScrollToRecord = useCallback((fn: (id: number) => void) => {
 		scrollToRecordRef.current = fn
@@ -96,6 +97,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 		setSelectedZone(zone)
 		setShowDeleteConfirm(false)
 		setIsDeleting(false)
+		deleteZoneIdRef.current = null
 	}, [])
 
 	const closeSheet = useCallback(() => {
@@ -108,32 +110,35 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 		scrollToRecordRef.current?.(recordId)
 	}, [])
 
-	const openDeleteConfirm = useCallback(() => {
+	const openDeleteConfirm = useCallback((zoneId: number) => {
+		deleteZoneIdRef.current = zoneId
 		setShowDeleteConfirm(true)
 	}, [])
 
 	const closeDeleteConfirm = useCallback(() => {
 		setShowDeleteConfirm(false)
+		setIsDeleting(false)
+		deleteZoneIdRef.current = null
 	}, [])
 
 	const deleteZone = useCallback(async (): Promise<number | null> => {
-		if (!selectedZone) return null
+		const zoneId = deleteZoneIdRef.current
+		if (zoneId === null) return null
 
 		setIsDeleting(true)
 		try {
-			await deleteMapZone(selectedZone.id)
-			const deletedId = selectedZone.id
-			onZoneDeletedRef.current?.(deletedId)
-			setSelectedZone(null)
+			await deleteMapZone(zoneId)
+			onZoneDeletedRef.current?.(zoneId)
 			setShowDeleteConfirm(false)
-			return deletedId
+			deleteZoneIdRef.current = null
+			return zoneId
 		} catch (error) {
 			setShowDeleteConfirm(false)
 			throw error
 		} finally {
 			setIsDeleting(false)
 		}
-	}, [selectedZone])
+	}, [])
 
 	const value = useMemo<MapZoneDetailContextType>(
 		() => ({

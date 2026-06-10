@@ -160,8 +160,10 @@ export function MapZoneDetailSheet() {
   }, [ctx])
 
   const handleDeletePress = useCallback(() => {
+    const zoneId = ctx.selectedZone?.id
+    if (zoneId === undefined) return
     bottomSheetRef.current?.close()
-    ctx.openDeleteConfirm()
+    ctx.openDeleteConfirm(zoneId)
   }, [ctx])
 
   const handleDeleteConfirm = useCallback(async () => {
