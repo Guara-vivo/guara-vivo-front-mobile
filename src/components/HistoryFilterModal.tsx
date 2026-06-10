@@ -112,6 +112,7 @@ export function HistoryFilterModal({
 			enableDynamicSizing={false}
 			enablePanDownToClose
 			stackBehavior="push"
+			keyboardBehavior="extend"
 			backdropComponent={renderBackdrop}
 			backgroundStyle={appStyles.historyBottomSheetBackground}
 			handleIndicatorStyle={appStyles.historyBottomSheetIndicator}
