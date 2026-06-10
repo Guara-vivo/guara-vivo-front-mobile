@@ -108,6 +108,15 @@ export function updateCachedRecordProgress(update: RecordProgressUpdate) {
 			analysis_progress: update.analysis_progress,
 		}
 	}
+
+	const cachedDetail = detailCache.get(update.id)
+	if (cachedDetail) {
+		cachedDetail.data = {
+			...cachedDetail.data,
+			status: update.status,
+			analysis_progress: update.analysis_progress,
+		}
+	}
 }
 
 export function invalidateRecordsCache() {

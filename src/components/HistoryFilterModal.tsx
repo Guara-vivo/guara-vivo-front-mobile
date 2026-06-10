@@ -74,8 +74,10 @@ export function HistoryFilterModal({
 			try {
 				const data = await getMapZones()
 				setZones(data)
-			} catch (error) {
-				console.error('[HistoryFilterModal] Failed to load zones:', error)
+			} catch {
+				if (__DEV__) {
+					console.error('[HistoryFilterModal] Failed to load zones:')
+				}
 			}
 		}
 		loadZones()

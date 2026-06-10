@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { StatusBar } from 'react-native'
+import { Alert, StatusBar } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { PortalProvider } from '@gorhom/portal'
@@ -36,10 +36,9 @@ function MapZoneDeleteConfirmSheetWrapper() {
 	const ctx = useMapZoneDetail()
 
 	const handleDeleteConfirm = useCallback(async () => {
-		try {
-			await ctx.deleteZone()
-		} catch {
-			// Error displayed by MapsScreen.
+		const result = await ctx.deleteZone()
+		if (result === null) {
+			Alert.alert('Erro', 'Não foi possível excluir a área. Tente novamente.')
 		}
 	}, [ctx])
 
@@ -135,7 +134,7 @@ export default function GuaraVivoApp() {
 	const statusBarColor = colors.background
 	const safeAreaStyle = [
 		appStyles.app,
-		colors.background,
+		{ backgroundColor: colors.background },
 	]
 
 	return (

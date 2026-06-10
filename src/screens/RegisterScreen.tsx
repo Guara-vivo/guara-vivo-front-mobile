@@ -34,6 +34,8 @@ const behaviorApiMap: Partial<Record<string, BirdBehavior>> = {
 }
 
 const pressFeedbackDelayMs = 80
+const MAX_IMAGES = 6
+const MAX_TOTAL_BYTES = 10 * 1024 * 1024
 
 type RegisterFeedback = {
 	title: string
@@ -109,9 +111,20 @@ export function RegisterScreen() {
 				allowsMultipleSelection: true,
 				mediaTypes: ['images'],
 				quality: 0.8,
-				selectionLimit: 20,
+				selectionLimit: MAX_IMAGES,
 			})
 			if (result.canceled) {
+				return
+			}
+
+			const oversized = result.assets.filter(
+				(asset) => asset.fileSize && asset.fileSize > MAX_TOTAL_BYTES,
+			)
+			if (oversized.length > 0) {
+				showErrorFeedback(
+					'Imagem muito grande',
+					'Cada imagem deve ter no máximo 10 MB.',
+				)
 				return
 			}
 
@@ -130,7 +143,7 @@ export function RegisterScreen() {
 				const existingUris = new Set(current.map((img) => img.uri))
 				const uniqueNewImages = newImages.filter((img) => !existingUris.has(img.uri))
 
-				return [...current, ...uniqueNewImages].slice(0, 20)
+				return [...current, ...uniqueNewImages].slice(0, MAX_IMAGES)
 			})
 		} finally {
 			setIsDropZonePressed(false)
@@ -271,7 +284,6 @@ export function RegisterScreen() {
 		setShowLocationPicker(true)
 
 		if (!locationFetchedRef.current) {
-			locationFetchedRef.current = true
 			try {
 				const { status } = await Location.requestForegroundPermissionsAsync()
 				if (status === 'granted') {
@@ -282,6 +294,7 @@ export function RegisterScreen() {
 						latitude: position.coords.latitude,
 						longitude: position.coords.longitude,
 					})
+					locationFetchedRef.current = true
 				}
 			} catch {
 				// location permission denied or unavailable, map uses default region

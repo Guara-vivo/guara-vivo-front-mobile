@@ -132,9 +132,9 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 			setShowDeleteConfirm(false)
 			deleteZoneIdRef.current = null
 			return zoneId
-		} catch (error) {
+		} catch {
 			setShowDeleteConfirm(false)
-			throw error
+			return null
 		} finally {
 			setIsDeleting(false)
 		}
