@@ -173,8 +173,6 @@ export function MapZoneDetailSheet() {
     }
   }, [ctx])
 
-  if (!ctx.selectedZone) return null
-
   return (
     <Portal>
       <BottomSheet
@@ -190,96 +188,100 @@ export function MapZoneDetailSheet() {
           style={appStyles.zoneBottomSheetContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={appStyles.mapZoneInfoHeader}>
-            <View>
-              <Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
-              <Text style={appStyles.mapZoneInfoTitle}>{ctx.selectedZone.name}</Text>
-              <Text style={appStyles.mapZoneInfoType}>
-                {formatZoneType(ctx.selectedZone.type)}
-              </Text>
-            </View>
-            <View style={appStyles.mapZoneInfoHeaderActions}>
-              <Pressable
-                onPress={handleDeletePress}
-                disabled={ctx.isDeleting}
-                hitSlop={8}
-                style={appStyles.mapZoneInfoDeleteIconButton}
-              >
-                <Ionicons name="trash-outline" size={17} color="#FFFFFF" />
-              </Pressable>
-              <Pressable
-                onPress={handleCloseZoneDetail}
-                disabled={ctx.isDeleting}
-                hitSlop={8}
-                style={appStyles.mapZoneInfoCloseButton}
-              >
-                <Ionicons name="close" size={18} color="#FFFFFF" />
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={appStyles.mapZoneInfoGrid}>
-            <View style={appStyles.mapZoneInfoMetric}>
-              <Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
-              <Text style={appStyles.mapZoneInfoValue}>
-                {ctx.selectedZone.radius_meters} m
-              </Text>
-            </View>
-            <View style={appStyles.mapZoneInfoMetric}>
-              <Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
-              <Text style={appStyles.mapZoneInfoValue}>
-                {formatZoneDate(ctx.selectedZone.created_at)}
-              </Text>
-            </View>
-          </View>
-
-          <Text style={appStyles.mapZoneInfoCoordinates}>
-            {ctx.selectedZone.latitude.toFixed(5)},{' '}
-            {ctx.selectedZone.longitude.toFixed(5)}
-          </Text>
-
-          <View style={appStyles.mapZoneRecordsSection}>
-            <View style={appStyles.mapZoneRecordsHeader}>
-              <Text style={appStyles.mapZoneInfoLabel}>Registros na área</Text>
-              <Text style={appStyles.mapZoneRecordsCount}>
-                {visibleZoneRecords.length}
-              </Text>
-            </View>
-            {ctx.isZoneRecordsLoading ? (
-              <View style={appStyles.mapZoneRecordsStatusRow}>
-                <ActivityIndicator size="small" color="#125ED0" />
-                <Text style={appStyles.mapZoneRecordsStatusText}>
-                  Carregando registros...
-                </Text>
+          {ctx.selectedZone && (
+            <>
+              <View style={appStyles.mapZoneInfoHeader}>
+                <View>
+                  <Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
+                  <Text style={appStyles.mapZoneInfoTitle}>{ctx.selectedZone.name}</Text>
+                  <Text style={appStyles.mapZoneInfoType}>
+                    {formatZoneType(ctx.selectedZone.type)}
+                  </Text>
+                </View>
+                <View style={appStyles.mapZoneInfoHeaderActions}>
+                  <Pressable
+                    onPress={handleDeletePress}
+                    disabled={ctx.isDeleting}
+                    hitSlop={8}
+                    style={appStyles.mapZoneInfoDeleteIconButton}
+                  >
+                    <Ionicons name="trash-outline" size={17} color="#FFFFFF" />
+                  </Pressable>
+                  <Pressable
+                    onPress={handleCloseZoneDetail}
+                    disabled={ctx.isDeleting}
+                    hitSlop={8}
+                    style={appStyles.mapZoneInfoCloseButton}
+                  >
+                    <Ionicons name="close" size={18} color="#FFFFFF" />
+                  </Pressable>
+                </View>
               </View>
-            ) : ctx.zoneRecordsError ? (
-              <Text style={appStyles.mapZoneRecordsErrorText}>
-                {ctx.zoneRecordsError}
+
+              <View style={appStyles.mapZoneInfoGrid}>
+                <View style={appStyles.mapZoneInfoMetric}>
+                  <Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
+                  <Text style={appStyles.mapZoneInfoValue}>
+                    {ctx.selectedZone.radius_meters} m
+                  </Text>
+                </View>
+                <View style={appStyles.mapZoneInfoMetric}>
+                  <Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
+                  <Text style={appStyles.mapZoneInfoValue}>
+                    {formatZoneDate(ctx.selectedZone.created_at)}
+                  </Text>
+                </View>
+              </View>
+
+              <Text style={appStyles.mapZoneInfoCoordinates}>
+                {ctx.selectedZone.latitude.toFixed(5)},{' '}
+                {ctx.selectedZone.longitude.toFixed(5)}
               </Text>
-            ) : visibleZoneRecords.length > 0 ? (
-              <ScrollView
-                ref={recordListRef}
-                style={appStyles.mapZoneRecordsList}
-                nestedScrollEnabled
-                showsVerticalScrollIndicator={false}
-              >
-                {visibleZoneRecords.map((record) => (
-                  <ZoneRecordRow
-                    key={record.id}
-                    record={record}
-                    selected={ctx.selectedRecordId === record.id}
-                    onSelect={(id) => ctx.setSelectedRecordId(id)}
-                    onOpenDetails={handleOpenZoneRecord}
-                    onLayout={handleRecordRowLayout}
-                  />
-                ))}
-              </ScrollView>
-            ) : (
-<Text style={appStyles.mapZoneRecordsStatusText}>
-                  Nenhum registro com guarás identificados nesta área.
-                </Text>
-            )}
-          </View>
+
+              <View style={appStyles.mapZoneRecordsSection}>
+                <View style={appStyles.mapZoneRecordsHeader}>
+                  <Text style={appStyles.mapZoneInfoLabel}>Registros na área</Text>
+                  <Text style={appStyles.mapZoneRecordsCount}>
+                    {visibleZoneRecords.length}
+                  </Text>
+                </View>
+                {ctx.isZoneRecordsLoading ? (
+                  <View style={appStyles.mapZoneRecordsStatusRow}>
+                    <ActivityIndicator size="small" color="#125ED0" />
+                    <Text style={appStyles.mapZoneRecordsStatusText}>
+                      Carregando registros...
+                    </Text>
+                  </View>
+                ) : ctx.zoneRecordsError ? (
+                  <Text style={appStyles.mapZoneRecordsErrorText}>
+                    {ctx.zoneRecordsError}
+                  </Text>
+                ) : visibleZoneRecords.length > 0 ? (
+                  <ScrollView
+                    ref={recordListRef}
+                    style={appStyles.mapZoneRecordsList}
+                    nestedScrollEnabled
+                    showsVerticalScrollIndicator={false}
+                  >
+                    {visibleZoneRecords.map((record) => (
+                      <ZoneRecordRow
+                        key={record.id}
+                        record={record}
+                        selected={ctx.selectedRecordId === record.id}
+                        onSelect={(id) => ctx.setSelectedRecordId(id)}
+                        onOpenDetails={handleOpenZoneRecord}
+                        onLayout={handleRecordRowLayout}
+                      />
+                    ))}
+                  </ScrollView>
+                ) : (
+                  <Text style={appStyles.mapZoneRecordsStatusText}>
+                    Nenhum registro com guarás identificados nesta área.
+                  </Text>
+                )}
+              </View>
+            </>
+          )}
         </BottomSheetScrollView>
       </BottomSheet>
 
