@@ -13,11 +13,18 @@ import { colors } from './constants/theme'
 import { restoreSession } from './services/authService'
 import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
-import { MapZoneDetailProvider } from './contexts/MapZoneDetailContext'
+import { MapZoneDetailProvider, useMapZoneDetail } from './contexts/MapZoneDetailContext'
 import { MapZoneDetailSheet } from './components/MapZoneDetailSheet'
 import { appStyles } from './styles/appStyles'
 import type { UserRead } from './types/api'
 import type { RootStackParamList } from './types/navigation'
+
+
+function MapZoneDetailSheetWrapper() {
+	const { selectedZone } = useMapZoneDetail()
+	if (!selectedZone) return null
+	return <MapZoneDetailSheet />
+}
 
 
 export default function GuaraVivoApp() {
@@ -87,7 +94,7 @@ export default function GuaraVivoApp() {
 								onAuthSuccess={handleAuthSuccess}
 								onLogoutSuccess={handleLogoutSuccess}
 							/>
-							<MapZoneDetailSheet />
+							<MapZoneDetailSheetWrapper />
 						</MapZoneDetailProvider>
 					</NavigationContainer>
 				</RecordProgressProvider>

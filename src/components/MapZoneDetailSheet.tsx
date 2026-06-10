@@ -138,14 +138,6 @@ export function MapZoneDetailSheet() {
     ctx.registerScrollToRecord(scrollToRecordRow)
   }, [ctx, scrollToRecordRow])
 
-  useEffect(() => {
-    if (ctx.selectedZone) {
-      bottomSheetRef.current?.snapToIndex(0)
-    } else {
-      bottomSheetRef.current?.close()
-    }
-  }, [ctx.selectedZone])
-
   const handleSheetChange = useCallback(
     (index: number) => {
       setSnapIndex(index)
@@ -179,7 +171,7 @@ export function MapZoneDetailSheet() {
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={snapPoints}
-      index={-1}
+      index={0}
       enablePanDownToClose
       onChange={handleSheetChange}
       backgroundStyle={appStyles.zoneBottomSheetBackground}
