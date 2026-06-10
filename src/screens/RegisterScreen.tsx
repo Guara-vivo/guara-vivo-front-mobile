@@ -482,7 +482,15 @@ export function RegisterScreen() {
 						) : null}
 					</View>
 
-					<View style={appStyles.registerActionsRow}>
+          <View style={appStyles.registerActionsRow}>
+            <ActionButton
+              title="CANCELAR"
+              onPress={handleCancel}
+              disabled={isSaving}
+              fullWidth={false}
+              containerStyle={appStyles.registerCancelButton}
+              textStyle={appStyles.registerActionButtonLabel}
+            />
 						<ActionButton
 							title={isSaving ? 'ENVIANDO...' : 'SALVAR REGISTRO'}
               onPress={() => {
@@ -498,14 +506,6 @@ export function RegisterScreen() {
 								isSaving ? <ActivityIndicator size="small" color="#FFFFFF" /> : null
 							}
 						/>
-					<ActionButton
-						title="CANCELAR"
-						onPress={handleCancel}
-						disabled={isSaving}
-						fullWidth={false}
-						containerStyle={appStyles.registerCancelButton}
-						textStyle={appStyles.registerActionButtonLabel}
-					/>
 					</View>
 				</View>
 			</ScrollView>

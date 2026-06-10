@@ -105,16 +105,16 @@ export default function GuaraVivoApp() {
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<SafeAreaProvider>
-			<BottomSheetModalProvider>
-				<PortalProvider>
+			<PortalProvider>
+				<BottomSheetModalProvider>
 					<ErrorBoundary>
 							<SafeAreaView style={safeAreaStyle}>
 								<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />
 								{renderScreen()}
 							</SafeAreaView>
 					</ErrorBoundary>
-				</PortalProvider>
-			</BottomSheetModalProvider>
+				</BottomSheetModalProvider>
+			</PortalProvider>
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
 	)
