@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import BottomSheet from '@gorhom/bottom-sheet'
 import { Portal } from '@gorhom/portal'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 import { MapZoneDeleteConfirmSheet } from './MapZoneDeleteConfirmSheet'
@@ -103,8 +103,9 @@ export function MapZoneDetailSheet() {
   const ctx = useMapZoneDetail()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const bottomSheetRef = useRef<BottomSheet>(null)
-  const sheetScrollRef = useRef<ScrollView>(null)
+  const recordScrollRef = useRef<ScrollView>(null)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
+  const RECORD_ROW_HEIGHT = 108
 
   const snapPoints = ['35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
@@ -124,18 +125,14 @@ export function MapZoneDetailSheet() {
   )
 
   const scrollToRecordRow = useCallback((recordId: number) => {
-    const tryScroll = (retries = 3) => {
-      const y = recordRowYByIdRef.current[recordId]
-      if (typeof y === 'number') {
-        sheetScrollRef.current?.scrollTo({ y: Math.max(y - 8, 0), animated: true })
-        return
-      }
-      if (retries > 0) {
-        setTimeout(() => tryScroll(retries - 1), 150)
-      }
+    const idx = visibleZoneRecords.findIndex((r) => r.id === recordId)
+    if (idx >= 0) {
+      recordScrollRef.current?.scrollTo({
+        y: idx * RECORD_ROW_HEIGHT,
+        animated: true,
+      })
     }
-    tryScroll()
-  }, [])
+  }, [visibleZoneRecords])
 
   useEffect(() => {
     ctx.registerScrollToRecord(scrollToRecordRow)
@@ -184,11 +181,7 @@ export function MapZoneDetailSheet() {
         backgroundStyle={appStyles.zoneBottomSheetBackground}
         handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
       >
-        <BottomSheetScrollView
-          ref={sheetScrollRef}
-          style={appStyles.zoneBottomSheetContent}
-          showsVerticalScrollIndicator={false}
-        >
+        <View style={appStyles.zoneBottomSheetContent}>
           {ctx.selectedZone && (
             <>
               <View style={appStyles.mapZoneInfoHeader}>
@@ -258,7 +251,13 @@ export function MapZoneDetailSheet() {
                     {ctx.zoneRecordsError}
                   </Text>
                 ) : visibleZoneRecords.length > 0 ? (
-                  <View style={appStyles.mapZoneRecordsList}>
+                  <ScrollView
+                    ref={recordScrollRef}
+                    snapToInterval={RECORD_ROW_HEIGHT}
+                    decelerationRate="fast"
+                    showsVerticalScrollIndicator={false}
+                    nestedScrollEnabled
+                  >
                     {visibleZoneRecords.map((record) => (
                       <ZoneRecordRow
                         key={record.id}
@@ -269,7 +268,7 @@ export function MapZoneDetailSheet() {
                         onLayout={handleRecordRowLayout}
                       />
                     ))}
-                  </View>
+                  </ScrollView>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
                     Nenhum registro com guarás identificados nesta área.
@@ -278,7 +277,7 @@ export function MapZoneDetailSheet() {
               </View>
             </>
           )}
-        </BottomSheetScrollView>
+        </View>
       </BottomSheet>
 
       {ctx.showDeleteConfirm && (
