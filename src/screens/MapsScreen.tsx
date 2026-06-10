@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
 import {
 	ActivityIndicator,
@@ -140,6 +141,14 @@ export function MapsScreen() {
 	const handleZonePress = (zone: MapZoneRead) => {
 		ctx.openSheet(zone)
 	}
+
+	useFocusEffect(
+		useCallback(() => {
+			return () => {
+				ctx.closeSheet()
+			}
+		}, [ctx]),
+	)
 
 	useEffect(() => {
 		ctx.registerOnZoneDeleted((zoneId: number) => {
