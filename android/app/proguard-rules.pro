@@ -11,4 +11,9 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
+# Expo modules are discovered dynamically. Keep them in release builds so
+# R8 does not strip modules such as expo-image-picker and expo-location.
+-keep class expo.modules.** { *; }
+-keep class expo.modules.ExpoModulesPackage { *; }
+
 # Add any project specific keep options here:

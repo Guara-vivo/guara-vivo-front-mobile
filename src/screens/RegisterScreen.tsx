@@ -145,6 +145,11 @@ export function RegisterScreen() {
 
 				return [...current, ...uniqueNewImages].slice(0, MAX_IMAGES)
 			})
+		} catch {
+			showErrorFeedback(
+				'Erro ao abrir galeria',
+				'Não foi possível acessar a galeria. Tente novamente.',
+			)
 		} finally {
 			setIsDropZonePressed(false)
 			setIsPickingImages(false)
