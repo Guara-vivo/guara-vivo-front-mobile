@@ -18,23 +18,44 @@ import {
 	getOfflineStatus,
 	triggerOfflineSync,
 	type OfflineStatus,
+	type SyncTriggerResult,
 } from '../services/offlineApi'
 import { getToken } from '../services/authService'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
+type Action = 'configure' | 'sync'
+type StatusState =
+	| { kind: 'loading' }
+	| { kind: 'ok'; data: OfflineStatus }
+	| { kind: 'session' }
+	| { kind: 'network' }
 
-function describeError(error: unknown) {
+const NO_REMOTE = 'Sem conexão com o servidor remoto.'
+
+function describeError(error: unknown, action: Action) {
 	if (error instanceof ApiError) {
 		if (error.status === 401 || error.status === 403) {
-			return 'Credenciais do servidor remoto inválidas.'
+			// Em /configure o 401 é a senha da conta remota; nas demais, a sessão local.
+			return action === 'configure'
+				? 'E-mail ou senha da conta remota inválidos.'
+				: 'Sessão expirada. Entre novamente no app.'
 		}
-		if (error.status === 502 || error.status === 503 || error.status === 504) {
-			return 'Não foi possível alcançar o servidor remoto.'
-		}
+		if (error.status === 409) return 'Já há uma sincronização em andamento.'
+		if ([502, 503, 504].includes(error.status)) return NO_REMOTE
 	}
 	return 'Não foi possível concluir a operação. Tente novamente.'
+}
+
+function describeSyncResult(result: SyncTriggerResult) {
+	const synced = result.synced ?? 0
+	const failed = result.failed ?? 0
+	const deferred = result.deferred ?? 0
+	const parts = [`${synced} enviado(s)`]
+	if (failed) parts.push(`${failed} com falha`)
+	if (deferred) parts.push(`${deferred} aguardando outro registro`)
+	return parts.join(', ') + '.'
 }
 
 function formatLastSync(value: string | null) {
@@ -43,19 +64,26 @@ function formatLastSync(value: string | null) {
 
 export function OfflineSyncScreen() {
 	const navigation = useNavigation<NavigationProp>()
-	const [status, setStatus] = useState<OfflineStatus | null>(null)
+	const [status, setStatus] = useState<StatusState>({ kind: 'loading' })
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
-	const [isBusy, setIsBusy] = useState(false)
+	const [busy, setBusy] = useState<Action | null>(null)
 
 	const loadStatus = useCallback(async () => {
 		const token = await getToken()
-		if (!token) return
+		if (!token) {
+			setStatus({ kind: 'session' })
+			return
+		}
 		try {
-			setStatus(await getOfflineStatus(token))
-		} catch {
-			setStatus(null)
+			setStatus({ kind: 'ok', data: await getOfflineStatus(token) })
+		} catch (error) {
+			setStatus(
+				error instanceof ApiError && error.status === 401
+					? { kind: 'session' }
+					: { kind: 'network' },
+			)
 		}
 	}, [])
 
@@ -63,19 +91,24 @@ export function OfflineSyncScreen() {
 		void loadStatus()
 	}, [loadStatus])
 
-	const run = async (action: (token: string) => Promise<void>, success: string) => {
-		if (isBusy) return
-		setIsBusy(true)
+	const run = async <T,>(
+		action: Action,
+		call: (token: string) => Promise<T>,
+		onSuccess: (result: T) => { title: string; message: string },
+	) => {
+		if (busy) return
+		setBusy(action)
 		try {
 			const token = await getToken()
-			if (!token) throw new Error('Missing token')
-			await action(token)
-			Alert.alert('Pronto', success)
+			if (!token) throw new ApiError(401, 'Missing token')
+			const result = await call(token)
+			const { title, message } = onSuccess(result)
+			Alert.alert(title, message)
 			await loadStatus()
 		} catch (error) {
-			Alert.alert('Erro', describeError(error))
+			Alert.alert('Erro', describeError(error, action))
 		} finally {
-			setIsBusy(false)
+			setBusy(null)
 		}
 	}
 
@@ -84,14 +117,24 @@ export function OfflineSyncScreen() {
 			Alert.alert('Atenção', 'Informe e-mail e senha da conta no servidor remoto.')
 			return
 		}
-		void run(async (token) => {
-			await configureOffline(token, email.trim(), password)
-			setPassword('')
-		}, 'Conta remota vinculada. Os registros serão sincronizados.')
+		void run(
+			'configure',
+			async (token) => {
+				await configureOffline(token, email.trim(), password)
+				setPassword('')
+			},
+			() => ({
+				title: 'Pronto',
+				message: 'Conta remota vinculada. Os registros serão sincronizados.',
+			}),
+		)
 	}
 
 	const handleSync = () =>
-		void run(triggerOfflineSync, 'Sincronização iniciada.')
+		void run('sync', triggerOfflineSync, (result) => ({
+			title: result.failed ? 'Sincronização com falhas' : 'Sincronização concluída',
+			message: describeSyncResult(result),
+		}))
 
 	return (
 		<View style={appStyles.profileScreen}>
@@ -111,35 +154,48 @@ export function OfflineSyncScreen() {
 			<ScrollView contentContainerStyle={appStyles.profileContent}>
 				<View style={appStyles.changePasswordCard}>
 					<Text style={appStyles.changePasswordLabel}>STATUS</Text>
-					{status ? (
+					{status.kind === 'loading' && <ActivityIndicator />}
+					{status.kind === 'session' && (
+						<Text style={appStyles.changePasswordHint}>
+							Sessão expirada. Entre novamente no app.
+						</Text>
+					)}
+					{status.kind === 'network' && (
+						<Text style={appStyles.changePasswordHint}>
+							Não foi possível falar com a API local. Verifique a rede.
+						</Text>
+					)}
+					{status.kind === 'ok' && (
 						<>
 							<Text style={appStyles.changePasswordHint}>
-								{`Servidor remoto: ${status.remote_connected ? 'conectado' : 'sem conexão'}`}
+								{`Servidor remoto: ${status.data.remote_connected ? 'conectado' : 'sem conexão'}`}
 							</Text>
 							<Text style={appStyles.changePasswordHint}>
-								{`Registros pendentes: ${status.pending_sync}`}
+								{`Registros pendentes: ${status.data.pending_sync}`}
 							</Text>
 							<Text style={appStyles.changePasswordHint}>
-								{`Última sincronização: ${formatLastSync(status.last_sync_at)}`}
+								{`Última sincronização: ${formatLastSync(status.data.last_sync_at)}`}
 							</Text>
-							{status.last_sync_error ? (
+							{status.data.last_sync_error ? (
 								<Text style={appStyles.changePasswordHint}>
-									{`Erro: ${status.last_sync_error}`}
+									{`Erro: ${status.data.last_sync_error}`}
 								</Text>
 							) : null}
 						</>
-					) : (
-						<Text style={appStyles.changePasswordHint}>Status indisponível.</Text>
 					)}
 					<View style={appStyles.changePasswordActionsRow}>
 						<Pressable
 							onPress={handleSync}
-							disabled={isBusy}
+							disabled={busy !== null}
 							style={appStyles.changePasswordSecondaryAction}
 						>
-							<Text style={appStyles.changePasswordSecondaryActionText}>
-								SINCRONIZAR AGORA
-							</Text>
+							{busy === 'sync' ? (
+								<ActivityIndicator />
+							) : (
+								<Text style={appStyles.changePasswordSecondaryActionText}>
+									SINCRONIZAR AGORA
+								</Text>
+							)}
 						</Pressable>
 					</View>
 				</View>
@@ -197,10 +253,10 @@ export function OfflineSyncScreen() {
 					<View style={appStyles.changePasswordActionsRow}>
 						<Pressable
 							onPress={handleConfigure}
-							disabled={isBusy}
+							disabled={busy !== null}
 							style={appStyles.changePasswordPrimaryAction}
 						>
-							{isBusy ? (
+							{busy === 'configure' ? (
 								<ActivityIndicator color="#FFFFFF" />
 							) : (
 								<Text style={appStyles.changePasswordPrimaryActionText}>VINCULAR CONTA</Text>

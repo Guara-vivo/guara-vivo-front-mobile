@@ -10,6 +10,7 @@ import type { MainTabParamList } from '../types/navigation'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { logout } from '../services/authService'
 import { IS_OFFLINE_API } from '../services/apiClient'
+import { useOfflinePending } from '../hooks/useOfflinePending'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
@@ -24,6 +25,7 @@ export function ProfileScreen({
 	const displayName = user?.name ?? 'Usuário Guará Vivo'
 	const displayEmail = user?.email ?? 'Sessão local'
 	const [isLoggingOut, setIsLoggingOut] = useState(false)
+	const pendingSync = useOfflinePending()
 
 	const handleLogoutPress = async () => {
 		setIsLoggingOut(true)
@@ -78,13 +80,24 @@ export function ProfileScreen({
 					</Pressable>
 
 					{IS_OFFLINE_API && (
+						<>
 						<Pressable
 							onPress={() => navigation.navigate('OfflineSync')}
 							style={appStyles.profileMenuItem}
 						>
 							<Ionicons name="sync-outline" size={19} color="#125ED0" />
-							<Text style={appStyles.profileMenuItemText}>Sincronização</Text>
+							<Text style={appStyles.profileMenuItemText}>
+								{pendingSync
+									? `Sincronização (${pendingSync} pendente${pendingSync > 1 ? 's' : ''})`
+									: 'Sincronização'}
+							</Text>
 						</Pressable>
+						{pendingSync ? (
+							<Text style={appStyles.changePasswordHint}>
+								Vincule sua conta para enviar os registros.
+							</Text>
+						) : null}
+						</>
 					)}
 
 					<Pressable

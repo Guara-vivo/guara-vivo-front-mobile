@@ -16,6 +16,9 @@ function withGoogleMapsApiKey(expoConfig) {
 	})
 }
 
+// API em modo offline roda na rede local, via HTTP: libera trafego sem TLS no build.
+const isOfflineApi = process.env.EXPO_PUBLIC_OFFLINE_MODE?.trim() === 'true'
+
 export default {
 	expo: {
 		name: 'GuaráVivo',
@@ -28,6 +31,11 @@ export default {
 		},
 		ios: {
 			supportsTablet: true,
+			...(isOfflineApi && {
+				infoPlist: {
+					NSAppTransportSecurity: { NSAllowsLocalNetworking: true },
+				},
+			}),
 		},
 		icon: './src/assets/images/icon.png',
 		android: {
@@ -56,6 +64,9 @@ export default {
 			],
 			'@react-native-community/datetimepicker',
 			'expo-secure-store',
+			...(isOfflineApi
+				? [['expo-build-properties', { android: { usesCleartextTraffic: true } }]]
+				: []),
 			withGoogleMapsApiKey,
 		],
 	},

@@ -114,10 +114,20 @@ async function refreshAccessToken() {
 	return refreshRequest
 }
 
-export async function apiFetch(path: string, options: RequestInit = {}) {
+type ApiFetchOptions = RequestInit & {
+	// Nao tenta renovar o token em 401 (ex.: 401 de credenciais de outro servidor).
+	skipAuthRefresh?: boolean
+}
+
+export async function apiFetch(path: string, init: ApiFetchOptions = {}) {
+	const { skipAuthRefresh, ...options } = init
 	let response = await fetch(`${API_URL}${path}`, options)
 
-	if (response.status === 401 && hasAuthorizationHeader(options.headers)) {
+	if (
+		response.status === 401 &&
+		!skipAuthRefresh &&
+		hasAuthorizationHeader(options.headers)
+	) {
 		try {
 			const refreshed = await refreshAccessToken()
 			response = await fetch(
