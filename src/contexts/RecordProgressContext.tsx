@@ -11,6 +11,7 @@ import {
 	subscribeRecordProgress,
 	type RecordProgressUpdate,
 } from '../services/recordProgressService'
+import { IS_OFFLINE_API } from '../services/apiClient'
 import { updateCachedRecordProgress } from '../services/recordsCache'
 import type { RecordStatus } from '../types/api'
 
@@ -110,7 +111,8 @@ export function RecordProgressProvider({
 	}, [])
 
 	useEffect(() => {
-		if (!isEnabled) {
+		// A API offline não tem /records/progress/ws (a análise acontece no servidor remoto).
+		if (!isEnabled || IS_OFFLINE_API) {
 			resetProgressState()
 			return
 		}

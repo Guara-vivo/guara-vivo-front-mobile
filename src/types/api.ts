@@ -46,6 +46,10 @@ export type RecordRead = {
 	status: RecordStatus
 	analysis_progress: number
 	map_zones: LinkedMapZoneRead[]
+	// Presentes apenas quando a API roda em modo offline
+	synced?: boolean
+	sync_status?: 'pending_sync' | 'synced' | null
+	remote_id?: number | null
 }
 
 export type RecordSummaryRead = RecordRead & {

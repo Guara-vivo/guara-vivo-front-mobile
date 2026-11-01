@@ -7,6 +7,7 @@ import { EditProfileScreen } from '../screens/EditProfileScreen'
 import { ChangePasswordScreen } from '../screens/ChangePasswordScreen'
 import { NotificationsScreen } from '../screens/NotificationsScreen'
 import { AboutScreen } from '../screens/AboutScreen'
+import { OfflineSyncScreen } from '../screens/OfflineSyncScreen'
 import type { RootStackParamList } from '../types/navigation'
 import type { UserRead } from '../types/api'
 
@@ -42,6 +43,7 @@ export function RootNavigator({
 					<Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
 					<Stack.Screen name="Notifications" component={NotificationsScreen} />
 					<Stack.Screen name="About" component={AboutScreen} />
+						<Stack.Screen name="OfflineSync" component={OfflineSyncScreen} />
 				</>
 			) : (
 				<Stack.Screen name="AuthStack">

@@ -1,4 +1,4 @@
-import { apiFetch } from './apiClient'
+import { apiFetch, resolveMediaUrl } from './apiClient'
 import type {
 	AnalysisRead,
 	BirdBehavior,
@@ -33,7 +33,7 @@ export function mapRecordReadToRecordItem(
 		latitude: record.latitude_camera,
 		longitude: record.longitude_camera,
 		datetime: record.date_time,
-		images: record.images,
+		images: record.images.map(resolveMediaUrl),
 		status: record.status,
 		analysis_progress: record.analysis_progress ?? 0,
 		user_id: record.user_id,
@@ -65,7 +65,7 @@ export function mapRecordDetailToRecordItem(
 			return {
 				id: img.id,
 				image_index: img.image_index,
-				image_url: img.image_url,
+				image_url: resolveMediaUrl(img.image_url),
 				ibis_quantity: img.ibis_quantity,
 				created_at: img.created_at,
 				raw_result: img.raw_result,

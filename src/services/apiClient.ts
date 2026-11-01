@@ -16,8 +16,21 @@ export const API_URL = __DEV__
 	? (process.env.EXPO_PUBLIC_API_URL?.trim() || DEV_API_URL)
 	: (process.env.EXPO_PUBLIC_API_URL?.trim() || '')
 
-// Validate HTTPS in production
-if (!__DEV__ && (!API_URL || API_URL.startsWith('http://'))) {
+// API rodando em modo offline (OFFLINE_MODE=true no backend): sem WebSocket de
+// progresso de análise e com imagens servidas em /local-storage (URL relativa).
+export const IS_OFFLINE_API = process.env.EXPO_PUBLIC_OFFLINE_MODE?.trim() === 'true'
+
+// Imagens da API offline vêm como "/local-storage/..."; prefixa com a URL da API.
+export function resolveMediaUrl(url: string) {
+	return url.startsWith('/') && !url.startsWith('//') ? `${API_URL}${url}` : url
+}
+
+// Validate HTTPS in production (a API offline roda na rede local, via HTTP)
+if (
+	!__DEV__ &&
+	!IS_OFFLINE_API &&
+	(!API_URL || API_URL.startsWith('http://'))
+) {
 	throw new Error(
 		'API_URL must be set and use HTTPS in production. ' +
 			'Set EXPO_PUBLIC_API_URL environment variable with an HTTPS URL.',

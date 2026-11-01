@@ -9,6 +9,7 @@ import type { UserRead } from '../types/api'
 import type { MainTabParamList } from '../types/navigation'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import { logout } from '../services/authService'
+import { IS_OFFLINE_API } from '../services/apiClient'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
@@ -75,6 +76,16 @@ export function ProfileScreen({
 						<Ionicons name="notifications-outline" size={19} color="#125ED0" />
 						<Text style={appStyles.profileMenuItemText}>Notificações</Text>
 					</Pressable>
+
+					{IS_OFFLINE_API && (
+						<Pressable
+							onPress={() => navigation.navigate('OfflineSync')}
+							style={appStyles.profileMenuItem}
+						>
+							<Ionicons name="sync-outline" size={19} color="#125ED0" />
+							<Text style={appStyles.profileMenuItemText}>Sincronização</Text>
+						</Pressable>
+					)}
 
 					<Pressable
 						onPress={() => navigation.navigate('About')}
