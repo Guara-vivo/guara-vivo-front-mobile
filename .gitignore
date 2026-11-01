@@ -3,3 +3,6 @@
 .opencode
 .env
 android/app/app.keystore
+# Local tool folders
+.claude/
+.tokensave/
