@@ -11,6 +11,7 @@ import type { BirdBehavior, ReactNativeFile } from '../types/api'
 // quando houver conexao. O client_uuid torna o reenvio seguro (a API nao duplica).
 
 const STORAGE_KEY = 'guara_vivo_pending_records'
+const CORRUPT_BACKUP_KEY = 'guara_vivo_pending_records_corrupt'
 const PENDING_DIR = 'pending-records'
 
 export type PendingRecord = {
@@ -106,10 +107,15 @@ async function readAll(): Promise<PendingRecord[]> {
 	if (!raw) return []
 	try {
 		const parsed: unknown = JSON.parse(raw)
-		return Array.isArray(parsed) ? (parsed as PendingRecord[]) : []
+		if (Array.isArray(parsed)) return parsed as PendingRecord[]
 	} catch {
-		return []
+		// Cai no backup abaixo.
 	}
+
+	// Conteudo ilegivel: o proximo writeAll sobrescreveria tudo. Guarda uma copia para
+	// recuperacao em vez de perder os registros em silencio.
+	await AsyncStorage.setItem(CORRUPT_BACKUP_KEY, raw).catch(() => {})
+	return []
 }
 
 async function writeAll(records: PendingRecord[]) {
