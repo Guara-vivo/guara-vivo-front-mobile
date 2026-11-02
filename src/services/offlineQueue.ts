@@ -67,6 +67,26 @@ export type FlushResult = {
 
 let activeUserId: number | null = null
 
+// Avisa telas (historico) quando a fila muda ou quando algum registro foi enviado.
+export type QueueEvent = 'changed' | 'sent'
+const listeners = new Set<(event: QueueEvent) => void>()
+
+export function subscribeQueue(listener: (event: QueueEvent) => void) {
+	listeners.add(listener)
+	return () => {
+		listeners.delete(listener)
+	}
+}
+
+function emit(event: QueueEvent) {
+	listeners.forEach((listener) => listener(event))
+}
+
+// Registros guardados do usuario ativo (pendentes e recusados).
+export async function getActivePendingRecords(): Promise<PendingRecord[]> {
+	return activeUserId === null ? [] : getPendingRecords(activeUserId)
+}
+
 // Usuario logado: a fila so envia os registros dele (evita enviar na conta errada).
 export function setQueueOwner(userId: number | null) {
 	activeUserId = userId
@@ -161,6 +181,7 @@ export async function enqueueRecord(params: EnqueueParams): Promise<PendingRecor
 		throw error
 	}
 
+	emit('changed')
 	return record
 }
 
@@ -168,12 +189,17 @@ export async function getPendingRecords(userId: number): Promise<PendingRecord[]
 	return withLock(async () => (await readAll()).filter((r) => r.userId === userId))
 }
 
-export async function discardPendingRecord(clientUuid: string) {
+async function removeRecord(clientUuid: string) {
 	await withLock(async () => {
 		const all = await readAll()
 		await writeAll(all.filter((r) => r.clientUuid !== clientUuid))
 	})
 	removeFiles(clientUuid)
+}
+
+export async function discardPendingRecord(clientUuid: string) {
+	await removeRecord(clientUuid)
+	emit('changed')
 }
 
 async function updateRecord(clientUuid: string, patch: Partial<PendingRecord>) {
@@ -183,6 +209,7 @@ async function updateRecord(clientUuid: string, patch: Partial<PendingRecord>) {
 			all.map((r) => (r.clientUuid === clientUuid ? { ...r, ...patch } : r)),
 		)
 	})
+	emit('changed')
 }
 
 // Erros de rede, sessao, timeout, limite e servidor: tenta de novo mais tarde.
@@ -272,9 +299,11 @@ async function runFlush(): Promise<FlushResult> {
 			continue
 		}
 
-		await discardPendingRecord(record.clientUuid)
+		// Sem avisar 'changed': a tela troca o pendente pelo da API de uma vez, em 'sent'.
+		await removeRecord(record.clientUuid)
 		invalidateRecordsCache()
 		result.outcomes[record.clientUuid] = 'sent'
+		emit('sent')
 	}
 
 	return result

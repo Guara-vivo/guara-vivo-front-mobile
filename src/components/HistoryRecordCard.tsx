@@ -13,11 +13,14 @@ export function HistoryRecordCard({
 	item,
 	analysisProgress,
 	onOpenRecord,
+	onDiscard,
 }: {
 	item: RecordItem
 	analysisProgress: number
 	onOpenRecord: (id: number) => void
+	onDiscard?: (clientUuid: string) => void
 }) {
+	const syncState = item.sync_state
 	const behaviorTags = String(item.flock_size)
 		.split(',')
 		.map((t) => t.trim())
@@ -32,7 +35,11 @@ export function HistoryRecordCard({
 				<View style={appStyles.historyRecordTopInfo}>
 					<View style={appStyles.historyRecordIdBadge}>
 						<Text style={appStyles.historyRecordIdText}>
-							#{String(item.id).padStart(3, '0')}
+							{syncState === 'failed'
+								? 'RECUSADO'
+								: syncState
+									? 'AGUARDANDO ENVIO'
+									: `#${String(item.id).padStart(3, '0')}`}
 						</Text>
 					</View>
 
@@ -48,10 +55,18 @@ export function HistoryRecordCard({
 					</View>
 				</View>
 
-				<AnalysisProgressIndicator
-					progress={analysisProgress}
-					status={item.status}
-				/>
+				{syncState ? (
+					<Ionicons
+						name={syncState === 'failed' ? 'alert-circle' : 'cloud-upload-outline'}
+						size={26}
+						color={syncState === 'failed' ? '#F2201F' : '#5C8BD6'}
+					/>
+				) : (
+					<AnalysisProgressIndicator
+						progress={analysisProgress}
+						status={item.status}
+					/>
+				)}
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>
@@ -68,18 +83,29 @@ export function HistoryRecordCard({
 
 			<View style={appStyles.historyTagRow}>
 				{behaviorTags.map((tag) => (
-					<View key={`${item.id}-${tag}`} style={appStyles.historyTagChip}>
+					<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
 						<Text style={appStyles.historyTagChipText}>{tag}</Text>
 					</View>
 				))}
 			</View>
 
-			<Pressable
-				onPress={() => onOpenRecord(item.id)}
-				style={appStyles.historyDetailButton}
-			>
-				<Text style={appStyles.historyDetailButtonText}>VER DETALHES</Text>
-			</Pressable>
+			{syncState === 'failed' && item.client_uuid && onDiscard ? (
+				<Pressable
+					onPress={() => onDiscard(item.client_uuid as string)}
+					style={appStyles.historyDetailButton}
+				>
+					<Text style={appStyles.historyDetailButtonText}>DESCARTAR REGISTRO</Text>
+				</Pressable>
+			) : null}
+
+			{!syncState ? (
+				<Pressable
+					onPress={() => onOpenRecord(item.id)}
+					style={appStyles.historyDetailButton}
+				>
+					<Text style={appStyles.historyDetailButtonText}>VER DETALHES</Text>
+				</Pressable>
+			) : null}
 		</View>
 	)
 }

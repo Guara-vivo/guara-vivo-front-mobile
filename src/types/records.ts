@@ -12,6 +12,11 @@ export type RecordItem = {
 	analysis_progress: number
 	user_id?: number
 	map_zones: LinkedMapZoneRead[]
+	// Identifica o registro entre o aparelho e a API (junta pendente com enviado)
+	client_uuid?: string | null
+	// Presente so em registros ainda guardados no aparelho (nao existem na API)
+	sync_state?: 'pending' | 'failed'
+	sync_error?: string | null
 }
 
 export type RawDetection = {

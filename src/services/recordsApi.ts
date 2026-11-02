@@ -38,6 +38,7 @@ export function mapRecordReadToRecordItem(
 		analysis_progress: record.analysis_progress ?? 0,
 		user_id: record.user_id,
 		map_zones: record.map_zones ?? [],
+		client_uuid: record.client_uuid ?? null,
 	}
 }
 

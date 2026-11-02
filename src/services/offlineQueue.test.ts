@@ -1,6 +1,7 @@
 import { ApiError } from './apiClient'
 import {
 	UploadLimitError,
+	subscribeQueue,
 	discardPendingRecord,
 	enqueueRecord,
 	flushPendingRecords,
@@ -190,5 +191,24 @@ describe('offlineQueue', () => {
 			})
 		await expect(enqueueRecord({ ...params, images: four(3) })).rejects.toBeInstanceOf(UploadLimitError)
 		expect(await getPendingRecords(1)).toHaveLength(0)
+	})
+
+	it('notifies listeners: changed on save and discard, only sent when a record goes out', async () => {
+		const events: string[] = []
+		const unsubscribe = subscribeQueue((event) => events.push(event))
+
+		const record = await enqueueRecord(params)
+		expect(events).toEqual(['changed'])
+
+		upload.mockResolvedValue({})
+		await flushPendingRecords()
+		expect(events).toEqual(['changed', 'sent'])
+
+		const other = await enqueueRecord(params)
+		await discardPendingRecord(other.clientUuid)
+		expect(events.slice(2)).toEqual(['changed', 'changed'])
+		expect(record.clientUuid).not.toBe(other.clientUuid)
+
+		unsubscribe()
 	})
 })
