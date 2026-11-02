@@ -15,9 +15,11 @@ import { RegisterBehaviorList } from '../components/RegisterBehaviorList'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { behaviorOptions } from '../constants/behaviors'
-import { getToken } from '../services/authService'
-import { invalidateRecordsCache } from '../services/recordsService'
-import { uploadRecord } from '../services/recordsApi'
+import {
+	discardPendingRecord,
+	enqueueRecord,
+	flushPendingRecords,
+} from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
 import type { BirdBehavior, ReactNativeFile } from '../types/api'
 import type { MainTabParamList } from '../types/navigation'
@@ -194,13 +196,6 @@ export function RegisterScreen() {
 		try {
 			setIsSaving(true)
 
-			const token = await getToken()
-
-			if (!token) {
-				showErrorFeedback('Sessão expirada', 'Entre novamente para enviar o registro.')
-				return
-			}
-
 			let latitude: number
 			let longitude: number
 
@@ -228,15 +223,24 @@ export function RegisterScreen() {
 
 			const recordDateTime = composeRecordDateTime(selectedDate, selectedTime)
 
-			await uploadRecord({
+			// Guarda no aparelho e tenta enviar; sem conexao, o envio fica para depois.
+			const pending = await enqueueRecord({
 				behavior: apiBehaviors,
 				dateTime: recordDateTime,
 				images: selectedImages,
 				latitude,
 				longitude,
-				token,
 			})
-			invalidateRecordsCache()
+			const flush = await flushPendingRecords()
+			const outcome = flush.outcomes[pending.clientUuid]
+
+			if (outcome === 'rejected') {
+				// Usuário ainda na tela: mostra o erro em vez de guardar um registro inválido.
+				await discardPendingRecord(pending.clientUuid)
+				throw new Error('Registro recusado pela API')
+			}
+
+			const wasSent = outcome === 'sent'
 
 			setSelectedImages([])
 			setBehaviors([])
@@ -248,8 +252,10 @@ export function RegisterScreen() {
 			setShowTimePicker(false)
 			setShowLocationPicker(false)
 			setFeedback({
-				title: 'Registro enviado',
-				message: 'Registro enviado para processamento com sucesso.',
+				title: wasSent ? 'Registro enviado' : 'Registro salvo',
+				message: wasSent
+					? 'Registro enviado para processamento com sucesso.'
+					: 'Sem conexão com o servidor. O registro foi salvo no aparelho e será enviado automaticamente.',
 				iconName: 'checkmark-circle-outline',
 				iconColor: colors.secondary,
 			})

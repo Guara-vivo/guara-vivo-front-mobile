@@ -46,6 +46,8 @@ export type RecordRead = {
 	status: RecordStatus
 	analysis_progress: number
 	map_zones: LinkedMapZoneRead[]
+	// UUID gerado pelo app ao criar o registro (null em registros antigos)
+	client_uuid?: string | null
 }
 
 export type RecordSummaryRead = RecordRead & {
