@@ -35,6 +35,9 @@ export class ApiError extends Error {
 	}
 }
 
+// O servidor respondeu e recusou o refresh token (diferente de falta de rede).
+class RefreshRejectedError extends Error {}
+
 let refreshRequest: Promise<LoginResponse> | null = null
 
 function hasAuthorizationHeader(headers: HeadersInit | undefined) {
@@ -81,7 +84,7 @@ async function refreshAccessToken() {
 		})
 			.then(async (response) => {
 				if (!response.ok) {
-					throw new Error(`Token refresh failed: ${response.status}`)
+					throw new RefreshRejectedError(`Token refresh failed: ${response.status}`)
 				}
 
 				return response.json() as Promise<LoginResponse>
@@ -111,7 +114,11 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
 				`${API_URL}${path}`,
 				withAuthorizationHeader(options, refreshed.access_token),
 			)
-		} catch {
+		} catch (error) {
+			// Sem rede durante o refresh nao e sessao invalida: mantem os tokens.
+			if (!(error instanceof RefreshRejectedError)) {
+				throw error
+			}
 			await clearTokens()
 		}
 	}
