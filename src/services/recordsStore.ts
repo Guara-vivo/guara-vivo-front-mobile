@@ -5,7 +5,11 @@ import type { RecordItem } from '../types/records'
 // abrir sem conexao. So o resumo (/records/summary) e guardado, nunca como detalhe.
 const STORAGE_KEY = 'guara_vivo_records_list'
 
+// Muda quando o formato de RecordItem muda: uma copia de outra versao e descartada.
+const STORE_VERSION = 1
+
 type PersistedRecords = {
+	version: number
 	userId: number
 	savedAt: number
 	records: RecordItem[]
@@ -13,25 +17,40 @@ type PersistedRecords = {
 
 let activeUserId: number | null = null
 
+// Grava e apaga em fila: um clear nunca e desfeito por uma gravacao que ja estava a caminho.
+let writeChain: Promise<void> = Promise.resolve()
+
+function enqueueWrite(task: () => Promise<void>) {
+	writeChain = writeChain.then(task, task).catch(() => {})
+	return writeChain
+}
+
 // Usuario logado: a lista so e gravada e lida para ele.
 export function setRecordsStoreOwner(userId: number | null) {
 	activeUserId = userId
 }
 
 export async function savePersistedRecords(records: RecordItem[]) {
-	if (activeUserId === null) return
+	const userId = activeUserId
+	if (userId === null) return
 
-	const payload: PersistedRecords = {
-		userId: activeUserId,
-		savedAt: Date.now(),
-		records,
-	}
+	await enqueueWrite(async () => {
+		// Quem saiu (ou trocou) enquanto a gravacao esperava na fila nao tem a lista regravada.
+		if (activeUserId !== userId) return
 
-	try {
-		await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-	} catch {
-		// Sem a copia local o historico so perde a abertura offline.
-	}
+		const payload: PersistedRecords = {
+			version: STORE_VERSION,
+			userId,
+			savedAt: Date.now(),
+			records,
+		}
+
+		try {
+			await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+		} catch {
+			// Sem a copia local o historico so perde a abertura offline.
+		}
+	})
 }
 
 export async function loadPersistedRecords(): Promise<{
@@ -46,6 +65,7 @@ export async function loadPersistedRecords(): Promise<{
 
 		if (
 			!parsed ||
+			parsed.version !== STORE_VERSION ||
 			parsed.userId !== activeUserId ||
 			typeof parsed.savedAt !== 'number' ||
 			!Array.isArray(parsed.records) ||
@@ -61,5 +81,10 @@ export async function loadPersistedRecords(): Promise<{
 }
 
 export async function clearPersistedRecords() {
-	await AsyncStorage.removeItem(STORAGE_KEY).catch(() => {})
+	// Primeiro tira o dono: buscas ainda em andamento deixam de regravar a lista.
+	activeUserId = null
+
+	await enqueueWrite(async () => {
+		await AsyncStorage.removeItem(STORAGE_KEY).catch(() => {})
+	})
 }

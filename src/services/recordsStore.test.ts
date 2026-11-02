@@ -85,4 +85,30 @@ describe('recordsStore', () => {
 
 		expect(await loadPersistedRecords()).toBeNull()
 	})
+
+	it('does not rewrite the list of someone who logged out while a save was in flight', async () => {
+		const saving = savePersistedRecords([record(1)])
+		const clearing = clearPersistedRecords()
+		await Promise.all([saving, clearing])
+
+		setRecordsStoreOwner(2)
+		expect(await loadPersistedRecords()).toBeNull()
+		expect(mockAsync.size).toBe(0)
+	})
+
+	it('ignores a save requested after the owner was cleared', async () => {
+		await clearPersistedRecords()
+		await savePersistedRecords([record(1)])
+
+		expect(mockAsync.size).toBe(0)
+	})
+
+	it('drops a copy saved by another version of the app', async () => {
+		mockAsync.set(
+			'guara_vivo_records_list',
+			JSON.stringify({ version: 0, userId: 2, savedAt: 1, records: [record(1)] }),
+		)
+
+		expect(await loadPersistedRecords()).toBeNull()
+	})
 })
