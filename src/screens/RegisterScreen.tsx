@@ -19,6 +19,7 @@ import {
 	discardPendingRecord,
 	enqueueRecord,
 	flushPendingRecords,
+	UploadLimitError,
 } from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
 import type { BirdBehavior, ReactNativeFile } from '../types/api'
@@ -37,7 +38,7 @@ const behaviorApiMap: Partial<Record<string, BirdBehavior>> = {
 
 const pressFeedbackDelayMs = 80
 const MAX_IMAGES = 6
-const MAX_TOTAL_BYTES = 10 * 1024 * 1024
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 type RegisterFeedback = {
 	title: string
@@ -120,12 +121,12 @@ export function RegisterScreen() {
 			}
 
 			const oversized = result.assets.filter(
-				(asset) => asset.fileSize && asset.fileSize > MAX_TOTAL_BYTES,
+				(asset) => asset.fileSize && asset.fileSize > MAX_IMAGE_BYTES,
 			)
 			if (oversized.length > 0) {
 				showErrorFeedback(
 					'Imagem muito grande',
-					'Cada imagem deve ter no máximo 10 MB.',
+					'Cada imagem deve ter no máximo 5 MB.',
 				)
 				return
 			}
@@ -255,11 +256,21 @@ export function RegisterScreen() {
 				title: wasSent ? 'Registro enviado' : 'Registro salvo',
 				message: wasSent
 					? 'Registro enviado para processamento com sucesso.'
-					: 'Sem conexão com o servidor. O registro foi salvo no aparelho e será enviado automaticamente.',
+					: 'Não foi possível enviar agora. O registro foi salvo no aparelho e será enviado automaticamente.',
 				iconName: 'checkmark-circle-outline',
 				iconColor: colors.secondary,
 			})
-		} catch {
+		} catch (error) {
+			if (error instanceof UploadLimitError) {
+				showErrorFeedback(
+					'Imagens muito grandes',
+					error.kind === 'image'
+						? 'Cada imagem deve ter no máximo 5 MB.'
+						: 'As imagens somam mais de 10 MB. Remova alguma.',
+				)
+				return
+			}
+
 			showErrorFeedback(
 				'Falha no envio',
 				'Não foi possível enviar o registro. Tente novamente.',

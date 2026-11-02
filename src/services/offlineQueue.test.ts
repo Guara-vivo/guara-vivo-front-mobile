@@ -1,5 +1,6 @@
 import { ApiError } from './apiClient'
 import {
+	UploadLimitError,
 	discardPendingRecord,
 	enqueueRecord,
 	flushPendingRecords,
@@ -9,6 +10,7 @@ import {
 import { uploadRecord } from './recordsApi'
 
 const mockStore = new Map<string, string>()
+const mockSizes = new Map<string, number>()
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
 	__esModule: true,
@@ -39,6 +41,9 @@ jest.mock('expo-file-system', () => {
 			this.uri = parts.map((p) => (typeof p === 'string' ? p : (p as { uri: string }).uri)).join('/')
 		}
 		copy() {}
+		get size() {
+			return mockSizes.get(this.uri) ?? 1000
+		}
 	}
 	return { Directory, File, Paths: { document: { uri: 'file:///doc' } } }
 })
@@ -58,6 +63,7 @@ const params = {
 
 beforeEach(() => {
 	mockStore.clear()
+	mockSizes.clear()
 	upload.mockReset()
 	setQueueOwner(1)
 })
@@ -149,6 +155,40 @@ describe('offlineQueue', () => {
 	it('discards a record', async () => {
 		const record = await enqueueRecord(params)
 		await discardPendingRecord(record.clientUuid)
+		expect(await getPendingRecords(1)).toHaveLength(0)
+	})
+
+	it('flushes again when a record is queued while a flush is running', async () => {
+		const first = await enqueueRecord(params)
+		let release: (value: unknown) => void = () => {}
+		upload.mockImplementationOnce(() => new Promise((resolve) => (release = resolve)))
+
+		const running = flushPendingRecords()
+		await new Promise((resolve) => setImmediate(resolve))
+
+		const second = await enqueueRecord(params)
+		upload.mockResolvedValue({})
+		const waiting = flushPendingRecords()
+		release({})
+
+		const [, result] = await Promise.all([running, waiting])
+		expect(result.outcomes[first.clientUuid]).toBe('sent')
+		expect(result.outcomes[second.clientUuid]).toBe('sent')
+		expect(await getPendingRecords(1)).toHaveLength(0)
+	})
+
+	it('refuses images over 5 MB or over 10 MB in total, without saving', async () => {
+		mockSizes.set('file:///cache/big.jpg', 6 * 1024 * 1024)
+		await expect(
+			enqueueRecord({ ...params, images: [{ ...params.images[0], uri: 'file:///cache/big.jpg' }] }),
+		).rejects.toMatchObject({ kind: 'image' })
+
+		const four = (n: number) =>
+			Array.from({ length: n }, (_, i) => {
+				mockSizes.set(`file:///cache/${i}.jpg`, 4 * 1024 * 1024)
+				return { uri: `file:///cache/${i}.jpg`, name: `${i}.jpg`, type: 'image/jpeg' }
+			})
+		await expect(enqueueRecord({ ...params, images: four(3) })).rejects.toBeInstanceOf(UploadLimitError)
 		expect(await getPendingRecords(1)).toHaveLength(0)
 	})
 })

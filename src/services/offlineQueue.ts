@@ -36,6 +36,27 @@ export type EnqueueParams = {
 	images: ReactNativeFile[]
 }
 
+// Limites da API: 5 MB por imagem e 10 MB no total. Validar ao salvar evita guardar um
+// registro que seria recusado depois, quando o usuario ja nao esta na tela.
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const MAX_TOTAL_BYTES = 10 * 1024 * 1024
+
+export class UploadLimitError extends Error {
+	constructor(public kind: 'image' | 'total') {
+		super(kind === 'image' ? 'Imagem acima de 5 MB' : 'Imagens somam mais de 10 MB')
+	}
+}
+
+function assertWithinUploadLimits(images: ReactNativeFile[]) {
+	let total = 0
+	for (const image of images) {
+		const size = new File(image.uri).size ?? 0
+		if (size > MAX_IMAGE_BYTES) throw new UploadLimitError('image')
+		total += size
+	}
+	if (total > MAX_TOTAL_BYTES) throw new UploadLimitError('total')
+}
+
 export type FlushOutcome = 'sent' | 'rejected' | 'retry'
 
 export type FlushResult = {
@@ -106,6 +127,8 @@ export async function enqueueRecord(params: EnqueueParams): Promise<PendingRecor
 		throw new Error('Sem usuário ativo para salvar o registro.')
 	}
 
+	assertWithinUploadLimits(params.images)
+
 	const clientUuid = randomUUID()
 	const userId = activeUserId
 
@@ -174,15 +197,34 @@ function describeError(error: unknown) {
 }
 
 let flushing: Promise<FlushResult> | null = null
+let flushAgain = false
 
 // Envia os registros pendentes do usuario ativo, um por vez. Uma execucao por vez:
-// chamadas simultaneas (rede volta + app abre) compartilham o mesmo resultado.
+// chamadas simultaneas (rede volta + app abre) compartilham o resultado. Se alguem pede
+// um envio durante outro, ele roda de novo ao terminar, para pegar registros que entraram
+// na fila depois que o envio em andamento leu a lista.
 export function flushPendingRecords(): Promise<FlushResult> {
-	if (!flushing) {
-		flushing = runFlush().finally(() => {
-			flushing = null
-		})
+	if (flushing) {
+		flushAgain = true
+		return flushing
 	}
+
+	flushing = (async () => {
+		const merged: FlushResult = { outcomes: {}, stopped: false }
+		try {
+			do {
+				flushAgain = false
+				const result = await runFlush()
+				Object.assign(merged.outcomes, result.outcomes)
+				merged.stopped = result.stopped
+			} while (flushAgain && !merged.stopped)
+			return merged
+		} finally {
+			// Sincrono com a checagem acima: quem chegar depois inicia um envio novo.
+			flushing = null
+		}
+	})()
+
 	return flushing
 }
 
