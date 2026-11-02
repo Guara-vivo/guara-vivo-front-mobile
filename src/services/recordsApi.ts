@@ -193,6 +193,8 @@ export async function uploadRecord(params: {
 	longitude: number
 	behavior: BirdBehavior[]
 	dateTime?: Date
+	// Gerado uma vez por registro: reenviar o mesmo UUID nao duplica o registro.
+	clientUuid?: string
 }): Promise<RecordRead> {
 	const formData = new FormData()
 
@@ -208,6 +210,10 @@ export async function uploadRecord(params: {
 	}
 
 	formData.append('date_time', (params.dateTime ?? new Date()).toISOString())
+
+	if (params.clientUuid) {
+		formData.append('client_uuid', params.clientUuid)
+	}
 
 	const response = await apiFetch('/records/upload', {
 		method: 'POST',
