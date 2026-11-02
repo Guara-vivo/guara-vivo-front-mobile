@@ -3,8 +3,12 @@ import { withAndroidManifest } from '@expo/config-plugins'
 function withGoogleMapsApiKey(expoConfig) {
 	return withAndroidManifest(expoConfig, (config) => {
 		const mainApplication = config.modResults.manifest.application[0]
+		// Remove a entrada anterior (ex.: o placeholder do android/ versionado) para nao duplicar.
+		const others = (mainApplication['meta-data'] ?? []).filter(
+			(item) => item.$['android:name'] !== 'com.google.android.geo.API_KEY',
+		)
 		mainApplication['meta-data'] = [
-			...(mainApplication['meta-data'] ?? []),
+			...others,
 			{
 				$: {
 					'android:name': 'com.google.android.geo.API_KEY',
@@ -32,6 +36,15 @@ export default {
 		icon: './src/assets/images/icon.png',
 		android: {
 			package: 'com.guaravivo.app',
+			allowBackup: false,
+			blockedPermissions: [
+				'android.permission.RECORD_AUDIO',
+				'android.permission.SYSTEM_ALERT_WINDOW',
+				'android.permission.WRITE_EXTERNAL_STORAGE',
+				'android.permission.CAMERA',
+				'android.permission.USE_BIOMETRIC',
+				'android.permission.USE_FINGERPRINT',
+			],
 			adaptiveIcon: {
 				foregroundImage: './src/assets/images/adaptive_icon.png',
 				backgroundColor: '#F1F1F1',
@@ -50,6 +63,7 @@ export default {
 			[
 				'expo-image-picker',
 				{
+					microphonePermission: false,
 					photosPermission:
 						'O app precisa acessar suas fotos para anexar imagens ao registro.',
 				},
