@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
+import { ApiError } from '../services/apiClient'
 import { login } from '../services/authService'
 import { appStyles } from '../styles/appStyles'
 import type { UserRead } from '../types/api'
@@ -53,8 +54,16 @@ export function LoginScreen({
 			const response = await login(email.trim(), password)
 			onSuccess(response.user)
 			// Navigation is now handled by RootNavigator reacting to isAuthenticated
-		} catch {
-			showErrorFeedback('Falha no login', 'Confira e-mail e senha e tente novamente.')
+		} catch (error) {
+			// So uma resposta da API indica credenciais erradas; o resto e conexao.
+			if (error instanceof ApiError && error.status < 500) {
+				showErrorFeedback('Falha no login', 'Confira e-mail e senha e tente novamente.')
+			} else {
+				showErrorFeedback(
+					'Sem conexão',
+					'Não foi possível falar com o servidor. Verifique sua internet e tente novamente.',
+				)
+			}
 		} finally {
 			setIsLoading(false)
 		}
@@ -70,6 +79,8 @@ export function LoginScreen({
 				<View style={appStyles.loginHeaderRow}>
 					<Pressable
 						onPress={() => navigation.goBack()}
+						accessibilityRole="button"
+						accessibilityLabel="Voltar"
 						hitSlop={10}
 						style={appStyles.loginBackButton}
 					>
@@ -86,6 +97,11 @@ export function LoginScreen({
 							placeholder="E-mail de acesso"
 							keyboardType="email-address"
 							autoCapitalize="none"
+							autoCorrect={false}
+							autoComplete="email"
+							textContentType="emailAddress"
+							returnKeyType="next"
+							accessibilityLabel="E-mail de acesso"
 							editable={!isLoading}
 							placeholderTextColor="#AEB4BF"
 							style={appStyles.loginInput}
@@ -101,12 +117,20 @@ export function LoginScreen({
 								placeholder="Senha de acesso"
 								secureTextEntry={!showPassword}
 								autoCapitalize="none"
+								autoCorrect={false}
+								autoComplete="current-password"
+								textContentType="password"
+								returnKeyType="go"
+								onSubmitEditing={handleLogin}
+								accessibilityLabel="Senha de acesso"
 								editable={!isLoading}
 								placeholderTextColor="#AEB4BF"
 								style={[appStyles.loginInput, appStyles.loginPasswordInput]}
 							/>
 							<Pressable
 								onPress={() => setShowPassword((current) => !current)}
+								accessibilityRole="button"
+								accessibilityLabel={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
 								hitSlop={10}
 								style={appStyles.loginEyeButton}
 							>

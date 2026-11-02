@@ -17,10 +17,31 @@ import {
 	mapRecordSummaryToRecordItem,
 } from './recordsApi'
 import { savePersistedRecords } from './recordsStore'
+import type { RecordSummaryRead } from '../types/api'
 import type { RecordItem, RecordDetailItem } from '../types/records'
 
 type FetchOptions = {
 	force?: boolean
+}
+
+// A API limita cada pagina; busca varias para nao esconder registros antigos.
+const PAGE_SIZE = 100
+const MAX_PAGES = 10
+
+function abortError() {
+	return Object.assign(new Error('Aborted'), { name: 'AbortError' })
+}
+
+// Deixa de esperar quando o chamador cancela, sem derrubar a requisicao compartilhada.
+function waitUnlessAborted<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+	if (!signal) return promise
+	if (signal.aborted) return Promise.reject(abortError())
+
+	return new Promise<T>((resolve, reject) => {
+		const onAbort = () => reject(abortError())
+		signal.addEventListener('abort', onAbort)
+		promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', onAbort))
+	})
 }
 
 let recordsRequest: Promise<RecordItem[]> | null = null
@@ -39,24 +60,31 @@ export async function fetchRecords(
 	}
 
 	if (recordsRequest) {
-		return recordsRequest
+		return waitUnlessAborted(recordsRequest, signal)
 	}
 
-	recordsRequest = loadRecords(signal).finally(() => {
+	// A requisicao e compartilhada: nao usa o signal de quem a iniciou, senao fechar essa
+	// tela cancelaria a lista para as outras. Cada chamador so deixa de esperar.
+	recordsRequest = loadRecords().finally(() => {
 		recordsRequest = null
 	})
 
-	return recordsRequest
+	return waitUnlessAborted(recordsRequest, signal)
 }
 
-async function loadRecords(signal?: AbortSignal): Promise<RecordItem[]> {
+async function loadRecords(): Promise<RecordItem[]> {
 	const token = await getToken()
 
 	if (!token) {
 		throw new Error('Missing access token')
 	}
 
-	const records = await getRecordSummaries(token, 0, 100, signal)
+	const records: RecordSummaryRead[] = []
+	for (let page = 0; page < MAX_PAGES; page += 1) {
+		const batch = await getRecordSummaries(token, page * PAGE_SIZE, PAGE_SIZE)
+		records.push(...batch)
+		if (batch.length < PAGE_SIZE) break
+	}
 	const items = records.map(mapRecordSummaryToRecordItem)
 
 	setCachedRecords(items)
@@ -80,20 +108,19 @@ export async function fetchRecordDetail(
 	const activeRequest = detailRequests.get(recordId)
 
 	if (activeRequest) {
-		return activeRequest
+		return waitUnlessAborted(activeRequest, signal)
 	}
 
-	const request = loadRecordDetail(recordId, signal).finally(() => {
+	const request = loadRecordDetail(recordId).finally(() => {
 		detailRequests.delete(recordId)
 	})
 	detailRequests.set(recordId, request)
 
-	return request
+	return waitUnlessAborted(request, signal)
 }
 
 async function loadRecordDetail(
 	recordId: number,
-	signal?: AbortSignal,
 ): Promise<RecordDetailItem | undefined> {
 	const token = await getToken()
 
@@ -101,7 +128,7 @@ async function loadRecordDetail(
 		throw new Error('Missing access token')
 	}
 
-	const record = await getRecordDetail(token, recordId, signal)
+	const record = await getRecordDetail(token, recordId)
 
 	const detail: RecordDetailItem = mapRecordDetailToRecordItem(record)
 

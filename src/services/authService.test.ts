@@ -1,4 +1,5 @@
 import { login, logout, restoreSession } from './authService'
+import { getCachedRecordsSnapshot, setCachedRecords } from './recordsCache'
 import {
 	loadPersistedRecords,
 	savePersistedRecords,
@@ -145,5 +146,16 @@ describe('login / logout', () => {
 		fetchMock.mockResolvedValueOnce(respond(401)).mockResolvedValueOnce(respond(401))
 		await restoreSession()
 		expect(await loadPersistedRecords()).toBeNull()
+	})
+})
+
+describe('logout', () => {
+	it('descarta a lista de registros guardada em memoria', async () => {
+		setCachedRecords([{ id: 1 }] as never)
+		fetchMock.mockResolvedValueOnce(respond(200))
+
+		await logout()
+
+		expect(getCachedRecordsSnapshot()).toBeUndefined()
 	})
 })

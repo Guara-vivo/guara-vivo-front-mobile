@@ -1,4 +1,4 @@
-import { API_URL } from './apiClient'
+import { API_URL, apiFetch } from './apiClient'
 import { getAccessToken } from './tokenStorage'
 import type { RecordStatus } from '../types/api'
 
@@ -140,7 +140,20 @@ export async function subscribeRecordProgress({
 	}
 
 	const openSocket = async () => {
-		const token = await getAccessToken()
+		let token = await getAccessToken()
+
+		// Depois de falhas seguidas, o token pode ter expirado: uma chamada autenticada
+		// aciona o refresh automatico do apiFetch antes de tentar de novo.
+		if (token && reconnectDelay > INITIAL_RECONNECT_DELAY_MS) {
+			try {
+				await apiFetch('/users/me', {
+					headers: { Authorization: `Bearer ${token}` },
+				})
+			} catch {
+				// Sem rede ou API fora: segue com o token atual e deixa o backoff agir.
+			}
+			token = await getAccessToken()
+		}
 
 		if (!isActive || !token) {
 			return
@@ -156,12 +169,13 @@ export async function subscribeRecordProgress({
 
 		socket.onopen = () => {
 			socket?.send(JSON.stringify({ type: 'auth', token }))
-			reconnectDelay = INITIAL_RECONNECT_DELAY_MS
 			resetInactivityTimer()
 			onOpen?.()
 		}
 
 		socket.onmessage = (event) => {
+			// So uma mensagem do servidor prova que o token foi aceito; abrir a conexao nao.
+			reconnectDelay = INITIAL_RECONNECT_DELAY_MS
 			resetInactivityTimer()
 
 			try {

@@ -38,6 +38,58 @@ export class ApiError extends Error {
 // O servidor respondeu e recusou o refresh token (diferente de falta de rede).
 class RefreshRejectedError extends Error {}
 
+export class RequestTimeoutError extends Error {
+	constructor() {
+		super('Request timeout')
+		this.name = 'TimeoutError'
+	}
+}
+
+// Sem prazo, uma rede ruim deixa telas girando e a fila offline presa para sempre.
+const REQUEST_TIMEOUT_MS = 20000
+const UPLOAD_TIMEOUT_MS = 120000
+
+// Avisa o app quando o servidor recusa o refresh token: a sessao acabou e o usuario
+// precisa voltar para o login.
+let sessionExpiredHandler: (() => void) | null = null
+
+export function setSessionExpiredHandler(handler: (() => void) | null) {
+	sessionExpiredHandler = handler
+}
+
+async function fetchWithTimeout(url: string, options: RequestInit) {
+	const controller = new AbortController()
+	const callerSignal = options.signal
+	let timedOut = false
+
+	const onCallerAbort = () => controller.abort()
+	if (callerSignal) {
+		if (callerSignal.aborted) {
+			controller.abort()
+		} else {
+			callerSignal.addEventListener('abort', onCallerAbort)
+		}
+	}
+
+	const timeoutMs = options.body instanceof FormData ? UPLOAD_TIMEOUT_MS : REQUEST_TIMEOUT_MS
+	const timer = setTimeout(() => {
+		timedOut = true
+		controller.abort()
+	}, timeoutMs)
+
+	try {
+		return await fetch(url, { ...options, signal: controller.signal })
+	} catch (error) {
+		if (timedOut) {
+			throw new RequestTimeoutError()
+		}
+		throw error
+	} finally {
+		clearTimeout(timer)
+		callerSignal?.removeEventListener('abort', onCallerAbort)
+	}
+}
+
 let refreshRequest: Promise<LoginResponse> | null = null
 
 function hasAuthorizationHeader(headers: HeadersInit | undefined) {
@@ -77,7 +129,7 @@ async function refreshAccessToken() {
 	}
 
 	if (!refreshRequest) {
-		refreshRequest = fetch(`${API_URL}/users/refresh`, {
+		refreshRequest = fetchWithTimeout(`${API_URL}/users/refresh`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ refresh_token: refreshToken }),
@@ -105,12 +157,12 @@ async function refreshAccessToken() {
 }
 
 export async function apiFetch(path: string, options: RequestInit = {}) {
-	let response = await fetch(`${API_URL}${path}`, options)
+	let response = await fetchWithTimeout(`${API_URL}${path}`, options)
 
 	if (response.status === 401 && hasAuthorizationHeader(options.headers)) {
 		try {
 			const refreshed = await refreshAccessToken()
-			response = await fetch(
+			response = await fetchWithTimeout(
 				`${API_URL}${path}`,
 				withAuthorizationHeader(options, refreshed.access_token),
 			)
@@ -120,6 +172,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
 				throw error
 			}
 			await clearTokens()
+			sessionExpiredHandler?.()
 		}
 	}
 

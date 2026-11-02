@@ -14,7 +14,7 @@
 - **Main App:** A navegação principal fica em `src/GuaraVivoApp.tsx`.
 - **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/types/navigation.ts`.
 - **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
-- **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx`, com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
+- **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx` (apesar do nome, usa `react-native-maps`/Google Maps, assim como o seletor de local de `RegisterScreen`; o nome é legado), com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
 - **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
 - **Dados/API:** Os registros reais vêm da API por `src/services/recordsService.ts` e `src/services/recordsApi.ts`. Tipos reais ficam em `src/types/api.ts`; formatadores em `src/utils/recordFormatters.ts`; opções de comportamento em `src/constants/behaviors.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
@@ -41,12 +41,13 @@
 - **Mapa:** Remove POIs comerciais, usa marcadores personalizados neutros, exibe badge de contagem. **Sem re-renders em pan/zoom** (otimização performance). Mapas carregados de `MAP_RECORDS` em dev.
 - **Map Layers:** `all` = total visível, `feeding` = pontos vermelhos (alimentação), `nests` = casas azuis (ninhos).
 - **API URL:** `src/services/apiClient.ts` usa `EXPO_PUBLIC_API_URL` (variável de ambiente). Em dev: fallback para `192.168.18.145:8001` (Android) ou `localhost:8001` (iOS). Em produção: requer HTTPS, erro se HTTP.
+- **Rede:** `apiFetch` aplica timeout (20s; 120s em upload). Quando o refresh token é recusado, `setSessionExpiredHandler` leva o app de volta ao login e `clearExpiredSession` limpa os dados locais.
 - **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts` usando **Keychain (iOS)** e **Keystore (Android)** via `expo-secure-store`. Fallback automático de `AsyncStorage` para migração (apenas leitura). `apiFetch` renova token em `401` usando `POST /users/refresh` e repete requisição.
 - **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`. **Requests suportam AbortSignal** para cancelamento em unmount (economiza bateria/dados).
 - **Record Detail Modal:** `src/components/RecordImageDetailModal.tsx` shows per-image analysis with image preview, analysis status, technical accuracy summary, and per-individual detection details.
 - **Per-image detections:** `RecordDetailItem.image_analyses` contains `detections` filtered by `analysis_image_id`; preserve `raw_detection` from the API to display `cor`, `fase_vida`, and `acuracia` fields.
 - **Accuracy fields:** The modal expects `raw_detection.acuracia.deteccao_yolo`, `classificacao_guara`, `classificacao_cor`, and `classificacao_fase_vida` as decimal values and formats them as percentages.
-- **Cache:** `src/services/recordsCache.ts` mantém cache em memória (TTL: 5 minutos). Invalide com `invalidateRecordsCache()` após upload.
+- **Cache:** `src/services/recordsCache.ts` mantém cache em memória (TTL: 60 segundos) e é limpo no logout. Invalide com `invalidateRecordsCache()` após upload.
   - ⚠️ **Importante:** `/records/summary` (resumos) NUNCA devem ser salvos como detalhe. Apenas `/records/{id}/detail` (com `image_analyses`) é cacheado como detalhe. Modal de análise usa `image_analyses` e mostraria erro se alimentado com resumo.
 
 ## Performance Optimization Guidelines
@@ -108,7 +109,7 @@ const [state, dispatch] = useReducer(reducer, {
 ### ✨ Code Quality (Recent)
 - **Type safety:** Todas instâncias de `any` removidas. Tipagem concreto (`HistoryFilterState`, `React.ErrorInfo`, `IoniconName`).
 - **Error handling:** `ErrorBoundary` com logs seguros.
-- **Modular architecture:** Componentes < 300 linhas. Hooks, Services, Screens bem separados.
+- **Modular architecture:** Hooks, Services, Screens separados. Meta de 200–300 linhas por arquivo, ainda não atingida em `appStyles.ts`, `RegisterScreen`, `RecordImageDetailModal` e `MapLibreMapView`.
 
 ### 📋 Previous Features
 - Shared `Header` component with blue bar, uppercase title, optional right action.
@@ -123,6 +124,9 @@ const [state, dispatch] = useReducer(reducer, {
 - Per-image analysis summary + per-individual detection details.
 
 ### ⚠️ Known Issues & Next Steps
-- **11 dependency vulnerabilities (Expo 54):** Requerem upgrade para Expo 56.0.4.
-- **2 unused variables (RecordImageDetailModal):** Cleanup opcional.
+- **Telas ainda sem backend:** cadastro (`RegisterEmail`/`RegisterPassword` não criam conta), `ChangePasswordScreen`, `EditProfileScreen`, "Recuperar senha" e as preferências de `NotificationsScreen` são apenas visuais.
+- **Keystore de release:** o antigo foi removido do git, mas continua no histórico público; gerar um novo antes de publicar e guardá-lo fora do repositório (`android/app/app.keystore` está no `.gitignore`).
+- **Chave do Google Maps:** lida de `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` (variável de ambiente ou `.env`) pelo Gradle via `manifestPlaceholders`. Restringir por pacote e SHA-1 no Google Cloud.
+- **`android/` é versionado e editado à mão:** ao rodar `expo prebuild`, revisar o diff do `AndroidManifest.xml`.
+- **Vulnerabilidades (`npm audit`):** vindas da cadeia de build do Expo 54 (transitivas, fora do APK); resolvidas com upgrade do Expo.
 - **1 metro.config.js warning:** Não-crítico; atualizar para extends `expo/metro-config` se necessário.

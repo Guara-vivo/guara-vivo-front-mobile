@@ -201,7 +201,7 @@ export function RecordImageDetailModal({
 														const parsed = JSON.parse(detection.raw_detection)
 														bbox = parsed.bbox_xyxy
 													} else if (detection.raw_detection && typeof detection.raw_detection === 'object') {
-														bbox = (detection.raw_detection as any).bbox_xyxy
+														bbox = (detection.raw_detection as { bbox_xyxy?: [number, number, number, number] }).bbox_xyxy ?? null
 													}
 												} catch (e) {
 													console.error('Error parsing bbox', e)

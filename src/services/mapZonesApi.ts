@@ -10,9 +10,6 @@ export async function getMapZones(signal?: AbortSignal): Promise<MapZoneRead[]> 
 		signal,
 	})
 
-	if (!response.ok) {
-		throw new Error(`Failed to fetch map zones: ${response.statusText}`)
-	}
 
 	return response.json()
 }
@@ -28,9 +25,6 @@ export async function getMapZoneRecords(
 		signal,
 	})
 
-	if (!response.ok) {
-		throw new Error(`Failed to fetch map zone records: ${response.statusText}`)
-	}
 
 	return response.json()
 }
@@ -60,9 +54,6 @@ export async function createMapZone(
 		signal,
 	})
 
-	if (!response.ok) {
-		throw new Error(`Failed to create map zone: ${response.statusText}`)
-	}
 
 	return response.json()
 }
@@ -75,9 +66,6 @@ export async function deleteMapZone(zone_id: number, signal?: AbortSignal): Prom
 		signal,
 	})
 
-	if (!response.ok) {
-		throw new Error(`Failed to delete map zone: ${response.statusText}`)
-	}
 
 	return response.json()
 }

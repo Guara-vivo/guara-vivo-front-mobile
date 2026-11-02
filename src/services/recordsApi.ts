@@ -2,7 +2,6 @@ import { apiFetch } from './apiClient'
 import type {
 	AnalysisRead,
 	BirdBehavior,
-	IbisRead,
 	ReactNativeFile,
 	RecordDetailRead,
 	RecordRead,
@@ -124,69 +123,6 @@ export async function getRecordDetail(
 	return response.json() as Promise<RecordDetailRead>
 }
 
-export async function getRecords(
-	token: string,
-	skip = 0,
-	limit = 100,
-): Promise<RecordRead[]> {
-	const response = await apiFetch(`/records?skip=${skip}&limit=${limit}`, {
-		headers: { Authorization: `Bearer ${token}` },
-	})
-
-	return response.json() as Promise<RecordRead[]>
-}
-
-export async function getRecord(
-	token: string,
-	recordId: number,
-): Promise<RecordRead> {
-	const response = await apiFetch(`/records/${recordId}`, {
-		headers: { Authorization: `Bearer ${token}` },
-	})
-
-	return response.json() as Promise<RecordRead>
-}
-
-export async function getAnalyses(
-	token: string,
-	skip = 0,
-	limit = 100,
-): Promise<AnalysisRead[]> {
-	const response = await apiFetch(`/analysis?skip=${skip}&limit=${limit}`, {
-		headers: { Authorization: `Bearer ${token}` },
-	})
-
-	return response.json() as Promise<AnalysisRead[]>
-}
-
-export async function getRecordAnalysis(
-	token: string,
-	recordId: number,
-): Promise<AnalysisRead | null> {
-	const analyses = await getAnalyses(token)
-	return analyses.find((analysis) => analysis.recorder_id === recordId) ?? null
-}
-
-export async function getIbis(
-	token: string,
-	skip = 0,
-	limit = 100,
-): Promise<IbisRead[]> {
-	const response = await apiFetch(`/ibis?skip=${skip}&limit=${limit}`, {
-		headers: { Authorization: `Bearer ${token}` },
-	})
-
-	return response.json() as Promise<IbisRead[]>
-}
-
-export async function getAnalysisIbis(
-	token: string,
-	analysisId: number,
-): Promise<IbisRead[]> {
-	const ibis = await getIbis(token)
-	return ibis.filter((item) => item.analysis_id === analysisId)
-}
-
 export async function uploadRecord(params: {
 	token: string
 	images: ReactNativeFile[]
@@ -226,14 +162,8 @@ export async function uploadRecord(params: {
 }
 
 export default {
-	getAnalyses,
-	getAnalysisIbis,
-	getIbis,
-	getRecord,
 	getRecordDetail,
-	getRecordAnalysis,
 	getRecordSummaries,
-	getRecords,
 	mapRecordDetailToRecordItem,
 	mapRecordReadToRecordItem,
 	mapRecordSummaryToRecordItem,
