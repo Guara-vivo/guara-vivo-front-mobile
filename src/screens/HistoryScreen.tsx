@@ -22,7 +22,14 @@ import {
 	getCachedRecordsSnapshot,
 	isRecordsCacheFresh,
 } from '../services/recordsService'
+import {
+	discardPendingRecord,
+	getActivePendingRecords,
+	subscribeQueue,
+	type PendingRecord,
+} from '../services/offlineQueue'
 import type { RecordProgressUpdate } from '../services/recordProgressService'
+import { mergeHistoryRecords, recordKey } from '../utils/pendingRecords'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 import type { MainTabParamList } from '../types/navigation'
@@ -68,6 +75,50 @@ export function HistoryScreen() {
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [loadError, setLoadError] = useState(false)
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+	const [pendingRecords, setPendingRecords] = useState<PendingRecord[]>([])
+
+	// Registros guardados no aparelho aparecem junto com os da API.
+	useEffect(() => {
+		let mounted = true
+		const loadPending = () =>
+			getActivePendingRecords().then((list) => {
+				if (mounted) setPendingRecords(list)
+			})
+
+		void loadPending()
+
+		const unsubscribe = subscribeQueue((event) => {
+			if (event !== 'sent') {
+				void loadPending()
+				return
+			}
+
+			// Um registro foi enviado: troca o pendente pelo da API de uma vez.
+			void Promise.all([
+				fetchRecords({ force: true }),
+				getActivePendingRecords(),
+			])
+				.then(([items, list]) => {
+					if (mounted) {
+						setRecords(items)
+						setPendingRecords(list)
+					}
+				})
+				.catch(() => {
+					void loadPending()
+				})
+		})
+
+		return () => {
+			mounted = false
+			unsubscribe()
+		}
+	}, [])
+
+	const allRecords = useMemo(
+		() => mergeHistoryRecords(records, pendingRecords),
+		[records, pendingRecords],
+	)
 
 
 	useEffect(() => {
@@ -160,7 +211,7 @@ export function HistoryScreen() {
 		clearFilters,
 		filteredRecords,
 		setIsFilterOpen,
-	} = useHistoryFilters(records)
+	} = useHistoryFilters(allRecords)
 
 	const orderedRecords = useMemo(() => {
 		if (sortOrder === 'desc') {
@@ -190,7 +241,7 @@ export function HistoryScreen() {
 				<FlatList
 					contentContainerStyle={appStyles.historyContent}
 					data={orderedRecords}
-					keyExtractor={(item) => String(item.id)}
+					keyExtractor={recordKey}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefreshing}
@@ -256,6 +307,7 @@ export function HistoryScreen() {
 							item={item}
 							analysisProgress={item.analysis_progress}
 							onOpenRecord={openRecord}
+							onDiscard={discardPendingRecord}
 						/>
 					)}
 				/>
