@@ -37,10 +37,11 @@ export default {
 		android: {
 			package: 'com.guaravivo.app',
 			allowBackup: false,
+			// WRITE_EXTERNAL_STORAGE nao entra aqui: o expo-image-picker a exige no Android 12 ou menor
+			// para liberar a galeria (no AndroidManifest ela fica limitada a maxSdkVersion 32).
 			blockedPermissions: [
 				'android.permission.RECORD_AUDIO',
 				'android.permission.SYSTEM_ALERT_WINDOW',
-				'android.permission.WRITE_EXTERNAL_STORAGE',
 				'android.permission.CAMERA',
 				'android.permission.USE_BIOMETRIC',
 				'android.permission.USE_FINGERPRINT',
