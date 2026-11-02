@@ -4,6 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const ACCESS_TOKEN_KEY = 'guara_vivo_access_token'
 const REFRESH_TOKEN_KEY = 'guara_vivo_refresh_token'
 
+// Usado só quando o SecureStore do aparelho não funciona (alguns emuladores perdem a chave de
+// criptografia). A sessão vale enquanto o app estiver aberto; o token nunca vai para o
+// AsyncStorage, que guarda em texto puro.
+const memoryFallback = new Map<string, string>()
+
 function normalizeToken(token: string) {
 	const normalizedToken = token.trim()
 
@@ -14,45 +19,12 @@ function normalizeToken(token: string) {
 	return normalizedToken
 }
 
-/**
- * Read token from secure storage with fallback to AsyncStorage for migration.
- * If token exists in AsyncStorage, migrate it to SecureStore and remove from AsyncStorage.
- */
-async function readTokenFromStorage(key: string): Promise<string | null> {
-	let token: string | null = null
-
-	// Try SecureStore first
+async function removeLegacyCopy(keys: string[]) {
 	try {
-		token = await SecureStore.getItemAsync(key)
-		if (token) {
-			return token.trim() || null
-		}
+		await AsyncStorage.multiRemove(keys)
 	} catch {
-		// SecureStore failed — fall through to AsyncStorage
+		// Sem a cópia antiga não há o que migrar; ignora.
 	}
-
-	// Fallback: AsyncStorage
-	try {
-		token = await AsyncStorage.getItem(key)
-	} catch {
-		return null
-	}
-
-	if (token) {
-		// Migrate to SecureStore only when it reads the value back; otherwise the
-		// AsyncStorage copy stays (secureStoreSetItem leaves it in place on failure).
-		try {
-			if (await secureStoreSetItem(key, token)) {
-				await AsyncStorage.removeItem(key)
-			}
-		} catch {
-			// Migration failed — AsyncStorage copy preserved
-		}
-
-		return token.trim() || null
-	}
-
-	return null
 }
 
 async function secureStoreSetItem(
@@ -68,11 +40,50 @@ async function secureStoreSetItem(
 			throw new Error('SecureStore read-back mismatch')
 		}
 
+		memoryFallback.delete(key)
 		return true
 	} catch {
-		await AsyncStorage.setItem(key, value)
+		memoryFallback.set(key, value)
 		return false
 	}
+}
+
+/**
+ * Lê o token do SecureStore. Se ele não funciona, usa a cópia em memória. Tokens salvos por
+ * versões antigas no AsyncStorage são migrados para o SecureStore e a cópia em texto puro é
+ * sempre apagada, mesmo que a migração não seja possível.
+ */
+async function readTokenFromStorage(key: string): Promise<string | null> {
+	try {
+		const token = await SecureStore.getItemAsync(key)
+		if (token?.trim()) {
+			return token.trim()
+		}
+	} catch {
+		// SecureStore indisponível — tenta a memória e depois a cópia antiga
+	}
+
+	const inMemory = memoryFallback.get(key)
+	if (inMemory) {
+		return inMemory
+	}
+
+	let legacyToken: string | null = null
+	try {
+		legacyToken = await AsyncStorage.getItem(key)
+	} catch {
+		return null
+	}
+
+	const normalized = legacyToken?.trim()
+	if (!normalized) {
+		return null
+	}
+
+	await secureStoreSetItem(key, normalized)
+	await removeLegacyCopy([key])
+
+	return normalized
 }
 
 export async function saveTokens(params: {
@@ -82,21 +93,16 @@ export async function saveTokens(params: {
 	const access = normalizeToken(params.accessToken)
 	const refresh = normalizeToken(params.refreshToken)
 
-	const secureAccessOk = await secureStoreSetItem(ACCESS_TOKEN_KEY, access)
-	const secureRefreshOk = await secureStoreSetItem(REFRESH_TOKEN_KEY, refresh)
-
-	if (secureAccessOk && secureRefreshOk) {
-		await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY])
-	}
+	await secureStoreSetItem(ACCESS_TOKEN_KEY, access)
+	await secureStoreSetItem(REFRESH_TOKEN_KEY, refresh)
+	await removeLegacyCopy([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY])
 }
 
 export async function saveAccessToken(token: string) {
 	const normalized = normalizeToken(token)
-	const secureOk = await secureStoreSetItem(ACCESS_TOKEN_KEY, normalized)
 
-	if (secureOk) {
-		await AsyncStorage.removeItem(ACCESS_TOKEN_KEY)
-	}
+	await secureStoreSetItem(ACCESS_TOKEN_KEY, normalized)
+	await removeLegacyCopy([ACCESS_TOKEN_KEY])
 }
 
 export async function getAccessToken() {
@@ -108,9 +114,11 @@ export async function getRefreshToken() {
 }
 
 export async function clearTokens() {
+	memoryFallback.clear()
+
 	await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY).catch(() => {})
 	await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY).catch(() => {})
 
-	// Also clear AsyncStorage for migration safety
-	await AsyncStorage.multiRemove([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY])
+	// Apaga também a cópia de versões antigas
+	await removeLegacyCopy([ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY])
 }
