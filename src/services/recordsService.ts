@@ -16,6 +16,7 @@ import {
 	mapRecordDetailToRecordItem,
 	mapRecordSummaryToRecordItem,
 } from './recordsApi'
+import { savePersistedRecords } from './recordsStore'
 import type { RecordItem, RecordDetailItem } from '../types/records'
 
 type FetchOptions = {
@@ -59,6 +60,7 @@ async function loadRecords(signal?: AbortSignal): Promise<RecordItem[]> {
 	const items = records.map(mapRecordSummaryToRecordItem)
 
 	setCachedRecords(items)
+	void savePersistedRecords(items)
 	return items
 }
 

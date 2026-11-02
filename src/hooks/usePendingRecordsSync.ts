@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { AppState } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
 import { flushPendingRecords, setQueueOwner } from '../services/offlineQueue'
+import { setRecordsStoreOwner } from '../services/recordsStore'
 
 const RETRY_INTERVAL_MS = 60000
 
@@ -10,6 +11,7 @@ const RETRY_INTERVAL_MS = 60000
 export function usePendingRecordsSync(userId: number | null) {
 	useEffect(() => {
 		setQueueOwner(userId)
+		setRecordsStoreOwner(userId)
 
 		if (userId === null) {
 			return
@@ -40,6 +42,7 @@ export function usePendingRecordsSync(userId: number | null) {
 			appStateSubscription.remove()
 			clearInterval(interval)
 			setQueueOwner(null)
+			setRecordsStoreOwner(null)
 		}
 	}, [userId])
 }

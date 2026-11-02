@@ -29,6 +29,8 @@ import {
 	type PendingRecord,
 } from '../services/offlineQueue'
 import type { RecordProgressUpdate } from '../services/recordProgressService'
+import { loadPersistedRecords } from '../services/recordsStore'
+import { formatDate, formatTime } from '../utils/recordFormatters'
 import { mergeHistoryRecords, recordKey } from '../utils/pendingRecords'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
@@ -76,6 +78,8 @@ export function HistoryScreen() {
 	const [loadError, setLoadError] = useState(false)
 	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 	const [pendingRecords, setPendingRecords] = useState<PendingRecord[]>([])
+	// Data da ultima atualizacao quando a lista vem do aparelho (sem conexao com a API)
+	const [staleSince, setStaleSince] = useState<number | null>(null)
 
 	// Registros guardados no aparelho aparecem junto com os da API.
 	useEffect(() => {
@@ -101,6 +105,7 @@ export function HistoryScreen() {
 				.then(([items, list]) => {
 					if (mounted) {
 						setRecords(items)
+						setStaleSince(null)
 						setPendingRecords(list)
 					}
 				})
@@ -133,18 +138,38 @@ export function HistoryScreen() {
 
 		setIsLoading(!hasCachedRecords)
 		setLoadError(false)
+
+		// Sem cache em memoria, mostra a ultima lista guardada no aparelho enquanto a API responde.
+		let fetched = false
+		let shownFromDevice = false
+		const persistedLoad = hasCachedRecords
+			? Promise.resolve(null)
+			: loadPersistedRecords().then((persisted) => {
+					if (mounted && persisted && !fetched) {
+						shownFromDevice = true
+						setRecords(persisted.records)
+						setStaleSince(persisted.savedAt)
+						setIsLoading(false)
+					}
+					return persisted
+				})
+
 		fetchRecords(
 			{ force: hasCachedRecords && !isRecordsCacheFresh() },
 			controller.signal,
 		)
 			.then((items) => {
+				fetched = true
 				if (mounted) {
 					setRecords(items)
+					setStaleSince(null)
 				}
 			})
-			.catch((error) => {
+			.catch(async (error) => {
+				await persistedLoad
+
 				if (mounted && error.name !== 'AbortError') {
-					setLoadError(!hasCachedRecords)
+					setLoadError(!hasCachedRecords && !shownFromDevice)
 				}
 			})
 			.finally(() => {
@@ -187,6 +212,7 @@ export function HistoryScreen() {
 		try {
 			const items = await fetchRecords({ force: true })
 			setRecords(items)
+			setStaleSince(null)
 		} catch {
 			setLoadError(records.length === 0)
 		} finally {
@@ -251,6 +277,12 @@ export function HistoryScreen() {
 						/>
 					}
 					ListHeaderComponent={
+						<>
+						{staleSince !== null ? (
+							<Text style={appStyles.historyEmptyText}>
+								{`Sem conexão com o servidor. Mostrando dados de ${formatDate(new Date(staleSince).toISOString())} às ${formatTime(new Date(staleSince).toISOString())}.`}
+							</Text>
+						) : null}
 						<ScreenCard style={appStyles.historySearchCard}>
 							<View style={appStyles.historySearchInputWrap}>
 								<Ionicons name="search-outline" size={19} color="#5C8BD6" />
@@ -289,6 +321,7 @@ export function HistoryScreen() {
 								</Text>
 							</Pressable>
 						</ScreenCard>
+						</>
 					}
 					ListEmptyComponent={
 						<View style={appStyles.historyEmptyWrap}>

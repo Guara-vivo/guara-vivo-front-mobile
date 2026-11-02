@@ -1,4 +1,9 @@
 import { login, logout, restoreSession } from './authService'
+import {
+	loadPersistedRecords,
+	savePersistedRecords,
+	setRecordsStoreOwner,
+} from './recordsStore'
 
 const mockAsync = new Map<string, string>()
 const mockTokens = { access: 'a' as string | null, refresh: 'r' as string | null }
@@ -123,5 +128,22 @@ describe('login / logout', () => {
 		await logout()
 		expect(mockAsync.size).toBe(0)
 		expect(mockTokens.access).toBeNull()
+	})
+
+	it('also drops the saved records list at logout and when the session is rejected', async () => {
+		setRecordsStoreOwner(2)
+		await savePersistedRecords([])
+		expect(await loadPersistedRecords()).not.toBeNull()
+
+		fetchMock.mockResolvedValueOnce(respond(200))
+		await logout()
+		expect(await loadPersistedRecords()).toBeNull()
+
+		await savePersistedRecords([])
+		mockTokens.access = 'a'
+		mockTokens.refresh = 'r'
+		fetchMock.mockResolvedValueOnce(respond(401)).mockResolvedValueOnce(respond(401))
+		await restoreSession()
+		expect(await loadPersistedRecords()).toBeNull()
 	})
 })
