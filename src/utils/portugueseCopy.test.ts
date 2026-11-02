@@ -14,6 +14,13 @@ const filesToCheck = [
 	'src/screens/RegisterEmailScreen.tsx',
 	'src/screens/RegisterPasswordScreen.tsx',
 	'src/screens/RegisterScreen.tsx',
+	'src/components/register/LocationPickerModal.tsx',
+	'src/components/register/RegisterDateTimeFields.tsx',
+	'src/components/register/RegisterImagePicker.tsx',
+	'src/components/register/RegisterLocationField.tsx',
+	'src/components/register/RegisterSubsection.tsx',
+	'src/hooks/useRegisterImages.ts',
+	'src/hooks/useRegisterLocation.ts',
 ]
 
 const unaccentedVisibleCopy = [
