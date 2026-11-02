@@ -6,3 +6,12 @@ export const MAP_CENTER = {
 };
 
 export const MAP_DEFAULT_ZOOM = 13;
+
+export const MAP_REGION_DELTA = 0.01;
+
+export const DEFAULT_REGION = {
+  latitude: MAP_CENTER.lat,
+  longitude: MAP_CENTER.lng,
+  latitudeDelta: MAP_REGION_DELTA,
+  longitudeDelta: MAP_REGION_DELTA,
+};

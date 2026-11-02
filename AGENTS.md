@@ -15,7 +15,7 @@
 - **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/types/navigation.ts`.
 - **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx` (apesar do nome, usa `react-native-maps`/Google Maps, assim como o seletor de local de `RegisterScreen`; o nome é legado), com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
-- **Estilos:** O visual do app fica centralizado em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
+- **Estilos:** O visual do app fica em `src/styles/`, dividido por assunto (`common.ts`, `auth.ts`, `history.ts`, `record.ts`, `maps.ts`, ...), com `appStyles.ts` agregando tudo (as telas usam `appStyles.<nome>`) e `shared.ts` com as constantes comuns; tokens em `src/constants/theme.ts`.
 - **Dados/API:** Os registros reais vêm da API por `src/services/recordsService.ts` e `src/services/recordsApi.ts`. Tipos reais ficam em `src/types/api.ts`; formatadores em `src/utils/recordFormatters.ts`; opções de comportamento em `src/constants/behaviors.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
 
@@ -27,7 +27,7 @@
 - **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`, `usePasswordValidation.ts`, `usePullRefreshAnimation.ts`).
 - **Services:** Integração de API e cache ficam em `src/services/` (ex.: `apiClient.ts`, `authService.ts`, `recordsApi.ts`, `recordsCache.ts`, `recordsService.ts`, `tokenStorage.ts`).
-- **Styles:** `src/styles/appStyles.ts` mantém estilos globais; prefira mover estilos muito grandes para arquivos por domínio.
+- **Styles:** estilos novos vão no arquivo de domínio em `src/styles/` (e passam a valer em `appStyles` automaticamente); crie um arquivo novo e registre-o em `appStyles.ts` se nenhum servir.
 - **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
 - **Header padrão:** Use `src/components/Header.tsx` nas telas principais; mantenha o estilo compartilhado em `appStyles.header`, `appHeaderTitle` e `headerRight` para preservar a faixa azul em largura total.
 
@@ -113,7 +113,7 @@ const [state, dispatch] = useReducer(reducer, {
 
 ### 📋 Previous Features
 - Shared `Header` component with blue bar, uppercase title, optional right action.
-- Centralized styles em `appStyles.ts` + `theme.ts`.
+- Centralized styles em `src/styles/` (agregados por `appStyles.ts`) + `theme.ts`.
 - `Button` component reusável (elimina duplicação).
 - `usePasswordValidation` hook com regras de complexidade.
 - Real API auth com token refresh automático.

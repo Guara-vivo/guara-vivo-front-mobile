@@ -1,89 +1,23 @@
-import MapView, { Circle, Marker, type Region } from 'react-native-maps'
-import { Ionicons } from '@expo/vector-icons'
-import * as Location from 'expo-location'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native'
-import { MAP_CENTER } from '../config/map'
-import type { MapLayerId } from '../config/map'
-import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
-import { colors } from '../constants/theme'
+import MapView, { Circle, Marker } from 'react-native-maps'
+import { ActivityIndicator, Text, View } from 'react-native'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { MapLayerId } from '../config/map'
+import { mapStyle } from '../config/mapStyle'
+import { useCurrentLocationTarget } from '../hooks/useCurrentLocationTarget'
+import { useRecordMarkerFade } from '../hooks/useRecordMarkerFade'
+import { useStoredCameraRegion } from '../hooks/useStoredCameraRegion'
+import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
+import {
+	filterZonesByLayer,
+	getLayerBadgeText,
+	getZoneCircleColors,
+} from '../utils/mapZoneStyle'
+import { mapViewStyles as styles } from './map/mapViewStyles'
+import { RecordMarker } from './map/RecordMarker'
+import { UserLocationMarker } from './map/UserLocationMarker'
 
-const MAP_REGION_DELTA = 0.01
 const CAMERA_ANIMATION_DURATION_MS = 250
-const CAMERA_STORAGE_DEBOUNCE_MS = 600
-const LOCATION_TIMEOUT_MS = 5000
-const MAP_CAMERA_STORAGE_KEY = 'guara_vivo:last_map_camera_region'
 const EMPTY_RECORD_MARKERS: MapZoneRecordRead[] = []
-const DEFAULT_REGION: Region = {
-	latitude: MAP_CENTER.lat,
-	longitude: MAP_CENTER.lng,
-	latitudeDelta: MAP_REGION_DELTA,
-	longitudeDelta: MAP_REGION_DELTA,
-}
-
-function parseStoredRegion(value: string | null): Region | null {
-	if (!value) {
-		return null
-	}
-
-	try {
-		const region = JSON.parse(value) as Partial<Region>
-		const values = [
-			region.latitude,
-			region.longitude,
-			region.latitudeDelta,
-			region.longitudeDelta,
-		]
-
-		if (values.every((item) => typeof item === 'number' && Number.isFinite(item))) {
-			return {
-				latitude: region.latitude as number,
-				longitude: region.longitude as number,
-				latitudeDelta: region.latitudeDelta as number,
-				longitudeDelta: region.longitudeDelta as number,
-			}
-		}
-	} catch {
-		return null
-	}
-
-	return null
-}
-
-type RecordMarkerProps = {
-	record: MapZoneRecordRead
-	focused: boolean
-	opacity: Animated.Value
-	onPress?: (recordId: number) => void
-}
-
-function RecordMarker({ record, focused, opacity, onPress }: RecordMarkerProps) {
-	return (
-		<Marker
-			coordinate={{
-				latitude: record.latitude_camera,
-				longitude: record.longitude_camera,
-			}}
-			onPress={onPress ? () => onPress(record.id) : undefined}
-			anchor={{ x: 0.5, y: 0.5 }}
-			zIndex={focused ? 201 : 200}
-		>
-			<Animated.View
-				style={[
-					styles.recordMarkerOuter,
-					focused ? styles.recordMarkerOuterFocused : null,
-					{ opacity },
-				]}
-			>
-				<View style={styles.recordMarkerInner}>
-					<Ionicons name="eye" size={12} color="#FFFFFF" />
-				</View>
-				<Text style={styles.recordMarkerText}>{record.ibis_quantity ?? 0}</Text>
-			</Animated.View>
-		</Marker>
-	)
-}
 
 type Props = {
 	selectedLayer: MapLayerId
@@ -110,175 +44,14 @@ export function MapLibreMapView({
 }: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
-	const cameraStorageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-	const locationTimedOutRef = useRef(false)
 	const userMovedMapRef = useRef(false)
-	const recordMarkerOpacity = useRef(new Animated.Value(0)).current
-	const recordMarkerFadeAnimationRef = useRef<Animated.CompositeAnimation | null>(null)
-	const visibleRecordMarkerCountRef = useRef(0)
-	const [initialRegion, setInitialRegion] = useState<Region>(DEFAULT_REGION)
-	const [initialRegionReady, setInitialRegionReady] = useState(false)
-	const [cameraTargetRegion, setCameraTargetRegion] = useState<Region>(DEFAULT_REGION)
-	const [hasLocationTarget, setHasLocationTarget] = useState(false)
-	const [locationReady, setLocationReady] = useState(false)
 	const [mapReady, setMapReady] = useState(false)
 	const [cameraReady, setCameraReady] = useState(false)
-	const [visibleRecordMarkers, setVisibleRecordMarkers] = useState<MapZoneRecordRead[]>([])
 	const activeRecordMarkers = onRecordMarkerPress ? recordMarkers : EMPTY_RECORD_MARKERS
-	const activeRecordMarkersRef = useRef(activeRecordMarkers)
-	activeRecordMarkersRef.current = activeRecordMarkers
 
-	useEffect(() => {
-		let isMounted = true
-
-		AsyncStorage.getItem(MAP_CAMERA_STORAGE_KEY)
-			.then((value) => {
-				if (!isMounted) {
-					return
-				}
-
-				const storedRegion = parseStoredRegion(value)
-				setInitialRegion(storedRegion ?? DEFAULT_REGION)
-			})
-			.catch(() => {})
-			.finally(() => {
-				if (isMounted) {
-					setInitialRegionReady(true)
-				}
-			})
-
-		return () => {
-			isMounted = false
-		}
-	}, [])
-
-	useEffect(() => {
-		return () => {
-			if (cameraStorageTimerRef.current) {
-				clearTimeout(cameraStorageTimerRef.current)
-			}
-
-			recordMarkerFadeAnimationRef.current?.stop()
-		}
-	}, [])
-
-	useEffect(() => {
-		const previousCount = visibleRecordMarkerCountRef.current
-
-		recordMarkerFadeAnimationRef.current?.stop()
-
-		if (activeRecordMarkers.length > 0) {
-			setVisibleRecordMarkers(activeRecordMarkers)
-			visibleRecordMarkerCountRef.current = activeRecordMarkers.length
-
-			if (previousCount === 0) {
-				recordMarkerOpacity.setValue(0)
-			}
-
-			const animation = Animated.timing(recordMarkerOpacity, {
-				toValue: 1,
-				duration: 150,
-				useNativeDriver: true,
-			})
-
-			recordMarkerFadeAnimationRef.current = animation
-			animation.start(({ finished }) => {
-				if (finished && recordMarkerFadeAnimationRef.current === animation) {
-					recordMarkerFadeAnimationRef.current = null
-				}
-			})
-			return
-		}
-
-		if (previousCount === 0) {
-			recordMarkerOpacity.setValue(0)
-			return
-		}
-
-		const animation = Animated.timing(recordMarkerOpacity, {
-			toValue: 0,
-			duration: 200,
-			useNativeDriver: true,
-		})
-
-		recordMarkerFadeAnimationRef.current = animation
-		animation.start(({ finished }) => {
-			if (finished && activeRecordMarkersRef.current.length === 0) {
-				visibleRecordMarkerCountRef.current = 0
-				setVisibleRecordMarkers([])
-			}
-
-			if (recordMarkerFadeAnimationRef.current === animation) {
-				recordMarkerFadeAnimationRef.current = null
-			}
-		})
-	}, [activeRecordMarkers, recordMarkerOpacity])
-
-	const persistCameraRegion = (region: Region) => {
-		if (cameraStorageTimerRef.current) {
-			clearTimeout(cameraStorageTimerRef.current)
-		}
-
-		cameraStorageTimerRef.current = setTimeout(() => {
-			void AsyncStorage.setItem(
-				MAP_CAMERA_STORAGE_KEY,
-				JSON.stringify(region),
-			).catch(() => {})
-		}, CAMERA_STORAGE_DEBOUNCE_MS)
-	}
-
-	useEffect(() => {
-		let isMounted = true
-		const locationTimeout = setTimeout(() => {
-			locationTimedOutRef.current = true
-
-			if (isMounted) {
-				setLocationReady(true)
-			}
-		}, LOCATION_TIMEOUT_MS)
-
-		const loadCurrentLocation = async () => {
-			try {
-				const permission = await Location.requestForegroundPermissionsAsync()
-
-				if (!permission.granted) {
-					if (isMounted) {
-						clearTimeout(locationTimeout)
-						setLocationReady(true)
-					}
-					return
-				}
-
-				const position = await Location.getCurrentPositionAsync({
-					accuracy: Location.Accuracy.Balanced,
-				})
-
-				if (isMounted && !locationTimedOutRef.current) {
-					clearTimeout(locationTimeout)
-					setCameraTargetRegion({
-						latitude: position.coords.latitude,
-						longitude: position.coords.longitude,
-						latitudeDelta: MAP_REGION_DELTA,
-						longitudeDelta: MAP_REGION_DELTA,
-					})
-					setHasLocationTarget(true)
-					setLocationReady(true)
-				}
-			} catch {
-				if (isMounted) {
-					clearTimeout(locationTimeout)
-					setLocationReady(true)
-				}
-			}
-		}
-
-		loadCurrentLocation()
-
-		return () => {
-			isMounted = false
-			clearTimeout(locationTimeout)
-		}
-	}, [])
+	const { initialRegion, initialRegionReady, persistCameraRegion } = useStoredCameraRegion()
+	const { visibleRecordMarkers, recordMarkerOpacity } = useRecordMarkerFade(activeRecordMarkers)
+	const { cameraTargetRegion, hasLocationTarget, locationReady } = useCurrentLocationTarget()
 
 	useEffect(() => {
 		let cameraFallback: ReturnType<typeof setTimeout> | undefined
@@ -306,35 +79,13 @@ export function MapLibreMapView({
 		}
 	}, [cameraTargetRegion, hasLocationTarget, initialRegionReady, locationReady, mapReady])
 
-	const visibleZones = useMemo(() => zones.filter((zone) => {
-		if (selectedLayer === 'all') {
-			return true
-		}
-
-		if (selectedLayer === 'feeding') {
-			return zone.type === 'feeding'
-		}
-
-		return zone.type === 'nest'
-	}), [selectedLayer, zones])
+	const visibleZones = useMemo(
+		() => filterZonesByLayer(zones, selectedLayer),
+		[selectedLayer, zones],
+	)
 
 	const zoneCircles = useMemo(() => visibleZones.map((zone) => {
-		const hasSelectedZone = selectedZoneId !== null && selectedZoneId !== undefined
-		const selected = zone.id === selectedZoneId
-		
-		let circleColor: string
-		let circleStrokeColor: string
-
-		if (!hasSelectedZone) {
-			circleColor = zone.type === 'nest' ? '#2f6ee43a' : '#e5383556'
-			circleStrokeColor = zone.type === 'nest' ? 'rgba(47, 111, 228, 0.4)' : 'rgba(229, 57, 53, 0.4)'
-		} else if (selected) {
-			circleColor = zone.type === 'nest' ? '#2f6ee466' : '#e5383566'
-			circleStrokeColor = zone.type === 'nest' ? '#2f6ee4' : '#e53835'
-		} else {
-			circleColor = 'rgba(107, 114, 128, 0.18)'
-			circleStrokeColor = 'rgba(107, 114, 128, 0.36)'
-		}
+		const { fill, stroke } = getZoneCircleColors(zone, selectedZoneId)
 
 		return (
 			<Circle
@@ -344,9 +95,9 @@ export function MapLibreMapView({
 					longitude: zone.longitude,
 				}}
 				radius={zone.radius_meters}
-				strokeColor={circleStrokeColor}
+				strokeColor={stroke}
 				strokeWidth={2}
-				fillColor={circleColor}
+				fillColor={fill}
 				zIndex={-1}
 			/>
 		)
@@ -391,12 +142,7 @@ export function MapLibreMapView({
 
 	const visibleCount = visibleZones.length
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
-	const badgeText =
-		selectedLayer === 'all'
-			? 'áreas'
-			: selectedLayer === 'feeding'
-				? 'alimentação'
-				: 'ninhos'
+	const badgeText = getLayerBadgeText(selectedLayer)
 
 	return (
 		<View style={styles.container}>
@@ -430,21 +176,10 @@ export function MapLibreMapView({
 					{zonePressMarkers}
 					{selectedRecordMarkers}
 					{hasLocationTarget && (
-                <Marker
-                    coordinate={{
-                        latitude: cameraTargetRegion.latitude,
-                        longitude: cameraTargetRegion.longitude,
-                    }}
-                    anchor={{ x: 0.5, y: 0.5 }}
-                    title="Sua Localização"
-                    description="Localização atual"
-                >
-						<View style={styles.userMarkerContainer}>
-							<View style={styles.userMarkerCircle}>
-								<Ionicons name="navigate" size={16} color="#FFFFFF" />
-							</View>
-						</View>
-						</Marker>
+						<UserLocationMarker
+							latitude={cameraTargetRegion.latitude}
+							longitude={cameraTargetRegion.longitude}
+						/>
 					)}
 				</MapView>
 			) : null}
@@ -464,176 +199,3 @@ export function MapLibreMapView({
 		</View>
 	)
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		minHeight: 430,
-		overflow: 'hidden',
-		backgroundColor: '#F4F5F7',
-	},
-	mapView: {
-		flex: 1,
-		width: '100%',
-	},
-	loadingOverlay: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: 'rgba(244, 245, 247, 0.2)',
-	},
-	recordsLoadingOverlay: {
-		...StyleSheet.absoluteFillObject,
-		backgroundColor: 'rgba(244, 245, 247, 0.5)',
-		justifyContent: 'center',
-		alignItems: 'center',
-		flexDirection: 'column',
-		gap: 16,
-	},
-	loadingText: {
-		fontSize: 14,
-		color: '#717182',
-	},
-	countBadge: {
-		position: 'absolute',
-		right: 10,
-		bottom: 10,
-		backgroundColor: 'rgba(255, 255, 255, 0.94)',
-		borderRadius: 14,
-		paddingHorizontal: 10,
-		paddingVertical: 7,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 5,
-		borderWidth: 1,
-		borderColor: '#E1E5EA',
-	},
-	countBadgeValue: {
-		color: '#E53935',
-		fontSize: 13,
-		fontWeight: '900',
-	},
-	countBadgeLabel: {
-		color: '#6B7280',
-		fontSize: 11,
-		fontWeight: '700',
-	},
-	zonePressMarker: {
-		width: 44,
-		height: 44,
-		borderRadius: 22,
-		backgroundColor: 'rgba(255, 255, 255, 0.01)',
-		zIndex: 0,
-	},
-	recordMarkerOuter: {
-		minWidth: 28,
-		height: 28,
-		borderRadius: 18,
-		paddingHorizontal: 4,
-		backgroundColor: 'rgba(242, 32, 31, 0.92)',
-		borderWidth: 2,
-		borderColor: '#FFFFFF',
-		alignItems: 'center',
-		justifyContent: 'center',
-		flexDirection: 'row',
-		shadowColor: '#F2201F',
-		shadowOpacity: 0.25,
-		shadowOffset: { width: 0, height: 2 },
-		shadowRadius: 6,
-		elevation: 5,
-	},
-	recordMarkerOuterFocused: {
-		backgroundColor: '#125ED0',
-		borderColor: '#FFFFFF',
-		shadowColor: '#125ED0',
-		shadowOpacity: 0.35,
-		shadowRadius: 8,
-		elevation: 8,
-	},
-	recordMarkerInner: {
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	recordMarkerText: {
-		color: '#FFFFFF',
-		fontSize: 9,
-		fontWeight: '900',
-		lineHeight: 10,
-	},
-	userMarkerContainer: {
-		width: 54,
-		height: 54,
-	},
-	userMarkerCircle: {
-		width: 24,
-		height: 24,
-		borderRadius: 22,
-		backgroundColor: colors.secondary,
-		borderWidth: 1,
-		borderColor: colors.surface,
-    alignItems: 'center',
-    padding: 3,
-		justifyContent: 'center',
-		shadowColor: colors.secondary,
-		shadowOpacity: 0.4,
-		shadowOffset: { width: 0, height: 2 },
-		shadowRadius: 8,
-		elevation: 5,
-	},
-})
-
-const mapStyle = [
-	{
-		featureType: 'poi',
-		elementType: 'labels',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'poi.business',
-		elementType: 'all',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'poi.government',
-		elementType: 'all',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'poi.medical',
-		elementType: 'all',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'poi.school',
-		elementType: 'all',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'transit',
-		elementType: 'labels',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'road',
-		elementType: 'labels.icon',
-		stylers: [{ visibility: 'off' }],
-	},
-	{
-		featureType: 'road',
-		elementType: 'labels.text.fill',
-		stylers: [{ color: '#8d94a0' }],
-	},
-	{
-		featureType: 'road',
-		elementType: 'labels.text.stroke',
-		stylers: [{ color: '#f5f5f5' }],
-	},
-	{
-		featureType: 'landscape',
-		elementType: 'geometry',
-		stylers: [{ color: '#f3f4f6' }],
-	},
-	{
-		featureType: 'water',
-		elementType: 'geometry',
-		stylers: [{ color: '#dfe6ee' }],
-	},
-]

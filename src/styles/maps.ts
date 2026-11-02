@@ -1,0 +1,152 @@
+import { StyleSheet } from 'react-native'
+import { colors, spacing } from '../constants/theme'
+import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
+
+export const mapsStyles = StyleSheet.create<Record<string, any>>({
+	mapsScreen: {
+		flex: 1,
+		backgroundColor: colors.background,
+	},
+	mapsContent: {
+		paddingHorizontal: screenGutter,
+		paddingBottom: screenBottomPadding,
+		paddingTop: spacing.lg,
+		gap: 8,
+	},
+	mapsFilterCard: {
+		gap: 10,
+		borderRadius: cornerRadius,
+		borderWidth: 0,
+		marginBottom: spacing.md,
+		backgroundColor: colors.surface,
+		...unifiedShadow,
+	},
+	mapsFilterTitleRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	mapsFilterRow: {
+		flexDirection: 'row',
+		gap: 8,
+	},
+	mapsFilterButton: {
+		flex: 1,
+		minHeight: 32,
+		borderWidth: 1.2,
+		borderColor: colors.secondaryLight,
+		borderRadius: cornerRadius,
+		backgroundColor: colors.surface,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingHorizontal: 12,
+		gap: 5,
+	},
+	mapsFilterButtonActive: {
+		backgroundColor: colors.secondary,
+		borderColor: colors.secondary,
+	},
+	mapsFilterButtonIcon: {
+		marginTop: -1,
+	},
+	mapsFilterButtonLabel: {
+		color: colors.text,
+		fontSize: 9,
+		textTransform: 'uppercase',
+	},
+	mapsFilterButtonLabelActive: {
+		color: colors.surface,
+	},
+	mapsMapCard: {
+		padding: 0,
+		overflow: 'hidden',
+		position: 'relative',
+		borderRadius: cornerRadius,
+		borderWidth: 0,
+		...unifiedShadow,
+		height: '96%',
+	},
+	mapReloadOverlay: {
+		position: 'absolute',
+		top: 10,
+		right: 10,
+		zIndex: 10,
+		elevation: 10,
+		alignItems: 'center',
+		gap: 6,
+	},
+	mapSelectionInstructionOverlay: {
+		position: 'absolute',
+		top: 10,
+		left: 10,
+		zIndex: 10,
+		maxWidth: '48%',
+		paddingHorizontal: 10,
+		paddingVertical: 8,
+		borderRadius: cornerRadius,
+		backgroundColor: 'rgba(255, 255, 255, 0.94)',
+		borderWidth: 1,
+		borderColor: colors.border,
+		...unifiedShadow,
+	},
+	mapSelectionInstructionText: {
+		color: colors.text,
+		fontSize: 12,
+		lineHeight: 16,
+	},
+	mapTopRightActions: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
+	},
+	mapAreaButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: colors.secondary,
+		alignItems: 'center',
+		justifyContent: 'center',
+		...unifiedShadow,
+	},
+	mapAreaButtonCancel: {
+		backgroundColor: colors.primary,
+	},
+	mapReloadButton: {
+		width: 44,
+		height: 44,
+		borderRadius: 22,
+		backgroundColor: colors.secondary,
+		alignItems: 'center',
+		justifyContent: 'center',
+		...unifiedShadow,
+	},
+	mapReloadButtonDisabled: {
+		opacity: 0.6,
+	},
+	mapReloadTextPill: {
+		paddingHorizontal: 8,
+		paddingVertical: 4,
+		borderRadius: 999,
+		backgroundColor: 'rgba(255, 255, 255, 0.94)',
+		borderWidth: 1,
+		borderColor: colors.border,
+	},
+	mapReloadText: {
+		color: colors.text,
+		fontSize: 10,
+	},
+	countBadge: {
+		position: 'absolute',
+		bottom: spacing.md,
+		right: spacing.md,
+		backgroundColor: 'rgba(255,255,255,0.96)',
+		borderRadius: cornerRadius,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.xs,
+	},
+	badgeText: {
+		color: colors.text,
+		fontSize: 12,
+	},
+})
