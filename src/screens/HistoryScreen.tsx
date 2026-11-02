@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Header from '../components/Header'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
@@ -12,15 +11,13 @@ import useHistoryFilters from '../hooks/useHistoryFilters'
 import { useHistoryRecords } from '../hooks/useHistoryRecords'
 import { discardPendingRecord } from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
-import type { MainTabParamList } from '../types/navigation'
+import type { MainTabNavigationProp } from '../types/navigation'
 import type { RecordItem } from '../types/records'
 import { sortRecordsByDate, type SortOrder } from '../utils/historyRecords'
 import { recordKey } from '../utils/pendingRecords'
 
-type NavigationProp = BottomTabNavigationProp<MainTabParamList>
-
 export function HistoryScreen() {
-	const navigation = useNavigation<NavigationProp>()
+	const navigation = useNavigation<MainTabNavigationProp>()
 	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
 		useHistoryRecords()
 	const [sortOrder, setSortOrder] = useState<SortOrder>('desc')

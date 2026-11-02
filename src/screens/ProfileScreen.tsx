@@ -6,11 +6,8 @@ import Header from '../components/Header'
 import { appStyles } from '../styles/appStyles'
 import { colors } from '../constants/theme'
 import type { UserRead } from '../types/api'
-import type { MainTabParamList } from '../types/navigation'
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import type { MainTabNavigationProp } from '../types/navigation'
 import { logout } from '../services/authService'
-
-type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
 export function ProfileScreen({
 	user,
@@ -19,7 +16,7 @@ export function ProfileScreen({
 	user: UserRead | null
 	onLogoutSuccess: () => void
 }) {
-	const navigation = useNavigation<NavigationProp>()
+	const navigation = useNavigation<MainTabNavigationProp>()
 	const displayName = user?.name ?? 'Usuário Guará Vivo'
 	const displayEmail = user?.email ?? 'Sessão local'
 	const [isLoggingOut, setIsLoggingOut] = useState(false)

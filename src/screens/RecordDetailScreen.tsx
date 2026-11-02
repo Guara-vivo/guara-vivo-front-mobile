@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { RefreshControl, ScrollView, View } from 'react-native'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { BehaviorsCard } from '../components/recordDetail/BehaviorsCard'
 import { ImageCarouselCard } from '../components/recordDetail/ImageCarouselCard'
@@ -17,7 +17,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
 export function RecordDetailScreen() {
 	const navigation = useNavigation<NavigationProp>()
-	const route = useRoute<{ params: { recordId: number } }>()
+	const route = useRoute<RouteProp<RootStackParamList, 'RecordDetail'>>()
 	const recordId = route.params?.recordId
 
 	const { record, isLoading, isRefreshing, handleRefresh } =
