@@ -28,6 +28,8 @@ const filesToCheck = [
 	'src/screens/RegisterEmailScreen.tsx',
 	'src/screens/RegisterPasswordScreen.tsx',
 	'src/screens/RegisterScreen.tsx',
+'src/hooks/useRegisterSave.ts',
+'src/utils/registerFeedback.ts',
 	'src/components/register/LocationPickerModal.tsx',
 	'src/components/register/RegisterDateTimeFields.tsx',
 	'src/components/register/RegisterImagePicker.tsx',
