@@ -39,10 +39,12 @@ async function readTokenFromStorage(key: string): Promise<string | null> {
 	}
 
 	if (token) {
-		// Try to migrate to SecureStore, but keep AsyncStorage copy if migration fails
+		// Migrate to SecureStore only when it reads the value back; otherwise the
+		// AsyncStorage copy stays (secureStoreSetItem leaves it in place on failure).
 		try {
-			await SecureStore.setItemAsync(key, token)
-			await AsyncStorage.removeItem(key)
+			if (await secureStoreSetItem(key, token)) {
+				await AsyncStorage.removeItem(key)
+			}
 		} catch {
 			// Migration failed — AsyncStorage copy preserved
 		}
@@ -59,6 +61,13 @@ async function secureStoreSetItem(
 ): Promise<boolean> {
 	try {
 		await SecureStore.setItemAsync(key, value)
+
+		// Alguns aparelhos/emuladores gravam sem erro mas perdem a chave de criptografia
+		// (leitura devolve vazio). Confere a leitura antes de confiar no SecureStore.
+		if ((await SecureStore.getItemAsync(key)) !== value) {
+			throw new Error('SecureStore read-back mismatch')
+		}
+
 		return true
 	} catch {
 		await AsyncStorage.setItem(key, value)
