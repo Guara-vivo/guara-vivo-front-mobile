@@ -10,7 +10,8 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import { InAppNotificationProvider } from './contexts/InAppNotificationContext'
 import { RecordProgressProvider } from './contexts/RecordProgressContext'
 import { colors } from './constants/theme'
-import { restoreSession } from './services/authService'
+import { setSessionExpiredHandler } from './services/apiClient'
+import { clearExpiredSession, restoreSession } from './services/authService'
 import { usePendingRecordsSync } from './hooks/usePendingRecordsSync'
 import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
@@ -84,6 +85,19 @@ export default function GuaraVivoApp() {
 		return () => {
 			mounted = false
 		}
+	}, [])
+
+	// Refresh token recusado pelo servidor: volta para o login em vez de deixar o usuario
+	// numa area logada em que toda requisicao falha.
+	useEffect(() => {
+		setSessionExpiredHandler(() => {
+			void clearExpiredSession().finally(() => {
+				setCurrentUser(null)
+				setIsAuthenticated(false)
+			})
+		})
+
+		return () => setSessionExpiredHandler(null)
 	}, [])
 
 	const handleAuthSuccess = (user: UserRead) => {

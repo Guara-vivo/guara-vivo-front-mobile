@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { ApiError, apiFetch } from './apiClient'
+import { invalidateRecordsCache } from './recordsCache'
 import { clearPersistedRecords } from './recordsStore'
 import {
 	clearTokens,
@@ -33,8 +34,16 @@ async function readCachedUser(): Promise<UserRead | null> {
 
 // Dados do usuario guardados no aparelho: o cache do usuario e a ultima lista de registros.
 async function clearCachedUser() {
+	// Cache em memoria tambem: sem isso, quem entra em seguida enxerga a lista anterior.
+	invalidateRecordsCache()
 	await AsyncStorage.removeItem(USER_CACHE_KEY).catch(() => {})
 	await clearPersistedRecords()
+}
+
+// Sessao encerrada pelo servidor (refresh recusado): os tokens ja foram apagados,
+// falta limpar os dados do usuario guardados no aparelho.
+export async function clearExpiredSession() {
+	await clearCachedUser()
 }
 
 export async function saveToken(token: string) {
