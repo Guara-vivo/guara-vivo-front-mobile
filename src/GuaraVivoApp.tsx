@@ -11,6 +11,7 @@ import { InAppNotificationProvider } from './contexts/InAppNotificationContext'
 import { RecordProgressProvider } from './contexts/RecordProgressContext'
 import { colors } from './constants/theme'
 import { restoreSession } from './services/authService'
+import { usePendingRecordsSync } from './hooks/usePendingRecordsSync'
 import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
 import { MapZoneDetailProvider, useMapZoneDetail } from './contexts/MapZoneDetailContext'
@@ -60,6 +61,7 @@ export default function GuaraVivoApp() {
 	const [isSessionReady, setIsSessionReady] = useState(false)
 	const [currentUser, setCurrentUser] = useState<UserRead | null>(null)
 
+	usePendingRecordsSync(isAuthenticated ? (currentUser?.id ?? null) : null)
 
 	useEffect(() => {
 		let mounted = true
