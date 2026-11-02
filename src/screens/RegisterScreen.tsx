@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location'
+import { getDevicePosition, LocationUnavailableError } from '../utils/deviceLocation'
 import { Image, Pressable, ScrollView, Text, View, StyleSheet } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import FeedbackModal from '../components/FeedbackModal'
@@ -215,11 +216,9 @@ export function RegisterScreen() {
 					return
 				}
 
-				const position = await Location.getCurrentPositionAsync({
-					accuracy: Location.Accuracy.Balanced,
-				})
-				latitude = position.coords.latitude
-				longitude = position.coords.longitude
+				const position = await getDevicePosition()
+				latitude = position.latitude
+				longitude = position.longitude
 			}
 
 			const recordDateTime = composeRecordDateTime(selectedDate, selectedTime)
@@ -271,6 +270,14 @@ export function RegisterScreen() {
 				return
 			}
 
+			if (error instanceof LocationUnavailableError) {
+				showErrorFeedback(
+					'Localização indisponível',
+					'Não foi possível obter a localização do aparelho. Escolha o local no mapa ou tente de novo em um lugar com sinal de GPS.',
+				)
+				return
+			}
+
 			showErrorFeedback(
 				'Falha no envio',
 				'Não foi possível enviar o registro. Tente novamente.',
@@ -309,13 +316,7 @@ export function RegisterScreen() {
 			try {
 				const { status } = await Location.requestForegroundPermissionsAsync()
 				if (status === 'granted') {
-					const position = await Location.getCurrentPositionAsync({
-						accuracy: Location.Accuracy.Balanced,
-					})
-					setUserLocation({
-						latitude: position.coords.latitude,
-						longitude: position.coords.longitude,
-					})
+					setUserLocation(await getDevicePosition())
 					locationFetchedRef.current = true
 				}
 			} catch {
