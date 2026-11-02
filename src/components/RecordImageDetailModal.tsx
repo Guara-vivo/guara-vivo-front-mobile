@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
 	Modal,
 	Pressable,
@@ -7,12 +7,14 @@ import {
 	View,
 	Image,
 } from 'react-native'
-import Svg, { Rect } from 'react-native-svg'
 import { Ionicons } from '@expo/vector-icons'
+import { useImageSize } from '../hooks/useImageSize'
 import { appStyles } from '../styles/appStyles'
-import type { DetectionItem, RecordDetailItem } from '../types/records'
-
-const BBOX_COLORS = ['#E91E63', '#2196F3', '#4CAF50', '#FFC107', '#9C27B0', '#FF5722', '#00BCD4', '#8BC34A']
+import type { RecordDetailItem } from '../types/records'
+import { calculateAccuracySummary, type Size } from '../utils/detectionFormatters'
+import { AccuracySummarySection } from './recordImage/AccuracySummarySection'
+import { DetectionOverlay } from './recordImage/DetectionOverlay'
+import { DetectionsSection } from './recordImage/DetectionsSection'
 
 interface RecordImageDetailModalProps {
 	visible: boolean
@@ -24,14 +26,6 @@ interface RecordImageDetailModalProps {
 	record: RecordDetailItem
 }
 
-type AccuracySummary = {
-	deteccao_yolo: number
-	classificacao_guara: number
-	classificacao_cor: number
-	classificacao_fase_vida: number
-	estimativa_distancia: number
-}
-
 export function RecordImageDetailModal({
 	visible,
 	imageIndex,
@@ -41,101 +35,13 @@ export function RecordImageDetailModal({
 	onImageChange,
 	record,
 }: RecordImageDetailModalProps) {
-	const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null)
-	const [containerSize, setContainerSize] = useState<{ width: number; height: number } | null>(null)
-
-	useEffect(() => {
-		let mounted = true
-		setImageSize(null)
-
-		if (imageUri) {
-			Image.getSize(
-				imageUri,
-				(width, height) => {
-					if (mounted) {
-						setImageSize({ width, height })
-					}
-				},
-				() => {
-					if (mounted) {
-						setImageSize(null)
-					}
-				},
-			)
-		}
-
-		return () => {
-			mounted = false
-		}
-	}, [imageUri])
+	const imageSize = useImageSize(imageUri)
+	const [containerSize, setContainerSize] = useState<Size | null>(null)
 
 	const imageAnalysis = record.image_analyses?.[imageIndex]
 	const canGoPrevious = imageIndex > 0
 	const canGoNext = imageIndex < totalImages - 1
-	
-	// Calculate accuracy summary for all detections in this image
-	const calculateSummary = (): AccuracySummary | null => {
-		if (!imageAnalysis?.detections || imageAnalysis.detections.length === 0) {
-			return null
-		}
-
-		const detections = imageAnalysis.detections
-		let yolo = 0,
-			guara = 0,
-			cor = 0,
-			fase = 0,
-			distancia = 0
-		let count = 0
-
-		for (const detection of detections) {
-			if (detection.raw_detection?.acuracia) {
-				const acc = detection.raw_detection.acuracia
-				yolo += acc.deteccao_yolo || 0
-				guara += acc.classificacao_guara || 0
-				cor += acc.classificacao_cor || 0
-				fase += acc.classificacao_fase_vida || 0
-				distancia += acc.estimativa_distancia || 0
-				count++
-			}
-		}
-
-		if (count === 0) return null
-
-		return {
-			deteccao_yolo: yolo / count,
-			classificacao_guara: guara / count,
-			classificacao_cor: cor / count,
-			classificacao_fase_vida: fase / count,
-			estimativa_distancia: distancia / count,
-		}
-	}
-
-	const summary = calculateSummary()
-
-	const formatPercent = (value: number | undefined): string => {
-		if (typeof value !== 'number') return 'N/A'
-		return `${(value * 100).toFixed(1)}%`
-	}
-
-	const getPlumageLabel = (color: string): string => {
-		const colorMap: Record<string, string> = {
-			vermelho: 'Vermelho',
-			cinza: 'Cinza',
-			red: 'Vermelho',
-			gray: 'Cinza',
-		}
-		return colorMap[color.toLowerCase()] || color
-	}
-
-	const getLifeStageLabel = (stage: string): string => {
-		const stageMap: Record<string, string> = {
-			adulto: 'Adulto',
-			filhote: 'Filhote',
-			adult: 'Adulto',
-			chick: 'Filhote',
-		}
-		return stageMap[stage.toLowerCase()] || stage
-	}
+	const summary = calculateAccuracySummary(imageAnalysis?.detections)
 
 	const handleImageChange = (nextIndex: number) => {
 		if (nextIndex < 0 || nextIndex >= totalImages) {
@@ -158,7 +64,12 @@ export function RecordImageDetailModal({
 						<Text style={appStyles.recordImageModalTitle}>
 							DETALHES DA IMAGEM
 						</Text>
-						<Pressable onPress={onClose} hitSlop={8}>
+						<Pressable
+							onPress={onClose}
+							hitSlop={8}
+							accessibilityRole="button"
+							accessibilityLabel="Fechar"
+						>
 							<Ionicons name="close" size={24} color="#1A1A1A" />
 						</Pressable>
 					</View>
@@ -167,7 +78,7 @@ export function RecordImageDetailModal({
 						contentContainerStyle={appStyles.recordImageModalContent}
 					>
 						{/* Image Preview */}
-						<View 
+						<View
 							style={appStyles.recordImageModalImageContainer}
 							onLayout={(e) => {
 								const { width, height } = e.nativeEvent.layout
@@ -182,54 +93,11 @@ export function RecordImageDetailModal({
 										resizeMode="contain"
 									/>
 									{imageSize && containerSize && imageAnalysis?.detections && (
-										<Svg
-											style={{
-												position: 'absolute',
-												top: 0,
-												left: 0,
-												width: containerSize.width,
-												height: containerSize.height,
-												pointerEvents: 'none',
-											}}
-										>
-											{imageAnalysis.detections.map((detection: DetectionItem, idx: number) => {
-												// Extract bbox from raw_detection if available
-												// Assuming raw_detection is a JSON string and contains bbox_xyxy
-												let bbox: [number, number, number, number] | null = null
-												try {
-													if (typeof detection.raw_detection === 'string') {
-														const parsed = JSON.parse(detection.raw_detection)
-														bbox = parsed.bbox_xyxy
-													} else if (detection.raw_detection && typeof detection.raw_detection === 'object') {
-														bbox = (detection.raw_detection as { bbox_xyxy?: [number, number, number, number] }).bbox_xyxy ?? null
-													}
-												} catch (e) {
-													console.error('Error parsing bbox', e)
-												}
-
-												if (!bbox) return null
-
-												const escala = Math.min(
-													containerSize.width / imageSize.width,
-													containerSize.height / imageSize.height
-												)
-												const offsetX = (containerSize.width - imageSize.width * escala) / 2
-												const offsetY = (containerSize.height - imageSize.height * escala) / 2
-
-												return (
-													<Rect
-														key={detection.id}
-														x={bbox[0] * escala + offsetX}
-														y={bbox[1] * escala + offsetY}
-														width={(bbox[2] - bbox[0]) * escala}
-														height={(bbox[3] - bbox[1]) * escala}
-														stroke={BBOX_COLORS[idx % BBOX_COLORS.length]}
-														strokeWidth={2}
-														fill="none"
-													/>
-												)
-											})}
-										</Svg>
+										<DetectionOverlay
+											detections={imageAnalysis.detections}
+											containerSize={containerSize}
+											imageSize={imageSize}
+										/>
 									)}
 								</>
 							) : (
@@ -260,7 +128,7 @@ export function RecordImageDetailModal({
 								<Pressable
 									onPress={() => handleImageChange(imageIndex + 1)}
 									accessibilityRole="button"
-									accessibilityLabel="Proxima imagem"
+									accessibilityLabel="Próxima imagem"
 									style={[
 										appStyles.recordImageModalArrow,
 										appStyles.recordImageModalArrowRight,
@@ -279,389 +147,15 @@ export function RecordImageDetailModal({
 						</View>
 
 						{/* Summary of Detections */}
-						{imageAnalysis && summary && (
-							<View style={appStyles.recordImageModalSection}>
-								<View
-									style={appStyles.recordImageModalSectionTitleRow}
-								>
-									<Ionicons
-										name="bar-chart-outline"
-										size={16}
-										color="#125ED0"
-									/>
-									<Text
-										style={
-											appStyles.recordImageModalSectionTitle
-										}
-									>
-										RESUMO TÉCNICO
-									</Text>
-								</View>
-
-								<View
-									style={
-										appStyles.recordImageModalSummaryGrid
-									}
-								>
-									<View
-										style={
-											appStyles.recordImageModalAccuracyItem
-										}
-									>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyLabel
-											}
-										>
-											Ave Detectada
-										</Text>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyValue
-											}
-										>
-											{formatPercent(
-												summary.deteccao_yolo
-											)}
-										</Text>
-									</View>
-
-									<View
-										style={
-											appStyles.recordImageModalAccuracyItem
-										}
-									>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyLabel
-											}
-										>
-											Guará-vermelho
-										</Text>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyValue
-											}
-										>
-											{formatPercent(
-												summary.classificacao_guara
-											)}
-										</Text>
-									</View>
-
-									<View
-										style={
-											appStyles.recordImageModalAccuracyItem
-										}
-									>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyLabel
-											}
-										>
-											Plumagem
-										</Text>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyValue
-											}
-										>
-											{formatPercent(summary.classificacao_cor)}
-										</Text>
-									</View>
-
-									<View
-										style={
-											appStyles.recordImageModalAccuracyItem
-										}
-									>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyLabel
-											}
-										>
-											Fase da Vida
-										</Text>
-										<Text
-											style={
-												appStyles.recordImageModalAccuracyValue
-											}
-										>
-											{formatPercent(
-												summary.classificacao_fase_vida
-											)}
-										</Text>
-									</View>
-								</View>
-							</View>
-						)}
+						{imageAnalysis && summary && <AccuracySummarySection summary={summary} />}
 
 						{/* Per-Individual Detections */}
 						{imageAnalysis ? (
-							<View style={appStyles.recordImageModalSection}>
-								<View
-									style={appStyles.recordImageModalSectionTitleRow}
-								>
-									<Ionicons
-										name="search-outline"
-										size={16}
-										color="#125ED0"
-									/>
-									<Text
-										style={
-											appStyles.recordImageModalSectionTitle
-										}
-									>
-										DETECÇÕES (
-										{imageAnalysis.ibis_quantity})
-									</Text>
-								</View>
-
-								{imageAnalysis.ibis_quantity === 0 ? (
-									<View
-										style={
-											appStyles.recordImageModalEmptyState
-										}
-									>
-										<Text
-											style={
-												appStyles.recordImageModalEmptyText
-											}
-										>
-											Nenhuma detecção nesta imagem.
-										</Text>
-									</View>
-								) : (
-									<View
-										style={
-											appStyles.recordImageModalIbisList
-										}
-									>
-										{imageAnalysis.detections.map(
-															(detection: DetectionItem, idx: number) => (
-																<View
-																	key={detection.id}
-																	style={[
-																		appStyles.recordImageModalIbisItemExpanded,
-																		{ borderLeftColor: BBOX_COLORS[idx % BBOX_COLORS.length], borderLeftWidth: 4 }
-																	]}
-																>
-																	<View
-
-															style={
-																appStyles.recordImageModalIbisHeader
-															}
-														>
-															<View
-																style={[
-																	appStyles.recordImageModalIbisColorBadge,
-																	{ backgroundColor: BBOX_COLORS[idx % BBOX_COLORS.length] }
-																]}
-															>
-																<Ionicons
-																	name="ellipse"
-																	size={14}
-																	color="#FFFFFF"
-																/>
-															</View>
-															<View
-																style={
-																	appStyles.recordImageModalIbisInfo
-																}
-															>
-																<Text
-																	style={
-																		appStyles.recordImageModalIbisIndex
-																	}
-																>
-																	Guará{' '}
-																	{idx + 1}
-																</Text>
-															</View>
-														</View>
-
-
-													<View
-														style={
-															appStyles.recordImageModalIbisDetails
-														}
-													>
-														<View
-															style={
-																appStyles.recordImageModalDetailRow
-															}
-														>
-															<Text
-																style={
-																	appStyles.recordImageModalDetailLabel
-																}
-															>
-																Plumagem:
-															</Text>
-															<Text
-																style={
-																	appStyles.recordImageModalDetailValue
-																}
-															>
-																{getPlumageLabel(
-																	detection.color
-																)}
-															</Text>
-														</View>
-
-														<View
-															style={
-																appStyles.recordImageModalDetailRow
-															}
-														>
-															<Text
-																style={
-																	appStyles.recordImageModalDetailLabel
-																}
-															>
-																Fase da Vida:
-															</Text>
-															<Text
-																style={
-																	appStyles.recordImageModalDetailValue
-																}
-															>
-																{getLifeStageLabel(
-																	detection.age_group
-																)}
-															</Text>
-														</View>
-
-														{detection.raw_detection?.acuracia && (
-															<View
-																style={
-																	appStyles.recordImageModalAccuraciesContainer
-																}
-															>
-																<View
-																	style={
-																		appStyles.recordImageModalAccuracySmall
-																	}
-																>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallLabel
-																		}
-																	>
-																		Ave
-																	</Text>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallValue
-																		}
-																	>
-																		{formatPercent(
-																			detection
-																				.raw_detection
-																				.acuracia
-																				.deteccao_yolo
-																		)}
-																	</Text>
-																</View>
-
-																<View
-																	style={
-																		appStyles.recordImageModalAccuracySmall
-																	}
-																>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallLabel
-																		}
-																	>
-																		Guará
-																	</Text>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallValue
-																		}
-																	>
-																		{formatPercent(
-																			detection
-																				.raw_detection
-																				.acuracia
-																				.classificacao_guara
-																		)}
-																	</Text>
-																</View>
-
-																<View
-																	style={
-																		appStyles.recordImageModalAccuracySmall
-																	}
-																>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallLabel
-																		}
-																	>
-																		Cor
-																	</Text>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallValue
-																		}
-																	>
-																		{formatPercent(
-																			detection
-																				.raw_detection
-																				.acuracia
-																				.classificacao_cor
-																		)}
-																	</Text>
-																</View>
-
-																<View
-																	style={
-																		appStyles.recordImageModalAccuracySmall
-																	}
-																>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallLabel
-																		}
-																	>
-																		Fase
-																	</Text>
-																	<Text
-																		style={
-																			appStyles.recordImageModalAccuracySmallValue
-																		}
-																	>
-																		{formatPercent(
-																			detection
-																				.raw_detection
-																				.acuracia
-																				.classificacao_fase_vida
-																		)}
-																	</Text>
-																</View>
-															</View>
-														)}
-													</View>
-												</View>
-											)
-										)}
-									</View>
-								)}
-							</View>
+							<DetectionsSection analysis={imageAnalysis} />
 						) : (
 							<View style={appStyles.recordImageModalSection}>
-								<View
-									style={
-										appStyles.recordImageModalEmptyState
-									}
-								>
-									<Text
-										style={
-											appStyles.recordImageModalEmptyText
-										}
-									>
+								<View style={appStyles.recordImageModalEmptyState}>
+									<Text style={appStyles.recordImageModalEmptyText}>
 										Aguardando análise desta imagem...
 									</Text>
 								</View>
