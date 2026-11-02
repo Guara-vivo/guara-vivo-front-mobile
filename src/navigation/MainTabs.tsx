@@ -85,6 +85,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={HomeScreen} 
 				options={{
 					tabBarIcon: HomeTabIcon,
+					tabBarAccessibilityLabel: 'Início',
 				}}
 			/>
 			<Tab.Screen 
@@ -92,6 +93,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={RegisterScreen} 
 				options={{
 					tabBarIcon: RegisterTabIcon,
+					tabBarAccessibilityLabel: 'Registrar',
 				}}
 			/>
 			<Tab.Screen 
@@ -99,6 +101,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={MapsScreen} 
 				options={{
 					tabBarIcon: MapsTabIcon,
+					tabBarAccessibilityLabel: 'Mapas',
 				}}
 			/>
 			<Tab.Screen 
@@ -106,12 +109,14 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={HistoryScreen} 
 				options={{
 					tabBarIcon: HistoryTabIcon,
+					tabBarAccessibilityLabel: 'Histórico',
 				}}
 			/>
 			<Tab.Screen 
 				name="Profile" 
 				options={{
 					tabBarIcon: ProfileTabIcon,
+					tabBarAccessibilityLabel: 'Perfil',
 				}}
 			>
 				{() => (
