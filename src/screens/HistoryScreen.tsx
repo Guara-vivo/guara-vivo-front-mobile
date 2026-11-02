@@ -1,229 +1,29 @@
-import React, { useEffect, useState, useMemo } from 'react'
-import { Ionicons } from '@expo/vector-icons'
-import {
-	ActivityIndicator,
-	View,
-	Pressable,
-	Text,
-	TextInput,
-	FlatList,
-	RefreshControl,
-} from 'react-native'
+import React, { useMemo, useState } from 'react'
+import { FlatList, RefreshControl, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import Header from '../components/Header'
-import { ScreenCard } from '../components/common'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
+import { HistoryListEmpty } from '../components/history/HistoryListEmpty'
+import { HistoryListHeader } from '../components/history/HistoryListHeader'
 import { colors } from '../constants/theme'
-import { useRecordProgress } from '../contexts/RecordProgressContext'
 import useHistoryFilters from '../hooks/useHistoryFilters'
-import {
-	fetchRecords,
-	getCachedRecordsSnapshot,
-	isRecordsCacheFresh,
-} from '../services/recordsService'
-import {
-	discardPendingRecord,
-	getActivePendingRecords,
-	subscribeQueue,
-	type PendingRecord,
-} from '../services/offlineQueue'
-import type { RecordProgressUpdate } from '../services/recordProgressService'
-import { loadPersistedRecords } from '../services/recordsStore'
-import { formatDate, formatTime } from '../utils/recordFormatters'
-import { mergeHistoryRecords, recordKey } from '../utils/pendingRecords'
+import { useHistoryRecords } from '../hooks/useHistoryRecords'
+import { discardPendingRecord } from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
-import type { RecordItem } from '../types/records'
 import type { MainTabParamList } from '../types/navigation'
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import type { RecordItem } from '../types/records'
+import { sortRecordsByDate, type SortOrder } from '../utils/historyRecords'
+import { recordKey } from '../utils/pendingRecords'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
-
-function isActiveAnalysisStatus(status?: RecordItem['status']) {
-	return !status || status === 'pending' || status === 'processing'
-}
-
-function mergeProgressUpdates(
-	records: RecordItem[],
-	updates: RecordProgressUpdate[],
-) {
-	if (updates.length === 0) {
-		return records
-	}
-
-	const updatesById = new Map(updates.map((update) => [update.id, update]))
-	return records.map((record) => {
-		const update = updatesById.get(record.id)
-
-		if (!update) {
-			return record
-		}
-
-		return {
-			...record,
-			status: update.status,
-			analysis_progress: update.analysis_progress,
-		}
-	})
-}
-
 export function HistoryScreen() {
 	const navigation = useNavigation<NavigationProp>()
-	const { addRecordProgressListener } = useRecordProgress()
-	const cachedRecords = getCachedRecordsSnapshot()
-	const [records, setRecords] = useState<RecordItem[]>(cachedRecords ?? [])
-	const [isLoading, setIsLoading] = useState(!cachedRecords)
-	const [isRefreshing, setIsRefreshing] = useState(false)
-	const [loadError, setLoadError] = useState(false)
-	const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
-	const [pendingRecords, setPendingRecords] = useState<PendingRecord[]>([])
-	// Data da ultima atualizacao quando a lista vem do aparelho (sem conexao com a API)
-	const [staleSince, setStaleSince] = useState<number | null>(null)
-
-	// Registros guardados no aparelho aparecem junto com os da API.
-	useEffect(() => {
-		let mounted = true
-		const loadPending = () =>
-			getActivePendingRecords().then((list) => {
-				if (mounted) setPendingRecords(list)
-			})
-
-		void loadPending()
-
-		const unsubscribe = subscribeQueue((event) => {
-			if (event !== 'sent') {
-				void loadPending()
-				return
-			}
-
-			// Um registro foi enviado: troca o pendente pelo da API de uma vez.
-			void Promise.all([
-				fetchRecords({ force: true }),
-				getActivePendingRecords(),
-			])
-				.then(([items, list]) => {
-					if (mounted) {
-						setRecords(items)
-						setStaleSince(null)
-						setPendingRecords(list)
-					}
-				})
-				.catch(() => {
-					void loadPending()
-				})
-		})
-
-		return () => {
-			mounted = false
-			unsubscribe()
-		}
-	}, [])
-
-	const allRecords = useMemo(
-		() => mergeHistoryRecords(records, pendingRecords),
-		[records, pendingRecords],
-	)
-
-
-	useEffect(() => {
-		const controller = new AbortController()
-		let mounted = true
-		const cached = getCachedRecordsSnapshot()
-		const hasCachedRecords = Boolean(cached)
-
-		if (cached) {
-			setRecords(cached)
-		}
-
-		setIsLoading(!hasCachedRecords)
-		setLoadError(false)
-
-		// Sem cache em memoria, mostra a ultima lista guardada no aparelho enquanto a API responde.
-		let fetched = false
-		let shownFromDevice = false
-		const persistedLoad = hasCachedRecords
-			? Promise.resolve(null)
-			: loadPersistedRecords().then((persisted) => {
-					if (mounted && persisted && !fetched) {
-						shownFromDevice = true
-						setRecords(persisted.records)
-						setStaleSince(persisted.savedAt)
-						setIsLoading(false)
-					}
-					return persisted
-				})
-
-		fetchRecords(
-			{ force: hasCachedRecords && !isRecordsCacheFresh() },
-			controller.signal,
-		)
-			.then((items) => {
-				fetched = true
-				if (mounted) {
-					setRecords(items)
-					setStaleSince(null)
-				}
-			})
-			.catch(async (error) => {
-				await persistedLoad
-
-				if (mounted && error.name !== 'AbortError') {
-					setLoadError(!hasCachedRecords && !shownFromDevice)
-				}
-			})
-			.finally(() => {
-				if (mounted && !hasCachedRecords) {
-					setIsLoading(false)
-				}
-			})
-
-		return () => {
-			mounted = false
-			controller.abort()
-		}
-	}, [])
-
-	const hasActiveAnalysis = useMemo(
-		() => records.some((record) => isActiveAnalysisStatus(record.status)),
-		[records],
-	)
-
-	useEffect(() => {
-		if (!hasActiveAnalysis) {
-			return
-		}
-
-		return addRecordProgressListener({
-			onSnapshot: (snapshot) => {
-				setRecords((current) => mergeProgressUpdates(current, snapshot))
-			},
-			onProgress: (progress) => {
-				setRecords((current) => mergeProgressUpdates(current, [progress]))
-			},
-		})
-	}, [addRecordProgressListener, hasActiveAnalysis])
-
-
-	const handleRefresh = async () => {
-		setIsRefreshing(true)
-		setLoadError(false)
-
-		try {
-			const items = await fetchRecords({ force: true })
-			setRecords(items)
-			setStaleSince(null)
-		} catch {
-			setLoadError(records.length === 0)
-		} finally {
-			setIsRefreshing(false)
-			setIsLoading(false)
-		}
-	}
-
-	const toggleSortOrder = () => {
-		setSortOrder((current) => (current === 'desc' ? 'asc' : 'desc'))
-	}
+	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
+		useHistoryRecords()
+	const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
 
 	const {
 		searchTerm,
@@ -239,26 +39,18 @@ export function HistoryScreen() {
 		setIsFilterOpen,
 	} = useHistoryFilters(allRecords)
 
-	const orderedRecords = useMemo(() => {
-		if (sortOrder === 'desc') {
-			return [...filteredRecords].sort(
-				(a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
-			)
-		}
-		return [...filteredRecords].sort(
-			(a, b) => new Date(a.datetime).getTime() - new Date(b.datetime).getTime()
-		)
-	}, [filteredRecords, sortOrder])
-	
+	const orderedRecords = useMemo(
+		() => sortRecordsByDate(filteredRecords, sortOrder),
+		[filteredRecords, sortOrder],
+	)
+
+	const toggleSortOrder = () => {
+		setSortOrder((current) => (current === 'desc' ? 'asc' : 'desc'))
+	}
+
 	const openRecord = (recordId: number) => {
 		navigation.navigate('RecordDetail', { recordId })
 	}
-
-	const emptyMessage = isLoading
-		? 'Carregando registros...'
-		: loadError
-			? 'Não foi possível carregar os registros.'
-			: 'Nenhum registro encontrado com os filtros atuais.'
 
 	return (
 		<View style={appStyles.historyScreen}>
@@ -277,63 +69,18 @@ export function HistoryScreen() {
 						/>
 					}
 					ListHeaderComponent={
-						<>
-						{staleSince !== null ? (
-							<Text style={appStyles.historyEmptyText}>
-								{`Sem conexão com o servidor. Mostrando dados de ${formatDate(new Date(staleSince).toISOString())} às ${formatTime(new Date(staleSince).toISOString())}.`}
-							</Text>
-						) : null}
-						<ScreenCard style={appStyles.historySearchCard}>
-							<View style={appStyles.historySearchInputWrap}>
-								<Ionicons name="search-outline" size={19} color="#5C8BD6" />
-								<TextInput
-									value={searchTerm}
-									onChangeText={setSearchTerm}
-									placeholder="Buscar por local, data..."
-									placeholderTextColor="#8E8E96"
-									style={appStyles.historySearchInput}
-								/>
-							</View>
-
-							<Pressable
-								onPress={openFilters}
-								disabled={isLoading}
-								style={[
-									appStyles.historyFilterButton,
-									isLoading && appStyles.historyFilterButtonDisabled,
-								]}
-							>
-								<Ionicons name="funnel-outline" size={17} color="#FFFFFF" />
-								<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
-							</Pressable>
-
-							<Pressable
-								onPress={toggleSortOrder}
-								disabled={isLoading}
-								style={[
-									appStyles.historyFilterButton,
-									isLoading && appStyles.historyFilterButtonDisabled,
-								]}
-							>
-								<Ionicons name="swap-vertical" size={17} color="#FFFFFF" />
-								<Text style={appStyles.historyFilterButtonText}>
-									{sortOrder === 'desc' ? 'MAIS RECENTES' : 'MAIS ANTIGOS'}
-								</Text>
-							</Pressable>
-						</ScreenCard>
-						</>
+						<HistoryListHeader
+							staleSince={staleSince}
+							searchTerm={searchTerm}
+							onSearchChange={setSearchTerm}
+							onOpenFilters={openFilters}
+							sortOrder={sortOrder}
+							onToggleSort={toggleSortOrder}
+							disabled={isLoading}
+						/>
 					}
 					ListEmptyComponent={
-						<View style={appStyles.historyEmptyWrap}>
-							{isLoading ? (
-								<ActivityIndicator
-									color={colors.muted}
-									size="small"
-									style={appStyles.historyLoadingIcon}
-								/>
-							) : null}
-							<Text style={appStyles.historyEmptyText}>{emptyMessage}</Text>
-						</View>
+						<HistoryListEmpty isLoading={isLoading} loadError={loadError} />
 					}
 					renderItem={({ item }: { item: RecordItem }) => (
 						<HistoryRecordCard
@@ -345,7 +92,6 @@ export function HistoryScreen() {
 					)}
 				/>
 			</View>
-
 
 			{isFilterOpen ? (
 				<HistoryFilterModal

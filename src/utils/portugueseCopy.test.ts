@@ -12,6 +12,8 @@ const filesToCheck = [
 	'src/screens/ProfileScreen.tsx',
 	'src/screens/RecordDetailScreen.tsx',
 	'src/components/RecordImageDetailModal.tsx',
+	'src/components/history/HistoryListEmpty.tsx',
+	'src/components/history/HistoryListHeader.tsx',
 	'src/components/recordDetail/BehaviorsCard.tsx',
 	'src/components/recordDetail/ImageCarouselCard.tsx',
 	'src/components/recordDetail/RecordDetailMessage.tsx',
