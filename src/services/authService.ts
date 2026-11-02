@@ -1,4 +1,5 @@
-import { apiFetch } from './apiClient'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { ApiError, apiFetch } from './apiClient'
 import {
 	clearTokens,
 	getAccessToken,
@@ -7,6 +8,31 @@ import {
 	saveTokens,
 } from './tokenStorage'
 import type { LoginResponse, UserRead } from '../types/api'
+
+// Ultimo usuario autenticado: permite abrir o app sem rede (modo offline).
+const USER_CACHE_KEY = 'guara_vivo_cached_user'
+
+async function cacheUser(user: UserRead) {
+	try {
+		await AsyncStorage.setItem(USER_CACHE_KEY, JSON.stringify(user))
+	} catch {
+		// Sem cache o app so perde a abertura offline.
+	}
+}
+
+async function readCachedUser(): Promise<UserRead | null> {
+	try {
+		const raw = await AsyncStorage.getItem(USER_CACHE_KEY)
+		const user = raw ? (JSON.parse(raw) as Partial<UserRead>) : null
+		return user && typeof user.id === 'number' ? (user as UserRead) : null
+	} catch {
+		return null
+	}
+}
+
+async function clearCachedUser() {
+	await AsyncStorage.removeItem(USER_CACHE_KEY).catch(() => {})
+}
 
 export async function saveToken(token: string) {
 	await saveAccessToken(token)
@@ -35,6 +61,7 @@ export async function login(
 		accessToken: result.access_token,
 		refreshToken: result.refresh_token,
 	})
+	await cacheUser(result.user)
 	return result
 }
 
@@ -54,9 +81,26 @@ export async function restoreSession() {
 	}
 
 	try {
-		return await getCurrentUser(token)
-	} catch {
+		const user = await getCurrentUser(token)
+		await cacheUser(user)
+		return user
+	} catch (error) {
+		// So uma recusa do servidor encerra a sessao. Sem rede ou com a API fora do ar,
+		// entra com o ultimo usuario conhecido: os registros salvos no aparelho precisam
+		// continuar acessiveis e sincronizar quando a conexao voltar.
+		const rejected =
+			error instanceof ApiError && (error.status === 401 || error.status === 403)
+
+		if (!rejected) {
+			const cached = await readCachedUser()
+
+			if (cached) {
+				return cached
+			}
+		}
+
 		await clearToken()
+		await clearCachedUser()
 		return null
 	}
 }
@@ -77,6 +121,7 @@ export async function logout() {
 	}
 
 	await clearToken()
+	await clearCachedUser()
 }
 
 export default {
