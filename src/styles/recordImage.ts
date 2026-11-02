@@ -100,27 +100,8 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		textTransform: 'uppercase',
 	},
-	recordImageModalStatusBadge: {
-		paddingHorizontal: 12,
-		paddingVertical: 8,
-		borderRadius: 8,
-		borderWidth: 1,
-	},
-	recordImageModalStatusText: {
-		fontSize: 13,
-		textTransform: 'uppercase',
-	},
 	recordImageModalIbisList: {
 		gap: 8,
-	},
-	recordImageModalIbisItem: {
-		backgroundColor: colors.background,
-		borderRadius: 8,
-		paddingHorizontal: 12,
-		paddingVertical: 10,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 12,
 	},
 	recordImageModalIbisColorBadge: {
 		width: 32,
@@ -137,10 +118,6 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalIbisIndex: {
 		color: colors.text,
 		fontSize: 13,
-	},
-	recordImageModalIbisDetail: {
-		color: colors.muted,
-		fontSize: 11,
 	},
 	recordImageModalEmptyState: {
 		paddingHorizontal: 12,

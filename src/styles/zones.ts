@@ -3,20 +3,6 @@ import { colors, spacing } from '../constants/theme'
 import { cornerRadius, unifiedShadow } from './shared'
 
 export const zonesStyles = StyleSheet.create<Record<string, any>>({
-	mapZoneInfoCard: {
-		position: 'absolute',
-		left: 10,
-		right: 10,
-		bottom: 10,
-		zIndex: 10,
-		padding: spacing.md,
-		borderRadius: cornerRadius,
-		backgroundColor: 'rgba(255, 255, 255, 0.96)',
-		borderWidth: 1,
-		borderColor: colors.border,
-		gap: spacing.sm,
-		...unifiedShadow,
-	},
 	mapZoneInfoHeader: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -108,9 +94,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.primary,
 		fontSize: 12,
 	},
-	mapZoneRecordsList: {
-		gap: spacing.xs,
-	},
 	mapZoneRecordRow: {
 		minHeight: 90,
 		paddingVertical: 8,
@@ -195,24 +178,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		paddingTop: spacing.sm,
 		paddingBottom: spacing.xl,
 	} as ViewStyle,
-	zoneModalContent: {
-		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		padding: spacing.lg,
-		marginHorizontal: spacing.md,
-		width: '90%',
-		maxWidth: 380,
-		...unifiedShadow,
-	} as ViewStyle,
-	zoneDeleteConfirmContent: {
-		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		padding: spacing.lg,
-		marginHorizontal: spacing.md,
-		width: '86%',
-		maxWidth: 360,
-		...unifiedShadow,
-	} as ViewStyle,
 	zoneModalTitle: {
 		fontSize: 18,
 		color: colors.text,
@@ -231,30 +196,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		marginTop: spacing.md,
 		marginBottom: spacing.sm,
-	} as TextStyle,
-	zoneTypeButtonContainer: {
-		flexDirection: 'row',
-		gap: spacing.md,
-		marginBottom: spacing.lg,
-	} as ViewStyle,
-	zoneTypeButton: {
-		flex: 1,
-		paddingVertical: spacing.md,
-		paddingHorizontal: spacing.md,
-		borderRadius: cornerRadius,
-		alignItems: 'center',
-		justifyContent: 'center',
-		backgroundColor: colors.primary,
-	} as ViewStyle,
-	zoneTypeButtonActive: {
-		backgroundColor: colors.splash,
-	} as ViewStyle,
-	zoneTypeButtonText: {
-		fontSize: 12,
-		color: colors.surface,
-	} as TextStyle,
-	zoneTypeButtonTextActive: {
-		color: colors.surface,
 	} as TextStyle,
 	zoneSelectContainer: {
 		marginBottom: spacing.lg,

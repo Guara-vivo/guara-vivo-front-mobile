@@ -159,14 +159,6 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		backgroundColor: colors.surface,
 	},
-	registerAccountContent: {
-		flexGrow: 1,
-		justifyContent: 'flex-start',
-		paddingTop: 16,
-		paddingHorizontal: screenGutter,
-		paddingBottom: 24,
-		backgroundColor: colors.surface,
-	},
 	registerHeaderRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -181,11 +173,6 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerAccountTopWrap: {
 		gap: 16,
-	},
-	registerAccountTitle: {
-		color: palette.text,
-		fontSize: 42,
-		lineHeight: 46,
 	},
 	registerAccountFieldBlock: {
 		gap: 5,
@@ -234,27 +221,6 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: 11,
 		lineHeight: 14,
-	},
-	registerAccountBottomWrap: {
-		marginTop: 325,
-		paddingBottom: 0,
-	},
-	registerAccountPrimaryButton: {
-		...basePrimaryButton,
-		minHeight: 45,
-		backgroundColor: palette.text,
-	},
-	registerAccountPrimaryButtonText: {
-		color: palette.surface,
-		fontSize: 15,
-	},
-	registerHeaderBar: {
-		backgroundColor: colors.secondary,
-		paddingHorizontal: screenGutter,
-		paddingTop: 28,
-		paddingBottom: 16,
-		minHeight: 78,
-		justifyContent: 'flex-end',
 	},
 	registerHeaderTitle: {
 		color: colors.text,

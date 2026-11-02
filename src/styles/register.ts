@@ -75,11 +75,6 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 14,
 		textAlign: 'center',
 	},
-	registerDropZoneText: {
-		color: colors.muted,
-		fontSize: 12,
-		textAlign: 'center',
-	},
 	registerImagePreviewGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
@@ -184,22 +179,5 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerActionButtonLabel: {
 		fontSize: 12,
-	},
-	photoDropZone: {
-		backgroundColor: colors.splash,
-		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.secondaryLight,
-		padding: spacing.md,
-		gap: spacing.xs,
-	},
-	photoDropZoneTitle: {
-		color: colors.text,
-		fontSize: 16,
-	},
-	photoDropZoneText: {
-		color: colors.muted,
-		fontSize: 13,
-		lineHeight: 20,
 	},
 })

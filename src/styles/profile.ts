@@ -7,37 +7,6 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		backgroundColor: colors.background,
 	},
-	profileHeaderBar: {
-		backgroundColor: colors.secondary,
-		minHeight: 82,
-		justifyContent: 'flex-end',
-		paddingBottom: 14,
-		paddingHorizontal: screenGutter,
-		paddingTop: 30,
-	},
-	profileSecondaryHeaderBar: {
-		backgroundColor: colors.secondary,
-		minHeight: 82,
-		paddingTop: 30,
-		paddingBottom: 14,
-		paddingHorizontal: screenGutter,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: 6,
-	},
-	profileHeaderBackButton: {
-		width: 28,
-		height: 28,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	profileHeaderTitle: {
-		color: colors.surface,
-		fontSize: 22,
-		lineHeight: 39,
-
-		textTransform: 'uppercase',
-	},
 	profileContent: {
 		paddingHorizontal: screenGutter,
 		paddingBottom: screenBottomPadding,
@@ -145,34 +114,6 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	logoutOverlayText: {
 		color: colors.text,
 		fontSize: 16,
-		textAlign: 'center',
-	},
-	profileHero: {
-		alignItems: 'center',
-	},
-	avatarCircle: {
-		width: 112,
-		height: 112,
-		borderRadius: 112,
-		backgroundColor: colors.splash,
-		borderWidth: 3,
-		borderColor: colors.secondary,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	avatarInitial: {
-		color: colors.secondary,
-		fontSize: 46,
-	},
-	profileName: {
-		color: colors.text,
-		fontSize: 20,
-
-		textAlign: 'center',
-	},
-	profileEmail: {
-		color: colors.muted,
-		fontSize: 13,
 		textAlign: 'center',
 	},
 })

@@ -1,22 +1,14 @@
 import { StyleSheet } from 'react-native'
 import { colors, radius, spacing } from '../constants/theme'
-import { screenGutter, cornerRadius, unifiedShadow, palette } from './shared'
+import { screenGutter, cornerRadius, unifiedShadow } from './shared'
 
 export const commonStyles = StyleSheet.create<Record<string, any>>({
 	app: {
 		flex: 1,
 		backgroundColor: colors.surface,
 	},
-	appSplash: {
-		backgroundColor: colors.splash,
-	},
 	screen: {
 		flex: 1,
-	},
-	screenPadding: {
-		flex: 1,
-		padding: spacing.md,
-		backgroundColor: colors.splash,
 	},
 	inAppNotificationOverlay: {
 		position: 'absolute',
@@ -66,24 +58,6 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		height: 28,
 		alignItems: 'center',
 		justifyContent: 'center',
-	},
-	scrollContent: {
-		padding: spacing.md,
-		paddingBottom: 108,
-		gap: spacing.md,
-		backgroundColor: colors.splash,
-	},
-	pageTitleWrap: {
-		flex: 1,
-	},
-	pageTitle: {
-		color: palette.text,
-		fontSize: 22,
-	},
-	pageSubtitle: {
-		color: colors.muted,
-		fontSize: 13,
-		lineHeight: 18,
 	},
 	fieldWrapper: {
 		gap: spacing.xs,
@@ -143,11 +117,6 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	actionButtonGhost: {
 		backgroundColor: 'transparent',
-	},
-	actionButtonGhostText: {
-		color: colors.text,
-		fontSize: 17,
-		textTransform: 'uppercase',
 	},
 	actionButtonPressed: {
 		opacity: 0.85,
@@ -269,38 +238,6 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 12,
 		textTransform: 'uppercase',
-	},
-	infoText: {
-		color: colors.text,
-		fontSize: 14,
-		lineHeight: 21,
-	},
-	chipRow: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: spacing.sm,
-	},
-	chip: {
-		backgroundColor: colors.splash,
-		borderWidth: 1,
-		borderColor: colors.secondaryLight,
-		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm,
-	},
-	chipActive: {
-		backgroundColor: colors.primary,
-		borderColor: colors.primary,
-	},
-	chipText: {
-		color: colors.text,
-		fontSize: 12,
-	},
-	chipTextActive: {
-		color: colors.surface,
-	},
-	rowGap: {
-		gap: spacing.sm,
 	},
 	bottomNav: {
 		flexDirection: 'row',

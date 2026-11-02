@@ -7,28 +7,6 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		...baseCard,
 		gap: spacing.md,
 	},
-	heroCard: {
-		padding: spacing.lg,
-	},
-	kicker: {
-		color: palette.secondary,
-		fontSize: 12,
-		textTransform: 'uppercase',
-	},
-	heroTitle: {
-		color: palette.text,
-		fontSize: 28,
-		lineHeight: 34,
-	},
-	homeTitle: {
-		color: palette.text,
-		fontSize: 30,
-	},
-	heroText: {
-		color: palette.muted,
-		fontSize: 15,
-		lineHeight: 22,
-	},
 	homeContent: {
 		flexGrow: 1,
 		backgroundColor: palette.background,
@@ -95,14 +73,5 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 13,
 		textTransform: 'uppercase',
-	},
-	gridCardTitle: {
-		color: colors.text,
-		fontSize: 18,
-	},
-	gridCardText: {
-		color: colors.muted,
-		fontSize: 13,
-		lineHeight: 20,
 	},
 })

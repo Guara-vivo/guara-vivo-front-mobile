@@ -21,28 +21,6 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		backgroundColor: colors.surface,
 	},
-	recordDetailHeaderBar: {
-		backgroundColor: colors.secondary,
-		minHeight: 82,
-		paddingTop: 30,
-		paddingBottom: 14,
-		paddingHorizontal: screenGutter,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.lg,
-	},
-	recordDetailBackButton: {
-		width: 28,
-		height: 28,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	recordDetailHeaderTitle: {
-		color: colors.surface,
-		fontSize: 22,
-		lineHeight: 20,
-		textTransform: 'uppercase',
-	},
 	recordDetailContent: {
 		paddingHorizontal: screenGutter,
 		paddingTop: spacing.lg,
@@ -149,20 +127,6 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: 14,
 	},
-	recordDetailImageGrid: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		gap: 12,
-		justifyContent: 'flex-start',
-	},
-	recordDetailImagePlaceholder: {
-		width: 72,
-		height: 72,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.border,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
 	recordDetailImageCarousel: {
 		width: '100%',
 		aspectRatio: 1.05,
@@ -217,16 +181,5 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailCarouselArrowRight: {
 		right: 12,
-	},
-	recordDetailImagePressable: {
-		width: 72,
-		height: 72,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.border,
-		overflow: 'hidden',
-	},
-	recordDetailImage: {
-		width: '100%',
-		height: '100%',
 	},
 })

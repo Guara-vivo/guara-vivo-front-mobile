@@ -7,20 +7,6 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		backgroundColor: colors.background,
 	},
-	historyHeaderBar: {
-		backgroundColor: colors.secondary,
-		paddingHorizontal: screenGutter,
-		paddingTop: 28,
-		paddingBottom: 16,
-		minHeight: 78,
-		justifyContent: 'flex-end',
-	},
-	historyHeaderTitle: {
-		color: colors.surface,
-		fontSize: 22,
-		lineHeight: 26,
-		textTransform: 'uppercase',
-	},
 	historyContent: {
 		flexGrow: 1,
 		paddingHorizontal: screenGutter,
@@ -167,17 +153,6 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: 13,
 		textAlign: 'center',
 	},
-	historyModalBackdrop: {
-		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.28)',
-		justifyContent: 'flex-end',
-	},
-	historyModalCard: {
-		backgroundColor: colors.surface,
-		borderTopLeftRadius: 12,
-		borderTopRightRadius: 12,
-		maxHeight: '84%',
-	},
 	historyBottomSheetBackground: {
 		backgroundColor: colors.surface,
 		borderTopLeftRadius: 24,
@@ -265,16 +240,6 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 		fontSize: 13,
 		paddingVertical: 0,
-	},
-	historySingleInput: {
-		minHeight: 40,
-		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.secondaryLight,
-		backgroundColor: colors.surface,
-		paddingHorizontal: 12,
-		color: colors.text,
-		fontSize: 14,
 	},
 	historyHalfInput: {
 		flex: 1,

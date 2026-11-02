@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors } from '../constants/theme'
 import { cornerRadius, unifiedShadow } from './shared'
 
 export const settingsStyles = StyleSheet.create<Record<string, any>>({
@@ -209,29 +209,5 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 15,
 
 		textAlign: 'center',
-	},
-	toggleRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: spacing.md,
-	},
-	toggleTextWrap: {
-		flex: 1,
-		gap: spacing.xs,
-	},
-	toggleTitle: {
-		color: colors.text,
-		fontSize: 15,
-	},
-	toggleSubtitle: {
-		color: colors.muted,
-		fontSize: 13,
-		lineHeight: 19,
-	},
-	listItem: {
-		color: colors.text,
-		fontSize: 14,
-		lineHeight: 21,
 	},
 })
