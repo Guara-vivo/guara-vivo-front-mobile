@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../../constants/theme'
 import type { Coordinates } from '../../hooks/useRegisterLocation'
+import { mapStyle } from '../../config/mapStyle'
 import { mapViewStyles } from '../map/mapViewStyles'
 import { registerStyles as styles } from './registerStyles'
 
@@ -39,7 +40,11 @@ export function LocationPickerModal({
 					latitudeDelta: 0.05,
 					longitudeDelta: 0.05,
 				}}
-				onPress={(e) => onSelect(e.nativeEvent.coordinate)}
+				showsPointsOfInterest={false}
+					showsIndoors={false}
+					showsBuildings={false}
+					customMapStyle={mapStyle}
+					onPress={(e) => onSelect(e.nativeEvent.coordinate)}
 			>
 				{userLocation && (
 					<Marker
