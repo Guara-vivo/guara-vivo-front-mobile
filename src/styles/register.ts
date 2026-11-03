@@ -169,13 +169,11 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 44,
 		backgroundColor: colors.secondary,
-		...unifiedShadow,
 	},
 	registerCancelButton: {
 		flex: 1,
 		minHeight: 44,
 		backgroundColor: colors.primary,
-		...unifiedShadow,
 	},
 	registerActionButtonLabel: {
 		fontSize: 12,

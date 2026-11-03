@@ -39,7 +39,6 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	welcomePrimaryButton: {
 		...basePrimaryButton,
-		elevation: 5,
 		backgroundColor: colors.text,
 	},
 	welcomePrimaryButtonLabel: {

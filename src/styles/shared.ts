@@ -1,16 +1,12 @@
 import type { TextStyle, ViewStyle } from 'react-native'
-import { colors, radius, spacing } from '../constants/theme'
+import { colors, elevation, radius, spacing } from '../constants/theme'
 
 export const screenGutter = spacing.md
 export const screenBottomPadding = 120
 export const cornerRadius = radius.md ?? 12
-export const unifiedShadow = {
-	shadowColor: colors.text,
-	shadowOpacity: 1,
-	shadowOffset: { width: 0, height: 5 },
-	shadowRadius: cornerRadius,
-	elevation: 10,
-}
+// `unifiedShadow` = elevação de card; `overlayShadow` = elementos flutuantes. Botões são planos.
+export const unifiedShadow = elevation.card
+export const overlayShadow = elevation.overlay
 
 // palette aliases — prefer theme colors, fallback to literals when needed
 export const palette = {
@@ -42,7 +38,6 @@ export const basePrimaryButton: ViewStyle = {
 	borderRadius: cornerRadius,
 	alignItems: 'center',
 	justifyContent: 'center',
-	...unifiedShadow,
 }
 
 export const basePrimaryButtonLabel: TextStyle = {

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, radius, spacing } from '../constants/theme'
-import { screenGutter, cornerRadius, unifiedShadow } from './shared'
+import { screenGutter, cornerRadius, unifiedShadow, overlayShadow } from './shared'
 
 export const commonStyles = StyleSheet.create<Record<string, any>>({
 	app: {
@@ -31,7 +31,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm,
-		...unifiedShadow,
+		...overlayShadow,
 	},
 	inAppNotificationBannerError: {
 		borderLeftColor: colors.primary,
@@ -152,7 +152,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: spacing.lg,
 		paddingVertical: spacing.xl,
 		gap: spacing.md,
-		...unifiedShadow,
+		...overlayShadow,
 	},
 	feedbackModalIconWrap: {
 		width: 64,

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, spacing } from '../constants/theme'
-import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
+import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow, overlayShadow } from './shared'
 
 export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapsScreen: {
@@ -64,7 +64,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		position: 'relative',
 		borderRadius: cornerRadius,
 		borderWidth: 0,
-		...unifiedShadow,
+		...overlayShadow,
 		height: '96%',
 	},
 	mapReloadOverlay: {
@@ -72,7 +72,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		top: 10,
 		right: 10,
 		zIndex: 10,
-		elevation: 10,
+		elevation: 6,
 		alignItems: 'center',
 		gap: 6,
 	},
@@ -88,7 +88,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: 'rgba(255, 255, 255, 0.94)',
 		borderWidth: 1,
 		borderColor: colors.border,
-		...unifiedShadow,
+		...overlayShadow,
 	},
 	mapSelectionInstructionText: {
 		color: colors.text,
@@ -107,7 +107,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
-		...unifiedShadow,
+		...overlayShadow,
 	},
 	mapAreaButtonCancel: {
 		backgroundColor: colors.primary,

@@ -1,6 +1,6 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native'
 import { colors, spacing } from '../constants/theme'
-import { cornerRadius, unifiedShadow } from './shared'
+import { cornerRadius } from './shared'
 
 export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	mapZoneInfoHeader: {
@@ -229,7 +229,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.primary,
-		...unifiedShadow,
 	} as ViewStyle,
 	zoneModalCancelButtonText: {
 		fontSize: 14,
@@ -243,7 +242,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.secondary,
-		...unifiedShadow,
 	} as ViewStyle,
 	zoneModalConfirmButtonText: {
 		fontSize: 14,
@@ -257,7 +255,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.primary,
-		...unifiedShadow,
 	} as ViewStyle,
 	zoneDeleteConfirmButtonText: {
 		fontSize: 14,
@@ -271,7 +268,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.secondary,
-		...unifiedShadow,
 	} as ViewStyle,
 	zoneModalDisabled: {
 		opacity: 0.6,
