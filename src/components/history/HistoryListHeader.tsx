@@ -17,7 +17,7 @@ type Props = {
 }
 
 // Topo da lista: aviso de dados offline, busca, filtros e ordenação.
-export function HistoryListHeader({
+function HistoryListHeaderBase({
 	staleSince,
 	searchTerm,
 	onSearchChange,
@@ -83,3 +83,5 @@ export function HistoryListHeader({
 		</>
 	)
 }
+
+export const HistoryListHeader = React.memo(HistoryListHeaderBase)

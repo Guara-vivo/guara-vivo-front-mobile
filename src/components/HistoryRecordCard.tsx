@@ -9,7 +9,7 @@ import AnalysisProgressIndicator from './AnalysisProgressIndicator'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 
-export function HistoryRecordCard({
+function HistoryRecordCardBase({
 	item,
 	analysisProgress,
 	onOpenRecord,
@@ -113,5 +113,8 @@ export function HistoryRecordCard({
 		</View>
 	)
 }
+
+// memo: a lista re-renderiza a cada tecla da busca; o cartão só muda se o registro mudar.
+export const HistoryRecordCard = React.memo(HistoryRecordCardBase)
 
 export default HistoryRecordCard

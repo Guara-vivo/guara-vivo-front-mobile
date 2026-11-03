@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useDebouncedValue } from './useDebouncedValue'
 import {
 	formatDate,
 	formatTime,
 	formatLocationLabel,
 } from '../utils/recordFormatters'
 import type { RecordItem } from '../types/records'
+
+const SEARCH_DEBOUNCE_MS = 250
 
 export type HistoryFilterState = {
 	fromDate: string
@@ -58,6 +61,7 @@ const parseBehaviorTags = (value: string) =>
 
 export function useHistoryFilters(records: RecordItem[]) {
 	const [searchTerm, setSearchTerm] = useState('')
+	const debouncedSearchTerm = useDebouncedValue(searchTerm, SEARCH_DEBOUNCE_MS)
 	const [isFilterOpen, setIsFilterOpen] = useState(false)
 	const [appliedFilters, setAppliedFilters] =
 		useState<HistoryFilterState>(defaultFilters)
@@ -73,10 +77,10 @@ export function useHistoryFilters(records: RecordItem[]) {
 		}))
 	}
 
-	const openFilters = () => {
+	const openFilters = useCallback(() => {
 		setDraftFilters(appliedFilters)
 		setIsFilterOpen(true)
-	}
+	}, [appliedFilters])
 
 	const applyFilters = () => {
 		setAppliedFilters(draftFilters)
@@ -90,7 +94,7 @@ export function useHistoryFilters(records: RecordItem[]) {
 	}
 
 	const filteredRecords = useMemo(() => {
-		const query = searchTerm.trim().toLowerCase()
+		const query = debouncedSearchTerm.trim().toLowerCase()
 		const fromDate = parseInputDate(appliedFilters.fromDate)
 		const toDate = parseInputDate(appliedFilters.toDate)
 		const locationQuery = appliedFilters.location.trim().toLowerCase()
@@ -172,7 +176,7 @@ export function useHistoryFilters(records: RecordItem[]) {
 
 			return true
 		})
-	}, [appliedFilters, records, searchTerm])
+	}, [appliedFilters, records, debouncedSearchTerm])
 
 	return {
 		searchTerm,

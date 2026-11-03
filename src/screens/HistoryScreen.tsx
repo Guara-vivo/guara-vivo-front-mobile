@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Header from '../components/Header'
@@ -41,13 +41,30 @@ export function HistoryScreen() {
 		[filteredRecords, sortOrder],
 	)
 
-	const toggleSortOrder = () => {
+	const toggleSortOrder = useCallback(() => {
 		setSortOrder((current) => (current === 'desc' ? 'asc' : 'desc'))
-	}
+	}, [])
 
-	const openRecord = (recordId: number) => {
-		navigation.navigate('RecordDetail', { recordId })
-	}
+	const openRecord = useCallback(
+		(recordId: number) => {
+			navigation.navigate('RecordDetail', { recordId })
+		},
+		[navigation],
+	)
+
+	const closeFilters = useCallback(() => setIsFilterOpen(false), [setIsFilterOpen])
+
+	const renderItem = useCallback(
+		({ item }: { item: RecordItem }) => (
+			<HistoryRecordCard
+				item={item}
+				analysisProgress={item.analysis_progress}
+				onOpenRecord={openRecord}
+				onDiscard={discardPendingRecord}
+			/>
+		),
+		[openRecord],
+	)
 
 	return (
 		<View style={appStyles.historyScreen}>
@@ -79,14 +96,11 @@ export function HistoryScreen() {
 					ListEmptyComponent={
 						<HistoryListEmpty isLoading={isLoading} loadError={loadError} />
 					}
-					renderItem={({ item }: { item: RecordItem }) => (
-						<HistoryRecordCard
-							item={item}
-							analysisProgress={item.analysis_progress}
-							onOpenRecord={openRecord}
-							onDiscard={discardPendingRecord}
-						/>
-					)}
+					renderItem={renderItem}
+					initialNumToRender={6}
+					maxToRenderPerBatch={6}
+					windowSize={7}
+					removeClippedSubviews
 				/>
 			</View>
 
@@ -97,7 +111,7 @@ export function HistoryScreen() {
 					toggleBehaviorFilter={toggleBehaviorFilter}
 					applyFilters={applyFilters}
 					clearFilters={clearFilters}
-					onClose={() => setIsFilterOpen(false)}
+					onClose={closeFilters}
 				/>
 			) : null}
 		</View>
