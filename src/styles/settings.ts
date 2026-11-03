@@ -26,7 +26,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	changePasswordInputRow: {
-		minHeight: 42,
+		minHeight: 48,
 		borderRadius: cornerRadius,
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
@@ -38,7 +38,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.sm,
 	},
 	changePasswordInput: {
-		minHeight: 42,
+		minHeight: 48,
 		borderRadius: cornerRadius,
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
@@ -54,8 +54,8 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: 0,
 	},
 	changePasswordEyeButton: {
-		width: 30,
-		height: 30,
+		width: 40,
+		height: 40,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

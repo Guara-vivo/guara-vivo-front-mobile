@@ -99,6 +99,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.xs,
 	},
 	loginInput: {
+		minHeight: 48,
 		paddingHorizontal: 0,
 		paddingVertical: spacing.xs,
 		fontSize: fontSize.body,
@@ -117,11 +118,11 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	loginPasswordInput: {
 		flex: 1,
-		minHeight: 36,
+		minHeight: 48,
 	},
 	loginEyeButton: {
-		width: 28,
-		height: 28,
+		width: 40,
+		height: 40,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
@@ -185,6 +186,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.xs,
 	},
 	registerAccountInput: {
+		minHeight: 48,
 		color: palette.text,
 		fontSize: fontSize.body,
 		lineHeight: 20,
@@ -200,7 +202,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		gap: 2,
 	},
 	registerPasswordInputRow: {
-		minHeight: 40,
+		minHeight: 48,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm,
@@ -219,8 +221,8 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		marginTop: 0,
 	},
 	registerPasswordEyeButton: {
-		width: 28,
-		height: 28,
+		width: 40,
+		height: 40,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
