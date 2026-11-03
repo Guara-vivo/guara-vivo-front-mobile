@@ -48,6 +48,7 @@ export function ProfileScreen({
 
 					<Pressable
 						onPress={() => navigation.navigate('EditProfile')}
+						accessibilityRole="button"
 						style={appStyles.profileEditButton}
 					>
 						<Text style={appStyles.profileEditButtonText}>EDITAR</Text>
@@ -59,6 +60,7 @@ export function ProfileScreen({
 
 					<Pressable
 						onPress={() => navigation.navigate('ChangePassword')}
+						accessibilityRole="button"
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons name="lock-closed-outline" size={19} color={colors.secondary} />
@@ -67,6 +69,7 @@ export function ProfileScreen({
 
 					<Pressable
 						onPress={() => navigation.navigate('Notifications')}
+						accessibilityRole="button"
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons name="notifications-outline" size={19} color={colors.secondary} />
@@ -75,6 +78,7 @@ export function ProfileScreen({
 
 					<Pressable
 						onPress={() => navigation.navigate('About')}
+						accessibilityRole="button"
 						style={appStyles.profileMenuItem}
 					>
 						<Ionicons
@@ -87,6 +91,7 @@ export function ProfileScreen({
 
 					<Pressable
 						onPress={handleLogoutPress}
+						accessibilityRole="button"
 						disabled={isLoggingOut}
 						style={appStyles.profileMenuItem}
 					>

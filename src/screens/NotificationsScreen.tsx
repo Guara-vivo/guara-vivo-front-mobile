@@ -1,118 +1,82 @@
-import React, { useState } from 'react'
-import { Pressable, ScrollView, Switch, Text, View } from 'react-native'
+import React, { useCallback, useState } from 'react'
+import { ScrollView, Switch, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { HeaderBackButton } from '../components/HeaderBackButton'
 import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
+type PreferenceId = 'newRecords' | 'mapUpdates' | 'monthlyReport' | 'systemAlerts'
+
+const PREFERENCES: { id: PreferenceId; title: string; subtitle: string }[] = [
+	{
+		id: 'newRecords',
+		title: 'Novos Registros',
+		subtitle: 'Receba notificações sobre novos avistamentos',
+	},
+	{
+		id: 'mapUpdates',
+		title: 'Atualizações de Mapas',
+		subtitle: 'Notifique quando houver mudanças nos mapas de calor',
+	},
+	{
+		id: 'monthlyReport',
+		title: 'Relatório Mensal',
+		subtitle: 'Resumo mensal de atividades e estatísticas',
+	},
+	{
+		id: 'systemAlerts',
+		title: 'Alertas do Sistema',
+		subtitle: 'Avisos importantes e atualizações do aplicativo',
+	},
+]
+
 export function NotificationsScreen() {
 	const navigation = useNavigation<NavigationProp>()
-	const [newRecords, setNewRecords] = useState(true)
-	const [mapUpdates, setMapUpdates] = useState(false)
-	const [monthlyReport, setMonthlyReport] = useState(true)
-	const [systemAlerts, setSystemAlerts] = useState(true)
+	const [enabled, setEnabled] = useState<Record<PreferenceId, boolean>>({
+		newRecords: true,
+		mapUpdates: false,
+		monthlyReport: true,
+		systemAlerts: true,
+	})
+
+	const goBack = useCallback(() => navigation.goBack(), [navigation])
 
 	return (
-    <View style={appStyles.profileScreen}>
-				<Header
-						title="Notificações"
-					leftIcon={
-						<Pressable
-							onPress={() => navigation.goBack()}
-							hitSlop={8}
-							style={appStyles.headerActionButton}
-						>
-							<Ionicons name="chevron-back" size={24} color={colors.onColor} />
-						</Pressable>
-					}
-				/>
+		<View style={appStyles.profileScreen}>
+			<Header title="Notificações" leftIcon={<HeaderBackButton onPress={goBack} />} />
 
-
-			<ScrollView
-				contentContainerStyle={appStyles.profileContent}
-				style={appStyles.screen}
-			>
-
+			<ScrollView contentContainerStyle={appStyles.profileContent} style={appStyles.screen}>
 				<View style={appStyles.notificationsCard}>
 					<View style={appStyles.notificationsTitleRow}>
 						<Ionicons name="notifications-outline" size={17} color={colors.secondary} />
-						<Text style={appStyles.notificationsTitle}>
+						<Text accessibilityRole="header" style={appStyles.notificationsTitle}>
 							PREFERÊNCIAS DE NOTIFICAÇÃO
 						</Text>
 					</View>
 
-					<View style={appStyles.notificationsItem}>
-						<View style={appStyles.notificationsTextWrap}>
-							<Text style={appStyles.notificationsItemTitle}>
-								Novos Registros
-							</Text>
-							<Text style={appStyles.notificationsItemSubtitle}>
-								Receba notificações sobre novos avistamentos
-							</Text>
+					{PREFERENCES.map((item) => (
+						<View key={item.id} style={appStyles.notificationsItem}>
+							<View style={appStyles.notificationsTextWrap}>
+								<Text style={appStyles.notificationsItemTitle}>{item.title}</Text>
+								<Text style={appStyles.notificationsItemSubtitle}>{item.subtitle}</Text>
+							</View>
+							<Switch
+								value={enabled[item.id]}
+								onValueChange={(value) =>
+									setEnabled((current) => ({ ...current, [item.id]: value }))
+								}
+								accessibilityLabel={item.title}
+								trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
+								thumbColor={colors.switchThumb}
+							/>
 						</View>
-						<Switch
-							value={newRecords}
-							onValueChange={setNewRecords}
-							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
-							thumbColor={colors.switchThumb}
-						/>
-					</View>
-
-					<View style={appStyles.notificationsItem}>
-						<View style={appStyles.notificationsTextWrap}>
-							<Text style={appStyles.notificationsItemTitle}>
-								Atualizações de Mapas
-							</Text>
-							<Text style={appStyles.notificationsItemSubtitle}>
-								Notifique quando houver mudanças nos mapas de calor
-							</Text>
-						</View>
-						<Switch
-							value={mapUpdates}
-							onValueChange={setMapUpdates}
-							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
-							thumbColor={colors.switchThumb}
-						/>
-					</View>
-
-					<View style={appStyles.notificationsItem}>
-						<View style={appStyles.notificationsTextWrap}>
-							<Text style={appStyles.notificationsItemTitle}>
-								Relatório Mensal
-							</Text>
-							<Text style={appStyles.notificationsItemSubtitle}>
-								Resumo mensal de atividades e estatísticas
-							</Text>
-						</View>
-						<Switch
-							value={monthlyReport}
-							onValueChange={setMonthlyReport}
-							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
-							thumbColor={colors.switchThumb}
-						/>
-					</View>
-
-					<View style={appStyles.notificationsItem}>
-						<View style={appStyles.notificationsTextWrap}>
-							<Text style={appStyles.notificationsItemTitle}>
-								Alertas do Sistema
-							</Text>
-							<Text style={appStyles.notificationsItemSubtitle}>
-								Avisos importantes e atualizações do aplicativo
-							</Text>
-						</View>
-						<Switch
-							value={systemAlerts}
-							onValueChange={setSystemAlerts}
-							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
-							thumbColor={colors.switchThumb}
-						/>
-					</View>
+					))}
 				</View>
 			</ScrollView>
 		</View>

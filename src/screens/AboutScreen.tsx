@@ -1,11 +1,12 @@
 import React from 'react'
-import { ScrollView, Image, Pressable, Text, View } from 'react-native'
+import { ScrollView, Image, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { HeaderBackButton } from '../components/HeaderBackButton'
 import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
@@ -18,13 +19,7 @@ export function AboutScreen() {
 			<Header
 				title="Sobre o App"
 				leftIcon={
-					<Pressable
-						onPress={() => navigation.goBack()}
-						hitSlop={8}
-						style={appStyles.headerActionButton}
-					>
-						<Ionicons name="chevron-back" size={24} color={colors.onColor} />
-					</Pressable>
+					<HeaderBackButton onPress={() => navigation.goBack()} />
 				}
 			/>
 
@@ -39,7 +34,7 @@ export function AboutScreen() {
 						style={appStyles.aboutLogo}
 						resizeMode="contain"
 					/>
-					<Text style={appStyles.aboutAppName}>GUARAVIVO</Text>
+					<Text style={appStyles.aboutAppName}>GUARÁVIVO</Text>
 					<Text style={appStyles.aboutVersion}>Versão 1.0.0</Text>
 
 					<View style={appStyles.aboutSection}>
