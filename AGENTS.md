@@ -5,7 +5,24 @@
 - **Initialization:** O projeto é um aplicativo móvel construído com **React Native/Expo**. O ponto de entrada principal é `expo/AppEntry`.
 - **Development Command:** Para iniciar o ambiente de desenvolvimento, use `npm start` ou `expo start`.
 - **Validation:** Os comandos principais do projeto são `npm run lint`, `npm run typecheck` e `npx expo-doctor`.
-- **Testing:** Testes devem seguir as convenções do Expo/React Native. Verifique a necessidade de mocking específico do Expo antes de testar componentes nativos.
+- **Testing:** Testes devem seguir as convenções do Expo/React Native. Verifique a necessidade de mocking específico do Expo antes de testar componentes nativos. O Jest só pega `*.test.ts` de funções puras (não há `react-test-renderer` tipado nem teste de `.tsx`).
+- **Teste visual no emulador:** gere o APK release e instale no BlueStacks pelo adb seguindo a seção **Fluxo de teste no BlueStacks** abaixo (`npm run android:install`).
+
+## 📱 Fluxo de teste no BlueStacks (APK release)
+
+Fluxo padrão para ver qualquer mudança de UI/JS rodando de verdade. **Sempre rode antes:** `npm run typecheck`, `npm run lint` e `npm test`.
+
+- **Comando único:** `npm run android:install` (`scripts/android-install.ps1`). Faz o build `assembleRelease` minificado de **uma só ABI** (`x86_64`, a do BlueStacks), instala via adb com `-r` e abre o app. Rode em background (leva ~35 s com cache; ~10 min na primeira vez ou depois de adicionar módulo nativo, ex.: `expo install ...`).
+- **Por que release e não debug:** o debug empacota as 4 ABIs (~181 MB), não tem JS embutido e exige Metro. O release x86_64 tem ~29 MB e funciona sem Metro. Consequência: **toda mudança de JS exige rebuild**; não há fast refresh.
+- **Assinatura (só teste):** o script passa `-PlocalDebugSign` (ver `android/app/build.gradle`), que assina com `debug.keystore`. **Nunca publique esse APK.** O build de publicação usa `app.keystore`; hoje a senha em `ANDROID_STORE_PASSWORD` **não abre** o `app.keystore` ("keystore password was incorrect") e precisa ser corrigida antes de publicar.
+- **Reinstalação:** se a assinatura instalada for diferente (`INSTALL_FAILED_UPDATE_INCOMPATIBLE`), o script desinstala e reinstala; isso **apaga os dados locais** do app (sessão, registros pendentes).
+- **adb:** `C:\Android\platform-tools\adb.exe` (não está no PATH). Dispositivo BlueStacks: `127.0.0.1:5555` (`adb connect 127.0.0.1:5555`), tela 900x1600, pacote `com.guaravivo.app`. Use sempre `-s 127.0.0.1:5555`.
+- **Rode o adb pelo PowerShell**, não pelo Git Bash: o Git Bash converte `/sdcard/...` em `C:/Program Files/Git/sdcard/...` e o `screencap`/`pull` falham.
+- **Screenshot:** `adb -s 127.0.0.1:5555 shell screencap -p /sdcard/s.png` + `adb pull /sdcard/s.png <pasta temporária>` e abra a imagem com a ferramenta Read.
+- **Login após cada abertura:** no emulador o SecureStore falha e o token fica só em memória, então o app volta à boas-vindas a cada reinício. A conta de teste (e-mail/senha) deve ser pedida ao usuário; **não grave a senha neste arquivo**. Toques (px): "ACESSAR MINHA CONTA" `(450,1038)`, campo e-mail `(400,342)`, campo senha `(400,438)`, botão "ACESSAR" `(450,685)`; use `adb shell input text "..."`. **Não use `keyevent 4`** para fechar teclado (volta de tela).
+- **Tab bar (y ≈ 1550):** Início x=100, Registrar 275, Mapas 450, Histórico 625, Perfil 800.
+- **Overlays do emulador:** se aparecerem rastros vermelhos/números no topo, desligue "Localização do ponteiro": `adb -s 127.0.0.1:5555 shell settings put system pointer_location 0`.
+- **Armadilhas no Windows:** `npx expo install --check` pode travar (rede); prefira `npx expo install <pacote>` direto. Processos `node` do Metro/Jest podem ficar pendurados e consumir CPU: só encerre com autorização do usuário. Scripts Python em heredoc perdem `\`; salve em arquivo na pasta temporária. O hook `rtk` reescreve `grep` (e não há `rg` no PATH): prefira as ferramentas Grep/Read.
 
 ## 📂 Codebase Structure
 
@@ -16,7 +33,7 @@
 - **Tipos de navegação:** `src/types/navigation.ts` exporta `MainTabNavigationProp` (aba + pilha raiz); use-o nas abas que abrem telas como `RecordDetail`. Para parâmetros de rota use `useRoute<RouteProp<RootStackParamList, 'Nome'>>()`.
 - **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx` (apesar do nome, usa `react-native-maps`/Google Maps, assim como o seletor de local de `RegisterScreen`; o nome é legado), com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
-- **Estilos:** O visual do app fica em `src/styles/`, dividido por assunto (`common.ts`, `auth.ts`, `history.ts`, `record.ts`, `maps.ts`, ...), com `appStyles.ts` agregando tudo (as telas usam `appStyles.<nome>`) e `shared.ts` com as constantes comuns; tokens em `src/constants/theme.ts`.
+- **Estilos:** O visual do app fica em `src/styles/`, dividido por assunto (`common.ts`, `auth.ts`, `history.ts`, `record.ts`, `maps.ts`, ...), com `appStyles.ts` agregando tudo (as telas usam `appStyles.<nome>`) e `shared.ts` com as constantes comuns; tokens em `src/constants/theme.ts` (ver **Tokens de design** abaixo).
 - **Dados/API:** Os registros reais vêm da API por `src/services/recordsService.ts` e `src/services/recordsApi.ts`. Tipos reais ficam em `src/types/api.ts`; formatadores em `src/utils/recordFormatters.ts`; opções de comportamento em `src/constants/behaviors.ts`.
 - **Assets:** As logos usadas no app ficam em `src/assets/images`.
 
@@ -26,26 +43,38 @@
 
 - **Components:** `src/components/` contém componentes reutilizáveis na raiz (`Button`, `ErrorBoundary`, `FeedbackModal`, `Header`, `MapLibreMapView`, `BottomNavigation`, `common.tsx` com `ActionButton`/`TextField`/`ScreenHeader`) e subpastas por domínio: `history/` (+ `history/filters/` com as seções do modal de filtros), `recordDetail/`, `recordImage/` (modal de análise por imagem), `register/` e `map/`.
 - **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
-- **Hooks:** Lógica reutilizável fica em `src/hooks/`: histórico (`useHistoryFilters`, `useHistoryRecords`, `useMapZoneOptions`), detalhe (`useRecordDetail`, `useImageCarousel`, `useImageSize`), registro (`useRegisterImages`, `useRegisterLocation`, `useRegisterSave`, `useRegisterFeedback`, `usePendingRecordsSync`), mapa (`useCurrentLocationTarget`, `useRecordMarkerFade`, `useStoredCameraRegion`), além de `usePasswordValidation`.
-- **Utils:** Funções puras (com testes) em `src/utils/`: `historyRecords.ts` (ordenação/mescla de progresso), `registerFeedback.ts` (mensagens do registro), `recordFormatters.ts`, `detectionFormatters.ts`, `registerDateTime.ts`, `pendingRecords.ts`, `mapZone*.ts`. Textos visíveis ao usuário devem manter a acentuação; arquivos novos com texto visível entram em `filesToCheck` de `src/utils/portugueseCopy.test.ts`.
-- **Services:** Integração de API e cache ficam em `src/services/` (ex.: `apiClient.ts`, `authService.ts`, `recordsApi.ts`, `recordsCache.ts`, `recordsService.ts`, `tokenStorage.ts`).
+- **Hooks:** Lógica reutilizável fica em `src/hooks/`: histórico (`useHistoryFilters`, `useHistoryRecords`, `useMapZoneOptions`, `useDebouncedValue` para a busca), detalhe (`useRecordDetail`, `useImageCarousel`), registro (`useRegisterImages`, `useRegisterLocation`, `useRegisterSave`, `useRegisterFeedback`, `usePendingRecordsSync`), mapa (`useCurrentLocationTarget`, `useRecordMarkerFade`, `useStoredCameraRegion`), além de `usePasswordValidation`.
+- **Utils:** Funções puras (com testes) em `src/utils/`: `historyRecords.ts` (ordenação/mescla de progresso), `registerFeedback.ts` (mensagens do registro), `recordFormatters.ts`, `detectionFormatters.ts`, `registerDateTime.ts`, `pendingRecords.ts`, `loadErrorMessage.ts` (texto amigável para falhas de carregamento), `mapZone*.ts`. Textos visíveis ao usuário devem manter a acentuação; arquivos novos com texto visível entram em `filesToCheck` de `src/utils/portugueseCopy.test.ts`.
+- **Services:** Integração de API e cache ficam em `src/services/` (ex.: `apiClient.ts` com `apiFetch` e `apiGetJson`, `authService.ts`, `recordsApi.ts`, `recordsCache.ts`, `recordsService.ts`, `tokenStorage.ts`).
 - **Styles:** estilos novos vão no arquivo de domínio em `src/styles/` (e passam a valer em `appStyles` automaticamente); crie um arquivo novo e registre-o em `appStyles.ts` se nenhum servir.
 - **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
 - **Header padrão:** Use `src/components/Header.tsx` nas telas principais; mantenha o estilo compartilhado em `appStyles.header`, `appHeaderTitle` e `headerRight` para preservar a faixa azul em largura total.
 
+### Tokens de design (`src/constants/theme.ts`)
+
+Estilos novos **não usam literais**; use os tokens:
+
+- **Cores:** `colors.*`. Base: `primary` (vermelho), `secondary` (azul), `text`, `muted`, `background`, `surface`, `border`. Semânticas: `onColor` (texto/ícone sobre cor), `accent`/`accentSoft` (ícones azuis), `danger`/`dangerBg`/`dangerText`, `success`, `placeholder`, `selectedBg`/`selectedBgActive`, `switchTrackOff`/`switchThumb`, `overlaySurface`, `scrim`/`scrimSoft`, `mediaBadge`. Branco em fundo/borda é `colors.surface`; branco em texto/ícone é `colors.onColor`.
+- **Espaçamento:** `spacing` = xs 4, sm 8, sm2 12, md 16, lg 24, xl 32 (em `padding*`, `margin*`, `gap`).
+- **Raio:** `radius` = sm 8, md 12, lg 16, pill 999 (círculos/pílulas); `cornerRadius` (12) em `shared.ts`.
+- **Fonte:** `fontSize` = caption 12, body 14, bodyLarge 16, title 20, headline 22, display 26 (`typography` traz também `lineHeight`).
+- **Elevação:** `elevation.card` (`unifiedShadow` em `shared.ts`, cards) e `elevation.overlay` (`overlayShadow`, itens flutuantes: botões do mapa, banner, modal). **Botões são planos** (sem sombra).
+- **Exceções aceitas (literais):** paleta de cores das detecções (`utils/detectionFormatters.ts`), estilo do Google Maps (`config/mapStyle.ts`), cores de zona do mapa (`utils/mapZoneStyle.ts`, cobertas por teste), neutros de marcador em `components/map/mapViewStyles.ts`, `fontSize: 7` do anel de progresso (`analysisProgressText`) e ajustes pontuais de 0/1/2 ou offsets grandes.
+
 ## 🛠️ Constraints & Quirks
 
 - **Framework:** A plataforma é estritamente **React Native**. Evite qualquer lógica ou importação que dependa de APIs web (DOM, etc.).
-- **Styling:** Os estilos e a aparência são gerenciados localmente em `src/styles/appStyles.ts` e `src/constants/theme.ts`.
-- **Expo Setup:** O app usa `expo-font`, `expo-location` e `expo-image-picker` no `app.json`. Localização centraliza o mapa e envia coordenadas no registro; image picker seleciona fotos do avistamento.
+- **Styling:** Os estilos e a aparência são gerenciados localmente em `src/styles/` (agregados em `appStyles.ts`) e nos tokens de `src/constants/theme.ts`.
+- **Expo Setup:** O app usa `expo-font`, `expo-location`, `expo-image-picker` e `expo-image` (config em `app.config.js`). Localização centraliza o mapa e envia coordenadas no registro; image picker seleciona fotos do avistamento.
 - **Platform:** `app.json` define orientação portrait, tema claro, suporte a tablet no iOS e adaptive icon no Android.
 - **Scripts Atuais:** Use `npm start`, `npm run lint`, `npm run lint:fix` e `npm run typecheck`.
-- **Mapa:** Remove POIs comerciais, usa marcadores personalizados neutros, exibe badge de contagem. **Sem re-renders em pan/zoom** (otimização performance). Mapas carregados de `MAP_RECORDS` em dev.
+- **Mapa:** Remove POIs comerciais, usa marcadores personalizados neutros, a contagem de áreas aparece no cabeçalho do card CAMADA em `MapsScreen` (não mais sobre o mapa). **Sem re-renders em pan/zoom** (otimização performance). Mapas carregados de `MAP_RECORDS` em dev.
 - **Map Layers:** `all` = total visível, `feeding` = pontos vermelhos (alimentação), `nests` = casas azuis (ninhos).
 - **API URL:** `src/services/apiClient.ts` usa `EXPO_PUBLIC_API_URL` (variável de ambiente). Em dev: fallback para `192.168.18.145:8001` (Android) ou `localhost:8001` (iOS). Em produção: requer HTTPS, erro se HTTP.
-- **Rede:** `apiFetch` aplica timeout (20s; 120s em upload). Quando o refresh token é recusado, `setSessionExpiredHandler` leva o app de volta ao login e `clearExpiredSession` limpa os dados locais.
+- **Rede:** `apiFetch` aplica timeout (20s; 120s em upload). `apiGetJson` faz `GET` + leitura do JSON na mesma tentativa e repete **uma vez** em falha de rede/corpo inválido (ex.: "The specified blob is invalid" do RN/Android); não repete erro da API, timeout nem cancelamento. Telas mostram `getLoadErrorMessage(...)`, nunca `error.message` cru. Quando o refresh token é recusado, `setSessionExpiredHandler` leva o app de volta ao login e `clearExpiredSession` limpa os dados locais.
 - **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts` usando **Keychain (iOS)** e **Keystore (Android)** via `expo-secure-store`. Cada gravação é conferida por leitura; se o SecureStore falhar (alguns emuladores), o token fica **só em memória** durante a sessão e **nunca** vai para o `AsyncStorage` (texto puro). Tokens de versões antigas no `AsyncStorage` são migrados para o SecureStore e a cópia antiga é sempre apagada. `apiFetch` renova token em `401` usando `POST /users/refresh` e repete requisição.
 - **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`. **Requests suportam AbortSignal** para cancelamento em unmount (economiza bateria/dados).
+- **Imagens:** fotos de registro usam `expo-image` (`cachePolicy="memory-disk"`, `contentFit`); o tamanho original para o overlay de detecções vem do `onLoad` da própria imagem (não use `Image.getSize`, que baixa a foto duas vezes).
 - **Record Detail Modal:** `src/components/RecordImageDetailModal.tsx` shows per-image analysis with image preview, analysis status, technical accuracy summary, and per-individual detection details.
 - **Per-image detections:** `RecordDetailItem.image_analyses` contains `detections` filtered by `analysis_image_id`; preserve `raw_detection` from the API to display `cor`, `fase_vida`, and `acuracia` fields.
 - **Accuracy fields:** The modal expects `raw_detection.acuracia.deteccao_yolo`, `classificacao_guara`, `classificacao_cor`, and `classificacao_fase_vida` as decimal values and formats them as percentages.
@@ -115,6 +144,12 @@ const [state, dispatch] = useReducer(reducer, {
 - **Request cancellation:** `AbortController` suporta `signal` em `apiFetch()`, cancelando requests em unmount.
 - **Date validation:** Parser rejeita overflow (`32/01`, `30/02`, etc.) no histórico.
 
+### 🎨 UI/Layout (Recent)
+- **Histórico:** busca com filtros/ordenação como botões secundários lado a lado; cartão compacto (área e quantidade na mesma linha, chips + "VER DETALHES" no rodapé); `React.memo` no cartão e no cabeçalho, callbacks estáveis, debounce de 250 ms na busca e `FlatList` com `initialNumToRender`/`windowSize`.
+- **Registrar:** botões Cancelar (contorno) e Salvar ficam num rodapé fixo (`registerFooter`) acima da tab bar; comportamentos em grade 2×2 com estado selecionado visível; sem título redundante no cartão.
+- **Boas-vindas/Splash:** usam a logo original `Logo Fonte Clara.png` (feita para fundo branco) sobre fundo branco; a splash nativa também é branca (`app.config.js` e `android/app/src/main/res/values/colors.xml`).
+- **Mapa:** animação de destaque da linha de registro só com `opacity` (driver nativo); contagem de áreas no card CAMADA.
+
 ### ✨ Code Quality (Recent)
 - **Type safety:** Todas instâncias de `any` removidas. Tipagem concreto (`HistoryFilterState`, `React.ErrorInfo`, `IoniconName`).
 - **Error handling:** `ErrorBoundary` com logs seguros.
@@ -135,7 +170,8 @@ const [state, dispatch] = useReducer(reducer, {
 ### ⚠️ Known Issues & Next Steps
 - **Telas ainda sem backend:** cadastro (`RegisterEmail`/`RegisterPassword` não criam conta), `ChangePasswordScreen`, `EditProfileScreen`, "Recuperar senha" e as preferências de `NotificationsScreen` são apenas visuais.
 - **Keystore de release:** o antigo foi removido do git, mas continua no histórico público; gerar um novo antes de publicar e guardá-lo fora do repositório (`android/app/app.keystore` está no `.gitignore`).
+- **Senha do `app.keystore`:** a variável `ANDROID_STORE_PASSWORD` não abre o keystore atual; corrigir antes de gerar o build de publicação (o fluxo de teste usa `-PlocalDebugSign`).
 - **Chave do Google Maps:** lida de `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` (variável de ambiente ou `.env`) pelo Gradle via `manifestPlaceholders`. Restringir por pacote e SHA-1 no Google Cloud.
-- **`android/` é versionado e editado à mão:** ao rodar `expo prebuild`, revisar o diff do `AndroidManifest.xml`.
+- **`android/` é versionado e editado à mão:** ao rodar `expo prebuild`, revisar o diff do `AndroidManifest.xml`, a flag `-PlocalDebugSign` em `app/build.gradle` e `splashscreen_background` em `res/values/colors.xml`.
 - **Vulnerabilidades (`npm audit`):** vindas da cadeia de build (transitivas, fora do APK); só somem com upgrade do Expo SDK (adiado; subir um SDK por vez, testando mapa e `android/` a cada passo).
 - **1 metro.config.js warning:** Não-crítico; atualizar para extends `expo/metro-config` se necessário.
