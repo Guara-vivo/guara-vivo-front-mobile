@@ -153,7 +153,8 @@ export function LoginScreen({
 							onPress={() => setShowForgotNotice(true)}
 							accessibilityRole="button"
 							accessibilityLabel="Recuperar senha"
-							hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+							hitSlop={{ left: 8, right: 8 }}
+							style={appStyles.loginForgotButton}
 					>
 						<Text style={appStyles.loginForgot}>Recuperar senha</Text>
 					</Pressable>

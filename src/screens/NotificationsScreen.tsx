@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { ScrollView, Switch, Text, View } from 'react-native'
+import { Pressable, ScrollView, Switch, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
@@ -45,6 +45,11 @@ export function NotificationsScreen() {
 		systemAlerts: true,
 	})
 
+	const toggle = useCallback(
+		(id: PreferenceId) => setEnabled((current) => ({ ...current, [id]: !current[id] })),
+		[],
+	)
+
 	const goBack = useCallback(() => navigation.goBack(), [navigation])
 
 	return (
@@ -61,21 +66,29 @@ export function NotificationsScreen() {
 					</View>
 
 					{PREFERENCES.map((item) => (
-						<View key={item.id} style={appStyles.notificationsItem}>
+						<Pressable
+							key={item.id}
+							onPress={() => toggle(item.id)}
+							accessibilityRole="switch"
+							accessibilityLabel={item.title}
+							accessibilityHint={item.subtitle}
+							accessibilityState={{ checked: enabled[item.id] }}
+							style={appStyles.notificationsItem}
+						>
 							<View style={appStyles.notificationsTextWrap}>
 								<Text style={appStyles.notificationsItemTitle}>{item.title}</Text>
 								<Text style={appStyles.notificationsItemSubtitle}>{item.subtitle}</Text>
 							</View>
+							{/* A linha inteira alterna (alvo de toque grande); o Switch é só o indicador. */}
 							<Switch
 								value={enabled[item.id]}
-								onValueChange={(value) =>
-									setEnabled((current) => ({ ...current, [item.id]: value }))
-								}
-								accessibilityLabel={item.title}
+								pointerEvents="none"
+								importantForAccessibility="no-hide-descendants"
+								accessibilityElementsHidden
 								trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
 								thumbColor={colors.switchThumb}
 							/>
-						</View>
+						</Pressable>
 					))}
 				</View>
 			</ScrollView>

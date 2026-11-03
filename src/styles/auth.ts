@@ -126,6 +126,11 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
+	loginForgotButton: {
+		minHeight: 48,
+		justifyContent: 'center',
+		alignSelf: 'flex-start',
+	},
 	loginForgot: {
 		color: colors.secondary,
 		fontSize: fontSize.body,
