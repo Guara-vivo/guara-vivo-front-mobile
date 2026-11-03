@@ -13,6 +13,7 @@
 - **Separação:** O diretório `src/app` foi removido, pois continha componentes e telas obsoletos da web.
 - **Main App:** A navegação principal fica em `src/GuaraVivoApp.tsx`.
 - **Navigation:** Os estados de tela são definidos por `ScreenId` em `src/types/navigation.ts`.
+- **Tipos de navegação:** `src/types/navigation.ts` exporta `MainTabNavigationProp` (aba + pilha raiz); use-o nas abas que abrem telas como `RecordDetail`. Para parâmetros de rota use `useRoute<RouteProp<RootStackParamList, 'Nome'>>()`.
 - **Screens:** As telas principais ficam em arquivos individuais em `src/screens/` (ex.: `SplashScreen.tsx`, `WelcomeScreen.tsx`, `LoginScreen.tsx`, `RegisterEmailScreen.tsx`, `RegisterPasswordScreen.tsx`, `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
 - **Mapa:** A visualização do mapa fica em `src/components/MapLibreMapView.tsx` (apesar do nome, usa `react-native-maps`/Google Maps, assim como o seletor de local de `RegisterScreen`; o nome é legado), com a seleção de camadas controlada em `src/screens/MapsScreen.tsx`.
 - **Estilos:** O visual do app fica em `src/styles/`, dividido por assunto (`common.ts`, `auth.ts`, `history.ts`, `record.ts`, `maps.ts`, ...), com `appStyles.ts` agregando tudo (as telas usam `appStyles.<nome>`) e `shared.ts` com as constantes comuns; tokens em `src/constants/theme.ts`.
@@ -23,9 +24,10 @@
 
 ### Arquitetura Modular (atual)
 
-- **Components:** `src/components/` contém componentes reutilizáveis e pequenos componentes por domínio (ex.: `auth/`, `history/`, `common`). Componentes padrão: `Button`, `ErrorBoundary`, `MapLibreMapView`, `BottomNavigation`.
+- **Components:** `src/components/` contém componentes reutilizáveis na raiz (`Button`, `ErrorBoundary`, `FeedbackModal`, `Header`, `MapLibreMapView`, `BottomNavigation`, `common.tsx` com `ActionButton`/`TextField`/`ScreenHeader`) e subpastas por domínio: `history/` (+ `history/filters/` com as seções do modal de filtros), `recordDetail/`, `recordImage/` (modal de análise por imagem), `register/` e `map/`.
 - **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
-- **Hooks:** Lógica reutilizável foi extraída para `src/hooks/` (ex.: `useHistoryFilters.ts`, `usePasswordValidation.ts`, `usePullRefreshAnimation.ts`).
+- **Hooks:** Lógica reutilizável fica em `src/hooks/`: histórico (`useHistoryFilters`, `useHistoryRecords`, `useMapZoneOptions`), detalhe (`useRecordDetail`, `useImageCarousel`, `useImageSize`), registro (`useRegisterImages`, `useRegisterLocation`, `useRegisterSave`, `useRegisterFeedback`, `usePendingRecordsSync`), mapa (`useCurrentLocationTarget`, `useRecordMarkerFade`, `useStoredCameraRegion`), além de `usePasswordValidation`.
+- **Utils:** Funções puras (com testes) em `src/utils/`: `historyRecords.ts` (ordenação/mescla de progresso), `registerFeedback.ts` (mensagens do registro), `recordFormatters.ts`, `detectionFormatters.ts`, `registerDateTime.ts`, `pendingRecords.ts`, `mapZone*.ts`. Textos visíveis ao usuário devem manter a acentuação; arquivos novos com texto visível entram em `filesToCheck` de `src/utils/portugueseCopy.test.ts`.
 - **Services:** Integração de API e cache ficam em `src/services/` (ex.: `apiClient.ts`, `authService.ts`, `recordsApi.ts`, `recordsCache.ts`, `recordsService.ts`, `tokenStorage.ts`).
 - **Styles:** estilos novos vão no arquivo de domínio em `src/styles/` (e passam a valer em `appStyles` automaticamente); crie um arquivo novo e registre-o em `appStyles.ts` se nenhum servir.
 - **Guideline:** Evitar arquivos acima de 200–300 linhas para facilitar leitura e agentes locais.
@@ -42,7 +44,7 @@
 - **Map Layers:** `all` = total visível, `feeding` = pontos vermelhos (alimentação), `nests` = casas azuis (ninhos).
 - **API URL:** `src/services/apiClient.ts` usa `EXPO_PUBLIC_API_URL` (variável de ambiente). Em dev: fallback para `192.168.18.145:8001` (Android) ou `localhost:8001` (iOS). Em produção: requer HTTPS, erro se HTTP.
 - **Rede:** `apiFetch` aplica timeout (20s; 120s em upload). Quando o refresh token é recusado, `setSessionExpiredHandler` leva o app de volta ao login e `clearExpiredSession` limpa os dados locais.
-- **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts` usando **Keychain (iOS)** e **Keystore (Android)** via `expo-secure-store`. Fallback automático de `AsyncStorage` para migração (apenas leitura). `apiFetch` renova token em `401` usando `POST /users/refresh` e repete requisição.
+- **Auth:** Login salva `access_token` e `refresh_token` via `src/services/tokenStorage.ts` usando **Keychain (iOS)** e **Keystore (Android)** via `expo-secure-store`. Cada gravação é conferida por leitura; se o SecureStore falhar (alguns emuladores), o token fica **só em memória** durante a sessão e **nunca** vai para o `AsyncStorage` (texto puro). Tokens de versões antigas no `AsyncStorage` são migrados para o SecureStore e a cópia antiga é sempre apagada. `apiFetch` renova token em `401` usando `POST /users/refresh` e repete requisição.
 - **Records API:** Histórico usa `GET /records/summary`; detalhe usa `GET /records/{record_id}/detail`; upload usa `POST /records/upload` com `FormData` sem definir manualmente `Content-Type`. **Requests suportam AbortSignal** para cancelamento em unmount (economiza bateria/dados).
 - **Record Detail Modal:** `src/components/RecordImageDetailModal.tsx` shows per-image analysis with image preview, analysis status, technical accuracy summary, and per-individual detection details.
 - **Per-image detections:** `RecordDetailItem.image_analyses` contains `detections` filtered by `analysis_image_id`; preserve `raw_detection` from the API to display `cor`, `fase_vida`, and `acuracia` fields.
@@ -87,12 +89,19 @@ const [state, dispatch] = useReducer(reducer, {
 })
 ```
 
+## Acessibilidade
+
+- Todo controle tocável precisa de `accessibilityRole` (`button`, `checkbox`, `radio`, `header`, `alert`) e, se não tiver texto próprio ou for repetido, de `accessibilityLabel` distinto (ex.: `Ver detalhes do registro 124`).
+- Estados via `accessibilityState` (`selected`, `checked`, `expanded`, `busy`, `disabled`); inputs com `accessibilityLabel`; imagens com rótulo; ícones decorativos ocultos.
+- Modais usam `accessibilityViewIsModal`; banners de erro usam `accessibilityRole="alert"` com `accessibilityLiveRegion`.
+- `ActionButton`, `Button`, `TextField` e `ScreenHeader` já aplicam o básico; componentes novos devem seguir o mesmo padrão. Conferência rápida: `adb shell uiautomator dump` lista os `content-desc`.
+
 ## Agent / Developer Guidelines
 
 - Manter tipagem TypeScript: `npm run typecheck` deve passar (strict mode ativo).
 - Lint: `npm run lint` deve passar. Use `npm run lint -- --fix` para auto-fix.
 - Saúde Expo: `npx expo-doctor` deve passar (warnings não-críticos são OK).
-- Auditar dependências: `npm audit --omit=dev` (11 vulnerabilidades moderadas em Expo 54; upgrade para 56 resolve).
+- Auditar dependências: `npm audit --omit=dev`. Os achados restantes vêm da cadeia de build (Babel, Metro, Expo CLI), fora do APK. O app está no Expo SDK 54; o upgrade de SDK é feito um por vez (hoje há SDKs até a 58) e foi adiado.
 
 ## Implementation Status by Category
 
@@ -109,7 +118,7 @@ const [state, dispatch] = useReducer(reducer, {
 ### ✨ Code Quality (Recent)
 - **Type safety:** Todas instâncias de `any` removidas. Tipagem concreto (`HistoryFilterState`, `React.ErrorInfo`, `IoniconName`).
 - **Error handling:** `ErrorBoundary` com logs seguros.
-- **Modular architecture:** Hooks, Services, Screens separados. Meta de 200–300 linhas por arquivo, ainda não atingida em `appStyles.ts`, `RegisterScreen`, `RecordImageDetailModal` e `MapLibreMapView`.
+- **Modular architecture:** Hooks, Services, Screens e componentes por domínio separados. Meta de 200–300 linhas por arquivo atingida (telas grandes foram divididas em hook + utilitários + componentes); mantenha assim.
 
 ### 📋 Previous Features
 - Shared `Header` component with blue bar, uppercase title, optional right action.
@@ -118,7 +127,7 @@ const [state, dispatch] = useReducer(reducer, {
 - `usePasswordValidation` hook com regras de complexidade.
 - Real API auth com token refresh automático.
 - Real image selection + upload com `expo-image-picker`.
-- Pull-to-refresh animado via `usePullRefreshAnimation`.
+- Pull-to-refresh nativo (`RefreshControl`) no histórico e no detalhe do registro.
 - Cache em memória para records/details com deduplicação.
 - Clickable record images com `RecordImageDetailModal`.
 - Per-image analysis summary + per-individual detection details.
@@ -128,5 +137,5 @@ const [state, dispatch] = useReducer(reducer, {
 - **Keystore de release:** o antigo foi removido do git, mas continua no histórico público; gerar um novo antes de publicar e guardá-lo fora do repositório (`android/app/app.keystore` está no `.gitignore`).
 - **Chave do Google Maps:** lida de `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` (variável de ambiente ou `.env`) pelo Gradle via `manifestPlaceholders`. Restringir por pacote e SHA-1 no Google Cloud.
 - **`android/` é versionado e editado à mão:** ao rodar `expo prebuild`, revisar o diff do `AndroidManifest.xml`.
-- **Vulnerabilidades (`npm audit`):** vindas da cadeia de build do Expo 54 (transitivas, fora do APK); resolvidas com upgrade do Expo.
+- **Vulnerabilidades (`npm audit`):** vindas da cadeia de build (transitivas, fora do APK); só somem com upgrade do Expo SDK (adiado; subir um SDK por vez, testando mapa e `android/` a cada passo).
 - **1 metro.config.js warning:** Não-crítico; atualizar para extends `expo/metro-config` se necessário.
