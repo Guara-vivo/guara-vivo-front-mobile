@@ -226,6 +226,9 @@ export function MapsScreen() {
 										/>
 									)}
 									<Text
+										numberOfLines={1}
+										adjustsFontSizeToFit
+										minimumFontScale={0.85}
 										style={[
 											appStyles.mapsFilterButtonLabel,
 											active && appStyles.mapsFilterButtonLabelActive,

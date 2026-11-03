@@ -45,6 +45,7 @@ export const radius = {
 }
 
 export const typography = {
+	micro: { fontSize: 11, lineHeight: 14 },
 	caption: { fontSize: 12, lineHeight: 16 },
 	body: { fontSize: 14, lineHeight: 20 },
 	bodyLarge: { fontSize: 16, lineHeight: 22 },
@@ -55,6 +56,7 @@ export const typography = {
 
 // Atalho para quem só precisa do tamanho (mantém lineHeight/peso definidos no estilo).
 export const fontSize = {
+	micro: typography.micro.fontSize,
 	caption: typography.caption.fontSize,
 	body: typography.body.fontSize,
 	bodyLarge: typography.bodyLarge.fontSize,

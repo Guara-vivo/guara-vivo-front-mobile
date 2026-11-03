@@ -28,8 +28,9 @@ function TabIcon({ color, focused, label, icon }: TabIconProps) {
 			<Ionicons name={icon} size={23} color={color} />
 			<Text
 				numberOfLines={1}
+				allowFontScaling={false}
 				adjustsFontSizeToFit
-				minimumFontScale={0.85}
+				minimumFontScale={0.9}
 				style={[
 					appStyles.bottomNavLabel,
 					{ color },
