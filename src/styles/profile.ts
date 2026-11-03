@@ -16,7 +16,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	profileHeroCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: 20,
 		alignItems: 'center',
 		...unifiedShadow,
@@ -29,7 +29,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		borderColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginBottom: 8,
+		marginBottom: spacing.sm,
 	},
 	profileHeroName: {
 		color: colors.text,
@@ -64,7 +64,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	profileMenuCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 16,
+		paddingHorizontal: spacing.md,
 		paddingVertical: 18,
 		gap: 10,
 		...unifiedShadow,
@@ -80,8 +80,8 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 42,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 12,
-		paddingHorizontal: 8,
+		gap: spacing.sm2,
+		paddingHorizontal: spacing.sm,
 	},
 	profileMenuItemText: {
 		color: colors.text,
@@ -105,10 +105,10 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	logoutOverlayCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingVertical: 32,
-		paddingHorizontal: 24,
+		paddingVertical: spacing.xl,
+		paddingHorizontal: spacing.lg,
 		alignItems: 'center',
-		gap: 16,
+		gap: spacing.md,
 		...unifiedShadow,
 	},
 	logoutOverlayText: {

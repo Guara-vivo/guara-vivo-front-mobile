@@ -100,10 +100,10 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		width: '100%',
 	},
 	actionButtonIconLeft: {
-		marginRight: 12,
+		marginRight: spacing.sm2,
 	},
 	actionButtonIconRight: {
-		marginLeft: 12,
+		marginLeft: spacing.sm2,
 	},
 	actionButtonPrimary: {
 		backgroundColor: colors.primary,
@@ -245,7 +245,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
 		height: 66,
-		paddingTop: 8,
+		paddingTop: spacing.sm,
 		paddingBottom: 10,
 		paddingHorizontal: 6,
 	},

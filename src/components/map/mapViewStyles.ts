@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, fontSize, radius } from '../../constants/theme'
+import { colors, fontSize, radius, spacing } from '../../constants/theme'
 
 export const mapViewStyles = StyleSheet.create({
 	container: {
@@ -22,7 +22,7 @@ export const mapViewStyles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		flexDirection: 'column',
-		gap: 16,
+		gap: spacing.md,
 	},
 	loadingText: {
 		fontSize: fontSize.body,
@@ -63,7 +63,7 @@ export const mapViewStyles = StyleSheet.create({
 		minWidth: 28,
 		height: 28,
 		borderRadius: 18,
-		paddingHorizontal: 4,
+		paddingHorizontal: spacing.xs,
 		backgroundColor: 'rgba(242, 32, 31, 0.92)',
 		borderWidth: 2,
 		borderColor: '#FFFFFF',

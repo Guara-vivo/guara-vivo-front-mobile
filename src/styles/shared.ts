@@ -34,7 +34,7 @@ export const baseCard: ViewStyle = {
 
 export const basePrimaryButton: ViewStyle = {
 	minHeight: 44,
-	padding: 16,
+	padding: spacing.md,
 	borderRadius: cornerRadius,
 	alignItems: 'center',
 	justifyContent: 'center',

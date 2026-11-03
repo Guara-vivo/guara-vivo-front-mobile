@@ -26,7 +26,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	registerSectionTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	registerSectionTitleTextBlue: {
 		color: colors.secondary,
@@ -55,8 +55,8 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 16,
-		paddingVertical: 16,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.md,
 		gap: spacing.md,
 	},
 	registerDropZonePressed: {
@@ -78,7 +78,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	registerImagePreviewGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	registerImagePreviewWrap: {
 		position: 'relative',
@@ -117,7 +117,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 44,
 		backgroundColor: colors.background,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 	},
 	registerCheckbox: {
 		width: 14,
@@ -127,7 +127,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginRight: 12,
+		marginRight: spacing.sm2,
 	},
 	registerCheckboxActive: {
 		backgroundColor: colors.primary,
@@ -148,7 +148,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
@@ -162,7 +162,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerActionsRow: {
 		flexDirection: 'row',
-		gap: 12,
+		gap: spacing.sm2,
 		marginTop: 2,
 	},
 	registerSaveButton: {

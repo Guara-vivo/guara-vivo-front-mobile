@@ -47,8 +47,8 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	welcomeTextButton: {
 		alignItems: 'center',
-		paddingVertical: 8,
-		paddingHorizontal: 12,
+		paddingVertical: spacing.sm,
+		paddingHorizontal: spacing.sm2,
 		backgroundColor: 'transparent',
 	},
 	welcomeTextButtonLabel: {
@@ -65,7 +65,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		paddingTop: 48,
 		paddingHorizontal: screenGutter,
-		paddingBottom: 24,
+		paddingBottom: spacing.lg,
 	},
 	loginHeaderRow: {
 		flexDirection: 'row',
@@ -92,7 +92,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	loginInput: {
 		paddingHorizontal: 0,
-		paddingVertical: 4,
+		paddingVertical: spacing.xs,
 		fontSize: fontSize.body,
 		lineHeight: 20,
 		color: colors.text,
@@ -136,7 +136,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		paddingTop: 48,
 		paddingHorizontal: screenGutter,
-		paddingBottom: 24,
+		paddingBottom: spacing.lg,
 	},
 	authButtonWrap: {
 		marginTop: 44,
@@ -171,7 +171,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 	},
 	registerAccountTopWrap: {
-		gap: 16,
+		gap: spacing.md,
 	},
 	registerAccountFieldBlock: {
 		gap: 5,
@@ -180,7 +180,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		color: palette.text,
 		fontSize: fontSize.body,
 		lineHeight: 20,
-		paddingVertical: 4,
+		paddingVertical: spacing.xs,
 		paddingHorizontal: 0,
 	},
 	registerAccountDivider: {
@@ -195,7 +195,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 40,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	registerPasswordInput: {
 		flex: 1,

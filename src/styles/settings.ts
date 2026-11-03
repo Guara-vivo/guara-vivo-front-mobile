@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native'
-import { colors, fontSize } from '../constants/theme'
+import { colors, fontSize, spacing } from '../constants/theme'
 import { cornerRadius, unifiedShadow } from './shared'
 
 export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	changePasswordCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 12,
-		paddingVertical: 16,
+		paddingHorizontal: spacing.sm2,
+		paddingVertical: spacing.md,
 		gap: 14,
 		...unifiedShadow,
 	},
@@ -35,7 +35,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		paddingRight: 6,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	changePasswordInput: {
 		minHeight: 42,
@@ -99,16 +99,16 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	notificationsCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: 14,
-		gap: 12,
+		gap: spacing.sm2,
 		...unifiedShadow,
 	},
 	notificationsTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: 7,
-		paddingHorizontal: 4,
+		paddingHorizontal: spacing.xs,
 	},
 	notificationsTitle: {
 		color: colors.secondary,
@@ -121,7 +121,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		backgroundColor: colors.background,
 		paddingHorizontal: 10,
-		paddingVertical: 8,
+		paddingVertical: spacing.sm,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
@@ -144,15 +144,15 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
 		paddingHorizontal: 14,
-		paddingVertical: 16,
-		gap: 12,
+		paddingVertical: spacing.md,
+		gap: spacing.sm2,
 		...unifiedShadow,
 	},
 	aboutLogo: {
 		alignSelf: 'center',
 		width: 210,
 		height: 110,
-		marginTop: 8,
+		marginTop: spacing.sm,
 		marginBottom: 6,
 	},
 	aboutAppName: {

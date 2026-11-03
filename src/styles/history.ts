@@ -55,8 +55,8 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 12,
-		paddingVertical: 12,
+		paddingHorizontal: spacing.sm2,
+		paddingVertical: spacing.sm2,
 		gap: spacing.md,
 		...unifiedShadow,
 	},
@@ -79,7 +79,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.primary,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 8,
+		paddingHorizontal: spacing.sm,
 	},
 	historyRecordIdText: {
 		color: colors.surface,
@@ -113,7 +113,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyTagRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	historyTagChip: {
 		paddingHorizontal: 10,
@@ -164,7 +164,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	} as ViewStyle,
 	historyModalHeader: {
 		minHeight: 60,
-		paddingHorizontal: 16,
+		paddingHorizontal: spacing.md,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.border,
 		flexDirection: 'row',
@@ -177,20 +177,20 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	historyModalContent: {
-		paddingHorizontal: 16,
+		paddingHorizontal: spacing.md,
 		paddingTop: 14,
 		paddingBottom: 18,
-		gap: 16,
+		gap: spacing.md,
 	},
 	historyFilterSection: {
 		gap: 10,
-		paddingVertical: 4,
+		paddingVertical: spacing.xs,
 	} as ViewStyle,
 	historyFilterSectionHeader: {
 		minHeight: 42,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.background,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
@@ -210,7 +210,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyDateLabelsRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		paddingRight: 12,
+		paddingRight: spacing.sm2,
 	},
 	historySmallLabel: {
 		color: colors.muted,
@@ -220,7 +220,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyDateRow: {
 		flexDirection: 'row',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	historyDateInputWrap: {
 		flex: 1,
@@ -248,12 +248,12 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		color: colors.text,
 		fontSize: fontSize.body,
 	},
 	historyBehaviorList: {
-		gap: 8,
+		gap: spacing.sm,
 	},
 	historyBehaviorItem: {
 		minHeight: 36,
@@ -282,7 +282,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyModalActions: {
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
-		paddingHorizontal: 16,
+		paddingHorizontal: spacing.md,
 		paddingVertical: 10,
 		flexDirection: 'row',
 		gap: 10,

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, fontSize, radius } from '../constants/theme'
+import { colors, fontSize, radius, spacing } from '../constants/theme'
 import { cornerRadius } from './shared'
 
 export const recordImageStyles = StyleSheet.create<Record<string, any>>({
@@ -19,7 +19,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalHeader: {
 		minHeight: 56,
-		paddingHorizontal: 16,
+		paddingHorizontal: spacing.md,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.border,
 		flexDirection: 'row',
@@ -32,10 +32,10 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	recordImageModalContent: {
-		paddingHorizontal: 16,
-		paddingTop: 16,
-		paddingBottom: 16,
-		gap: 16,
+		paddingHorizontal: spacing.md,
+		paddingTop: spacing.md,
+		paddingBottom: spacing.md,
+		gap: spacing.md,
 	},
 	recordImageModalImageContainer: {
 		borderRadius: radius.sm,
@@ -78,7 +78,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalIndexBadge: {
 		alignSelf: 'center',
 		backgroundColor: colors.surface,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: 6,
 		borderRadius: radius.lg,
 	},
@@ -93,7 +93,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalSectionTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	recordImageModalSectionTitle: {
 		color: colors.text,
@@ -101,7 +101,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	recordImageModalIbisList: {
-		gap: 8,
+		gap: spacing.sm,
 	},
 	recordImageModalIbisColorBadge: {
 		width: 32,
@@ -120,8 +120,8 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: fontSize.body,
 	},
 	recordImageModalEmptyState: {
-		paddingHorizontal: 12,
-		paddingVertical: 16,
+		paddingHorizontal: spacing.sm2,
+		paddingVertical: spacing.md,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.background,
@@ -135,8 +135,8 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalActions: {
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
-		paddingHorizontal: 16,
-		paddingVertical: 12,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm2,
 		flexDirection: 'row',
 		gap: 10,
 	},
@@ -158,14 +158,14 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
 		rowGap: 10,
-		marginBottom: 12,
+		marginBottom: spacing.sm2,
 	},
 	recordImageModalAccuracyItem: {
 		width: '48%',
 		flexGrow: 0,
 		flexShrink: 0,
 		paddingHorizontal: 10,
-		paddingVertical: 8,
+		paddingVertical: spacing.sm,
 		backgroundColor: colors.background,
 		borderRadius: radius.sm,
 		alignItems: 'center',
@@ -174,7 +174,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalAccuracyLabel: {
 		fontSize: fontSize.caption,
 		color: colors.muted,
-		marginBottom: 4,
+		marginBottom: spacing.xs,
 		textAlign: 'center',
 	},
 	recordImageModalAccuracyValue: {
@@ -182,9 +182,9 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 	},
 	recordImageModalIbisItemExpanded: {
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: 10,
-		marginBottom: 8,
+		marginBottom: spacing.sm,
 		backgroundColor: colors.background,
 		borderRadius: radius.sm,
 		borderLeftWidth: 3,
@@ -193,7 +193,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalIbisHeader: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 		marginBottom: 10,
 	},
 	recordImageModalIbisDetails: {
@@ -202,7 +202,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalDetailRow: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		paddingVertical: 4,
+		paddingVertical: spacing.xs,
 	},
 	recordImageModalDetailLabel: {
 		fontSize: fontSize.caption,
@@ -216,8 +216,8 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		gap: 6,
-		marginTop: 8,
-		paddingTop: 8,
+		marginTop: spacing.sm,
+		paddingTop: spacing.sm,
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
 	},

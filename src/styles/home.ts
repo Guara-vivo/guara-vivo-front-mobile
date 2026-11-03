@@ -12,7 +12,7 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: palette.background,
 		paddingHorizontal: screenGutter,
 		paddingTop: '25%',
-		paddingBottom: 24,
+		paddingBottom: spacing.lg,
 		gap: spacing.md,
 	},
 	homeScreen: {

@@ -11,7 +11,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: screenGutter,
 		paddingBottom: screenBottomPadding,
 		paddingTop: spacing.lg,
-		gap: 8,
+		gap: spacing.sm,
 	},
 	mapsFilterCard: {
 		gap: 10,
@@ -24,11 +24,11 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapsFilterTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	mapsFilterRow: {
 		flexDirection: 'row',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	mapsFilterButton: {
 		flex: 1,
@@ -40,7 +40,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		gap: 5,
 	},
 	mapsFilterButtonActive: {
@@ -83,7 +83,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		zIndex: 10,
 		maxWidth: '48%',
 		paddingHorizontal: 10,
-		paddingVertical: 8,
+		paddingVertical: spacing.sm,
 		borderRadius: cornerRadius,
 		backgroundColor: 'rgba(255, 255, 255, 0.94)',
 		borderWidth: 1,
@@ -98,7 +98,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapTopRightActions: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	mapAreaButton: {
 		width: 44,
@@ -125,8 +125,8 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		opacity: 0.6,
 	},
 	mapReloadTextPill: {
-		paddingHorizontal: 8,
-		paddingVertical: 4,
+		paddingHorizontal: spacing.sm,
+		paddingVertical: spacing.xs,
 		borderRadius: radius.pill,
 		backgroundColor: 'rgba(255, 255, 255, 0.94)',
 		borderWidth: 1,

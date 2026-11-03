@@ -115,12 +115,12 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailChipRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 8,
+		gap: spacing.sm,
 	},
 	recordDetailChip: {
 		borderRadius: cornerRadius,
 		backgroundColor: colors.splash,
-		paddingHorizontal: 12,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: 7,
 	},
 	recordDetailChipText: {

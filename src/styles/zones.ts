@@ -49,7 +49,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneInfoMetric: {
 		flex: 1,
-		paddingVertical: 8,
+		paddingVertical: spacing.sm,
 		paddingHorizontal: 10,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.splash,
@@ -96,7 +96,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneRecordRow: {
 		minHeight: 90,
-		paddingVertical: 8,
+		paddingVertical: spacing.sm,
 		paddingLeft: 14,
 		paddingRight: 10,
 		borderRadius: cornerRadius,
