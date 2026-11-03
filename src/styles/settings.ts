@@ -195,6 +195,12 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'flex-start',
 		gap: spacing.sm,
 	},
+	aboutBulletText: {
+		flex: 1,
+		color: colors.text,
+		fontSize: fontSize.body,
+		lineHeight: 25,
+	},
 	aboutBulletDot: {
 		color: colors.primary,
 		fontSize: fontSize.caption,

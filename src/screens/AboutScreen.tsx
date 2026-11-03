@@ -59,25 +59,25 @@ export function AboutScreen() {
 						<Text style={appStyles.aboutSectionTitle}>FUNCIONALIDADES</Text>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBodyText}>
+							<Text style={appStyles.aboutBulletText}>
 								Registro de avistamentos com análise IA
 							</Text>
 						</View>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBodyText}>
+							<Text style={appStyles.aboutBulletText}>
 								Mapeamento de áreas de alimentação e ninhos
 							</Text>
 						</View>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBodyText}>
+							<Text style={appStyles.aboutBulletText}>
 								Histórico completo de registros
 							</Text>
 						</View>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBodyText}>
+							<Text style={appStyles.aboutBulletText}>
 								Visualização de rotas de voo
 							</Text>
 						</View>
