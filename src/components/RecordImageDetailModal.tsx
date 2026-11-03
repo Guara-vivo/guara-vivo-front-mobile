@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
 	Modal,
 	Pressable,
@@ -8,7 +8,6 @@ import {
 } from 'react-native'
 import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
-import { useImageSize } from '../hooks/useImageSize'
 import { appStyles } from '../styles/appStyles'
 import type { RecordDetailItem } from '../types/records'
 import { calculateAccuracySummary, type Size } from '../utils/detectionFormatters'
@@ -36,8 +35,13 @@ export function RecordImageDetailModal({
 	onImageChange,
 	record,
 }: RecordImageDetailModalProps) {
-	const imageSize = useImageSize(imageUri)
+	// Tamanho original vem do onLoad da própria imagem exibida (sem baixar a foto duas vezes).
+	const [imageSize, setImageSize] = useState<Size | null>(null)
 	const [containerSize, setContainerSize] = useState<Size | null>(null)
+
+	useEffect(() => {
+		setImageSize(null)
+	}, [imageUri])
 
 	const imageAnalysis = record.image_analyses?.[imageIndex]
 	const canGoPrevious = imageIndex > 0
@@ -93,6 +97,9 @@ export function RecordImageDetailModal({
 										style={appStyles.recordImageModalImage}
 										contentFit="contain"
 										cachePolicy="memory-disk"
+										onLoad={(event) =>
+											setImageSize({ width: event.source.width, height: event.source.height })
+										}
 										transition={150}
 									/>
 									{imageSize && containerSize && imageAnalysis?.detections && (

@@ -28,7 +28,7 @@ export default {
 		orientation: 'portrait',
 		userInterfaceStyle: 'light',
 		splash: {
-			backgroundColor: '#E8F1FC',
+			backgroundColor: '#FFFFFF',
 		},
 		ios: {
 			supportsTablet: true,

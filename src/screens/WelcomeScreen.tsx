@@ -9,7 +9,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
-const welcomeLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
+const welcomeLogo = require('../assets/images/Logo Fonte Clara.png')
 
 export function WelcomeScreen() {
 	const navigation = useNavigation<NavigationProp>()
