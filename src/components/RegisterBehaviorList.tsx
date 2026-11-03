@@ -20,6 +20,9 @@ export function RegisterBehaviorList({
 					<Pressable
 						key={behavior}
 						onPress={() => toggleBehavior(behavior)}
+						accessibilityRole="checkbox"
+						accessibilityState={{ checked: active }}
+						accessibilityLabel={behavior}
 						style={appStyles.registerBehaviorItem}
 					>
 						<View

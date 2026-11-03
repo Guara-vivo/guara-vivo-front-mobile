@@ -57,6 +57,8 @@ export function MapZoneDeleteConfirmSheet({
 							isDeleting && appStyles.zoneModalDisabled,
 						]}
 						onPress={onCancel}
+						accessibilityRole="button"
+						accessibilityLabel="Cancelar"
 						disabled={isDeleting}
 					>
 						<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
@@ -67,6 +69,9 @@ export function MapZoneDeleteConfirmSheet({
 							isDeleting && appStyles.zoneModalConfirmButtonDisabled,
 						]}
 						onPress={onConfirm}
+						accessibilityRole="button"
+						accessibilityLabel="Excluir área"
+						accessibilityState={{ busy: isDeleting, disabled: isDeleting }}
 						disabled={isDeleting}
 					>
 						{isDeleting ? (

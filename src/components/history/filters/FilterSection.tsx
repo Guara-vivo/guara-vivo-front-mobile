@@ -22,7 +22,13 @@ type Props = {
 export function FilterSection({ iconName, title, isOpen, onToggle, children }: Props) {
 	return (
 		<View style={appStyles.historyFilterSection}>
-			<Pressable onPress={onToggle} style={appStyles.historyFilterSectionHeader}>
+			<Pressable
+				onPress={onToggle}
+				accessibilityRole="button"
+				accessibilityLabel={title}
+				accessibilityState={{ expanded: isOpen }}
+				style={appStyles.historyFilterSectionHeader}
+			>
 				<View style={appStyles.historyFilterSectionTitleRow}>
 					<Ionicons name={iconName} size={15} color="#F2201F" />
 					<Text style={appStyles.historyFilterSectionTitle}>{title}</Text>

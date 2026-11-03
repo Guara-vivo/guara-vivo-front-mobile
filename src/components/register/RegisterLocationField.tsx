@@ -23,6 +23,9 @@ export function RegisterLocationField({
 			<View style={appStyles.registerDateField}>
 				<Pressable
 					onPress={onOpen}
+					accessibilityRole="button"
+					accessibilityLabel={hasSelectedLocation ? "Localização selecionada. Alterar no mapa" : "Escolher localização no mapa. Usando a localização do dispositivo"}
+					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={styles.locationFieldContent}
 				>

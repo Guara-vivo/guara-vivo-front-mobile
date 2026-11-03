@@ -134,11 +134,11 @@ export function HistoryFilterModal({
 			</BottomSheetScrollView>
 
 			<View style={appStyles.historyModalActions}>
-				<Pressable onPress={clearFilters} style={appStyles.historyClearButton}>
+				<Pressable onPress={clearFilters} accessibilityRole="button" accessibilityLabel="Limpar filtros" style={appStyles.historyClearButton}>
 					<Text style={appStyles.historyClearButtonText}>LIMPAR</Text>
 				</Pressable>
 
-				<Pressable onPress={applyFilters} style={appStyles.historyApplyButton}>
+				<Pressable onPress={applyFilters} accessibilityRole="button" accessibilityLabel="Aplicar filtros" style={appStyles.historyApplyButton}>
 					<Text style={appStyles.historyApplyButtonText}>APLICAR FILTROS</Text>
 				</Pressable>
 			</View>

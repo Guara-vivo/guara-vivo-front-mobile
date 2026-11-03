@@ -56,7 +56,13 @@ export function Button({
 	}
 
 	return (
-		<Pressable onPress={onPress} disabled={disabled} style={wrapperStyle}>
+		<Pressable
+			onPress={onPress}
+			disabled={disabled}
+			accessibilityRole="button"
+			accessibilityState={{ disabled }}
+			style={wrapperStyle}
+		>
 			<Text style={textStyle}>{children ?? label}</Text>
 		</Pressable>
 	)

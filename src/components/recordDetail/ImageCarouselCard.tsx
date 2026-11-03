@@ -58,6 +58,8 @@ export function ImageCarouselCard({ imageUris, onImagePress }: Props) {
 							{imageUri ? (
 								<Pressable
 									onPress={() => onImagePress(index)}
+									accessibilityRole="button"
+									accessibilityLabel={`Abrir imagem ${index + 1}`}
 									style={appStyles.recordDetailCarouselImagePressable}
 								>
 									<Image

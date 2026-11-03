@@ -54,6 +54,9 @@ export function RegisterDateTimeFields({
 			<View style={appStyles.registerDateRow}>
 				<Pressable
 					onPress={() => !disabled && setShowDatePicker(true)}
+					accessibilityRole="button"
+					accessibilityLabel={`Data do avistamento: ${dateLabel ?? "não informada"}`}
+					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={appStyles.registerDateField}
 				>
@@ -70,6 +73,9 @@ export function RegisterDateTimeFields({
 
 				<Pressable
 					onPress={() => !disabled && setShowTimePicker(true)}
+					accessibilityRole="button"
+					accessibilityLabel={`Hora do avistamento: ${timeLabel ?? "não informada"}`}
+					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={appStyles.registerDateField}
 				>

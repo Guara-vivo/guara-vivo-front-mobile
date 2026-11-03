@@ -14,20 +14,23 @@ type Props = {
 function DateInput({
 	value,
 	onChangeText,
+	label,
 }: {
+	label: string
 	value: string
 	onChangeText: (value: string) => void
 }) {
 	return (
 		<View style={appStyles.historyDateInputWrap}>
 			<BottomSheetTextInput
+				accessibilityLabel={label}
 				value={value}
 				onChangeText={onChangeText}
 				placeholder="dd/mm/aaaa"
 				placeholderTextColor="#6B6B74"
 				style={appStyles.historyDateInput}
 			/>
-			<Ionicons name="calendar-outline" size={14} color="#1A1A1A" />
+			<Ionicons accessible={false} name="calendar-outline" size={14} color="#1A1A1A" />
 		</View>
 	)
 }
@@ -43,10 +46,12 @@ export function PeriodFilter({ draftFilters, setField }: Props) {
 
 			<View style={appStyles.historyDateRow}>
 				<DateInput
+					label="Data inicial"
 					value={draftFilters.fromDate}
 					onChangeText={(value) => setField('fromDate', value)}
 				/>
 				<DateInput
+					label="Data final"
 					value={draftFilters.toDate}
 					onChangeText={(value) => setField('toDate', value)}
 				/>

@@ -77,6 +77,7 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 					>
 						<Picker
 							selectedValue={zoneType}
+							accessibilityLabel="Tipo de área"
 							onValueChange={(value) => setZoneType(value as MapZoneType)}
 							enabled={!isSubmitting}
 							style={appStyles.zonePicker}
@@ -98,6 +99,8 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 					value={radius}
 					onValueChange={setRadius}
 					step={10}
+					accessibilityLabel="Raio da área em metros"
+					accessibilityValue={{ min: 10, max: 500, now: radius, text: `${radius} metros` }}
 					disabled={isSubmitting}
 				/>
 
@@ -108,6 +111,8 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 							isSubmitting && appStyles.zoneModalDisabled,
 						]}
 						onPress={handleCancel}
+						accessibilityRole="button"
+						accessibilityLabel="Cancelar"
 						disabled={isSubmitting}
 					>
 						<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
@@ -118,6 +123,9 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 							isSubmitting && appStyles.zoneModalConfirmButtonDisabled,
 						]}
 						onPress={handleConfirm}
+						accessibilityRole="button"
+						accessibilityLabel="Confirmar área"
+						accessibilityState={{ busy: isSubmitting, disabled: isSubmitting }}
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? (

@@ -24,6 +24,7 @@ export function QuantityFilter({ draftFilters, setField }: Props) {
 					value={draftFilters.minQuantity}
 					onChangeText={(value) => setField('minQuantity', value)}
 					placeholder="Min"
+					accessibilityLabel="Quantidade mínima"
 					placeholderTextColor="#6B6B74"
 					keyboardType="numeric"
 					style={appStyles.historyHalfInput}
@@ -33,6 +34,7 @@ export function QuantityFilter({ draftFilters, setField }: Props) {
 					value={draftFilters.maxQuantity}
 					onChangeText={(value) => setField('maxQuantity', value)}
 					placeholder="Max"
+					accessibilityLabel="Quantidade máxima"
 					placeholderTextColor="#6B6B74"
 					keyboardType="numeric"
 					style={appStyles.historyHalfInput}

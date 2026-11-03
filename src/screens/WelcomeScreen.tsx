@@ -19,6 +19,7 @@ export function WelcomeScreen() {
 			<View style={appStyles.welcomeContent}>
 				<Image
 					source={welcomeLogo}
+						accessibilityLabel="Guará Vivo"
 					style={appStyles.welcomeLogo}
 					resizeMode="contain"
 				/>

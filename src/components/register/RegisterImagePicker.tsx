@@ -25,6 +25,9 @@ export function RegisterImagePicker({
 		<>
 			<Pressable
 				onPress={onPick}
+				accessibilityRole="button"
+				accessibilityLabel="Adicionar fotos"
+				accessibilityState={{ busy: isPicking, disabled: disabled || isPicking }}
 				disabled={disabled || isPicking}
 				style={[
 					appStyles.registerDropZone,
@@ -49,6 +52,7 @@ export function RegisterImagePicker({
 						<View key={image.uri} style={appStyles.registerImagePreviewWrap}>
 							<Image
 								source={{ uri: image.uri }}
+								accessibilityLabel={`Foto ${images.indexOf(image) + 1} de ${images.length}`}
 								style={appStyles.registerImagePreview}
 								resizeMode="cover"
 							/>

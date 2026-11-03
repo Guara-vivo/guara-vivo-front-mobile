@@ -32,12 +32,16 @@ export function FeedbackModal({
 			onRequestClose={onConfirm}
 		>
 			<View style={appStyles.feedbackModalBackdrop}>
-				<View style={appStyles.feedbackModalCard}>
-					<View style={appStyles.feedbackModalIconWrap}>
+				<View style={appStyles.feedbackModalCard} accessibilityViewIsModal>
+					<View
+							style={appStyles.feedbackModalIconWrap}
+							accessibilityElementsHidden
+							importantForAccessibility="no-hide-descendants"
+						>
 						<Ionicons name={iconName} size={46} color={iconColor} />
 					</View>
 
-					<Text style={appStyles.feedbackModalTitle}>{title}</Text>
+					<Text style={appStyles.feedbackModalTitle} accessibilityRole="header">{title}</Text>
 					<Text style={appStyles.feedbackModalMessage}>{message}</Text>
 
 					<ActionButton

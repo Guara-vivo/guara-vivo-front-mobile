@@ -11,6 +11,8 @@ export function RecordDetailHeader({ onBack }: { onBack: () => void }) {
 			leftIcon={
 				<Pressable
 					onPress={onBack}
+					accessibilityRole="button"
+					accessibilityLabel="Voltar"
 					hitSlop={8}
 					style={appStyles.headerActionButton}
 				>

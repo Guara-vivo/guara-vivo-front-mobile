@@ -27,6 +27,7 @@ export function LocationPickerModal({
 		<View style={styles.locationPickerOverlay}>
 			<MapView
 				style={styles.pickerMap}
+				accessibilityLabel="Mapa para escolher a localização do registro"
 				initialRegion={userLocation ? {
 					latitude: userLocation.latitude,
 					longitude: userLocation.longitude,
@@ -59,6 +60,8 @@ export function LocationPickerModal({
 			<View style={styles.pickerHeader}>
 				<Pressable
 					onPress={onBack}
+					accessibilityRole="button"
+					accessibilityLabel="Voltar"
 					style={styles.pickerButton}
 				>
 					<Ionicons name="arrow-back" size={24} color={colors.text} />
@@ -66,6 +69,9 @@ export function LocationPickerModal({
 				</Pressable>
 				<Pressable
 					onPress={onConfirm}
+					accessibilityRole="button"
+					accessibilityLabel="Confirmar localização"
+					accessibilityState={{ disabled: !tempLocation }}
 					disabled={!tempLocation}
 					style={[
 						styles.pickerButton,

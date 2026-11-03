@@ -40,6 +40,9 @@ export function ActionButton({
 		<Pressable
 			onPress={onPress}
 			disabled={disabled}
+			accessibilityRole="button"
+			accessibilityLabel={title}
+			accessibilityState={{ disabled }}
 			style={({ pressed }) => [
 				appStyles.actionButton,
 				variant === 'primary' && appStyles.actionButtonPrimary,
@@ -87,6 +90,7 @@ export function TextField({
 		<View style={appStyles.fieldWrapper}>
 			{label ? <Text style={appStyles.fieldLabel}>{label}</Text> : null}
 			<TextInput
+					accessibilityLabel={label ?? placeholder}
 				value={value}
 				onChangeText={onChangeText}
 				placeholder={placeholder}
@@ -121,7 +125,7 @@ export function ScreenHeader({
 }) {
 	return (
 		<View style={appStyles.headerWrap}>
-			<Pressable onPress={onBack} style={appStyles.backButton}>
+			<Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel="Voltar" style={appStyles.backButton}>
 				<Text style={appStyles.backButtonText}>Voltar</Text>
 			</Pressable>
 			<Text style={appStyles.headerTitle}>{title}</Text>

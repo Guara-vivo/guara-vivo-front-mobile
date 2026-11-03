@@ -72,7 +72,9 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
       style={[appStyles.mapZoneRecordRow, animatedStyle]}
     >
       <Animated.View style={[appStyles.mapZoneRecordFocusAccent, focusAccentStyle]} />
-      <Pressable onPress={() => onSelect(record.id)}>
+      <Pressable onPress={() => onSelect(record.id)}
+        accessibilityRole="button"
+        accessibilityLabel={`Registro ${record.id}, localizar no mapa`}>
         <View style={appStyles.mapZoneRecordMainRow}>
           <Text style={appStyles.mapZoneRecordId}>
             #{String(record.id).padStart(3, '0')}
@@ -89,6 +91,8 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
       </Pressable>
       <Pressable
         onPress={() => onOpenDetails(record.id)}
+        accessibilityRole="button"
+        accessibilityLabel={`Ver detalhes do registro ${record.id}`}
         style={appStyles.mapZoneRecordDetailsButton}
       >
         <Text style={appStyles.mapZoneRecordDetailsButtonText}>VER DETALHES</Text>
@@ -187,6 +191,8 @@ export function MapZoneDetailSheet() {
                 <View style={appStyles.mapZoneInfoHeaderActions}>
                   <Pressable
                     onPress={handleDeletePress}
+                    accessibilityRole="button"
+                    accessibilityLabel="Excluir área"
                     disabled={ctx.isDeleting}
                     hitSlop={8}
                     style={appStyles.mapZoneInfoDeleteIconButton}
@@ -195,6 +201,8 @@ export function MapZoneDetailSheet() {
                   </Pressable>
                   <Pressable
                     onPress={handleCloseZoneDetail}
+                    accessibilityRole="button"
+                    accessibilityLabel="Fechar detalhes da área"
                     disabled={ctx.isDeleting}
                     hitSlop={8}
                     style={appStyles.mapZoneInfoCloseButton}

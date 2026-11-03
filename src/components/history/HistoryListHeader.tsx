@@ -41,6 +41,7 @@ export function HistoryListHeader({
 					<TextInput
 						value={searchTerm}
 						onChangeText={onSearchChange}
+						accessibilityLabel="Buscar registros"
 						placeholder="Buscar por local, data..."
 						placeholderTextColor="#8E8E96"
 						style={appStyles.historySearchInput}
@@ -49,6 +50,9 @@ export function HistoryListHeader({
 
 				<Pressable
 					onPress={onOpenFilters}
+					accessibilityRole="button"
+					accessibilityLabel="Filtros"
+					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={[
 						appStyles.historyFilterButton,
@@ -61,6 +65,9 @@ export function HistoryListHeader({
 
 				<Pressable
 					onPress={onToggleSort}
+					accessibilityRole="button"
+					accessibilityLabel={sortOrder === "desc" ? "Ordenação: mais recentes primeiro. Alternar" : "Ordenação: mais antigos primeiro. Alternar"}
+					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={[
 						appStyles.historyFilterButton,

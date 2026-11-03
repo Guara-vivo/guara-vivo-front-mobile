@@ -20,6 +20,9 @@ export function BehaviorsFilter({ selected, onToggle }: Props) {
 					<Pressable
 						key={behavior}
 						onPress={() => onToggle(behavior)}
+						accessibilityRole="checkbox"
+						accessibilityState={{ checked: active }}
+						accessibilityLabel={behavior}
 						style={appStyles.historyBehaviorItem}
 					>
 						<View

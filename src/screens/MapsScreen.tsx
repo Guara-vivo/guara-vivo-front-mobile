@@ -202,6 +202,9 @@ export function MapsScreen() {
 								<Pressable
 									key={item.id}
 									onPress={() => handleSelectLayer(item.id)}
+										accessibilityRole="radio"
+										accessibilityState={{ selected: active }}
+										accessibilityLabel={`Camada ${item.label}`}
 									style={[
 										appStyles.mapsFilterButton,
 										active && appStyles.mapsFilterButtonActive,
@@ -242,7 +245,11 @@ export function MapsScreen() {
 				</ScreenCard>
 
 				{zonesError && (
-					<View style={appStyles.zoneErrorBanner}>
+					<View
+							style={appStyles.zoneErrorBanner}
+							accessibilityRole="alert"
+							accessibilityLiveRegion="polite"
+						>
 						<Text style={appStyles.zoneErrorText}>{zonesError}</Text>
 					</View>
 				)}
@@ -270,6 +277,9 @@ export function MapsScreen() {
 					<View style={appStyles.mapTopRightActions}>
 						<Pressable
 							onPress={handleToggleSelectionMode}
+								accessibilityRole="button"
+								accessibilityLabel={selectionMode ? 'Cancelar seleção de área' : 'Adicionar área'}
+								accessibilityState={{ disabled: creatingZone }}
 							disabled={creatingZone}
 							style={[
 								appStyles.mapAreaButton,
@@ -285,6 +295,9 @@ export function MapsScreen() {
 						</Pressable>
 						<Pressable
 							onPress={handleReloadZones}
+								accessibilityRole="button"
+								accessibilityLabel="Atualizar áreas"
+								accessibilityState={{ busy: isReloading, disabled: isReloading }}
 							disabled={isReloading}
 							style={[
 								appStyles.mapReloadButton,

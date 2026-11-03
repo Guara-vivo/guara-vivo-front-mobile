@@ -92,6 +92,8 @@ export function HistoryRecordCard({
 			{syncState === 'failed' && item.client_uuid && onDiscard ? (
 				<Pressable
 					onPress={() => onDiscard(item.client_uuid as string)}
+						accessibilityRole="button"
+						accessibilityLabel="Descartar registro recusado"
 					style={appStyles.historyDetailButton}
 				>
 					<Text style={appStyles.historyDetailButtonText}>DESCARTAR REGISTRO</Text>
@@ -101,6 +103,8 @@ export function HistoryRecordCard({
 			{!syncState ? (
 				<Pressable
 					onPress={() => onOpenRecord(item.id)}
+						accessibilityRole="button"
+						accessibilityLabel={`Ver detalhes do registro ${item.id}`}
 					style={appStyles.historyDetailButton}
 				>
 					<Text style={appStyles.historyDetailButtonText}>VER DETALHES</Text>
