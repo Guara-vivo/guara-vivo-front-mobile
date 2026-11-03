@@ -8,16 +8,16 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		paddingHorizontal: spacing.sm2,
 		paddingVertical: spacing.md,
-		gap: 14,
+		gap: spacing.md,
 		...unifiedShadow,
 	},
 	changePasswordFieldWrap: {
-		gap: 5,
+		gap: spacing.xs,
 	},
 	changePasswordLabelRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.sm,
 	},
 	changePasswordLabel: {
 		color: colors.text,
@@ -31,8 +31,8 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
-		paddingLeft: 10,
-		paddingRight: 6,
+		paddingLeft: spacing.sm2,
+		paddingRight: spacing.sm,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm,
@@ -43,7 +43,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
 		backgroundColor: colors.surface,
-		paddingHorizontal: 10,
+		paddingHorizontal: spacing.sm2,
 		color: colors.text,
 		fontSize: fontSize.body,
 	},
@@ -65,8 +65,8 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	changePasswordActionsRow: {
 		flexDirection: 'row',
-		gap: 10,
-		marginTop: 10,
+		gap: spacing.sm2,
+		marginTop: spacing.sm2,
 	},
 	changePasswordPrimaryAction: {
 		flex: 1,
@@ -100,14 +100,14 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
 		paddingHorizontal: spacing.sm2,
-		paddingVertical: 14,
+		paddingVertical: spacing.md,
 		gap: spacing.sm2,
 		...unifiedShadow,
 	},
 	notificationsTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 7,
+		gap: spacing.sm,
 		paddingHorizontal: spacing.xs,
 	},
 	notificationsTitle: {
@@ -120,12 +120,12 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		minHeight: 58,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.background,
-		paddingHorizontal: 10,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: spacing.sm,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		gap: 10,
+		gap: spacing.sm2,
 	},
 	notificationsTextWrap: {
 		flex: 1,
@@ -143,7 +143,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	aboutCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 14,
+		paddingHorizontal: spacing.md,
 		paddingVertical: spacing.md,
 		gap: spacing.sm2,
 		...unifiedShadow,
@@ -153,7 +153,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		width: 210,
 		height: 110,
 		marginTop: spacing.sm,
-		marginBottom: 6,
+		marginBottom: spacing.sm,
 	},
 	aboutAppName: {
 		color: colors.secondary,
@@ -167,15 +167,15 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: fontSize.body,
 
 		textAlign: 'center',
-		marginBottom: 10,
+		marginBottom: spacing.sm2,
 	},
 	aboutSection: {
-		gap: 6,
+		gap: spacing.sm,
 	},
 	aboutSectionTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.sm,
 	},
 	aboutSectionTitle: {
 		color: colors.secondary,
@@ -191,7 +191,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	aboutBulletRow: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		gap: 6,
+		gap: spacing.sm,
 	},
 	aboutBulletDot: {
 		color: colors.primary,
@@ -201,7 +201,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	aboutFooterDivider: {
 		height: 1,
 		backgroundColor: colors.border,
-		marginTop: 6,
+		marginTop: spacing.sm,
 	},
 	aboutFooterText: {
 		color: colors.muted,

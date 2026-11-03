@@ -44,7 +44,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 15,
 
 		textAlign: 'center',
-		marginBottom: 10,
+		marginBottom: spacing.sm2,
 	},
 	profileEditButton: {
 		minWidth: 114,
@@ -53,7 +53,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: 18,
+		paddingHorizontal: spacing.md,
 	},
 	profileEditButtonText: {
 		color: colors.surface,
@@ -65,8 +65,8 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
 		paddingHorizontal: spacing.md,
-		paddingVertical: 18,
-		gap: 10,
+		paddingVertical: spacing.md,
+		gap: spacing.sm2,
 		...unifiedShadow,
 	},
 	profileMenuTitle: {

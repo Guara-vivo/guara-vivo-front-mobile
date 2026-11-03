@@ -18,10 +18,10 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	registerCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 14,
-		paddingVertical: 14,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.md,
 		...unifiedShadow,
-		gap: 14,
+		gap: spacing.md,
 	},
 	registerSectionTitleRow: {
 		flexDirection: 'row',
@@ -34,12 +34,12 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	registerSubsection: {
-		gap: 10,
+		gap: spacing.sm2,
 	},
 	registerSubTitleRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.sm,
 	},
 	registerSubTitleText: {
 		color: colors.text,
@@ -150,7 +150,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerDateRow: {
 		flexDirection: 'row',
-		gap: 10,
+		gap: spacing.sm2,
 	},
 	registerDateField: {
 		flex: 1,

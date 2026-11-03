@@ -79,7 +79,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		alignSelf: 'center',
 		backgroundColor: colors.surface,
 		paddingHorizontal: spacing.sm2,
-		paddingVertical: 6,
+		paddingVertical: spacing.sm,
 		borderRadius: radius.lg,
 	},
 	recordImageModalIndexText: {
@@ -88,7 +88,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	recordImageModalSection: {
-		gap: 10,
+		gap: spacing.sm2,
 	},
 	recordImageModalSectionTitleRow: {
 		flexDirection: 'row',
@@ -138,7 +138,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: spacing.md,
 		paddingVertical: spacing.sm2,
 		flexDirection: 'row',
-		gap: 10,
+		gap: spacing.sm2,
 	},
 	recordImageModalCloseButton: {
 		flex: 1,
@@ -157,14 +157,14 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
-		rowGap: 10,
+		rowGap: spacing.sm2,
 		marginBottom: spacing.sm2,
 	},
 	recordImageModalAccuracyItem: {
 		width: '48%',
 		flexGrow: 0,
 		flexShrink: 0,
-		paddingHorizontal: 10,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: spacing.sm,
 		backgroundColor: colors.background,
 		borderRadius: radius.sm,
@@ -183,7 +183,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalIbisItemExpanded: {
 		paddingHorizontal: spacing.sm2,
-		paddingVertical: 10,
+		paddingVertical: spacing.sm2,
 		marginBottom: spacing.sm,
 		backgroundColor: colors.background,
 		borderRadius: radius.sm,
@@ -194,10 +194,10 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm,
-		marginBottom: 10,
+		marginBottom: spacing.sm2,
 	},
 	recordImageModalIbisDetails: {
-		gap: 6,
+		gap: spacing.sm,
 	},
 	recordImageModalDetailRow: {
 		flexDirection: 'row',
@@ -215,7 +215,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalAccuraciesContainer: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: 6,
+		gap: spacing.sm,
 		marginTop: spacing.sm,
 		paddingTop: spacing.sm,
 		borderTopWidth: 1,
@@ -224,8 +224,8 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalAccuracySmall: {
 		flex: 1,
 		minWidth: 65,
-		paddingHorizontal: 6,
-		paddingVertical: 6,
+		paddingHorizontal: spacing.sm,
+		paddingVertical: spacing.sm,
 		backgroundColor: colors.splash,
 		borderRadius: 4,
 		alignItems: 'center',

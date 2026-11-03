@@ -14,7 +14,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.sm,
 	},
 	mapsFilterCard: {
-		gap: 10,
+		gap: spacing.sm2,
 		borderRadius: cornerRadius,
 		borderWidth: 0,
 		marginBottom: spacing.md,
@@ -51,7 +51,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingHorizontal: spacing.sm2,
-		gap: 5,
+		gap: spacing.xs,
 	},
 	mapsFilterButtonActive: {
 		backgroundColor: colors.secondary,
@@ -84,7 +84,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		zIndex: 10,
 		elevation: 6,
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.sm,
 	},
 	mapSelectionInstructionOverlay: {
 		position: 'absolute',
@@ -92,7 +92,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		left: 10,
 		zIndex: 10,
 		maxWidth: '48%',
-		paddingHorizontal: 10,
+		paddingHorizontal: spacing.sm2,
 		paddingVertical: spacing.sm,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.overlaySurface,

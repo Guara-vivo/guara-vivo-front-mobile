@@ -6,7 +6,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	splashScreen: {
 		justifyContent: 'center',
 		color: colors.secondary,
-		backgroundColor: colors.splash,
+		backgroundColor: colors.surface,
 	},
 	splashLogo: {
 		width: 300,
@@ -22,7 +22,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	welcomeScreen: {
 		flex: 1,
-		backgroundColor: colors.splash,
+		backgroundColor: colors.surface,
 		paddingHorizontal: spacing.md,
 		paddingBottom: spacing.md,
 	},
@@ -70,7 +70,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	loginHeaderRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.sm,
 		marginBottom: 56,
 	},
 	loginTitle: {
@@ -85,10 +85,10 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 	},
 	loginFields: {
-		gap: 10,
+		gap: spacing.sm2,
 	},
 	loginFieldWrap: {
-		gap: 5,
+		gap: spacing.xs,
 	},
 	loginInput: {
 		paddingHorizontal: 0,
@@ -161,7 +161,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	registerHeaderRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 6,
+		gap: spacing.sm,
 		marginBottom: 56,
 	},
 	registerBackButton: {
@@ -174,7 +174,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.md,
 	},
 	registerAccountFieldBlock: {
-		gap: 5,
+		gap: spacing.xs,
 	},
 	registerAccountInput: {
 		color: palette.text,

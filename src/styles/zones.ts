@@ -50,7 +50,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	mapZoneInfoMetric: {
 		flex: 1,
 		paddingVertical: spacing.sm,
-		paddingHorizontal: 10,
+		paddingHorizontal: spacing.sm2,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.splash,
 	},
@@ -84,7 +84,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.xs,
-		paddingVertical: 6,
+		paddingVertical: spacing.sm,
 	},
 	mapZoneRecordsStatusText: {
 		color: colors.muted,
@@ -97,13 +97,13 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	mapZoneRecordRow: {
 		minHeight: 90,
 		paddingVertical: spacing.sm,
-		paddingLeft: 14,
-		paddingRight: 10,
+		paddingLeft: spacing.md,
+		paddingRight: spacing.sm2,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.selectedBg,
 		borderWidth: 1,
 		borderColor: 'transparent',
-		marginBottom: 6,
+		marginBottom: spacing.sm,
 		overflow: 'hidden',
 	},
 	mapZoneRecordFocusFill: {
@@ -145,9 +145,9 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneRecordDetailsButton: {
 		alignSelf: 'flex-end',
-		marginTop: 6,
-		paddingHorizontal: 9,
-		paddingVertical: 5,
+		marginTop: spacing.sm,
+		paddingHorizontal: spacing.sm,
+		paddingVertical: spacing.xs,
 		borderRadius: radius.pill,
 		backgroundColor: colors.secondary,
 	},

@@ -62,8 +62,8 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailCard: {
 		backgroundColor: colors.surface,
 		borderRadius: cornerRadius,
-		paddingHorizontal: 18,
-		paddingVertical: 18,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.md,
 		gap: spacing.sm,
 		...unifiedShadow,
 	},
@@ -121,7 +121,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		backgroundColor: colors.splash,
 		paddingHorizontal: spacing.sm2,
-		paddingVertical: 7,
+		paddingVertical: spacing.sm,
 	},
 	recordDetailChipText: {
 		color: colors.secondary,

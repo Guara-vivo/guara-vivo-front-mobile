@@ -82,7 +82,7 @@ export const mapViewStyles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: colors.surface,
     alignItems: 'center',
-    padding: 3,
+    padding: spacing.xs,
 		justifyContent: 'center',
 		shadowColor: colors.secondary,
 		shadowOpacity: 0.4,
