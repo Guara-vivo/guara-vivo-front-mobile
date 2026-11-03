@@ -52,27 +52,25 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
     Animated.timing(focusValue, {
       toValue: selected ? 1 : 0,
       duration: selected ? RECORD_FOCUS_IN_MS : RECORD_FOCUS_OUT_MS,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start()
   }, [focusValue, selected])
 
-  const animatedStyle = {
-    backgroundColor: focusValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [colors.selectedBg, colors.selectedBgActive],
-    }),
-  }
-
-  const focusAccentStyle = {
+  // Só opacity: roda no driver nativo (animar backgroundColor obrigaria a thread JS).
+  const focusStyle = {
     opacity: focusValue,
   }
 
   return (
-    <Animated.View
+    <View
       onLayout={(event) => onLayout(record.id, event)}
-      style={[appStyles.mapZoneRecordRow, animatedStyle]}
+      style={appStyles.mapZoneRecordRow}
     >
-      <Animated.View style={[appStyles.mapZoneRecordFocusAccent, focusAccentStyle]} />
+      <Animated.View
+        pointerEvents="none"
+        style={[appStyles.mapZoneRecordFocusFill, focusStyle]}
+      />
+      <Animated.View style={[appStyles.mapZoneRecordFocusAccent, focusStyle]} />
       <Pressable onPress={() => onSelect(record.id)}
         accessibilityRole="button"
         accessibilityLabel={`Registro ${record.id}, localizar no mapa`}>
@@ -98,7 +96,7 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
       >
         <Text style={appStyles.mapZoneRecordDetailsButtonText}>VER DETALHES</Text>
       </Pressable>
-    </Animated.View>
+    </View>
   )
 }
 

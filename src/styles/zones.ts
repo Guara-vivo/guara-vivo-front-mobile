@@ -106,6 +106,10 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		marginBottom: 6,
 		overflow: 'hidden',
 	},
+	mapZoneRecordFocusFill: {
+		...StyleSheet.absoluteFillObject,
+		backgroundColor: colors.selectedBgActive,
+	},
 	mapZoneRecordFocusAccent: {
 		position: 'absolute',
 		left: 0,
