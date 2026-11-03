@@ -72,45 +72,46 @@ function HistoryRecordCardBase({
 
 			<View style={appStyles.historyRecordInfoRow}>
 				<Ionicons name="map-outline" size={18} color={colors.primary} />
-				<Text style={appStyles.historyRecordInfoText}>{areaLabel}</Text>
-			</View>
-
-			<View style={appStyles.historyRecordInfoRow}>
+				<Text numberOfLines={1} style={appStyles.historyRecordInfoText}>
+					{areaLabel}
+				</Text>
 				<Ionicons name="eye-outline" size={18} color={colors.primary} />
-				<Text style={appStyles.historyRecordInfoText}>
+				<Text style={appStyles.historyRecordCountText}>
 					{item.ibis_quantity} {item.ibis_quantity === 1 ? 'Guará' : 'Guarás'}
 				</Text>
 			</View>
 
-			<View style={appStyles.historyTagRow}>
-				{behaviorTags.map((tag) => (
-					<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
-						<Text style={appStyles.historyTagChipText}>{tag}</Text>
-					</View>
-				))}
-			</View>
+			<View style={appStyles.historyRecordFooterRow}>
+				<View style={appStyles.historyTagRow}>
+					{behaviorTags.map((tag) => (
+						<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
+							<Text style={appStyles.historyTagChipText}>{tag}</Text>
+						</View>
+					))}
+				</View>
 
-			{syncState === 'failed' && item.client_uuid && onDiscard ? (
-				<Pressable
-					onPress={() => onDiscard(item.client_uuid as string)}
+				{syncState === 'failed' && item.client_uuid && onDiscard ? (
+					<Pressable
+						onPress={() => onDiscard(item.client_uuid as string)}
 						accessibilityRole="button"
 						accessibilityLabel="Descartar registro recusado"
-					style={appStyles.historyDetailButton}
-				>
-					<Text style={appStyles.historyDetailButtonText}>DESCARTAR REGISTRO</Text>
-				</Pressable>
-			) : null}
+						style={appStyles.historyDetailButton}
+					>
+						<Text style={appStyles.historyDetailButtonText}>DESCARTAR REGISTRO</Text>
+					</Pressable>
+				) : null}
 
-			{!syncState ? (
-				<Pressable
-					onPress={() => onOpenRecord(item.id)}
+				{!syncState ? (
+					<Pressable
+						onPress={() => onOpenRecord(item.id)}
 						accessibilityRole="button"
 						accessibilityLabel={`Ver detalhes do registro ${item.id}`}
-					style={appStyles.historyDetailButton}
-				>
-					<Text style={appStyles.historyDetailButtonText}>VER DETALHES</Text>
-				</Pressable>
-			) : null}
+						style={appStyles.historyDetailButton}
+					>
+						<Text style={appStyles.historyDetailButtonText}>VER DETALHES</Text>
+					</Pressable>
+				) : null}
+			</View>
 		</View>
 	)
 }

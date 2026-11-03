@@ -49,6 +49,7 @@ function HistoryListHeaderBase({
 					/>
 				</View>
 
+				<View style={appStyles.historyActionRow}>
 				<Pressable
 					onPress={onOpenFilters}
 					accessibilityRole="button"
@@ -60,7 +61,7 @@ function HistoryListHeaderBase({
 						disabled && appStyles.historyFilterButtonDisabled,
 					]}
 				>
-					<Ionicons name="funnel-outline" size={17} color={colors.onColor} />
+					<Ionicons name="funnel-outline" size={17} color={colors.secondary} />
 					<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
 				</Pressable>
 
@@ -75,11 +76,12 @@ function HistoryListHeaderBase({
 						disabled && appStyles.historyFilterButtonDisabled,
 					]}
 				>
-					<Ionicons name="swap-vertical" size={17} color={colors.onColor} />
+					<Ionicons name="swap-vertical" size={17} color={colors.secondary} />
 					<Text style={appStyles.historyFilterButtonText}>
 						{sortOrder === 'desc' ? 'MAIS RECENTES' : 'MAIS ANTIGOS'}
 					</Text>
 				</Pressable>
+				</View>
 			</ScreenCard>
 		</>
 	)
