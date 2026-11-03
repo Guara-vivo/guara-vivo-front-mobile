@@ -245,8 +245,9 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
 		height: 66,
-		paddingTop: spacing.sm,
-		paddingBottom: spacing.sm2,
+		// Sem padding vertical: o conjunto ícone + rótulo centraliza na altura da barra.
+		paddingTop: 0,
+		paddingBottom: 0,
 		paddingHorizontal: spacing.sm,
 	},
 	bottomNavItem: {
