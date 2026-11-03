@@ -203,6 +203,7 @@ export function MapsScreen() {
 										accessibilityRole="radio"
 										accessibilityState={{ selected: active }}
 										accessibilityLabel={`Camada ${item.label}`}
+										hitSlop={{ top: 8, bottom: 8 }}
 									style={[
 										appStyles.mapsFilterButton,
 										active && appStyles.mapsFilterButtonActive,
@@ -273,6 +274,7 @@ export function MapsScreen() {
 							onPress={handleToggleSelectionMode}
 								accessibilityRole="button"
 								accessibilityLabel={selectionMode ? 'Cancelar seleção de área' : 'Adicionar área'}
+								hitSlop={4}
 								accessibilityState={{ disabled: creatingZone }}
 							disabled={creatingZone}
 							style={[
@@ -291,6 +293,7 @@ export function MapsScreen() {
 							onPress={handleReloadZones}
 								accessibilityRole="button"
 								accessibilityLabel="Atualizar áreas"
+								hitSlop={4}
 								accessibilityState={{ busy: isReloading, disabled: isReloading }}
 							disabled={isReloading}
 							style={[

@@ -40,7 +40,7 @@ export function ProfileScreen({
 			>
 				<View style={appStyles.profileHeroCard}>
 					<View style={appStyles.profileAvatarCircle}>
-						<Ionicons name="person-outline" size={58} color={colors.secondary} />
+						<Ionicons name="person-outline" size={58} color={colors.secondary} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
 					</View>
 
 					<Text style={appStyles.profileHeroName}>{displayName}</Text>
@@ -48,6 +48,7 @@ export function ProfileScreen({
 
 					<Pressable
 						onPress={() => navigation.navigate('EditProfile')}
+						hitSlop={6}
 						accessibilityRole="button"
 						style={appStyles.profileEditButton}
 					>
@@ -63,7 +64,7 @@ export function ProfileScreen({
 						accessibilityRole="button"
 						style={appStyles.profileMenuItem}
 					>
-						<Ionicons name="lock-closed-outline" size={19} color={colors.secondary} />
+						<Ionicons name="lock-closed-outline" size={19} color={colors.secondary} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
 						<Text style={appStyles.profileMenuItemText}>Alterar senha</Text>
 					</Pressable>
 
@@ -72,7 +73,7 @@ export function ProfileScreen({
 						accessibilityRole="button"
 						style={appStyles.profileMenuItem}
 					>
-						<Ionicons name="notifications-outline" size={19} color={colors.secondary} />
+						<Ionicons name="notifications-outline" size={19} color={colors.secondary} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
 						<Text style={appStyles.profileMenuItemText}>Notificações</Text>
 					</Pressable>
 
@@ -85,6 +86,8 @@ export function ProfileScreen({
 							name="information-circle-outline"
 							size={19}
 							color={colors.secondary}
+							accessibilityElementsHidden
+							importantForAccessibility="no-hide-descendants"
 						/>
 						<Text style={appStyles.profileMenuItemText}>Sobre o app</Text>
 					</Pressable>
@@ -95,7 +98,7 @@ export function ProfileScreen({
 						disabled={isLoggingOut}
 						style={appStyles.profileMenuItem}
 					>
-						<Ionicons name="log-out-outline" size={19} color={colors.primary} />
+						<Ionicons name="log-out-outline" size={19} color={colors.primary} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
 						<Text style={appStyles.profileMenuItemTextLogout}>
 							Sair da conta
 						</Text>

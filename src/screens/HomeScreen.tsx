@@ -47,8 +47,8 @@ export function HomeScreen() {
 				<View style={appStyles.homeShortcutRow}>
 					<Pressable
 						onPress={() => navigation.navigate('Maps')}
-							accessibilityRole="button"
-							accessibilityLabel="Ver mapas"
+						accessibilityRole="button"
+						accessibilityLabel="Ver mapas"
 						style={appStyles.homeShortcutCard}
 					>
 						<View style={appStyles.homeShortcutIconBox}>
@@ -59,8 +59,8 @@ export function HomeScreen() {
 
 					<Pressable
 						onPress={() => navigation.navigate('History')}
-							accessibilityRole="button"
-							accessibilityLabel="Histórico de registros"
+						accessibilityRole="button"
+						accessibilityLabel="Histórico de registros"
 						style={appStyles.homeShortcutCard}
 					>
 						<View style={appStyles.homeShortcutIconBox}>

@@ -11,7 +11,7 @@ export function HeaderBackButton({ onPress }: { onPress: () => void }) {
 			onPress={onPress}
 			accessibilityRole="button"
 			accessibilityLabel="Voltar"
-			hitSlop={8}
+			hitSlop={12}
 			style={appStyles.headerActionButton}
 		>
 			<Ionicons name="chevron-back" size={24} color={colors.onColor} />

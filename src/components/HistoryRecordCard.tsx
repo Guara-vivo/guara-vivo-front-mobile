@@ -94,6 +94,7 @@ function HistoryRecordCardBase({
 					<Pressable
 						onPress={() => onDiscard(item.client_uuid as string)}
 						accessibilityRole="button"
+						hitSlop={4}
 						accessibilityLabel="Descartar registro recusado"
 						style={appStyles.historyDetailButton}
 					>
@@ -105,6 +106,7 @@ function HistoryRecordCardBase({
 					<Pressable
 						onPress={() => onOpenRecord(item.id)}
 						accessibilityRole="button"
+						hitSlop={4}
 						accessibilityLabel={`Ver detalhes do registro ${item.id}`}
 						style={appStyles.historyDetailButton}
 					>

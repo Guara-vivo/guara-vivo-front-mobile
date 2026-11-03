@@ -37,7 +37,7 @@ export function PasswordField({ label, value, onChangeText, hint, autoComplete }
 					onPress={() => setVisible((current) => !current)}
 					accessibilityRole="button"
 					accessibilityLabel={visible ? `Ocultar ${label}` : `Mostrar ${label}`}
-					hitSlop={8}
+					hitSlop={10}
 					style={appStyles.changePasswordEyeButton}
 				>
 					<Ionicons
