@@ -9,6 +9,7 @@ import React, {
 } from 'react'
 import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
 import { getMapZoneRecords, deleteMapZone } from '../services/mapZonesApi'
+import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 
 interface MapZoneDetailContextType {
 	selectedZone: MapZoneRead | null
@@ -80,7 +81,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 			})
 			.catch((error: unknown) => {
 				if (mounted && error instanceof Error && error.name !== 'AbortError') {
-					setZoneRecordsError(error.message)
+					setZoneRecordsError(getLoadErrorMessage(error, 'Não foi possível carregar os registros desta área.'))
 				}
 			})
 			.finally(() => {

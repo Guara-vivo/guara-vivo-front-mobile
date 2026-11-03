@@ -60,6 +60,11 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapsFilterButtonIcon: {
 		marginTop: -1,
 	},
+	mapsFilterDot: {
+		width: 9,
+		height: 9,
+		borderRadius: radius.pill,
+	},
 	mapsFilterButtonLabel: {
 		color: colors.text,
 		fontSize: fontSize.caption,

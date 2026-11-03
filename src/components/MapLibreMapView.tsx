@@ -1,6 +1,6 @@
 import MapView, { Circle, Marker } from 'react-native-maps'
 import { ActivityIndicator, Text, View } from 'react-native'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { MapLayerId } from '../config/map'
 import { mapStyle } from '../config/mapStyle'
 import { useCurrentLocationTarget } from '../hooks/useCurrentLocationTarget'
@@ -31,10 +31,10 @@ type Props = {
 	isLoadingData?: boolean
 }
 
-export function MapLibreMapView({
+function MapLibreMapViewBase({
 	selectedLayer,
 	zones,
-	recordMarkers = [],
+	recordMarkers = EMPTY_RECORD_MARKERS,
 	onMapPress,
 	onZonePress,
 	onRecordMarkerPress,
@@ -193,3 +193,6 @@ export function MapLibreMapView({
 		</View>
 	)
 }
+
+// memo: o mapa só redesenha quando camada, zonas ou marcadores mudam (e não a cada render da tela).
+export const MapLibreMapView = React.memo(MapLibreMapViewBase)

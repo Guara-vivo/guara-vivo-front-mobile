@@ -10,6 +10,7 @@ import {
 import Header from '../components/Header'
 import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
+import { LastUpdatedPill } from '../components/map/LastUpdatedPill'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 
@@ -18,7 +19,6 @@ import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { MapLayerId } from '../config/map'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { invalidateRecordsCache } from '../services/recordsService'
-import { formatLastUpdatedAt } from '../utils/timeFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 import { filterZonesByLayer, getLayerBadgeText } from '../utils/mapZoneStyle'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
@@ -46,7 +46,6 @@ export function MapsScreen() {
 	const [creatingZone, setCreatingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
-	const [lastUpdatedNow, setLastUpdatedNow] = useState(() => new Date())
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
 
@@ -90,14 +89,6 @@ export function MapsScreen() {
 	}, [loadZones])
 
 	useEffect(() => {
-		const interval = setInterval(() => {
-			setLastUpdatedNow(new Date())
-		}, 60000)
-
-		return () => clearInterval(interval)
-	}, [])
-
-	useEffect(() => {
 		return () => {
 			if (selectionModalTimerRef.current) {
 				clearTimeout(selectionModalTimerRef.current)
@@ -106,7 +97,7 @@ export function MapsScreen() {
 		}
 	}, [])
 
-	const handleReloadZones = async () => {
+	const handleReloadZones = useCallback(async () => {
 		if (isReloading) {
 			return
 		}
@@ -118,15 +109,9 @@ export function MapsScreen() {
 		} finally {
 			setIsReloading(false)
 		}
-	}
+	}, [isReloading, loadZones])
 
-	const lastUpdatedLabel = formatLastUpdatedAt(lastUpdatedAt, lastUpdatedNow)
-
-	const handleSelectLayer = (layerId: MapLayerId) => {
-		setSelectedLayer(layerId)
-	}
-
-	const handleToggleSelectionMode = () => {
+	const handleToggleSelectionMode = useCallback(() => {
 		if (selectionMode) {
 			setSelectionMode(false)
 			setSelectedCoords(null)
@@ -134,10 +119,9 @@ export function MapsScreen() {
 		}
 
 		setSelectionMode(true)
-	}
+	}, [selectionMode])
 
-	const handleMapPress = (lat: number, lng: number) => {
-		if (!selectionMode) return
+	const handleMapPress = useCallback((lat: number, lng: number) => {
 		setSelectedCoords({ lat, lng })
 
 		if (selectionModalTimerRef.current) {
@@ -148,28 +132,23 @@ export function MapsScreen() {
 			setShowZoneModal(true)
 			selectionModalTimerRef.current = null
 		}, 50)
-	}
+	}, [])
 
-	const handleZonePress = (zone: MapZoneRead) => {
-		ctx.openSheet(zone)
-	}
-
-	const closeSheetRef = useRef(ctx.closeSheet)
-	closeSheetRef.current = ctx.closeSheet
+	const { openSheet, closeSheet, registerOnZoneDeleted, onRecordMarkerPress } = ctx
 
 	useFocusEffect(
 		useCallback(() => {
 			return () => {
-				closeSheetRef.current()
+				closeSheet()
 			}
-		}, []),
+		}, [closeSheet]),
 	)
 
 	useEffect(() => {
-		ctx.registerOnZoneDeleted((zoneId: number) => {
+		registerOnZoneDeleted((zoneId: number) => {
 			setZones((prev) => prev.filter((z) => z.id !== zoneId))
 		})
-	}, [ctx])
+	}, [registerOnZoneDeleted])
 
 	const handleCreateZone = async (type: MapZoneType, radius_meters: number) => {
 		if (!selectedCoords) return
@@ -183,17 +162,17 @@ export function MapsScreen() {
 			setSelectedCoords(null)
 			setShowZoneModal(false)
 		} catch (error) {
-			console.error('[MapsScreen] Failed to create zone:', error)
-			setZonesError(error instanceof Error ? error.message : 'Erro ao criar área')
+			if (__DEV__) {
+				console.error('[MapsScreen] Failed to create zone:', error)
+			}
+			setZonesError(getLoadErrorMessage(error, 'Não foi possível criar a área. Tente de novo.'))
 		} finally {
 			setCreatingZone(false)
 		}
 	}
 
-	const handleCancelModal = () => {
-		setShowZoneModal(false)
-		// Keep selection mode and coords in case user wants to select different point
-	}
+	// Mantém o modo de seleção e as coordenadas para o usuário poder escolher outro ponto.
+	const handleCancelModal = useCallback(() => setShowZoneModal(false), [])
 
 	return (
 		<View style={appStyles.mapsScreen}>
@@ -220,7 +199,7 @@ export function MapsScreen() {
 							return (
 								<Pressable
 									key={item.id}
-									onPress={() => handleSelectLayer(item.id)}
+									onPress={() => setSelectedLayer(item.id)}
 										accessibilityRole="radio"
 										accessibilityState={{ selected: active }}
 										accessibilityLabel={`Camada ${item.label}`}
@@ -233,19 +212,15 @@ export function MapsScreen() {
 										<View
 											style={[
 												appStyles.mapsFilterButtonIcon,
-												{
-													width: 9,
-													height: 9,
-													borderRadius: 9,
-													backgroundColor: active ? colors.surface : colors.danger,
-												},
+												appStyles.mapsFilterDot,
+												{ backgroundColor: active ? colors.surface : colors.danger },
 											]}
 										/>
 									) : (
 										<Ionicons
 											name={item.icon}
 											size={15}
-											color={active ? colors.onColor : '#2F6FE4'}
+											color={active ? colors.onColor : colors.secondary}
 											style={appStyles.mapsFilterButtonIcon}
 										/>
 									)}
@@ -279,8 +254,8 @@ export function MapsScreen() {
 					zones={zones}
 					recordMarkers={visibleZoneRecords}
 					onMapPress={selectionMode ? handleMapPress : undefined}
-					onZonePress={!selectionMode ? handleZonePress : undefined}
-					onRecordMarkerPress={!selectionMode ? ctx.onRecordMarkerPress : undefined}
+					onZonePress={!selectionMode ? openSheet : undefined}
+					onRecordMarkerPress={!selectionMode ? onRecordMarkerPress : undefined}
 					selectedZoneId={ctx.selectedZone?.id ?? null}
 					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}
@@ -330,9 +305,7 @@ export function MapsScreen() {
 							)}
 						</Pressable>
 					</View>
-					<View style={appStyles.mapReloadTextPill}>
-						<Text style={appStyles.mapReloadText}>{lastUpdatedLabel}</Text>
-					</View>
+					<LastUpdatedPill lastUpdatedAt={lastUpdatedAt} />
 				</View>
 			</ScreenCard>
 			</View>
