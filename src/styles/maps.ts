@@ -26,6 +26,16 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		gap: spacing.sm,
 	},
+	mapsFilterCount: {
+		marginLeft: 'auto',
+		color: colors.muted,
+		fontSize: fontSize.caption,
+	},
+	mapsFilterCountValue: {
+		color: colors.danger,
+		fontSize: fontSize.body,
+		fontWeight: '900',
+	},
 	mapsFilterRow: {
 		flexDirection: 'row',
 		gap: spacing.sm,
@@ -133,19 +143,6 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		borderColor: colors.border,
 	},
 	mapReloadText: {
-		color: colors.text,
-		fontSize: fontSize.caption,
-	},
-	countBadge: {
-		position: 'absolute',
-		bottom: spacing.md,
-		right: spacing.md,
-		backgroundColor: colors.overlaySurface,
-		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.xs,
-	},
-	badgeText: {
 		color: colors.text,
 		fontSize: fontSize.caption,
 	},

@@ -20,6 +20,7 @@ import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { invalidateRecordsCache } from '../services/recordsService'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
+import { filterZonesByLayer, getLayerBadgeText } from '../utils/mapZoneStyle'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 import { colors } from '../constants/theme'
 
@@ -53,6 +54,12 @@ export function MapsScreen() {
 		() => getVisibleMapZoneRecords(ctx.zoneRecords),
 		[ctx.zoneRecords],
 	)
+
+	const visibleZoneCount = useMemo(
+		() => filterZonesByLayer(zones, selectedLayer).length,
+		[zones, selectedLayer],
+	)
+	const layerCountLabel = getLayerBadgeText(selectedLayer)
 
 	const loadZones = useCallback(async (signal?: AbortSignal) => {
 		try {
@@ -196,6 +203,14 @@ export function MapsScreen() {
 					<View style={appStyles.mapsFilterTitleRow}>
 						<Ionicons name="layers-outline" size={18} color={colors.secondary} />
 						<Text style={appStyles.sectionTitle}>CAMADA</Text>
+						<Text
+							style={appStyles.mapsFilterCount}
+							accessibilityLiveRegion="polite"
+							accessibilityLabel={`${visibleZoneCount} ${layerCountLabel} no mapa`}
+						>
+							<Text style={appStyles.mapsFilterCountValue}>{visibleZoneCount}</Text>{' '}
+							{layerCountLabel}
+						</Text>
 					</View>
 
 					<View style={appStyles.mapsFilterRow}>

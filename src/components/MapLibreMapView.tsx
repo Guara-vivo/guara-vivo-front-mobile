@@ -9,7 +9,6 @@ import { useStoredCameraRegion } from '../hooks/useStoredCameraRegion'
 import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
 import {
 	filterZonesByLayer,
-	getLayerBadgeText,
 	getZoneCircleColors,
 } from '../utils/mapZoneStyle'
 import { mapViewStyles as styles } from './map/mapViewStyles'
@@ -141,9 +140,7 @@ export function MapLibreMapView({
 		})
 	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers])
 
-	const visibleCount = visibleZones.length
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
-	const badgeText = getLayerBadgeText(selectedLayer)
 
 	return (
 		<View style={styles.container}>
@@ -190,10 +187,6 @@ export function MapLibreMapView({
 					<Text style={styles.loadingText}>Preparando mapa...</Text>
 				</View>
 			) : null}
-			<View style={styles.countBadge}>
-				<Text style={styles.countBadgeValue}>{visibleCount}</Text>
-				<Text style={styles.countBadgeLabel}>{badgeText}</Text>
-			</View>
 			{!locationReady ? (
 				<View pointerEvents="none" style={styles.loadingOverlay} />
 			) : null}
