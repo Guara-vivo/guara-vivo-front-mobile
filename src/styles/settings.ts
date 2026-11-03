@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors } from '../constants/theme'
+import { colors, fontSize } from '../constants/theme'
 import { cornerRadius, unifiedShadow } from './shared'
 
 export const settingsStyles = StyleSheet.create<Record<string, any>>({
@@ -21,7 +21,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	changePasswordLabel: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',
 	},
@@ -45,12 +45,12 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		paddingHorizontal: 10,
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 	},
 	changePasswordInputNoPadding: {
 		flex: 1,
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		paddingVertical: 0,
 	},
 	changePasswordEyeButton: {
@@ -61,7 +61,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	changePasswordHint: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 	},
 	changePasswordActionsRow: {
 		flexDirection: 'row',
@@ -78,7 +78,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	changePasswordPrimaryActionText: {
 		color: colors.surface,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',
 	},
@@ -92,7 +92,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	changePasswordSecondaryActionText: {
 		color: colors.surface,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',
 	},
@@ -112,7 +112,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	notificationsTitle: {
 		color: colors.secondary,
-		fontSize: 13,
+		fontSize: fontSize.body,
 
 		textTransform: 'uppercase',
 	},
@@ -133,11 +133,11 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	notificationsItemTitle: {
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	notificationsItemSubtitle: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		lineHeight: 14,
 	},
 	aboutCard: {
@@ -157,14 +157,14 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	aboutAppName: {
 		color: colors.secondary,
-		fontSize: 19,
+		fontSize: fontSize.title,
 
 		textAlign: 'center',
 		textTransform: 'uppercase',
 	},
 	aboutVersion: {
 		color: colors.muted,
-		fontSize: 14,
+		fontSize: fontSize.body,
 
 		textAlign: 'center',
 		marginBottom: 10,
@@ -179,13 +179,13 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	aboutSectionTitle: {
 		color: colors.secondary,
-		fontSize: 13,
+		fontSize: fontSize.body,
 
 		textTransform: 'uppercase',
 	},
 	aboutBodyText: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		lineHeight: 25,
 	},
 	aboutBulletRow: {
@@ -195,7 +195,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	aboutBulletDot: {
 		color: colors.primary,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		lineHeight: 24,
 	},
 	aboutFooterDivider: {
@@ -205,7 +205,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	aboutFooterText: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		lineHeight: 15,
 
 		textAlign: 'center',

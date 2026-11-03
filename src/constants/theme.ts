@@ -31,9 +31,19 @@ export const typography = {
 	caption: { fontSize: 12, lineHeight: 16 },
 	body: { fontSize: 14, lineHeight: 20 },
 	bodyLarge: { fontSize: 16, lineHeight: 22 },
-	title: { fontSize: 18, lineHeight: 24 },
+	title: { fontSize: 20, lineHeight: 26 },
 	headline: { fontSize: 22, lineHeight: 28 },
 	display: { fontSize: 26, lineHeight: 32 },
+}
+
+// Atalho para quem só precisa do tamanho (mantém lineHeight/peso definidos no estilo).
+export const fontSize = {
+	caption: typography.caption.fontSize,
+	body: typography.body.fontSize,
+	bodyLarge: typography.bodyLarge.fontSize,
+	title: typography.title.fontSize,
+	headline: typography.headline.fontSize,
+	display: typography.display.fontSize,
 }
 
 // Elevação em dois níveis: `card` (superfícies na página) e `overlay` (flutuantes sobre

@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, radius, spacing } from '../constants/theme'
+import { colors, radius, spacing, fontSize } from '../constants/theme'
 import { screenGutter, cornerRadius, unifiedShadow, overlayShadow } from './shared'
 
 export const commonStyles = StyleSheet.create<Record<string, any>>({
@@ -46,11 +46,11 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	inAppNotificationTitle: {
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	inAppNotificationMessage: {
 		color: colors.muted,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		lineHeight: 17,
 	},
 	inAppNotificationCloseButton: {
@@ -64,7 +64,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	fieldLabel: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 	textField: {
@@ -74,7 +74,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		borderRadius: cornerRadius,
 		paddingHorizontal: spacing.md,
 		paddingVertical: 14,
-		fontSize: 15,
+		fontSize: fontSize.bodyLarge,
 		color: colors.text,
 	},
 	textFieldMultiline: {
@@ -127,7 +127,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	actionButtonText: {
 		color: colors.surface,
-		fontSize: 15,
+		fontSize: fontSize.bodyLarge,
 		textTransform: 'uppercase',
 	},
 	actionButtonTextOutline: {
@@ -164,13 +164,13 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	feedbackModalTitle: {
 		color: colors.secondary,
-		fontSize: 20,
+		fontSize: fontSize.title,
 		textAlign: 'center',
 		textTransform: 'uppercase',
 	},
 	feedbackModalMessage: {
 		color: colors.muted,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		lineHeight: 20,
 		textAlign: 'center',
 	},
@@ -197,7 +197,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	appHeaderTitle: {
 		color: colors.surface,
 		marginLeft: spacing.md,
-		fontSize: 20,
+		fontSize: fontSize.title,
 		lineHeight: 22,
 		textTransform: 'uppercase',
 	},
@@ -222,21 +222,21 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	backButtonText: {
 		color: colors.secondary,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	headerTitle: {
 		color: colors.text,
-		fontSize: 26,
+		fontSize: fontSize.display,
 	},
 	headerSubtitle: {
 		color: colors.muted,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		lineHeight: 20,
 	},
 	sectionTitle: {
 		color: colors.secondary,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	bottomNav: {
@@ -277,7 +277,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	bottomNavLabel: {
 		color: colors.muted,
 		width: '100%',
-		fontSize: 10,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 		textAlign: 'center',
 	},

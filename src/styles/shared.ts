@@ -1,5 +1,5 @@
 import type { TextStyle, ViewStyle } from 'react-native'
-import { colors, elevation, radius, spacing } from '../constants/theme'
+import { colors, elevation, fontSize, radius, spacing } from '../constants/theme'
 
 export const screenGutter = spacing.md
 export const screenBottomPadding = 120
@@ -42,5 +42,5 @@ export const basePrimaryButton: ViewStyle = {
 
 export const basePrimaryButtonLabel: TextStyle = {
 	color: palette.surface,
-	fontSize: 15,
+	fontSize: fontSize.bodyLarge,
 }

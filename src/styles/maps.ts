@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize, radius } from '../constants/theme'
 import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow, overlayShadow } from './shared'
 
 export const mapsStyles = StyleSheet.create<Record<string, any>>({
@@ -52,7 +52,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapsFilterButtonLabel: {
 		color: colors.text,
-		fontSize: 9,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	mapsFilterButtonLabelActive: {
@@ -92,7 +92,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapSelectionInstructionText: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		lineHeight: 16,
 	},
 	mapTopRightActions: {
@@ -103,7 +103,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapAreaButton: {
 		width: 44,
 		height: 44,
-		borderRadius: 22,
+		borderRadius: radius.pill,
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -115,7 +115,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapReloadButton: {
 		width: 44,
 		height: 44,
-		borderRadius: 22,
+		borderRadius: radius.pill,
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -127,14 +127,14 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapReloadTextPill: {
 		paddingHorizontal: 8,
 		paddingVertical: 4,
-		borderRadius: 999,
+		borderRadius: radius.pill,
 		backgroundColor: 'rgba(255, 255, 255, 0.94)',
 		borderWidth: 1,
 		borderColor: colors.border,
 	},
 	mapReloadText: {
 		color: colors.text,
-		fontSize: 10,
+		fontSize: fontSize.caption,
 	},
 	countBadge: {
 		position: 'absolute',
@@ -147,6 +147,6 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	},
 	badgeText: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 })

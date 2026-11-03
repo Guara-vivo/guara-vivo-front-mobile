@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize, radius } from '../constants/theme'
 import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
 
 export const profileStyles = StyleSheet.create<Record<string, any>>({
@@ -24,7 +24,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	profileAvatarCircle: {
 		width: 104,
 		height: 104,
-		borderRadius: 104,
+		borderRadius: radius.pill,
 		borderWidth: 2.8,
 		borderColor: colors.secondary,
 		alignItems: 'center',
@@ -33,14 +33,14 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileHeroName: {
 		color: colors.text,
-		fontSize: 15,
+		fontSize: fontSize.bodyLarge,
 		lineHeight: 18,
 
 		textAlign: 'center',
 	},
 	profileHeroEmail: {
 		color: colors.muted,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		lineHeight: 15,
 
 		textAlign: 'center',
@@ -57,7 +57,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileEditButtonText: {
 		color: colors.surface,
-		fontSize: 14,
+		fontSize: fontSize.body,
 
 		textTransform: 'uppercase',
 	},
@@ -71,7 +71,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileMenuTitle: {
 		color: colors.secondary,
-		fontSize: 14,
+		fontSize: fontSize.body,
 
 		textTransform: 'uppercase',
 		marginBottom: 2,
@@ -85,11 +85,11 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileMenuItemText: {
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	profileMenuItemTextLogout: {
 		color: colors.primary,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	logoutOverlayContainer: {
 		position: 'absolute' as const,
@@ -113,7 +113,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	logoutOverlayText: {
 		color: colors.text,
-		fontSize: 16,
+		fontSize: fontSize.bodyLarge,
 		textAlign: 'center',
 	},
 })

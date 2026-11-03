@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, radius, spacing } from '../constants/theme'
+import { colors, radius, spacing, fontSize } from '../constants/theme'
 import { screenGutter, cornerRadius, unifiedShadow } from './shared'
 
 export const registerStyles = StyleSheet.create<Record<string, any>>({
@@ -30,7 +30,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerSectionTitleTextBlue: {
 		color: colors.secondary,
-		fontSize: 15,
+		fontSize: fontSize.bodyLarge,
 		textTransform: 'uppercase',
 	},
 	registerSubsection: {
@@ -43,7 +43,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerSubTitleText: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	registerDropZone: {
@@ -72,7 +72,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerDropZoneTitle: {
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		textAlign: 'center',
 	},
 	registerImagePreviewGrid: {
@@ -135,7 +135,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerBehaviorLabel: {
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	registerDateRow: {
 		flexDirection: 'row',
@@ -155,7 +155,7 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerDateFieldText: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 	},
 	registerDateFieldPlaceholder: {
 		color: colors.muted,
@@ -176,6 +176,6 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.primary,
 	},
 	registerActionButtonLabel: {
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 })

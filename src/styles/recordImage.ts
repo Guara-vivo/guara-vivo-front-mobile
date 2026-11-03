@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors } from '../constants/theme'
+import { colors, fontSize, radius } from '../constants/theme'
 import { cornerRadius } from './shared'
 
 export const recordImageStyles = StyleSheet.create<Record<string, any>>({
@@ -11,7 +11,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalCard: {
 		backgroundColor: colors.surface,
-		borderRadius: 12,
+		borderRadius: radius.md,
 		maxHeight: '90%',
 		maxWidth: '95%',
 		width: '100%',
@@ -28,7 +28,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalTitle: {
 		color: colors.secondary,
-		fontSize: 18,
+		fontSize: fontSize.title,
 		textTransform: 'uppercase',
 	},
 	recordImageModalContent: {
@@ -38,7 +38,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		gap: 16,
 	},
 	recordImageModalImageContainer: {
-		borderRadius: 8,
+		borderRadius: radius.sm,
 		backgroundColor: colors.background,
 		minHeight: 240,
 		maxHeight: 320,
@@ -63,7 +63,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		top: '50%',
 		width: 42,
 		height: 42,
-		borderRadius: 21,
+		borderRadius: radius.pill,
 		backgroundColor: 'rgba(117, 117, 117, 0.47)',
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -80,11 +80,11 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
 		paddingVertical: 6,
-		borderRadius: 16,
+		borderRadius: radius.lg,
 	},
 	recordImageModalIndexText: {
 		color: colors.text,
-		fontSize: 10,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	recordImageModalSection: {
@@ -97,7 +97,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalSectionTitle: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 	recordImageModalIbisList: {
@@ -106,7 +106,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalIbisColorBadge: {
 		width: 32,
 		height: 32,
-		borderRadius: 6,
+		borderRadius: radius.sm,
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
@@ -117,7 +117,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalIbisIndex: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 	},
 	recordImageModalEmptyState: {
 		paddingHorizontal: 12,
@@ -125,11 +125,11 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.background,
-		borderRadius: 8,
+		borderRadius: radius.sm,
 	},
 	recordImageModalEmptyText: {
 		color: colors.muted,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textAlign: 'center',
 	},
 	recordImageModalActions: {
@@ -150,7 +150,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalCloseButtonText: {
 		color: colors.surface,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 	recordImageModalSummaryGrid: {
@@ -167,18 +167,18 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: 10,
 		paddingVertical: 8,
 		backgroundColor: colors.background,
-		borderRadius: 6,
+		borderRadius: radius.sm,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	recordImageModalAccuracyLabel: {
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		color: colors.muted,
 		marginBottom: 4,
 		textAlign: 'center',
 	},
 	recordImageModalAccuracyValue: {
-		fontSize: 14,
+		fontSize: fontSize.body,
 		color: colors.secondary,
 	},
 	recordImageModalIbisItemExpanded: {
@@ -186,7 +186,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: 10,
 		marginBottom: 8,
 		backgroundColor: colors.background,
-		borderRadius: 8,
+		borderRadius: radius.sm,
 		borderLeftWidth: 3,
 		borderLeftColor: '#125ED0',
 	},
@@ -205,11 +205,11 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: 4,
 	},
 	recordImageModalDetailLabel: {
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		color: colors.muted,
 	},
 	recordImageModalDetailValue: {
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		color: colors.secondary,
 	},
 	recordImageModalAccuraciesContainer: {
@@ -232,12 +232,12 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 	},
 	recordImageModalAccuracySmallLabel: {
-		fontSize: 10,
+		fontSize: fontSize.caption,
 		color: '#666666',
 		marginBottom: 2,
 	},
 	recordImageModalAccuracySmallValue: {
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		color: '#125ED0',
 	},
 })

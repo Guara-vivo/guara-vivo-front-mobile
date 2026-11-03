@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors } from '../../constants/theme'
+import { colors, fontSize, radius } from '../../constants/theme'
 
 export const mapViewStyles = StyleSheet.create({
 	container: {
@@ -25,7 +25,7 @@ export const mapViewStyles = StyleSheet.create({
 		gap: 16,
 	},
 	loadingText: {
-		fontSize: 14,
+		fontSize: fontSize.body,
 		color: '#717182',
 	},
 	countBadge: {
@@ -44,18 +44,18 @@ export const mapViewStyles = StyleSheet.create({
 	},
 	countBadgeValue: {
 		color: '#E53935',
-		fontSize: 13,
+		fontSize: fontSize.body,
 		fontWeight: '900',
 	},
 	countBadgeLabel: {
 		color: '#6B7280',
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		fontWeight: '700',
 	},
 	zonePressMarker: {
 		width: 44,
 		height: 44,
-		borderRadius: 22,
+		borderRadius: radius.pill,
 		backgroundColor: 'rgba(255, 255, 255, 0.01)',
 		zIndex: 0,
 	},
@@ -90,7 +90,7 @@ export const mapViewStyles = StyleSheet.create({
 	},
 	recordMarkerText: {
 		color: '#FFFFFF',
-		fontSize: 9,
+		fontSize: fontSize.caption,
 		fontWeight: '900',
 		lineHeight: 10,
 	},
@@ -101,7 +101,7 @@ export const mapViewStyles = StyleSheet.create({
 	userMarkerCircle: {
 		width: 24,
 		height: 24,
-		borderRadius: 22,
+		borderRadius: radius.pill,
 		backgroundColor: colors.secondary,
 		borderWidth: 1,
 		borderColor: colors.surface,

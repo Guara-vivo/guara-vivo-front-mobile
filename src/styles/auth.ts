@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize } from '../constants/theme'
 import { screenGutter, palette, basePrimaryButton, basePrimaryButtonLabel } from './shared'
 
 export const authStyles = StyleSheet.create<Record<string, any>>({
@@ -54,7 +54,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	welcomeTextButtonLabel: {
 		color: colors.text,
 		fontWeight: '600',
-		fontSize: 16,
+		fontSize: fontSize.bodyLarge,
 	},
 	loginScreen: {
 		flex: 1,
@@ -75,7 +75,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	loginTitle: {
 		color: colors.text,
-		fontSize: 22,
+		fontSize: fontSize.headline,
 		lineHeight: 26,
 	},
 	loginBackButton: {
@@ -93,7 +93,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	loginInput: {
 		paddingHorizontal: 0,
 		paddingVertical: 4,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		lineHeight: 20,
 		color: colors.text,
 		backgroundColor: 'transparent',
@@ -119,7 +119,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	loginForgot: {
 		color: colors.secondary,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	loginButtonWrap: {
 		marginTop: 44,
@@ -178,7 +178,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerAccountInput: {
 		color: palette.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		lineHeight: 20,
 		paddingVertical: 4,
 		paddingHorizontal: 0,
@@ -200,7 +200,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	registerPasswordInput: {
 		flex: 1,
 		color: palette.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		lineHeight: 20,
 		paddingVertical: 2,
 		paddingHorizontal: 0,
@@ -218,12 +218,12 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerPasswordHint: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		lineHeight: 14,
 	},
 	registerHeaderTitle: {
 		color: colors.text,
-		fontSize: 22,
+		fontSize: fontSize.headline,
 		lineHeight: 26,
 	},
 })

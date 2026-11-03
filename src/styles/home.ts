@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize } from '../constants/theme'
 import { screenGutter, cornerRadius, unifiedShadow, palette, baseCard, basePrimaryButton } from './shared'
 
 export const homeStyles = StyleSheet.create<Record<string, any>>({
@@ -29,12 +29,12 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 	},
 	homeKicker: {
 		color: palette.text,
-		fontSize: 15,
+		fontSize: fontSize.bodyLarge,
 		textTransform: 'uppercase',
 	},
 	homeSubtitle: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		lineHeight: 16,
 		textAlign: 'center',
 		maxWidth: 250,
@@ -45,7 +45,7 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: palette.primary,
 	},
 	homePrimaryButtonLabel: {
-		fontSize: 16,
+		fontSize: fontSize.bodyLarge,
 	},
 	homeShortcutRow: {
 		flexDirection: 'row',
@@ -71,7 +71,7 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 	},
 	homeShortcutLabel: {
 		color: colors.secondary,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 })

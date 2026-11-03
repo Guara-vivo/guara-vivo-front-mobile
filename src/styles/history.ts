@@ -1,5 +1,5 @@
 import { StyleSheet, ViewStyle } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize } from '../constants/theme'
 import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
 
 export const historyStyles = StyleSheet.create<Record<string, any>>({
@@ -32,7 +32,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historySearchInput: {
 		flex: 1,
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		paddingVertical: 0,
 	},
 	historyFilterButton: {
@@ -49,7 +49,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyFilterButtonText: {
 		color: colors.surface,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 	historyRecordCard: {
@@ -83,7 +83,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordIdText: {
 		color: colors.surface,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	historyRecordDateRow: {
 		flexShrink: 1,
@@ -93,11 +93,11 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyRecordDateText: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	historyRecordDateDot: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	historyRecordInfoRow: {
 		flexDirection: 'row',
@@ -108,7 +108,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyRecordInfoText: {
 		flex: 1,
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	historyTagRow: {
 		flexDirection: 'row',
@@ -123,7 +123,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyTagChipText: {
 		color: colors.secondary,
-		fontSize: 10,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	historyDetailButton: {
@@ -135,7 +135,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyDetailButtonText: {
 		color: colors.surface,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 	historyEmptyWrap: {
@@ -150,7 +150,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyEmptyText: {
 		color: colors.muted,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textAlign: 'center',
 	},
 	historyBottomSheetBackground: {
@@ -173,7 +173,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyModalTitle: {
 		color: colors.secondary,
-		fontSize: 22,
+		fontSize: fontSize.headline,
 		textTransform: 'uppercase',
 	},
 	historyModalContent: {
@@ -203,7 +203,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyFilterSectionTitle: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 
 		textTransform: 'uppercase',
 	},
@@ -214,7 +214,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historySmallLabel: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 
 		width: '48%',
 	},
@@ -238,7 +238,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyDateInput: {
 		flex: 1,
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		paddingVertical: 0,
 	},
 	historyHalfInput: {
@@ -250,7 +250,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.surface,
 		paddingHorizontal: 12,
 		color: colors.text,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	historyBehaviorList: {
 		gap: 8,
@@ -277,7 +277,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyBehaviorLabel: {
 		color: colors.text,
-		fontSize: 16,
+		fontSize: fontSize.bodyLarge,
 	},
 	historyModalActions: {
 		borderTopWidth: 1,
@@ -297,7 +297,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyClearButtonText: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',
 	},
@@ -311,7 +311,7 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historyApplyButtonText: {
 		color: colors.surface,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',
 	},

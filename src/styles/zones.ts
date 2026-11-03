@@ -1,5 +1,5 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize, radius } from '../constants/theme'
 import { cornerRadius } from './shared'
 
 export const zonesStyles = StyleSheet.create<Record<string, any>>({
@@ -16,21 +16,21 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneInfoEyebrow: {
 		color: colors.muted,
-		fontSize: 10,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	mapZoneInfoTitle: {
 		color: colors.secondary,
-		fontSize: 16,
+		fontSize: fontSize.bodyLarge,
 	},
 	mapZoneInfoType: {
 		color: colors.muted,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	mapZoneInfoCloseButton: {
 		width: 30,
 		height: 30,
-		borderRadius: 15,
+		borderRadius: radius.pill,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.secondary,
@@ -38,7 +38,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	mapZoneInfoDeleteIconButton: {
 		width: 30,
 		height: 30,
-		borderRadius: 15,
+		borderRadius: radius.pill,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: colors.primary,
@@ -56,16 +56,16 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneInfoLabel: {
 		color: colors.muted,
-		fontSize: 10,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	mapZoneInfoValue: {
 		color: colors.text,
-		fontSize: 13,
+		fontSize: fontSize.body,
 	},
 	mapZoneInfoCoordinates: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 	},
 	mapZoneRecordsSection: {
 		gap: spacing.xs,
@@ -77,7 +77,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneRecordsCount: {
 		color: colors.secondary,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		fontWeight: '900',
 	},
 	mapZoneRecordsStatusRow: {
@@ -88,11 +88,11 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneRecordsStatusText: {
 		color: colors.muted,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	mapZoneRecordsErrorText: {
 		color: colors.primary,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 	},
 	mapZoneRecordRow: {
 		minHeight: 90,
@@ -122,21 +122,21 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	mapZoneRecordId: {
 		color: colors.secondary,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		fontWeight: '900',
 	},
 	mapZoneRecordDate: {
 		color: colors.text,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 	},
 	mapZoneRecordAuthor: {
 		color: colors.text,
-		fontSize: 12,
+		fontSize: fontSize.caption,
 		marginTop: 2,
 	},
 	mapZoneRecordMeta: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		marginTop: 2,
 	},
 	mapZoneRecordDetailsButton: {
@@ -144,12 +144,12 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		marginTop: 6,
 		paddingHorizontal: 9,
 		paddingVertical: 5,
-		borderRadius: 999,
+		borderRadius: radius.pill,
 		backgroundColor: colors.secondary,
 	},
 	mapZoneRecordDetailsButtonText: {
 		color: colors.surface,
-		fontSize: 9,
+		fontSize: fontSize.caption,
 	},
 	zoneErrorBanner: {
 		marginHorizontal: spacing.md,
@@ -162,7 +162,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 	},
 	zoneErrorText: {
 		color: '#C62828',
-		fontSize: 13,
+		fontSize: fontSize.body,
 	},
 	zoneBottomSheetBackground: {
 		backgroundColor: colors.surface,
@@ -179,20 +179,20 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		paddingBottom: spacing.xl,
 	} as ViewStyle,
 	zoneModalTitle: {
-		fontSize: 18,
+		fontSize: fontSize.title,
 		color: colors.text,
 		marginBottom: spacing.lg,
 		textAlign: 'center',
 	} as TextStyle,
 	zoneDeleteConfirmText: {
 		color: colors.muted,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		lineHeight: 20,
 		textAlign: 'center',
 		marginBottom: spacing.lg,
 	} as TextStyle,
 	zoneModalLabel: {
-		fontSize: 13,
+		fontSize: fontSize.body,
 		color: colors.text,
 		marginTop: spacing.md,
 		marginBottom: spacing.sm,
@@ -231,7 +231,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.primary,
 	} as ViewStyle,
 	zoneModalCancelButtonText: {
-		fontSize: 14,
+		fontSize: fontSize.body,
 		color: colors.surface,
 	} as TextStyle,
 	zoneModalConfirmButton: {
@@ -244,7 +244,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.secondary,
 	} as ViewStyle,
 	zoneModalConfirmButtonText: {
-		fontSize: 14,
+		fontSize: fontSize.body,
 		color: colors.surface,
 	} as TextStyle,
 	zoneDeleteConfirmButton: {
@@ -257,7 +257,7 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.primary,
 	} as ViewStyle,
 	zoneDeleteConfirmButtonText: {
-		fontSize: 14,
+		fontSize: fontSize.body,
 		color: colors.surface,
 	} as TextStyle,
 	zoneDeleteConfirmCancelButton: {

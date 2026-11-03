@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing } from '../constants/theme'
+import { colors, spacing, fontSize, radius } from '../constants/theme'
 import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
 
 export const recordStyles = StyleSheet.create<Record<string, any>>({
@@ -40,7 +40,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailEmptyText: {
 		color: colors.muted,
-		fontSize: 14,
+		fontSize: fontSize.body,
 		textAlign: 'center',
 	},
 	recordDetailIdBadge: {
@@ -56,7 +56,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailIdText: {
 		color: colors.surface,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textTransform: 'uppercase',
 	},
 	recordDetailCard: {
@@ -83,7 +83,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailSectionTitle: {
 		color: colors.secondary,
-		fontSize: 15,
+		fontSize: fontSize.bodyLarge,
 		textTransform: 'uppercase',
 	},
 	recordDetailInfoList: {
@@ -99,17 +99,17 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailInfoLabel: {
 		color: colors.muted,
-		fontSize: 11,
+		fontSize: fontSize.caption,
 		textTransform: 'uppercase',
 	},
 	recordDetailValue: {
 		color: colors.text,
-		fontSize: 16,
+		fontSize: fontSize.bodyLarge,
 		lineHeight: 20,
 	},
 	recordDetailCoordinates: {
 		color: colors.muted,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		lineHeight: 17,
 	},
 	recordDetailChipRow: {
@@ -125,7 +125,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailChipText: {
 		color: colors.secondary,
-		fontSize: 14,
+		fontSize: fontSize.body,
 	},
 	recordDetailImageCarousel: {
 		width: '100%',
@@ -162,7 +162,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailCarouselCounter: {
 		color: colors.muted,
-		fontSize: 13,
+		fontSize: fontSize.body,
 		textAlign: 'center',
 	},
 	recordDetailCarouselArrow: {
@@ -170,7 +170,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		top: '50%',
 		width: 42,
 		height: 42,
-		borderRadius: 21,
+		borderRadius: radius.pill,
 		backgroundColor: 'rgba(117, 117, 117, 0.47)',
 		alignItems: 'center',
 		justifyContent: 'center',
