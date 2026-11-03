@@ -122,7 +122,9 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.release
+            // -PlocalDebugSign assina com a debug.keystore (só para testar no emulador;
+            // nunca use para publicar).
+            signingConfig project.hasProperty('localDebugSign') ? signingConfigs.debug : signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "android:install": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/android-install.ps1",
     "ios": "expo run:ios",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
