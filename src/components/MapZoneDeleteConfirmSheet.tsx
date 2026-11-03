@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import { appStyles } from '../styles/appStyles'
+import { colors } from '../constants/theme'
 
 interface MapZoneDeleteConfirmSheetProps {
 	onConfirm: () => void
@@ -75,7 +76,7 @@ export function MapZoneDeleteConfirmSheet({
 						disabled={isDeleting}
 					>
 						{isDeleting ? (
-							<ActivityIndicator size="small" color="#FFFFFF" />
+							<ActivityIndicator size="small" color={colors.onColor} />
 						) : (
 							<Text style={appStyles.zoneDeleteConfirmButtonText}>Excluir</Text>
 						)}

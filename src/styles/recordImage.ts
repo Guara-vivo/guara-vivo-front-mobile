@@ -5,7 +5,7 @@ import { cornerRadius } from './shared'
 export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	recordImageModalBackdrop: {
 		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		backgroundColor: colors.scrim,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
@@ -64,7 +64,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		width: 42,
 		height: 42,
 		borderRadius: radius.pill,
-		backgroundColor: 'rgba(117, 117, 117, 0.47)',
+		backgroundColor: colors.mediaBadge,
 		alignItems: 'center',
 		justifyContent: 'center',
 		transform: [{ translateY: -21 }],
@@ -188,7 +188,7 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.background,
 		borderRadius: radius.sm,
 		borderLeftWidth: 3,
-		borderLeftColor: '#125ED0',
+		borderLeftColor: colors.secondary,
 	},
 	recordImageModalIbisHeader: {
 		flexDirection: 'row',
@@ -233,11 +233,11 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordImageModalAccuracySmallLabel: {
 		fontSize: fontSize.caption,
-		color: '#666666',
+		color: colors.muted,
 		marginBottom: 2,
 	},
 	recordImageModalAccuracySmallValue: {
 		fontSize: fontSize.caption,
-		color: '#125ED0',
+		color: colors.secondary,
 	},
 })

@@ -40,7 +40,7 @@ export function ProfileScreen({
 			>
 				<View style={appStyles.profileHeroCard}>
 					<View style={appStyles.profileAvatarCircle}>
-						<Ionicons name="person-outline" size={58} color="#1F61C5" />
+						<Ionicons name="person-outline" size={58} color={colors.secondary} />
 					</View>
 
 					<Text style={appStyles.profileHeroName}>{displayName}</Text>
@@ -61,7 +61,7 @@ export function ProfileScreen({
 						onPress={() => navigation.navigate('ChangePassword')}
 						style={appStyles.profileMenuItem}
 					>
-						<Ionicons name="lock-closed-outline" size={19} color="#125ED0" />
+						<Ionicons name="lock-closed-outline" size={19} color={colors.secondary} />
 						<Text style={appStyles.profileMenuItemText}>Alterar senha</Text>
 					</Pressable>
 
@@ -69,7 +69,7 @@ export function ProfileScreen({
 						onPress={() => navigation.navigate('Notifications')}
 						style={appStyles.profileMenuItem}
 					>
-						<Ionicons name="notifications-outline" size={19} color="#125ED0" />
+						<Ionicons name="notifications-outline" size={19} color={colors.secondary} />
 						<Text style={appStyles.profileMenuItemText}>Notificações</Text>
 					</Pressable>
 
@@ -80,7 +80,7 @@ export function ProfileScreen({
 						<Ionicons
 							name="information-circle-outline"
 							size={19}
-							color="#125ED0"
+							color={colors.secondary}
 						/>
 						<Text style={appStyles.profileMenuItemText}>Sobre o app</Text>
 					</Pressable>
@@ -90,7 +90,7 @@ export function ProfileScreen({
 						disabled={isLoggingOut}
 						style={appStyles.profileMenuItem}
 					>
-						<Ionicons name="log-out-outline" size={19} color="#F2201F" />
+						<Ionicons name="log-out-outline" size={19} color={colors.primary} />
 						<Text style={appStyles.profileMenuItemTextLogout}>
 							Sair da conta
 						</Text>

@@ -4,12 +4,13 @@ import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import type { ImageAnalysisItem } from '../../types/records'
 import { DetectionCard } from './DetectionCard'
+import { colors } from '../../constants/theme'
 
 export function DetectionsSection({ analysis }: { analysis: ImageAnalysisItem }) {
 	return (
 		<View style={appStyles.recordImageModalSection}>
 			<View style={appStyles.recordImageModalSectionTitleRow}>
-				<Ionicons name="search-outline" size={16} color="#125ED0" />
+				<Ionicons name="search-outline" size={16} color={colors.secondary} />
 				<Text style={appStyles.recordImageModalSectionTitle}>
 					{`DETECÇÕES (${analysis.ibis_quantity})`}
 				</Text>

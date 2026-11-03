@@ -30,7 +30,7 @@ export function FilterSection({ iconName, title, isOpen, onToggle, children }: P
 				style={appStyles.historyFilterSectionHeader}
 			>
 				<View style={appStyles.historyFilterSectionTitleRow}>
-					<Ionicons name={iconName} size={15} color="#F2201F" />
+					<Ionicons name={iconName} size={15} color={colors.primary} />
 					<Text style={appStyles.historyFilterSectionTitle}>{title}</Text>
 				</View>
 				<Ionicons

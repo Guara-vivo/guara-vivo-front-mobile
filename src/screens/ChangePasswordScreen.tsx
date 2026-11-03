@@ -14,6 +14,7 @@ import { usePasswordValidation } from '../hooks/usePasswordValidation'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -85,7 +86,7 @@ export function ChangePasswordScreen() {
 							hitSlop={8}
 							style={appStyles.headerActionButton}
 						>
-							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+							<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 						</Pressable>
 					}
 				/>
@@ -97,7 +98,7 @@ export function ChangePasswordScreen() {
 				<View style={appStyles.changePasswordCard}>
 					<View style={appStyles.changePasswordFieldWrap}>
 						<View style={appStyles.changePasswordLabelRow}>
-							<Ionicons name="lock-closed-outline" size={13} color="#F2201F" />
+							<Ionicons name="lock-closed-outline" size={13} color={colors.primary} />
 							<Text style={appStyles.changePasswordLabel}>SENHA ATUAL</Text>
 						</View>
 						<View style={appStyles.changePasswordInputRow}>
@@ -114,7 +115,7 @@ export function ChangePasswordScreen() {
 								<Ionicons
 									name={state.showCurrentPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
-									color="#909097"
+									color={colors.muted}
 								/>
 							</Pressable>
 						</View>
@@ -122,7 +123,7 @@ export function ChangePasswordScreen() {
 
 					<View style={appStyles.changePasswordFieldWrap}>
 						<View style={appStyles.changePasswordLabelRow}>
-							<Ionicons name="lock-closed-outline" size={13} color="#F2201F" />
+							<Ionicons name="lock-closed-outline" size={13} color={colors.primary} />
 							<Text style={appStyles.changePasswordLabel}>NOVA SENHA</Text>
 						</View>
 						<View style={appStyles.changePasswordInputRow}>
@@ -139,7 +140,7 @@ export function ChangePasswordScreen() {
 								<Ionicons
 									name={state.showNewPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
-									color="#909097"
+									color={colors.muted}
 								/>
 							</Pressable>
 						</View>
@@ -148,7 +149,7 @@ export function ChangePasswordScreen() {
 
 					<View style={appStyles.changePasswordFieldWrap}>
 						<View style={appStyles.changePasswordLabelRow}>
-							<Ionicons name="lock-closed-outline" size={13} color="#F2201F" />
+							<Ionicons name="lock-closed-outline" size={13} color={colors.primary} />
 							<Text style={appStyles.changePasswordLabel}>
 								CONFIRMAR NOVA SENHA
 							</Text>
@@ -167,7 +168,7 @@ export function ChangePasswordScreen() {
 								<Ionicons
 									name={state.showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
-									color="#909097"
+									color={colors.muted}
 								/>
 							</Pressable>
 						</View>

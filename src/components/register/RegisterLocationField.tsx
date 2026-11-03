@@ -38,7 +38,7 @@ export function RegisterLocationField({
 						{hasSelectedLocation ? 'Localização selecionada' : 'Localização atual do dispositivo'}
 					</Text>
 				</Pressable>
-				{!hasSelectedLocation && <Ionicons name="map-outline" size={16} color="#125ED0" />}
+				{!hasSelectedLocation && <Ionicons name="map-outline" size={16} color={colors.secondary} />}
 				{hasSelectedLocation && (
 					<Pressable
 						onPress={onClear}

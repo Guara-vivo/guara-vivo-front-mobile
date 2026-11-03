@@ -4,6 +4,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { appStyles } from '../../../styles/appStyles'
 import type { HistoryFilterState } from '../../../hooks/useHistoryFilters'
 import type { FilterFieldSetter } from './FilterSection'
+import { colors } from '../../../constants/theme'
 
 type Props = {
 	draftFilters: HistoryFilterState
@@ -25,7 +26,7 @@ export function QuantityFilter({ draftFilters, setField }: Props) {
 					onChangeText={(value) => setField('minQuantity', value)}
 					placeholder="Min"
 					accessibilityLabel="Quantidade mínima"
-					placeholderTextColor="#6B6B74"
+					placeholderTextColor={colors.placeholder}
 					keyboardType="numeric"
 					style={appStyles.historyHalfInput}
 				/>
@@ -35,7 +36,7 @@ export function QuantityFilter({ draftFilters, setField }: Props) {
 					onChangeText={(value) => setField('maxQuantity', value)}
 					placeholder="Max"
 					accessibilityLabel="Quantidade máxima"
-					placeholderTextColor="#6B6B74"
+					placeholderTextColor={colors.placeholder}
 					keyboardType="numeric"
 					style={appStyles.historyHalfInput}
 				/>

@@ -34,7 +34,7 @@ export const registerStyles = StyleSheet.create({
 	pickerButton: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		backgroundColor: 'rgba(255, 255, 255, 0.9)',
+		backgroundColor: colors.overlaySurface,
 		paddingVertical: 8,
 		paddingHorizontal: 12,
 		borderRadius: 20,

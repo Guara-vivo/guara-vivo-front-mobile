@@ -6,6 +6,7 @@ import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -49,7 +50,7 @@ export function EditProfileScreen() {
 							hitSlop={8}
 							style={appStyles.headerActionButton}
 						>
-							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+							<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 						</Pressable>
 					}
 				/>
@@ -63,7 +64,7 @@ export function EditProfileScreen() {
 							dispatch({ type: 'SET_NAME', payload: text })
 						}
 						placeholder="Nome completo"
-						placeholderTextColor="#8F9098"
+						placeholderTextColor={colors.placeholder}
 						style={appStyles.changePasswordInput}
 					/>
 
@@ -74,7 +75,7 @@ export function EditProfileScreen() {
 							dispatch({ type: 'SET_EMAIL', payload: text })
 						}
 						placeholder="E-mail"
-						placeholderTextColor="#8F9098"
+						placeholderTextColor={colors.placeholder}
 						keyboardType="email-address"
 						style={appStyles.changePasswordInput}
 					/>

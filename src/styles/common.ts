@@ -25,7 +25,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		borderWidth: 1,
 		borderLeftWidth: 5,
 		borderColor: colors.border,
-		borderLeftColor: '#2E9D57',
+		borderLeftColor: colors.success,
 		paddingHorizontal: spacing.md,
 		paddingVertical: spacing.sm,
 		flexDirection: 'row',
@@ -140,7 +140,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: 'rgba(0, 0, 0, 0.28)',
+		backgroundColor: colors.scrimSoft,
 		paddingHorizontal: screenGutter,
 	},
 	feedbackModalCard: {

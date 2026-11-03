@@ -31,7 +31,7 @@ export function RegisterEmailScreen() {
 							onPress={() => navigation.goBack()}
 							style={appStyles.registerBackButton}
 						>
-							<Ionicons name="chevron-back" size={24} color="#1A1A1A" />
+							<Ionicons name="chevron-back" size={24} color={colors.text} />
 						</Pressable>
 
 					<Text style={appStyles.registerHeaderTitle}>Crie sua conta</Text>
@@ -43,7 +43,7 @@ export function RegisterEmailScreen() {
 							value={email}
 							onChangeText={setEmail}
 							placeholder="Qual seu e-mail?"
-							placeholderTextColor="#9DA2AE"
+							placeholderTextColor={colors.placeholder}
 							keyboardType="email-address"
 							style={appStyles.registerAccountInput}
 						/>

@@ -6,6 +6,7 @@ import { ActionButton } from '../components/common'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabParamList } from '../types/navigation'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
+import { colors } from '../constants/theme'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
@@ -38,9 +39,9 @@ export function HomeScreen() {
 					containerStyle={appStyles.homePrimaryButton}
 					textStyle={appStyles.homePrimaryButtonLabel}
 					leftIcon={
-						<Ionicons name="location-outline" size={26} color="#F1F1F1" />
+						<Ionicons name="location-outline" size={26} color={colors.background} />
 					}
-					rightIcon={<Ionicons name="arrow-forward" size={24} color="#F1F1F1" />}
+					rightIcon={<Ionicons name="arrow-forward" size={24} color={colors.background} />}
 				/>
 
 				<View style={appStyles.homeShortcutRow}>
@@ -51,7 +52,7 @@ export function HomeScreen() {
 						style={appStyles.homeShortcutCard}
 					>
 						<View style={appStyles.homeShortcutIconBox}>
-							<Ionicons name="map-outline" size={30} color="#125ED0" />
+							<Ionicons name="map-outline" size={30} color={colors.secondary} />
 						</View>
 						<Text style={appStyles.homeShortcutLabel}>VER MAPAS</Text>
 					</Pressable>
@@ -63,7 +64,7 @@ export function HomeScreen() {
 						style={appStyles.homeShortcutCard}
 					>
 						<View style={appStyles.homeShortcutIconBox}>
-							<Ionicons name="list-outline" size={30} color="#125ED0" />
+							<Ionicons name="list-outline" size={30} color={colors.secondary} />
 						</View>
 						<Text style={appStyles.homeShortcutLabel}>HISTÓRICO</Text>
 					</Pressable>

@@ -6,6 +6,7 @@ import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -26,7 +27,7 @@ export function NotificationsScreen() {
 							hitSlop={8}
 							style={appStyles.headerActionButton}
 						>
-							<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+							<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 						</Pressable>
 					}
 				/>
@@ -39,7 +40,7 @@ export function NotificationsScreen() {
 
 				<View style={appStyles.notificationsCard}>
 					<View style={appStyles.notificationsTitleRow}>
-						<Ionicons name="notifications-outline" size={17} color="#125ED0" />
+						<Ionicons name="notifications-outline" size={17} color={colors.secondary} />
 						<Text style={appStyles.notificationsTitle}>
 							PREFERÊNCIAS DE NOTIFICAÇÃO
 						</Text>
@@ -57,8 +58,8 @@ export function NotificationsScreen() {
 						<Switch
 							value={newRecords}
 							onValueChange={setNewRecords}
-							trackColor={{ false: '#C9CED8', true: '#125ED0' }}
-							thumbColor="#F2F2F2"
+							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
+							thumbColor={colors.switchThumb}
 						/>
 					</View>
 
@@ -74,8 +75,8 @@ export function NotificationsScreen() {
 						<Switch
 							value={mapUpdates}
 							onValueChange={setMapUpdates}
-							trackColor={{ false: '#C9CED8', true: '#125ED0' }}
-							thumbColor="#F2F2F2"
+							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
+							thumbColor={colors.switchThumb}
 						/>
 					</View>
 
@@ -91,8 +92,8 @@ export function NotificationsScreen() {
 						<Switch
 							value={monthlyReport}
 							onValueChange={setMonthlyReport}
-							trackColor={{ false: '#C9CED8', true: '#125ED0' }}
-							thumbColor="#F2F2F2"
+							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
+							thumbColor={colors.switchThumb}
 						/>
 					</View>
 
@@ -108,8 +109,8 @@ export function NotificationsScreen() {
 						<Switch
 							value={systemAlerts}
 							onValueChange={setSystemAlerts}
-							trackColor={{ false: '#C9CED8', true: '#125ED0' }}
-							thumbColor="#F2F2F2"
+							trackColor={{ false: colors.switchTrackOff, true: colors.secondary }}
+							thumbColor={colors.switchThumb}
 						/>
 					</View>
 				</View>

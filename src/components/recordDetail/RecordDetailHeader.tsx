@@ -3,6 +3,7 @@ import { Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import { Header } from '../Header'
+import { colors } from '../../constants/theme'
 
 export function RecordDetailHeader({ onBack }: { onBack: () => void }) {
 	return (
@@ -16,7 +17,7 @@ export function RecordDetailHeader({ onBack }: { onBack: () => void }) {
 					hitSlop={8}
 					style={appStyles.headerActionButton}
 				>
-					<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+					<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 				</Pressable>
 			}
 		/>

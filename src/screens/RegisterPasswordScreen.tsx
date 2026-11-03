@@ -60,7 +60,7 @@ export function RegisterPasswordScreen({
 						onPress={() => navigation.goBack()}
 						style={appStyles.registerBackButton}
 					>
-						<Ionicons name="chevron-back" size={24} color="#1A1A1A" />
+						<Ionicons name="chevron-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text style={appStyles.registerHeaderTitle}>Crie sua senha</Text>
 				</View>
@@ -72,7 +72,7 @@ export function RegisterPasswordScreen({
 								value={password}
 								onChangeText={setPassword}
 								placeholder="Senha"
-								placeholderTextColor="#9DA2AE"
+								placeholderTextColor={colors.placeholder}
 								secureTextEntry={!showPassword}
 								style={appStyles.registerPasswordInput}
 							/>
@@ -83,7 +83,7 @@ export function RegisterPasswordScreen({
 								<Ionicons
 									name={showPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
-									color="#9A9A9A"
+									color={colors.muted}
 								/>
 							</Pressable>
 						</View>
@@ -99,7 +99,7 @@ export function RegisterPasswordScreen({
 								value={confirmPassword}
 								onChangeText={setConfirmPassword}
 								placeholder="Confirmar senha"
-								placeholderTextColor="#9DA2AE"
+								placeholderTextColor={colors.placeholder}
 								secureTextEntry={!showConfirmPassword}
 								style={appStyles.registerPasswordInput}
 							/>
@@ -110,7 +110,7 @@ export function RegisterPasswordScreen({
 								<Ionicons
 									name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
 									size={20}
-									color="#9A9A9A"
+									color={colors.muted}
 								/>
 							</Pressable>
 						</View>

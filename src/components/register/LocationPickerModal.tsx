@@ -48,7 +48,7 @@ export function LocationPickerModal({
 					>
 						<View style={mapViewStyles.userMarkerContainer}>
 							<View style={mapViewStyles.userMarkerCircle}>
-								<Ionicons name="navigate" size={16} color="#FFFFFF" />
+								<Ionicons name="navigate" size={16} color={colors.onColor} />
 							</View>
 						</View>
 					</Marker>

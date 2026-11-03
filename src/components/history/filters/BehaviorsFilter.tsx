@@ -3,6 +3,7 @@ import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { behaviorOptions } from '../../../constants/behaviors'
 import { appStyles } from '../../../styles/appStyles'
+import { colors } from '../../../constants/theme'
 
 type Props = {
 	selected: string[]
@@ -32,7 +33,7 @@ export function BehaviorsFilter({ selected, onToggle }: Props) {
 							]}
 						>
 							{active ? (
-								<Ionicons name="checkmark" size={12} color="#FFFFFF" />
+								<Ionicons name="checkmark" size={12} color={colors.onColor} />
 							) : null}
 						</View>
 						<Text style={appStyles.historyBehaviorLabel}>{behavior}</Text>

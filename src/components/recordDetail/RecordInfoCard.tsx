@@ -8,6 +8,7 @@ import {
 	formatLocationLabel,
 	formatTime,
 } from '../../utils/recordFormatters'
+import { colors } from '../../constants/theme'
 
 type RowProps = {
 	icon: React.ComponentProps<typeof Ionicons>['name']
@@ -18,7 +19,7 @@ type RowProps = {
 function InfoRow({ icon, label, children }: RowProps) {
 	return (
 		<View style={appStyles.recordDetailInfoRow}>
-			<Ionicons name={icon} size={18} color="#F2201F" />
+			<Ionicons name={icon} size={18} color={colors.primary} />
 			<View style={appStyles.recordDetailInfoTextWrap}>
 				<Text style={appStyles.recordDetailInfoLabel}>{label}</Text>
 				{children}

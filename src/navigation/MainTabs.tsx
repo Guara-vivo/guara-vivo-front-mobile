@@ -76,7 +76,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				tabBarIconStyle: appStyles.bottomNavIcon,
 				tabBarShowLabel: false,
 				tabBarActiveTintColor: colors.primary,
-				tabBarInactiveTintColor: '#8A8D95',
+				tabBarInactiveTintColor: colors.muted,
 				tabBarItemStyle: appStyles.bottomNavItem,
 			}}
 		>

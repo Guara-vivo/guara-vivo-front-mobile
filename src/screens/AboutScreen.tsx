@@ -6,6 +6,7 @@ import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 const aboutLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
@@ -22,7 +23,7 @@ export function AboutScreen() {
 						hitSlop={8}
 						style={appStyles.headerActionButton}
 					>
-						<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 					</Pressable>
 				}
 			/>
@@ -46,7 +47,7 @@ export function AboutScreen() {
 							<Ionicons
 								name="information-circle-outline"
 								size={16}
-								color="#125ED0"
+								color={colors.secondary}
 							/>
 							<Text style={appStyles.aboutSectionTitle}>SOBRE O PROJETO</Text>
 						</View>

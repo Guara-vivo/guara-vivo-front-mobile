@@ -2,6 +2,7 @@ import React from 'react'
 import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
+import { colors } from '../../constants/theme'
 
 type Props = {
 	icon: keyof typeof Ionicons.glyphMap
@@ -14,7 +15,7 @@ export function RegisterSubsection({ icon, title, children }: Props) {
 	return (
 		<View style={appStyles.registerSubsection}>
 			<View style={appStyles.registerSubTitleRow}>
-				<Ionicons name={icon} size={18} color="#F2201F" />
+				<Ionicons name={icon} size={18} color={colors.primary} />
 				<Text style={appStyles.registerSubTitleText}>{title}</Text>
 			</View>
 

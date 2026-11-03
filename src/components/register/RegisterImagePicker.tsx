@@ -4,6 +4,7 @@ import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import type { ReactNativeFile } from '../../types/api'
+import { colors } from '../../constants/theme'
 
 type Props = {
 	images: ReactNativeFile[]
@@ -37,9 +38,9 @@ export function RegisterImagePicker({
 			>
 				<View style={appStyles.registerDropZoneIconWrap}>
 					{isPicking ? (
-						<ActivityIndicator size="large" color="#125ED0" />
+						<ActivityIndicator size="large" color={colors.secondary} />
 					) : (
-						<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
+						<Ionicons name="camera-outline" size={44} color={colors.accentSoft} />
 					)}
 				</View>
 				<Text style={appStyles.registerDropZoneTitle}>
@@ -68,7 +69,7 @@ export function RegisterImagePicker({
 									pressed && appStyles.registerImageRemoveButtonPressed,
 								]}
 							>
-								<Ionicons name="close" size={14} color="#FFFFFF" />
+								<Ionicons name="close" size={14} color={colors.onColor} />
 							</Pressable>
 						</View>
 					))}

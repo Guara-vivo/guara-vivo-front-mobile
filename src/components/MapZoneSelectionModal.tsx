@@ -5,6 +5,7 @@ import Slider from '@react-native-community/slider'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type { MapZoneType } from '../types/api'
 import { appStyles } from '../styles/appStyles'
+import { colors } from '../constants/theme'
 
 interface MapZoneSelectionModalProps {
 	onConfirm: (type: MapZoneType, radius_meters: number) => void
@@ -129,7 +130,7 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? (
-							<ActivityIndicator size="small" color="#FFFFFF" />
+							<ActivityIndicator size="small" color={colors.onColor} />
 						) : (
 							<Text style={appStyles.zoneModalConfirmButtonText}>Confirmar</Text>
 						)}

@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import { Marker } from 'react-native-maps'
 import { Ionicons } from '@expo/vector-icons'
 import { mapViewStyles as styles } from './mapViewStyles'
+import { colors } from '../../constants/theme'
 
 type Props = {
 	latitude: number
@@ -18,7 +19,7 @@ export function UserLocationMarker({ latitude, longitude }: Props) {
 		>
 			<View style={styles.userMarkerContainer}>
 				<View style={styles.userMarkerCircle}>
-					<Ionicons name="navigate" size={16} color="#FFFFFF" />
+					<Ionicons name="navigate" size={16} color={colors.onColor} />
 				</View>
 			</View>
 		</Marker>

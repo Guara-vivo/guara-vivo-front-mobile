@@ -15,6 +15,7 @@ import { calculateAccuracySummary, type Size } from '../utils/detectionFormatter
 import { AccuracySummarySection } from './recordImage/AccuracySummarySection'
 import { DetectionOverlay } from './recordImage/DetectionOverlay'
 import { DetectionsSection } from './recordImage/DetectionsSection'
+import { colors } from '../constants/theme'
 
 interface RecordImageDetailModalProps {
 	visible: boolean
@@ -70,7 +71,7 @@ export function RecordImageDetailModal({
 							accessibilityRole="button"
 							accessibilityLabel="Fechar"
 						>
-							<Ionicons name="close" size={24} color="#1A1A1A" />
+							<Ionicons name="close" size={24} color={colors.text} />
 						</Pressable>
 					</View>
 
@@ -107,7 +108,7 @@ export function RecordImageDetailModal({
 									<Ionicons
 										name="camera-outline"
 										size={48}
-										color="#8FB0F4"
+										color={colors.accentSoft}
 									/>
 								</View>
 							)}
@@ -122,7 +123,7 @@ export function RecordImageDetailModal({
 										appStyles.recordImageModalArrowLeft,
 									]}
 								>
-									<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+									<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 								</Pressable>
 							)}
 
@@ -136,7 +137,7 @@ export function RecordImageDetailModal({
 										appStyles.recordImageModalArrowRight,
 									]}
 								>
-									<Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+									<Ionicons name="chevron-forward" size={24} color={colors.onColor} />
 								</Pressable>
 							)}
 						</View>

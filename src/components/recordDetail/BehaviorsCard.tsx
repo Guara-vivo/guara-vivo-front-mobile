@@ -2,6 +2,7 @@ import React from 'react'
 import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
+import { colors } from '../../constants/theme'
 
 // Card "COMPORTAMENTOS OBSERVADOS": `flockSize` chega da API como lista separada por vírgula.
 export function BehaviorsCard({ flockSize }: { flockSize: string | number }) {
@@ -13,7 +14,7 @@ export function BehaviorsCard({ flockSize }: { flockSize: string | number }) {
 	return (
 		<View style={appStyles.recordDetailCard}>
 			<View style={appStyles.recordDetailSectionTitleRow}>
-				<Ionicons name="pulse-outline" size={16} color="#125ED0" />
+				<Ionicons name="pulse-outline" size={16} color={colors.secondary} />
 				<Text style={appStyles.recordDetailSectionTitle}>
 					COMPORTAMENTOS OBSERVADOS
 				</Text>

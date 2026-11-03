@@ -21,6 +21,7 @@ import { invalidateRecordsCache } from '../services/recordsService'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
+import { colors } from '../constants/theme'
 
 const ZONES_LOAD_ERROR = 'Não foi possível carregar as áreas. Toque em atualizar para tentar de novo.'
 
@@ -193,7 +194,7 @@ export function MapsScreen() {
 			<View style={[appStyles.screen, appStyles.mapsContent]}>
 				<ScreenCard style={appStyles.mapsFilterCard}>
 					<View style={appStyles.mapsFilterTitleRow}>
-						<Ionicons name="layers-outline" size={18} color="#125ED0" />
+						<Ionicons name="layers-outline" size={18} color={colors.secondary} />
 						<Text style={appStyles.sectionTitle}>CAMADA</Text>
 					</View>
 
@@ -221,7 +222,7 @@ export function MapsScreen() {
 													width: 9,
 													height: 9,
 													borderRadius: 9,
-													backgroundColor: active ? '#FFFFFF' : '#E53935',
+													backgroundColor: active ? colors.surface : colors.danger,
 												},
 											]}
 										/>
@@ -229,7 +230,7 @@ export function MapsScreen() {
 										<Ionicons
 											name={item.icon}
 											size={15}
-											color={active ? '#FFFFFF' : '#2F6FE4'}
+											color={active ? colors.onColor : '#2F6FE4'}
 											style={appStyles.mapsFilterButtonIcon}
 										/>
 									)}
@@ -293,7 +294,7 @@ export function MapsScreen() {
 							<Ionicons
 								name={selectionMode ? 'close' : 'add'}
 								size={18}
-								color="#FFFFFF"
+								color={colors.onColor}
 							/>
 						</Pressable>
 						<Pressable
@@ -308,9 +309,9 @@ export function MapsScreen() {
 							]}
 						>
 							{isReloading ? (
-								<ActivityIndicator size="small" color="#FFFFFF" />
+								<ActivityIndicator size="small" color={colors.onColor} />
 							) : (
-								<Ionicons name="refresh" size={18} color="#FFFFFF" />
+								<Ionicons name="refresh" size={18} color={colors.onColor} />
 							)}
 						</Pressable>
 					</View>

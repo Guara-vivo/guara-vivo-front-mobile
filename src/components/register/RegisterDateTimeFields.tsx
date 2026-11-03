@@ -5,6 +5,7 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
+import { colors } from '../../constants/theme'
 
 type Props = {
 	date: Date | null
@@ -68,7 +69,7 @@ export function RegisterDateTimeFields({
 					>
 						{dateLabel ?? 'Insira a data...'}
 					</Text>
-					<Ionicons name="calendar-outline" size={16} color="#125ED0" />
+					<Ionicons name="calendar-outline" size={16} color={colors.secondary} />
 				</Pressable>
 
 				<Pressable
@@ -87,7 +88,7 @@ export function RegisterDateTimeFields({
 					>
 						{timeLabel ?? 'Insira a hora...'}
 					</Text>
-					<Ionicons name="time-outline" size={16} color="#125ED0" />
+					<Ionicons name="time-outline" size={16} color={colors.secondary} />
 				</Pressable>
 			</View>
 

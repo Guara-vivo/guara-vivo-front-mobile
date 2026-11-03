@@ -18,6 +18,7 @@ import { formatDate, formatTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 import type { MapZoneRecordRead, MapZoneType } from '../types/api'
 import type { RootStackParamList } from '../types/navigation'
+import { colors } from '../constants/theme'
 
 function formatZoneType(type: MapZoneType) {
   return type === 'feeding' ? 'Alimentação' : 'Ninho'
@@ -58,7 +59,7 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
   const animatedStyle = {
     backgroundColor: focusValue.interpolate({
       inputRange: [0, 1],
-      outputRange: ['#F3F7FF', '#EAF2FF'],
+      outputRange: [colors.selectedBg, colors.selectedBgActive],
     }),
   }
 
@@ -197,7 +198,7 @@ export function MapZoneDetailSheet() {
                     hitSlop={8}
                     style={appStyles.mapZoneInfoDeleteIconButton}
                   >
-                    <Ionicons name="trash-outline" size={17} color="#FFFFFF" />
+                    <Ionicons name="trash-outline" size={17} color={colors.onColor} />
                   </Pressable>
                   <Pressable
                     onPress={handleCloseZoneDetail}
@@ -207,7 +208,7 @@ export function MapZoneDetailSheet() {
                     hitSlop={8}
                     style={appStyles.mapZoneInfoCloseButton}
                   >
-                    <Ionicons name="close" size={18} color="#FFFFFF" />
+                    <Ionicons name="close" size={18} color={colors.onColor} />
                   </Pressable>
                 </View>
               </View>
@@ -241,7 +242,7 @@ export function MapZoneDetailSheet() {
                 </View>
                 {ctx.isZoneRecordsLoading ? (
                   <View style={appStyles.mapZoneRecordsStatusRow}>
-                    <ActivityIndicator size="small" color="#125ED0" />
+                    <ActivityIndicator size="small" color={colors.secondary} />
                     <Text style={appStyles.mapZoneRecordsStatusText}>
                       Carregando registros...
                     </Text>

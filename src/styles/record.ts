@@ -171,7 +171,7 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		width: 42,
 		height: 42,
 		borderRadius: radius.pill,
-		backgroundColor: 'rgba(117, 117, 117, 0.47)',
+		backgroundColor: colors.mediaBadge,
 		alignItems: 'center',
 		justifyContent: 'center',
 		transform: [{ translateY: -21 }],

@@ -4,6 +4,7 @@ import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { useImageCarousel } from '../../hooks/useImageCarousel'
 import { appStyles } from '../../styles/appStyles'
+import { colors } from '../../constants/theme'
 
 type Props = {
 	imageUris: string[]
@@ -26,7 +27,7 @@ export function ImageCarouselCard({ imageUris, onImagePress }: Props) {
 	return (
 		<View style={appStyles.recordDetailCard}>
 			<View style={appStyles.recordDetailSectionTitleRow}>
-				<Ionicons name="camera-outline" size={16} color="#125ED0" />
+				<Ionicons name="camera-outline" size={16} color={colors.secondary} />
 				<Text style={appStyles.recordDetailSectionTitle}>
 					IMAGENS ({imageSlots})
 				</Text>
@@ -74,7 +75,7 @@ export function ImageCarouselCard({ imageUris, onImagePress }: Props) {
 								</Pressable>
 							) : (
 								<View style={appStyles.recordDetailCarouselPlaceholder}>
-									<Ionicons name="camera-outline" size={44} color="#8FB0F4" />
+									<Ionicons name="camera-outline" size={44} color={colors.accentSoft} />
 									<Text style={appStyles.recordDetailEmptyText}>
 										Nenhuma imagem disponível.
 									</Text>
@@ -94,7 +95,7 @@ export function ImageCarouselCard({ imageUris, onImagePress }: Props) {
 							appStyles.recordDetailCarouselArrowLeft,
 						]}
 					>
-						<Ionicons name="chevron-back" size={24} color="#FFFFFF" />
+						<Ionicons name="chevron-back" size={24} color={colors.onColor} />
 					</Pressable>
 				)}
 
@@ -108,7 +109,7 @@ export function ImageCarouselCard({ imageUris, onImagePress }: Props) {
 							appStyles.recordDetailCarouselArrowRight,
 						]}
 					>
-						<Ionicons name="chevron-forward" size={24} color="#FFFFFF" />
+						<Ionicons name="chevron-forward" size={24} color={colors.onColor} />
 					</Pressable>
 				)}
 			</View>

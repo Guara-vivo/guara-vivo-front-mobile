@@ -3,6 +3,7 @@ import { Marker } from 'react-native-maps'
 import { Ionicons } from '@expo/vector-icons'
 import type { MapZoneRecordRead } from '../../types/api'
 import { mapViewStyles as styles } from './mapViewStyles'
+import { colors } from '../../constants/theme'
 
 type RecordMarkerProps = {
 	record: MapZoneRecordRead
@@ -30,7 +31,7 @@ export function RecordMarker({ record, focused, opacity, onPress }: RecordMarker
 				]}
 			>
 				<View style={styles.recordMarkerInner}>
-					<Ionicons name="eye" size={12} color="#FFFFFF" />
+					<Ionicons name="eye" size={12} color={colors.onColor} />
 				</View>
 				<Text style={styles.recordMarkerText}>{record.ibis_quantity ?? 0}</Text>
 			</Animated.View>

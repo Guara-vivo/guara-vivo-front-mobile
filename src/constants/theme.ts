@@ -9,6 +9,22 @@ export const colors = {
 	muted: '#717182',
 	border: 'rgba(26, 26, 26, 0.12)',
 	splash: '#c5dfff',
+	onColor: '#FFFFFF',
+	accent: '#5C8BD6',
+	accentSoft: '#8FB0F4',
+	danger: '#E53935',
+	success: '#2E9D57',
+	placeholder: '#6B6B74',
+	selectedBg: '#F3F7FF',
+	selectedBgActive: '#EAF2FF',
+	switchTrackOff: '#C9CED8',
+	switchThumb: '#F2F2F2',
+	overlaySurface: 'rgba(255, 255, 255, 0.94)',
+	scrim: 'rgba(0, 0, 0, 0.5)',
+	scrimSoft: 'rgba(0, 0, 0, 0.28)',
+	mediaBadge: 'rgba(117, 117, 117, 0.47)',
+	dangerBg: '#FFEBEE',
+	dangerText: '#C62828',
 }
 
 export const spacing = {

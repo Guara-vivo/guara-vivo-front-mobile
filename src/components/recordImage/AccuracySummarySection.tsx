@@ -3,6 +3,7 @@ import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import { formatPercent, type AccuracySummary } from '../../utils/detectionFormatters'
+import { colors } from '../../constants/theme'
 
 const SUMMARY_ITEMS = [
 	{ label: 'Ave Detectada', key: 'deteccao_yolo' },
@@ -15,7 +16,7 @@ export function AccuracySummarySection({ summary }: { summary: AccuracySummary }
 	return (
 		<View style={appStyles.recordImageModalSection}>
 			<View style={appStyles.recordImageModalSectionTitleRow}>
-				<Ionicons name="bar-chart-outline" size={16} color="#125ED0" />
+				<Ionicons name="bar-chart-outline" size={16} color={colors.secondary} />
 				<Text style={appStyles.recordImageModalSectionTitle}>RESUMO TÉCNICO</Text>
 			</View>
 

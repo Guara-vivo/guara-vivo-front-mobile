@@ -42,7 +42,7 @@ export function InAppNotificationBanner({
 					<Ionicons
 						name={isError ? 'alert-circle' : 'checkmark-circle'}
 						size={22}
-						color={isError ? colors.primary : '#2E9D57'}
+						color={isError ? colors.primary : colors.success}
 					/>
 				</View>
 

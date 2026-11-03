@@ -2,6 +2,7 @@ import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { Pressable, Text, View } from 'react-native'
 import { appStyles } from '../styles/appStyles'
+import { colors } from '../constants/theme'
 
 export function RegisterBehaviorList({
 	behaviorOrder,
@@ -32,7 +33,7 @@ export function RegisterBehaviorList({
 							]}
 						>
 							{active ? (
-								<Ionicons name="checkmark" size={12} color="#FFFFFF" />
+								<Ionicons name="checkmark" size={12} color={colors.onColor} />
 							) : null}
 						</View>
 						<Text style={appStyles.registerBehaviorLabel}>{behavior}</Text>

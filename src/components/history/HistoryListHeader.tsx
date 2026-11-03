@@ -5,6 +5,7 @@ import { appStyles } from '../../styles/appStyles'
 import type { SortOrder } from '../../utils/historyRecords'
 import { formatDate, formatTime } from '../../utils/recordFormatters'
 import { ScreenCard } from '../common'
+import { colors } from '../../constants/theme'
 
 type Props = {
 	staleSince: number | null
@@ -37,13 +38,13 @@ function HistoryListHeaderBase({
 			) : null}
 			<ScreenCard style={appStyles.historySearchCard}>
 				<View style={appStyles.historySearchInputWrap}>
-					<Ionicons name="search-outline" size={19} color="#5C8BD6" />
+					<Ionicons name="search-outline" size={19} color={colors.accent} />
 					<TextInput
 						value={searchTerm}
 						onChangeText={onSearchChange}
 						accessibilityLabel="Buscar registros"
 						placeholder="Buscar por local, data..."
-						placeholderTextColor="#8E8E96"
+						placeholderTextColor={colors.placeholder}
 						style={appStyles.historySearchInput}
 					/>
 				</View>
@@ -59,7 +60,7 @@ function HistoryListHeaderBase({
 						disabled && appStyles.historyFilterButtonDisabled,
 					]}
 				>
-					<Ionicons name="funnel-outline" size={17} color="#FFFFFF" />
+					<Ionicons name="funnel-outline" size={17} color={colors.onColor} />
 					<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
 				</Pressable>
 
@@ -74,7 +75,7 @@ function HistoryListHeaderBase({
 						disabled && appStyles.historyFilterButtonDisabled,
 					]}
 				>
-					<Ionicons name="swap-vertical" size={17} color="#FFFFFF" />
+					<Ionicons name="swap-vertical" size={17} color={colors.onColor} />
 					<Text style={appStyles.historyFilterButtonText}>
 						{sortOrder === 'desc' ? 'MAIS RECENTES' : 'MAIS ANTIGOS'}
 					</Text>

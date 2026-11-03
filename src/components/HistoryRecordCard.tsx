@@ -8,6 +8,7 @@ import {
 import AnalysisProgressIndicator from './AnalysisProgressIndicator'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
+import { colors } from '../constants/theme'
 
 function HistoryRecordCardBase({
 	item,
@@ -44,7 +45,7 @@ function HistoryRecordCardBase({
 					</View>
 
 					<View style={appStyles.historyRecordDateRow}>
-						<Ionicons name="calendar-outline" size={18} color="#5C8BD6" />
+						<Ionicons name="calendar-outline" size={18} color={colors.accent} />
 						<Text style={appStyles.historyRecordDateText}>
 							{formatDate(item.datetime)}
 						</Text>
@@ -59,7 +60,7 @@ function HistoryRecordCardBase({
 					<Ionicons
 						name={syncState === 'failed' ? 'alert-circle' : 'cloud-upload-outline'}
 						size={26}
-						color={syncState === 'failed' ? '#F2201F' : '#5C8BD6'}
+						color={syncState === 'failed' ? colors.primary : colors.accent}
 					/>
 				) : (
 					<AnalysisProgressIndicator
@@ -70,12 +71,12 @@ function HistoryRecordCardBase({
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>
-				<Ionicons name="map-outline" size={18} color="#F2201F" />
+				<Ionicons name="map-outline" size={18} color={colors.primary} />
 				<Text style={appStyles.historyRecordInfoText}>{areaLabel}</Text>
 			</View>
 
 			<View style={appStyles.historyRecordInfoRow}>
-				<Ionicons name="eye-outline" size={18} color="#F2201F" />
+				<Ionicons name="eye-outline" size={18} color={colors.primary} />
 				<Text style={appStyles.historyRecordInfoText}>
 					{item.ibis_quantity} {item.ibis_quantity === 1 ? 'Guará' : 'Guarás'}
 				</Text>

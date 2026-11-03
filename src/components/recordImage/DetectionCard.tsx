@@ -9,6 +9,7 @@ import {
 	getLifeStageLabel,
 	getPlumageLabel,
 } from '../../utils/detectionFormatters'
+import { colors } from '../../constants/theme'
 
 const ACCURACY_ITEMS = [
 	{ label: 'Ave', key: 'deteccao_yolo' },
@@ -41,7 +42,7 @@ export function DetectionCard({ detection, index }: Props) {
 						{ backgroundColor: color },
 					]}
 				>
-					<Ionicons name="ellipse" size={14} color="#FFFFFF" />
+					<Ionicons name="ellipse" size={14} color={colors.onColor} />
 				</View>
 				<View style={appStyles.recordImageModalIbisInfo}>
 					<Text style={appStyles.recordImageModalIbisIndex}>Guará {index + 1}</Text>

@@ -5,6 +5,7 @@ import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
 import { appStyles } from '../../../styles/appStyles'
 import type { HistoryFilterState } from '../../../hooks/useHistoryFilters'
 import type { FilterFieldSetter } from './FilterSection'
+import { colors } from '../../../constants/theme'
 
 type Props = {
 	draftFilters: HistoryFilterState
@@ -27,10 +28,10 @@ function DateInput({
 				value={value}
 				onChangeText={onChangeText}
 				placeholder="dd/mm/aaaa"
-				placeholderTextColor="#6B6B74"
+				placeholderTextColor={colors.placeholder}
 				style={appStyles.historyDateInput}
 			/>
-			<Ionicons accessible={false} name="calendar-outline" size={14} color="#1A1A1A" />
+			<Ionicons accessible={false} name="calendar-outline" size={14} color={colors.text} />
 		</View>
 	)
 }

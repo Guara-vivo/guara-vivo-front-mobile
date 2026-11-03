@@ -84,7 +84,7 @@ export function LoginScreen({
 						hitSlop={10}
 						style={appStyles.loginBackButton}
 					>
-						<Ionicons name="chevron-back" size={24} color="#1A1A1A" />
+						<Ionicons name="chevron-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text style={appStyles.loginTitle}>Acessar conta</Text>
 				</View>
@@ -103,7 +103,7 @@ export function LoginScreen({
 							returnKeyType="next"
 							accessibilityLabel="E-mail de acesso"
 							editable={!isLoading}
-							placeholderTextColor="#AEB4BF"
+							placeholderTextColor={colors.placeholder}
 							style={appStyles.loginInput}
 						/>
 						<View style={appStyles.loginDivider} />
@@ -124,7 +124,7 @@ export function LoginScreen({
 								onSubmitEditing={handleLogin}
 								accessibilityLabel="Senha de acesso"
 								editable={!isLoading}
-								placeholderTextColor="#AEB4BF"
+								placeholderTextColor={colors.placeholder}
 								style={[appStyles.loginInput, appStyles.loginPasswordInput]}
 							/>
 							<Pressable
@@ -137,7 +137,7 @@ export function LoginScreen({
 								<Ionicons
 									name={showPassword ? 'eye' : 'eye-off-outline'}
 									size={22}
-									color="#A3A3A3"
+									color={colors.muted}
 								/>
 							</Pressable>
 						</View>

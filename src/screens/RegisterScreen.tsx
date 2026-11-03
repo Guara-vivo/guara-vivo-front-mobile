@@ -19,6 +19,7 @@ import { useRegisterLocation } from '../hooks/useRegisterLocation'
 import { useRegisterSave } from '../hooks/useRegisterSave'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabParamList } from '../types/navigation'
+import { colors } from '../constants/theme'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
@@ -82,7 +83,7 @@ export function RegisterScreen() {
 			>
 				<View style={appStyles.registerCard}>
 					<View style={appStyles.registerSectionTitleRow}>
-						<Ionicons name="camera-outline" size={22} color="#125ED0" />
+						<Ionicons name="camera-outline" size={22} color={colors.secondary} />
 						<Text style={appStyles.registerSectionTitleTextBlue}>
 							INFORMAÇÕES DO AVISTAMENTO
 						</Text>
@@ -146,7 +147,7 @@ export function RegisterScreen() {
 							containerStyle={appStyles.registerSaveButton}
 							textStyle={appStyles.registerActionButtonLabel}
 							leftIcon={
-								isSaving ? <ActivityIndicator size="small" color="#FFFFFF" /> : null
+								isSaving ? <ActivityIndicator size="small" color={colors.onColor} /> : null
 							}
 						/>
 					</View>

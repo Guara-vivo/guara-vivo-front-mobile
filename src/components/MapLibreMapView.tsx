@@ -15,6 +15,7 @@ import {
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { RecordMarker } from './map/RecordMarker'
 import { UserLocationMarker } from './map/UserLocationMarker'
+import { colors } from '../constants/theme'
 
 const CAMERA_ANIMATION_DURATION_MS = 250
 const EMPTY_RECORD_MARKERS: MapZoneRecordRead[] = []
@@ -185,7 +186,7 @@ export function MapLibreMapView({
 			) : null}
 			{showMapLoading ? (
 				<View pointerEvents="none" style={styles.recordsLoadingOverlay}>
-					<ActivityIndicator size="large" color="#1A1A1A" />
+					<ActivityIndicator size="large" color={colors.text} />
 					<Text style={styles.loadingText}>Preparando mapa...</Text>
 				</View>
 			) : null}
