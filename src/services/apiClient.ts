@@ -183,3 +183,40 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
 
 	return response
 }
+
+const GET_RETRY_DELAY_MS = 400
+
+// Falhas que valem uma nova tentativa: o servidor nao respondeu de forma conclusiva
+// (rede caiu, corpo da resposta invalido no RN/Android). Erros da API, cancelamento
+// e timeout nao se repetem.
+function isRetryableNetworkError(error: unknown) {
+	if (error instanceof ApiError || error instanceof RequestTimeoutError) {
+		return false
+	}
+	if (error instanceof Error && error.name === 'AbortError') {
+		return false
+	}
+	return true
+}
+
+// GET que le o corpo JSON dentro da mesma tentativa, para que uma falha ao ler o corpo
+// tambem seja repetida uma vez (apiFetch devolve a resposta antes de o corpo ser lido).
+export async function apiGetJson<T>(path: string, options: RequestInit = {}): Promise<T> {
+	const request = async () => {
+		const response = await apiFetch(path, { ...options, method: 'GET' })
+		return (await response.json()) as T
+	}
+
+	try {
+		return await request()
+	} catch (error) {
+		if (!isRetryableNetworkError(error) || options.signal?.aborted) {
+			throw error
+		}
+		await new Promise((resolve) => setTimeout(resolve, GET_RETRY_DELAY_MS))
+		if (options.signal?.aborted) {
+			throw error
+		}
+		return request()
+	}
+}

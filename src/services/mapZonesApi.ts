@@ -1,17 +1,13 @@
 import type { MapZoneRead, MapZoneRecordRead, MapZoneType } from '../types/api'
-import { apiFetch } from './apiClient'
+import { apiFetch, apiGetJson } from './apiClient'
 import { getAccessToken } from './tokenStorage'
 
 export async function getMapZones(signal?: AbortSignal): Promise<MapZoneRead[]> {
 	const token = await getAccessToken()
-	const response = await apiFetch('/map-zones/', {
-		method: 'GET',
+	return apiGetJson<MapZoneRead[]>('/map-zones/', {
 		headers: token ? { Authorization: `Bearer ${token}` } : {},
 		signal,
 	})
-
-
-	return response.json()
 }
 
 export async function getMapZoneRecords(
@@ -19,14 +15,10 @@ export async function getMapZoneRecords(
 	signal?: AbortSignal,
 ): Promise<MapZoneRecordRead[]> {
 	const token = await getAccessToken()
-	const response = await apiFetch(`/map-zones/${zoneId}/records`, {
-		method: 'GET',
+	return apiGetJson<MapZoneRecordRead[]>(`/map-zones/${zoneId}/records`, {
 		headers: token ? { Authorization: `Bearer ${token}` } : {},
 		signal,
 	})
-
-
-	return response.json()
 }
 
 export async function createMapZone(

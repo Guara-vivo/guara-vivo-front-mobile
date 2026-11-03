@@ -1,8 +1,9 @@
 import { createMapZone, getMapZones } from './mapZonesApi'
-import { apiFetch } from './apiClient'
+import { apiFetch, apiGetJson } from './apiClient'
 
 jest.mock('./apiClient', () => ({
 	apiFetch: jest.fn(),
+	apiGetJson: jest.fn(),
 }))
 
 jest.mock('./tokenStorage', () => ({
@@ -10,6 +11,7 @@ jest.mock('./tokenStorage', () => ({
 }))
 
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>
+const mockedApiGetJson = apiGetJson as jest.MockedFunction<typeof apiGetJson>
 
 function mockJsonResponse(data: unknown) {
 	mockedApiFetch.mockResolvedValue({
@@ -21,14 +23,15 @@ function mockJsonResponse(data: unknown) {
 describe('mapZonesApi', () => {
 	beforeEach(() => {
 		mockedApiFetch.mockReset()
+		mockedApiGetJson.mockReset()
 	})
 
 	it('fetches map zones using trailing slash to avoid redirects', async () => {
-		mockJsonResponse([])
+		mockedApiGetJson.mockResolvedValue([])
 
 		await getMapZones()
 
-		expect(mockedApiFetch).toHaveBeenCalledWith('/map-zones/', expect.any(Object))
+		expect(mockedApiGetJson).toHaveBeenCalledWith('/map-zones/', expect.any(Object))
 	})
 
 	it('creates map zones using trailing slash to avoid redirects', async () => {

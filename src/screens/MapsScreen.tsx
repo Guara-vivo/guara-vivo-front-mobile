@@ -20,6 +20,9 @@ import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { invalidateRecordsCache } from '../services/recordsService'
 import { formatLastUpdatedAt } from '../utils/timeFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
+import { getLoadErrorMessage } from '../utils/loadErrorMessage'
+
+const ZONES_LOAD_ERROR = 'Não foi possível carregar as áreas. Toque em atualizar para tentar de novo.'
 
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 type LayerButton = { id: MapLayerId; label: string; icon: IoniconName }
@@ -62,7 +65,7 @@ export function MapsScreen() {
 				return
 			}
 
-			setZonesError(error instanceof Error ? error.message : 'Erro ao carregar áreas')
+			setZonesError(getLoadErrorMessage(error, ZONES_LOAD_ERROR))
 		} finally {
 			setIsZonesLoading(false)
 		}

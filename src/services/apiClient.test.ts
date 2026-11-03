@@ -1,6 +1,7 @@
 import {
 	ApiError,
 	apiFetch,
+	apiGetJson,
 	RequestTimeoutError,
 	setSessionExpiredHandler,
 } from './apiClient'
@@ -122,5 +123,43 @@ describe('apiFetch', () => {
 		controller.abort()
 
 		await expect(request).rejects.toMatchObject({ name: 'AbortError' })
+	})
+})
+
+describe('apiGetJson', () => {
+	it('repete uma vez quando a leitura do corpo falha e devolve o JSON', async () => {
+		const flaky = {
+			...respond(200),
+			json: async () => {
+				throw new Error('The specified blob is invalid')
+			},
+		}
+		fetchMock.mockResolvedValueOnce(flaky).mockResolvedValueOnce(respond(200, [{ id: 1 }]))
+
+		await expect(apiGetJson('/map-zones/')).resolves.toEqual([{ id: 1 }])
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+	})
+
+	it('não repete erros da API', async () => {
+		fetchMock.mockResolvedValue(respond(500, 'falhou'))
+
+		await expect(apiGetJson('/map-zones/')).rejects.toBeInstanceOf(ApiError)
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('desiste após a segunda falha', async () => {
+		fetchMock.mockRejectedValue(new TypeError('Network request failed'))
+
+		await expect(apiGetJson('/map-zones/')).rejects.toThrow('Network request failed')
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+	})
+
+	it('não repete quando a requisição foi cancelada', async () => {
+		const controller = new AbortController()
+		controller.abort()
+		fetchMock.mockRejectedValue(Object.assign(new Error('Aborted'), { name: 'AbortError' }))
+
+		await expect(apiGetJson('/map-zones/', { signal: controller.signal })).rejects.toThrow()
+		expect(fetchMock).toHaveBeenCalledTimes(1)
 	})
 })

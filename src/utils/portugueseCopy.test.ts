@@ -7,6 +7,7 @@ const filesToCheck = [
 	'src/contexts/InAppNotificationContext.tsx',
 	'src/screens/AboutScreen.tsx',
 	'src/screens/HistoryScreen.tsx',
+	'src/utils/loadErrorMessage.ts',
 	'src/screens/LoginScreen.tsx',
 	'src/screens/NotificationsScreen.tsx',
 	'src/screens/ProfileScreen.tsx',
