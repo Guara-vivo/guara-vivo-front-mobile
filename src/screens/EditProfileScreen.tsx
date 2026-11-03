@@ -1,12 +1,22 @@
-import React, { useReducer } from 'react'
-import { ScrollView, Pressable, Text, TextInput, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import React, { useReducer, useState } from 'react'
+import {
+	KeyboardAvoidingView,
+	Platform,
+	Pressable,
+	ScrollView,
+	Text,
+	TextInput,
+	View,
+} from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
+import { HeaderBackButton } from '../components/HeaderBackButton'
+import { ComingSoonModal } from '../components/ComingSoonModal'
 import { colors } from '../constants/theme'
+import type { UserRead } from '../types/api'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -33,29 +43,31 @@ function editProfileReducer(
 	}
 }
 
-export function EditProfileScreen() {
+export function EditProfileScreen({ user }: { user: UserRead | null }) {
 	const navigation = useNavigation<NavigationProp>()
 	const [state, dispatch] = useReducer(editProfileReducer, {
-		name: 'Joao da Silva Goulard',
-		email: 'joaosgoulard@email.com',
+		name: user?.name ?? '',
+		email: user?.email ?? '',
 	})
 
+	const [showComingSoon, setShowComingSoon] = useState(false)
+
 	return (
-		<View style={appStyles.profileScreen}>
+		<KeyboardAvoidingView
+			style={appStyles.profileScreen}
+			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+		>
 				<Header
 					title="Editar Perfil"
 					leftIcon={
-						<Pressable
-							onPress={() => navigation.goBack()}
-							hitSlop={8}
-							style={appStyles.headerActionButton}
-						>
-							<Ionicons name="chevron-back" size={24} color={colors.onColor} />
-						</Pressable>
+							<HeaderBackButton onPress={() => navigation.goBack()} />
 					}
 				/>
 
-			<ScrollView contentContainerStyle={appStyles.profileContent}>
+			<ScrollView
+				contentContainerStyle={appStyles.profileContent}
+				keyboardShouldPersistTaps="handled"
+			>
 				<View style={appStyles.changePasswordCard}>
 					<Text style={appStyles.changePasswordLabel}>NOME</Text>
 					<TextInput
@@ -64,6 +76,9 @@ export function EditProfileScreen() {
 							dispatch({ type: 'SET_NAME', payload: text })
 						}
 						placeholder="Nome completo"
+						accessibilityLabel="Nome"
+						autoComplete="name"
+						textContentType="name"
 						placeholderTextColor={colors.placeholder}
 						style={appStyles.changePasswordInput}
 					/>
@@ -75,14 +90,20 @@ export function EditProfileScreen() {
 							dispatch({ type: 'SET_EMAIL', payload: text })
 						}
 						placeholder="E-mail"
+						accessibilityLabel="E-mail"
 						placeholderTextColor={colors.placeholder}
 						keyboardType="email-address"
+						autoCapitalize="none"
+						autoCorrect={false}
+						autoComplete="email"
+						textContentType="emailAddress"
 						style={appStyles.changePasswordInput}
 					/>
 
 					<View style={appStyles.changePasswordActionsRow}>
 						<Pressable
-							onPress={() => navigation.goBack()}
+							onPress={() => setShowComingSoon(true)}
+							accessibilityRole="button"
 							style={appStyles.changePasswordPrimaryAction}
 						>
 							<Text style={appStyles.changePasswordPrimaryActionText}>
@@ -91,6 +112,7 @@ export function EditProfileScreen() {
 						</Pressable>
 						<Pressable
 							onPress={() => navigation.goBack()}
+							accessibilityRole="button"
 							style={appStyles.changePasswordSecondaryAction}
 						>
 							<Text style={appStyles.changePasswordSecondaryActionText}>
@@ -100,7 +122,13 @@ export function EditProfileScreen() {
 					</View>
 				</View>
 			</ScrollView>
-		</View>
+
+			<ComingSoonModal
+				visible={showComingSoon}
+				message="A edição de perfil ainda não está disponível no aplicativo."
+				onClose={() => setShowComingSoon(false)}
+			/>
+		</KeyboardAvoidingView>
 	)
 }
 

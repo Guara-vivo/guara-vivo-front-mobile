@@ -6,6 +6,11 @@ import FeedbackModal from '../components/FeedbackModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
+import {
+	isPasswordLongEnough,
+	MIN_PASSWORD_LENGTH,
+	PASSWORD_RULE_HINT,
+} from '../utils/passwordRules'
 import type { AuthStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -31,8 +36,8 @@ export function RegisterPasswordScreen({
 	}
 
 	const handleFinish = () => {
-		if (password.length < 6) {
-			showErrorFeedback('Senha fraca', 'Use pelo menos 6 caracteres.')
+		if (!isPasswordLongEnough(password)) {
+			showErrorFeedback('Senha fraca', `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`)
 			return
 		}
 
@@ -58,6 +63,9 @@ export function RegisterPasswordScreen({
 				<View style={appStyles.registerHeaderRow}>
 					<Pressable
 						onPress={() => navigation.goBack()}
+						accessibilityRole="button"
+						accessibilityLabel="Voltar"
+						hitSlop={10}
 						style={appStyles.registerBackButton}
 					>
 						<Ionicons name="chevron-back" size={24} color={colors.text} />
@@ -74,10 +82,19 @@ export function RegisterPasswordScreen({
 								placeholder="Senha"
 								placeholderTextColor={colors.placeholder}
 								secureTextEntry={!showPassword}
+								autoCapitalize="none"
+								autoCorrect={false}
+								autoComplete="new-password"
+								textContentType="newPassword"
+								returnKeyType="next"
+								accessibilityLabel="Senha"
 								style={appStyles.registerPasswordInput}
 							/>
 							<Pressable
 								onPress={() => setShowPassword((current) => !current)}
+								accessibilityRole="button"
+								accessibilityLabel={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+								hitSlop={10}
 								style={appStyles.registerPasswordEyeButton}
 							>
 								<Ionicons
@@ -89,7 +106,7 @@ export function RegisterPasswordScreen({
 						</View>
 						<View style={appStyles.registerPasswordDivider} />
 						<Text style={appStyles.registerPasswordHint}>
-							Minimo de 8 caracteres
+							{PASSWORD_RULE_HINT}
 						</Text>
 					</View>
 
@@ -101,10 +118,22 @@ export function RegisterPasswordScreen({
 								placeholder="Confirmar senha"
 								placeholderTextColor={colors.placeholder}
 								secureTextEntry={!showConfirmPassword}
+								autoCapitalize="none"
+								autoCorrect={false}
+								autoComplete="new-password"
+								textContentType="newPassword"
+								returnKeyType="go"
+								onSubmitEditing={handleFinish}
+								accessibilityLabel="Confirmar senha"
 								style={appStyles.registerPasswordInput}
 							/>
 							<Pressable
 								onPress={() => setShowConfirmPassword((current) => !current)}
+								accessibilityRole="button"
+								accessibilityLabel={
+									showConfirmPassword ? 'Ocultar confirmação da senha' : 'Mostrar confirmação da senha'
+								}
+								hitSlop={10}
 								style={appStyles.registerPasswordEyeButton}
 							>
 								<Ionicons

@@ -86,12 +86,14 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 42,
 		borderRadius: cornerRadius,
-		backgroundColor: colors.secondary,
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	changePasswordSecondaryActionText: {
-		color: colors.surface,
+		color: colors.secondary,
 		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',

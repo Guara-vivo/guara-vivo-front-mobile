@@ -1,206 +1,90 @@
-import React, { useReducer } from 'react'
-import {
-	Alert,
-	ScrollView,
-	Pressable,
-	Text,
-	TextInput,
-	View,
-} from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import React, { useCallback, useReducer, useState } from 'react'
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
-import { usePasswordValidation } from '../hooks/usePasswordValidation'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
-import { colors } from '../constants/theme'
+import { HeaderBackButton } from '../components/HeaderBackButton'
+import { PasswordField } from '../components/PasswordField'
+import { ComingSoonModal } from '../components/ComingSoonModal'
+import { getPasswordHint } from '../utils/passwordRules'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
+type Field = 'currentPassword' | 'newPassword' | 'confirmPassword'
+type State = Record<Field, string>
 
-type ChangePasswordState = {
-	currentPassword: string
-	newPassword: string
-	confirmPassword: string
-	showCurrentPassword: boolean
-	showNewPassword: boolean
-	showConfirmPassword: boolean
-}
+const initialState: State = { currentPassword: '', newPassword: '', confirmPassword: '' }
 
-type ChangePasswordAction =
-	| { type: 'SET_CURRENT_PASSWORD'; payload: string }
-	| { type: 'SET_NEW_PASSWORD'; payload: string }
-	| { type: 'SET_CONFIRM_PASSWORD'; payload: string }
-	| { type: 'TOGGLE_SHOW_CURRENT_PASSWORD' }
-	| { type: 'TOGGLE_SHOW_NEW_PASSWORD' }
-	| { type: 'TOGGLE_SHOW_CONFIRM_PASSWORD' }
-
-function changePasswordReducer(
-	state: ChangePasswordState,
-	action: ChangePasswordAction,
-): ChangePasswordState {
-	switch (action.type) {
-		case 'SET_CURRENT_PASSWORD':
-			return { ...state, currentPassword: action.payload }
-		case 'SET_NEW_PASSWORD':
-			return { ...state, newPassword: action.payload }
-		case 'SET_CONFIRM_PASSWORD':
-			return { ...state, confirmPassword: action.payload }
-		case 'TOGGLE_SHOW_CURRENT_PASSWORD':
-			return { ...state, showCurrentPassword: !state.showCurrentPassword }
-		case 'TOGGLE_SHOW_NEW_PASSWORD':
-			return { ...state, showNewPassword: !state.showNewPassword }
-		case 'TOGGLE_SHOW_CONFIRM_PASSWORD':
-			return { ...state, showConfirmPassword: !state.showConfirmPassword }
-		default:
-			return state
-	}
+function reducer(state: State, action: { field: Field; value: string }): State {
+	return { ...state, [action.field]: action.value }
 }
 
 export function ChangePasswordScreen() {
 	const navigation = useNavigation<NavigationProp>()
-	const [state, dispatch] = useReducer(
-		changePasswordReducer,
-		{
-			currentPassword: '',
-			newPassword: '',
-			confirmPassword: '',
-			showCurrentPassword: false,
-			showNewPassword: false,
-			showConfirmPassword: false,
-		},
-	)
+	const [state, dispatch] = useReducer(reducer, initialState)
+	const [showComingSoon, setShowComingSoon] = useState(false)
 
-
-	const { message: passwordHint } = usePasswordValidation()
+	const goBack = useCallback(() => navigation.goBack(), [navigation])
 
 	return (
-    <View style={appStyles.profileScreen}>
-      
-				<Header
-					title="Editar Senha"
-					leftIcon={
-						<Pressable
-							onPress={() => navigation.goBack()}
-							hitSlop={8}
-							style={appStyles.headerActionButton}
-						>
-							<Ionicons name="chevron-back" size={24} color={colors.onColor} />
-						</Pressable>
-					}
-				/>
+		<KeyboardAvoidingView
+			style={appStyles.profileScreen}
+			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+		>
+			<Header title="Editar Senha" leftIcon={<HeaderBackButton onPress={goBack} />} />
 
 			<ScrollView
 				contentContainerStyle={appStyles.profileContent}
+				keyboardShouldPersistTaps="handled"
 			>
-
 				<View style={appStyles.changePasswordCard}>
-					<View style={appStyles.changePasswordFieldWrap}>
-						<View style={appStyles.changePasswordLabelRow}>
-							<Ionicons name="lock-closed-outline" size={13} color={colors.primary} />
-							<Text style={appStyles.changePasswordLabel}>SENHA ATUAL</Text>
-						</View>
-						<View style={appStyles.changePasswordInputRow}>
-							<TextInput
-								value={state.currentPassword}
-								onChangeText={(text) => dispatch({ type: 'SET_CURRENT_PASSWORD', payload: text })}
-								secureTextEntry={!state.showCurrentPassword}
-								style={appStyles.changePasswordInputNoPadding}
-							/>
-							<Pressable
-								onPress={() => dispatch({ type: 'TOGGLE_SHOW_CURRENT_PASSWORD' })}
-								style={appStyles.changePasswordEyeButton}
-							>
-								<Ionicons
-									name={state.showCurrentPassword ? 'eye-outline' : 'eye-off-outline'}
-									size={20}
-									color={colors.muted}
-								/>
-							</Pressable>
-						</View>
-					</View>
-
-					<View style={appStyles.changePasswordFieldWrap}>
-						<View style={appStyles.changePasswordLabelRow}>
-							<Ionicons name="lock-closed-outline" size={13} color={colors.primary} />
-							<Text style={appStyles.changePasswordLabel}>NOVA SENHA</Text>
-						</View>
-						<View style={appStyles.changePasswordInputRow}>
-							<TextInput
-								value={state.newPassword}
-								onChangeText={(text) => dispatch({ type: 'SET_NEW_PASSWORD', payload: text })}
-								secureTextEntry={!state.showNewPassword}
-								style={appStyles.changePasswordInputNoPadding}
-							/>
-							<Pressable
-								onPress={() => dispatch({ type: 'TOGGLE_SHOW_NEW_PASSWORD' })}
-								style={appStyles.changePasswordEyeButton}
-							>
-								<Ionicons
-									name={state.showNewPassword ? 'eye-outline' : 'eye-off-outline'}
-									size={20}
-									color={colors.muted}
-								/>
-							</Pressable>
-						</View>
-						<Text style={appStyles.changePasswordHint}>{passwordHint}</Text>
-					</View>
-
-					<View style={appStyles.changePasswordFieldWrap}>
-						<View style={appStyles.changePasswordLabelRow}>
-							<Ionicons name="lock-closed-outline" size={13} color={colors.primary} />
-							<Text style={appStyles.changePasswordLabel}>
-								CONFIRMAR NOVA SENHA
-							</Text>
-						</View>
-						<View style={appStyles.changePasswordInputRow}>
-							<TextInput
-								value={state.confirmPassword}
-								onChangeText={(text) => dispatch({ type: 'SET_CONFIRM_PASSWORD', payload: text })}
-								secureTextEntry={!state.showConfirmPassword}
-								style={appStyles.changePasswordInputNoPadding}
-							/>
-							<Pressable
-								onPress={() => dispatch({ type: 'TOGGLE_SHOW_CONFIRM_PASSWORD' })}
-								style={appStyles.changePasswordEyeButton}
-							>
-								<Ionicons
-									name={state.showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
-									size={20}
-									color={colors.muted}
-								/>
-							</Pressable>
-						</View>
-					</View>
+					<PasswordField
+						label="SENHA ATUAL"
+						value={state.currentPassword}
+						onChangeText={(value) => dispatch({ field: 'currentPassword', value })}
+						autoComplete="current-password"
+					/>
+					<PasswordField
+						label="NOVA SENHA"
+						value={state.newPassword}
+						onChangeText={(value) => dispatch({ field: 'newPassword', value })}
+						hint={getPasswordHint(state.newPassword)}
+						autoComplete="new-password"
+					/>
+					<PasswordField
+						label="CONFIRMAR NOVA SENHA"
+						value={state.confirmPassword}
+						onChangeText={(value) => dispatch({ field: 'confirmPassword', value })}
+						autoComplete="new-password"
+					/>
 
 					<View style={appStyles.changePasswordActionsRow}>
 						<Pressable
-							onPress={() => {
-								Alert.alert(
-									'Senha atualizada',
-									'Sua senha foi alterada com sucesso.',
-								)
-								navigation.goBack()
-							}}
+							onPress={() => setShowComingSoon(true)}
+							accessibilityRole="button"
 							style={appStyles.changePasswordPrimaryAction}
 						>
-							<Text style={appStyles.changePasswordPrimaryActionText}>
-								ALTERAR SENHA
-							</Text>
+							<Text style={appStyles.changePasswordPrimaryActionText}>ALTERAR SENHA</Text>
 						</Pressable>
 						<Pressable
-							onPress={() => navigation.goBack()}
+							onPress={goBack}
+							accessibilityRole="button"
 							style={appStyles.changePasswordSecondaryAction}
 						>
-							<Text style={appStyles.changePasswordSecondaryActionText}>
-								CANCELAR
-							</Text>
+							<Text style={appStyles.changePasswordSecondaryActionText}>CANCELAR</Text>
 						</Pressable>
 					</View>
 				</View>
 			</ScrollView>
-		</View>
+
+			<ComingSoonModal
+				visible={showComingSoon}
+				message="A alteração de senha ainda não está disponível no aplicativo."
+				onClose={() => setShowComingSoon(false)}
+			/>
+		</KeyboardAvoidingView>
 	)
 }
 

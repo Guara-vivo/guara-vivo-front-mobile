@@ -38,7 +38,9 @@ export function RootNavigator({
 						)}
 					</Stack.Screen>
 					<Stack.Screen name="RecordDetail" component={RecordDetailScreen} />
-					<Stack.Screen name="EditProfile" component={EditProfileScreen} />
+					<Stack.Screen name="EditProfile">
+						{() => <EditProfileScreen user={currentUser} />}
+					</Stack.Screen>
 					<Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
 					<Stack.Screen name="Notifications" component={NotificationsScreen} />
 					<Stack.Screen name="About" component={AboutScreen} />

@@ -41,9 +41,9 @@ Fluxo padrão para ver qualquer mudança de UI/JS rodando de verdade. **Sempre r
 
 ### Arquitetura Modular (atual)
 
-- **Components:** `src/components/` contém componentes reutilizáveis na raiz (`Button`, `ErrorBoundary`, `FeedbackModal`, `Header`, `MapLibreMapView`, `BottomNavigation`, `common.tsx` com `ActionButton`/`TextField`/`ScreenHeader`) e subpastas por domínio: `history/` (+ `history/filters/` com as seções do modal de filtros), `recordDetail/`, `recordImage/` (modal de análise por imagem), `register/` e `map/`.
+- **Components:** `src/components/` contém componentes reutilizáveis na raiz (`Button`, `ErrorBoundary`, `FeedbackModal`, `Header`, `MapLibreMapView`, `BottomNavigation`, `common.tsx` com `ActionButton`/`TextField`/`ScreenHeader`), `HeaderBackButton`, `PasswordField` e `ComingSoonModal` (aviso para ações sem backend) e subpastas por domínio: `history/` (+ `history/filters/` com as seções do modal de filtros), `recordDetail/`, `recordImage/` (modal de análise por imagem), `register/` e `map/`.
 - **Screens:** Cada tela agora é um arquivo único em `src/screens/` (ex.: `HomeScreen.tsx`, `HistoryScreen.tsx`, `MapsScreen.tsx`, `RecordDetailScreen.tsx`, `RegisterScreen.tsx`, `ProfileScreen.tsx`, `EditProfileScreen.tsx`, `ChangePasswordScreen.tsx`, `NotificationsScreen.tsx`, `AboutScreen.tsx`).
-- **Hooks:** Lógica reutilizável fica em `src/hooks/`: histórico (`useHistoryFilters`, `useHistoryRecords`, `useMapZoneOptions`, `useDebouncedValue` para a busca), detalhe (`useRecordDetail`, `useImageCarousel`), registro (`useRegisterImages`, `useRegisterLocation`, `useRegisterSave`, `useRegisterFeedback`, `usePendingRecordsSync`), mapa (`useCurrentLocationTarget`, `useRecordMarkerFade`, `useStoredCameraRegion`), além de `usePasswordValidation`.
+- **Hooks:** Lógica reutilizável fica em `src/hooks/`: histórico (`useHistoryFilters`, `useHistoryRecords`, `useMapZoneOptions`, `useDebouncedValue` para a busca), detalhe (`useRecordDetail`, `useImageCarousel`), registro (`useRegisterImages`, `useRegisterLocation`, `useRegisterSave`, `useRegisterFeedback`, `usePendingRecordsSync`), mapa (`useCurrentLocationTarget`, `useRecordMarkerFade`, `useStoredCameraRegion`), além de utilitários de senha em `utils/passwordRules.ts` (regra única: mínimo de 6 caracteres).
 - **Utils:** Funções puras (com testes) em `src/utils/`: `historyRecords.ts` (ordenação/mescla de progresso), `registerFeedback.ts` (mensagens do registro), `recordFormatters.ts`, `detectionFormatters.ts`, `registerDateTime.ts`, `pendingRecords.ts`, `loadErrorMessage.ts` (texto amigável para falhas de carregamento), `mapZone*.ts`. Textos visíveis ao usuário devem manter a acentuação; arquivos novos com texto visível entram em `filesToCheck` de `src/utils/portugueseCopy.test.ts`.
 - **Services:** Integração de API e cache ficam em `src/services/` (ex.: `apiClient.ts` com `apiFetch` e `apiGetJson`, `authService.ts`, `recordsApi.ts`, `recordsCache.ts`, `recordsService.ts`, `tokenStorage.ts`).
 - **Styles:** estilos novos vão no arquivo de domínio em `src/styles/` (e passam a valer em `appStyles` automaticamente); crie um arquivo novo e registre-o em `appStyles.ts` se nenhum servir.
@@ -159,7 +159,7 @@ const [state, dispatch] = useReducer(reducer, {
 - Shared `Header` component with blue bar, uppercase title, optional right action.
 - Centralized styles em `src/styles/` (agregados por `appStyles.ts`) + `theme.ts`.
 - `Button` component reusável (elimina duplicação).
-- `usePasswordValidation` hook com regras de complexidade.
+- Regra de senha única em `utils/passwordRules.ts` (cadastro e troca de senha).
 - Real API auth com token refresh automático.
 - Real image selection + upload com `expo-image-picker`.
 - Pull-to-refresh nativo (`RefreshControl`) no histórico e no detalhe do registro.

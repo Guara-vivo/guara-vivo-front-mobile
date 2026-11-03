@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
-	Alert,
 	Pressable,
 	ScrollView,
 	Text,
@@ -10,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
+import { ComingSoonModal } from '../components/ComingSoonModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { ApiError } from '../services/apiClient'
@@ -31,6 +31,8 @@ export function LoginScreen({
 	const [password, setPassword] = useState('')
 	const [showPassword, setShowPassword] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
+	const [showForgotNotice, setShowForgotNotice] = useState(false)
+	const passwordInputRef = useRef<TextInput>(null)
 	const [feedback, setFeedback] = useState<{
 		title: string
 		message: string
@@ -101,6 +103,8 @@ export function LoginScreen({
 							autoComplete="email"
 							textContentType="emailAddress"
 							returnKeyType="next"
+							onSubmitEditing={() => passwordInputRef.current?.focus()}
+							blurOnSubmit={false}
 							accessibilityLabel="E-mail de acesso"
 							editable={!isLoading}
 							placeholderTextColor={colors.placeholder}
@@ -112,6 +116,7 @@ export function LoginScreen({
 					<View style={appStyles.loginFieldWrap}>
 						<View style={appStyles.loginPasswordRow}>
 							<TextInput
+								ref={passwordInputRef}
 								value={password}
 								onChangeText={setPassword}
 								placeholder="Senha de acesso"
@@ -145,12 +150,10 @@ export function LoginScreen({
 					</View>
 
 						<Pressable
-							onPress={() =>
-								Alert.alert(
-									'Recuperação',
-									'Fluxo de recuperação entra na próxima etapa.',
-								)
-							}
+							onPress={() => setShowForgotNotice(true)}
+							accessibilityRole="button"
+							accessibilityLabel="Recuperar senha"
+							hitSlop={8}
 					>
 						<Text style={appStyles.loginForgot}>Recuperar senha</Text>
 					</Pressable>
@@ -166,6 +169,12 @@ export function LoginScreen({
 					/>
 				</View>
 			</ScrollView>
+
+			<ComingSoonModal
+				visible={showForgotNotice}
+				message="A recuperação de senha ainda não está disponível no aplicativo."
+				onClose={() => setShowForgotNotice(false)}
+			/>
 
 			{feedback ? (
 				<FeedbackModal

@@ -19,6 +19,17 @@ export function RegisterEmailScreen() {
 		message: string
 	} | null>(null)
 
+	const handleContinue = () => {
+		if (!email.trim()) {
+			setFeedback({
+				title: 'Campo obrigatório',
+				message: 'Informe um e-mail para continuar.',
+			})
+			return
+		}
+		navigation.navigate('RegisterPassword')
+	}
+
 	return (
 		<View style={appStyles.registerAccountScreen}>
 			<ScrollView
@@ -29,6 +40,9 @@ export function RegisterEmailScreen() {
 				<View style={appStyles.registerHeaderRow}>
 						<Pressable
 							onPress={() => navigation.goBack()}
+							accessibilityRole="button"
+							accessibilityLabel="Voltar"
+							hitSlop={10}
 							style={appStyles.registerBackButton}
 						>
 							<Ionicons name="chevron-back" size={24} color={colors.text} />
@@ -45,6 +59,13 @@ export function RegisterEmailScreen() {
 							placeholder="Qual seu e-mail?"
 							placeholderTextColor={colors.placeholder}
 							keyboardType="email-address"
+							autoCapitalize="none"
+							autoCorrect={false}
+							autoComplete="email"
+							textContentType="emailAddress"
+							returnKeyType="next"
+							onSubmitEditing={handleContinue}
+							accessibilityLabel="E-mail"
 							style={appStyles.registerAccountInput}
 						/>
 						<View style={appStyles.registerAccountDivider} />
@@ -54,16 +75,7 @@ export function RegisterEmailScreen() {
 				<View style={appStyles.authButtonWrap}>
 						<ActionButton
 							title="CONTINUAR"
-							onPress={() => {
-								if (!email) {
-									setFeedback({
-										title: 'Campo obrigatório',
-										message: 'Informe um e-mail para continuar.',
-									})
-									return
-								}
-								navigation.navigate('RegisterPassword')
-							}}
+							onPress={handleContinue}
 							containerStyle={appStyles.authPrimaryButton}
 							textStyle={appStyles.authPrimaryButtonText}
 						/>
