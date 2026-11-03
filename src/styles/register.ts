@@ -12,8 +12,8 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	},
 	registerContent: {
 		paddingHorizontal: screenGutter,
-		paddingBottom: spacing.lg,
-		paddingTop: spacing.lg,
+		paddingBottom: spacing.md,
+		paddingTop: spacing.md,
 	},
 	registerCard: {
 		backgroundColor: colors.surface,
@@ -109,29 +109,40 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 		transform: [{ scale: 0.96 }],
 	},
 	registerBehaviorList: {
-		gap: spacing.md,
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		gap: spacing.sm,
 	},
 	registerBehaviorItem: {
+		flexBasis: '47%',
+		flexGrow: 1,
 		flexDirection: 'row',
 		alignItems: 'center',
-		minHeight: 44,
+		minHeight: 48,
 		backgroundColor: colors.background,
 		borderRadius: cornerRadius,
+		borderWidth: 1,
+		borderColor: 'transparent',
 		paddingHorizontal: spacing.sm2,
 	},
+	registerBehaviorItemActive: {
+		backgroundColor: colors.selectedBg,
+		borderColor: colors.secondary,
+	},
 	registerCheckbox: {
-		width: 14,
-		height: 14,
-		borderWidth: 1,
-		borderColor: colors.background,
+		width: 20,
+		height: 20,
+		borderRadius: radius.sm / 2,
+		borderWidth: 1.5,
+		borderColor: colors.muted,
 		backgroundColor: colors.surface,
 		alignItems: 'center',
 		justifyContent: 'center',
-		marginRight: spacing.sm2,
+		marginRight: spacing.sm,
 	},
 	registerCheckboxActive: {
-		backgroundColor: colors.primary,
-		borderColor: colors.primary,
+		backgroundColor: colors.secondary,
+		borderColor: colors.secondary,
 	},
 	registerBehaviorLabel: {
 		color: colors.text,
@@ -160,22 +171,25 @@ export const registerStyles = StyleSheet.create<Record<string, any>>({
 	registerDateFieldPlaceholder: {
 		color: colors.muted,
 	},
-	registerActionsRow: {
+	registerFooter: {
 		flexDirection: 'row',
 		gap: spacing.sm2,
-		marginTop: 2,
+		paddingHorizontal: screenGutter,
+		paddingVertical: spacing.sm2,
+		backgroundColor: colors.surface,
+		borderTopWidth: 1,
+		borderTopColor: colors.border,
 	},
 	registerSaveButton: {
 		flex: 1,
-		minHeight: 44,
+		minHeight: 48,
 		backgroundColor: colors.secondary,
 	},
 	registerCancelButton: {
 		flex: 1,
-		minHeight: 44,
-		backgroundColor: colors.primary,
+		minHeight: 48,
 	},
 	registerActionButtonLabel: {
-		fontSize: fontSize.caption,
+		fontSize: fontSize.body,
 	},
 })

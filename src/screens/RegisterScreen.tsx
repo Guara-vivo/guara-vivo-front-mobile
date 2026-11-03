@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ActivityIndicator, ScrollView, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import FeedbackModal from '../components/FeedbackModal'
@@ -82,13 +81,6 @@ export function RegisterScreen() {
 				style={appStyles.registerScroll}
 			>
 				<View style={appStyles.registerCard}>
-					<View style={appStyles.registerSectionTitleRow}>
-						<Ionicons name="camera-outline" size={22} color={colors.secondary} />
-						<Text style={appStyles.registerSectionTitleTextBlue}>
-							INFORMAÇÕES DO AVISTAMENTO
-						</Text>
-					</View>
-
 					<RegisterSubsection icon="camera-outline" title="IMAGENS DO AVISTAMENTO">
 						<RegisterImagePicker
 							images={images.selectedImages}
@@ -126,33 +118,35 @@ export function RegisterScreen() {
 							onTimeChange={setSelectedTime}
 						/>
 					</RegisterSubsection>
-
-					<View style={appStyles.registerActionsRow}>
-						<ActionButton
-							title="CANCELAR"
-							onPress={handleCancel}
-							disabled={isSaving}
-							fullWidth={false}
-							containerStyle={appStyles.registerCancelButton}
-							textStyle={appStyles.registerActionButtonLabel}
-						/>
-						<ActionButton
-							title={isSaving ? 'ENVIANDO...' : 'SALVAR REGISTRO'}
-							onPress={() => {
-								handleSave()
-								location.setTempLocation(null)
-							}}
-							disabled={isSaving}
-							fullWidth={false}
-							containerStyle={appStyles.registerSaveButton}
-							textStyle={appStyles.registerActionButtonLabel}
-							leftIcon={
-								isSaving ? <ActivityIndicator size="small" color={colors.onColor} /> : null
-							}
-						/>
-					</View>
 				</View>
 			</ScrollView>
+
+			{/* Ações fixas: salvar/cancelar ficam sempre à vista, sem rolar o formulário. */}
+			<View style={appStyles.registerFooter}>
+				<ActionButton
+					title="CANCELAR"
+					variant="outline"
+					onPress={handleCancel}
+					disabled={isSaving}
+					fullWidth={false}
+					containerStyle={appStyles.registerCancelButton}
+					textStyle={appStyles.registerActionButtonLabel}
+				/>
+				<ActionButton
+					title={isSaving ? 'ENVIANDO...' : 'SALVAR REGISTRO'}
+					onPress={() => {
+						handleSave()
+						location.setTempLocation(null)
+					}}
+					disabled={isSaving}
+					fullWidth={false}
+					containerStyle={appStyles.registerSaveButton}
+					textStyle={appStyles.registerActionButtonLabel}
+					leftIcon={
+						isSaving ? <ActivityIndicator size="small" color={colors.onColor} /> : null
+					}
+				/>
+			</View>
 
 			{location.showLocationPicker && (
 				<LocationPickerModal

@@ -24,7 +24,10 @@ export function RegisterBehaviorList({
 						accessibilityRole="checkbox"
 						accessibilityState={{ checked: active }}
 						accessibilityLabel={behavior}
-						style={appStyles.registerBehaviorItem}
+						style={[
+							appStyles.registerBehaviorItem,
+							active && appStyles.registerBehaviorItemActive,
+						]}
 					>
 						<View
 							style={[
@@ -33,7 +36,7 @@ export function RegisterBehaviorList({
 							]}
 						>
 							{active ? (
-								<Ionicons name="checkmark" size={12} color={colors.onColor} />
+								<Ionicons name="checkmark" size={14} color={colors.onColor} />
 							) : null}
 						</View>
 						<Text style={appStyles.registerBehaviorLabel}>{behavior}</Text>
