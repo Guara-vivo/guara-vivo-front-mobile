@@ -8,7 +8,12 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		backgroundColor: colors.surface,
 	},
+	splashContent: {
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
 	splashLogo: {
+		alignSelf: 'center',
 		width: 300,
 		height: 240,
 	},
@@ -36,6 +41,9 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	welcomeActions: {
 		width: '100%',
 		alignItems: 'center',
+	},
+	welcomeSpacer: {
+		height: spacing.lg,
 	},
 	welcomePrimaryButton: {
 		...basePrimaryButton,
