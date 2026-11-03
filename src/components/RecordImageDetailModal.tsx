@@ -5,8 +5,8 @@ import {
 	ScrollView,
 	Text,
 	View,
-	Image,
 } from 'react-native'
+import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { useImageSize } from '../hooks/useImageSize'
 import { appStyles } from '../styles/appStyles'
@@ -90,7 +90,9 @@ export function RecordImageDetailModal({
 									<Image
 										source={{ uri: imageUri }}
 										style={appStyles.recordImageModalImage}
-										resizeMode="contain"
+										contentFit="contain"
+										cachePolicy="memory-disk"
+										transition={150}
 									/>
 									{imageSize && containerSize && imageAnalysis?.detections && (
 										<DetectionOverlay

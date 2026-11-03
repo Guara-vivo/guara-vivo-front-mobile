@@ -1,5 +1,6 @@
 import React from 'react'
-import { FlatList, Image, Pressable, Text, View } from 'react-native'
+import { FlatList, Pressable, Text, View } from 'react-native'
+import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { useImageCarousel } from '../../hooks/useImageCarousel'
 import { appStyles } from '../../styles/appStyles'
@@ -65,7 +66,10 @@ export function ImageCarouselCard({ imageUris, onImagePress }: Props) {
 									<Image
 										source={{ uri: imageUri }}
 										style={appStyles.recordDetailCarouselImage}
-										resizeMode="cover"
+										contentFit="cover"
+										cachePolicy="memory-disk"
+										recyclingKey={imageUri}
+										transition={150}
 									/>
 								</Pressable>
 							) : (

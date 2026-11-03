@@ -1,5 +1,6 @@
 import React from 'react'
-import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import type { ReactNativeFile } from '../../types/api'
@@ -54,7 +55,7 @@ export function RegisterImagePicker({
 								source={{ uri: image.uri }}
 								accessibilityLabel={`Foto ${images.indexOf(image) + 1} de ${images.length}`}
 								style={appStyles.registerImagePreview}
-								resizeMode="cover"
+								contentFit="cover"
 							/>
 							<Pressable
 								onPress={() => onRemove(image.uri)}
