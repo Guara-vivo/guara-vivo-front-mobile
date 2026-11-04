@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { BehaviorsCard } from '../components/recordDetail/BehaviorsCard'
+import { AiAnalysisCard } from '../components/recordDetail/AiAnalysisCard'
 import { ImageCarouselCard } from '../components/recordDetail/ImageCarouselCard'
-import { RecordDetailHeader } from '../components/recordDetail/RecordDetailHeader'
 import { RecordDetailMessage } from '../components/recordDetail/RecordDetailMessage'
 import { RecordInfoCard } from '../components/recordDetail/RecordInfoCard'
+import { RecordLocationCard } from '../components/recordDetail/RecordLocationCard'
 import RecordImageDetailModal from '../components/RecordImageDetailModal'
 import { colors } from '../constants/theme'
 import { useRecordDetail } from '../hooks/useRecordDetail'
@@ -39,30 +39,27 @@ export function RecordDetailScreen() {
 
 	return (
 		<View style={appStyles.recordDetailScreen}>
-			<RecordDetailHeader onBack={goBack} />
-
-			<View style={appStyles.screen}>
-				<ScrollView
-					style={appStyles.screen}
-					contentContainerStyle={appStyles.recordDetailContent}
-					alwaysBounceVertical
-					refreshControl={
-						<RefreshControl
-							refreshing={isRefreshing}
-							onRefresh={handleRefresh}
-							colors={[colors.secondary]}
-							tintColor={colors.secondary}
-						/>
-					}
-				>
-					<ImageCarouselCard
-						imageUris={imageUris}
-						onImagePress={setSelectedImageIndex}
+			<ScrollView
+				contentContainerStyle={appStyles.recordDetailContent}
+				alwaysBounceVertical
+				refreshControl={
+					<RefreshControl
+						refreshing={isRefreshing}
+						onRefresh={handleRefresh}
+						colors={[colors.secondary]}
+						tintColor={colors.secondary}
 					/>
-					<RecordInfoCard record={record} />
-					<BehaviorsCard flockSize={record.flock_size} />
-				</ScrollView>
-			</View>
+				}
+			>
+				<ImageCarouselCard
+					imageUris={imageUris}
+					onImagePress={setSelectedImageIndex}
+					onBack={goBack}
+				/>
+				<RecordInfoCard record={record} />
+				<AiAnalysisCard record={record} onOpen={() => setSelectedImageIndex(0)} />
+				<RecordLocationCard record={record} />
+			</ScrollView>
 
 			{selectedImageIndex !== null && (
 				<RecordImageDetailModal

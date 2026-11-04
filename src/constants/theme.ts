@@ -1,19 +1,26 @@
 export const colors = {
-	primary: '#F2201F',
-	primaryDark: '#D11D1C',
-	secondary: '#125ED0',
+	primary: '#E5202A',
+	primaryDark: '#C41A23',
+	redSoft: '#FDECEC',
+	secondary: '#1560D0',
 	secondaryLight: '#79A7EB',
-	background: '#F1F1F1',
+	blueSoft: '#E8F0FC',
+	background: '#FAF9F7',
 	surface: '#FFFFFF',
-	text: '#1A1A1A',
-	muted: '#717182',
-	border: 'rgba(26, 26, 26, 0.12)',
+	field: '#EFECE6',
+	text: '#1B1B1F',
+	muted: '#6C6C75',
+	border: '#ECE9E4',
+	borderStrong: '#D9D5CE',
 	splash: '#c5dfff',
 	onColor: '#FFFFFF',
 	accent: '#5C8BD6',
 	accentSoft: '#8FB0F4',
 	danger: '#E53935',
-	success: '#2E9D57',
+	success: '#18794E',
+	successSoft: '#E4F4EC',
+	warning: '#9A5B00',
+	warningSoft: '#FFF1D6',
 	placeholder: '#6B6B74',
 	selectedBg: '#F3F7FF',
 	selectedBgActive: '#EAF2FF',
@@ -65,15 +72,15 @@ export const fontSize = {
 	display: typography.display.fontSize,
 }
 
-// Elevação em dois níveis: `card` (superfícies na página) e `overlay` (flutuantes sobre
-// o conteúdo: FAB do mapa, banners, modais, cabeçalho). Controles comuns ficam planos.
+// Elevação em dois níveis: `card` (superfícies na página, hoje planas: separadas por borda
+// de 1 px) e `overlay` (flutuantes sobre o conteúdo: botões do mapa, banners, modais).
 export const elevation = {
 	card: {
 		shadowColor: colors.text,
-		shadowOpacity: 0.08,
-		shadowOffset: { width: 0, height: 2 },
-		shadowRadius: 8,
-		elevation: 2,
+		shadowOpacity: 0,
+		shadowOffset: { width: 0, height: 0 },
+		shadowRadius: 0,
+		elevation: 0,
 	},
 	overlay: {
 		shadowColor: colors.text,
@@ -82,4 +89,11 @@ export const elevation = {
 		shadowRadius: 12,
 		elevation: 6,
 	},
+}
+
+// Fonte dos títulos grandes e dos números de destaque (carregada em GuaraVivoApp). O texto corrido
+// segue na fonte do sistema; se a fonte falhar em carregar, o Android cai para a fonte padrão.
+export const fontFamily = {
+	display: 'BarlowCondensed_700Bold',
+	displaySemi: 'BarlowCondensed_600SemiBold',
 }

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing, fontSize, radius } from '../constants/theme'
-import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
+import { colors, spacing, fontSize, radius, fontFamily } from '../constants/theme'
+import { screenGutter, screenBottomPadding } from './shared'
 
 export const recordStyles = StyleSheet.create<Record<string, any>>({
 	analysisProgressWrap: {
@@ -19,19 +19,16 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	},
 	recordDetailScreen: {
 		flex: 1,
-		backgroundColor: colors.surface,
+		backgroundColor: colors.background,
 	},
 	recordDetailContent: {
-		paddingHorizontal: screenGutter,
-		paddingTop: spacing.lg,
 		paddingBottom: screenBottomPadding,
-		gap: spacing.lg,
+		gap: spacing.md,
 	},
 	recordDetailNotFoundWrap: {
 		flexGrow: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: 'transparent',
 		paddingHorizontal: screenGutter,
 		paddingVertical: spacing.lg,
 	},
@@ -43,74 +40,44 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: fontSize.body,
 		textAlign: 'center',
 	},
-	recordDetailIdBadge: {
-		flexShrink: 0,
-		maxWidth: '30%',
-		minWidth: 44,
-		height: 30,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.primary,
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingHorizontal: spacing.sm,
+	recordDetailHero: {
+		width: '100%',
+		aspectRatio: 1.1,
+		position: 'relative',
+		backgroundColor: colors.border,
 	},
-	recordDetailIdText: {
-		color: colors.surface,
+	recordDetailHeroBack: {
+		position: 'absolute',
+		top: spacing.sm2,
+		left: spacing.md,
+	},
+	recordDetailHeroCounter: {
+		position: 'absolute',
+		right: spacing.md,
+		bottom: spacing.md,
+		paddingHorizontal: spacing.sm2,
+		paddingVertical: spacing.xs,
+		borderRadius: radius.pill,
+		backgroundColor: colors.mediaBadge,
+	},
+	recordDetailHeroCounterText: {
+		color: colors.onColor,
 		fontSize: fontSize.body,
-		textTransform: 'uppercase',
+		fontWeight: '600',
 	},
-	recordDetailCard: {
-		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.md,
-		gap: spacing.sm,
-		...unifiedShadow,
-	},
-	recordDetailSectionTitleRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
+	recordDetailTitleBlock: {
+		paddingHorizontal: screenGutter,
 		gap: spacing.sm,
 	},
-	recordDetailHeaderRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: spacing.sm,
-	},
-	recordDetailInfoHeaderTitle: {
-		flex: 1,
-	},
-	recordDetailSectionTitle: {
-		color: colors.secondary,
-		fontSize: fontSize.bodyLarge,
-		textTransform: 'uppercase',
-	},
-	recordDetailInfoList: {
-		gap: spacing.sm,
-	},
-	recordDetailInfoRow: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		gap: spacing.sm,
-	},
-	recordDetailInfoTextWrap: {
-		flex: 1,
-	},
-	recordDetailInfoLabel: {
-		color: colors.muted,
-		fontSize: fontSize.caption,
-		textTransform: 'uppercase',
-	},
-	recordDetailValue: {
+	recordDetailTitle: {
 		color: colors.text,
-		fontSize: fontSize.bodyLarge,
-		lineHeight: 20,
+		fontSize: 38,
+		lineHeight: 45,
+		fontFamily: fontFamily.display,
 	},
-	recordDetailCoordinates: {
+	recordDetailMeta: {
 		color: colors.muted,
-		fontSize: fontSize.body,
-		lineHeight: 17,
+		fontSize: fontSize.bodyLarge,
 	},
 	recordDetailChipRow: {
 		flexDirection: 'row',
@@ -118,20 +85,95 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.sm,
 	},
 	recordDetailChip: {
-		borderRadius: cornerRadius,
-		backgroundColor: colors.splash,
+		borderRadius: radius.pill,
+		backgroundColor: colors.blueSoft,
 		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.sm,
+		paddingVertical: spacing.xs,
 	},
 	recordDetailChipText: {
 		color: colors.secondary,
 		fontSize: fontSize.body,
+		fontWeight: '600',
 	},
-	recordDetailImageCarousel: {
-		width: '100%',
-		aspectRatio: 1.05,
+	recordDetailCard: {
+		marginHorizontal: screenGutter,
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.md,
+		padding: spacing.md,
+		gap: spacing.sm2,
+	},
+	recordDetailCardHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm2,
+	},
+	recordDetailCardIcon: {
+		width: 40,
+		height: 40,
+		borderRadius: radius.md,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.blueSoft,
+	},
+	recordDetailCardTitleWrap: {
+		flex: 1,
+	},
+	recordDetailCardTitle: {
+		color: colors.text,
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
+	},
+	recordDetailCardText: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+		lineHeight: 20,
+	},
+	recordDetailBadge: {
+		alignSelf: 'flex-start',
+		paddingHorizontal: spacing.sm2,
+		paddingVertical: spacing.xs,
+		borderRadius: radius.pill,
+	},
+	recordDetailBadgeHigh: {
+		backgroundColor: colors.successSoft,
+	},
+	recordDetailBadgeMedium: {
+		backgroundColor: colors.warningSoft,
+	},
+	recordDetailBadgeLow: {
+		backgroundColor: colors.dangerBg,
+	},
+	recordDetailBadgeNeutral: {
+		backgroundColor: colors.field,
+	},
+	recordDetailBadgeText: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+		fontWeight: '700',
+	},
+	recordDetailBadgeTextHigh: {
+		color: colors.success,
+	},
+	recordDetailBadgeTextMedium: {
+		color: colors.warning,
+	},
+	recordDetailBadgeTextLow: {
+		color: colors.dangerText,
+	},
+	recordDetailMiniMap: {
+		height: 140,
+		borderRadius: radius.md,
 		overflow: 'hidden',
-		position: 'relative',
+		backgroundColor: colors.field,
+	},
+	recordDetailMiniMapView: {
+		flex: 1,
+	},
+	recordDetailCoordinates: {
+		color: colors.muted,
+		fontSize: fontSize.body,
 	},
 	recordDetailCarouselList: {
 		width: '100%',
@@ -143,7 +185,6 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailCarouselImagePressable: {
 		width: '100%',
 		height: '100%',
-		borderRadius: cornerRadius,
 		backgroundColor: colors.border,
 		overflow: 'hidden',
 	},
@@ -154,16 +195,9 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailCarouselPlaceholder: {
 		width: '100%',
 		height: '100%',
-		borderRadius: cornerRadius,
-		backgroundColor: colors.border,
 		alignItems: 'center',
 		justifyContent: 'center',
 		gap: spacing.sm,
-	},
-	recordDetailCarouselCounter: {
-		color: colors.muted,
-		fontSize: fontSize.body,
-		textAlign: 'center',
 	},
 	recordDetailCarouselArrow: {
 		position: 'absolute',
@@ -177,9 +211,9 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		transform: [{ translateY: -21 }],
 	},
 	recordDetailCarouselArrowLeft: {
-		left: 12,
+		left: spacing.sm2,
 	},
 	recordDetailCarouselArrowRight: {
-		right: 12,
+		right: spacing.sm2,
 	},
 })

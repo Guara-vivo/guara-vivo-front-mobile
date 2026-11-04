@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
+    "@expo-google-fonts/barlow-condensed": "^0.4.1",
     "@expo/vector-icons": "^15.1.1",
     "@gorhom/bottom-sheet": "^5.2.14",
     "@gorhom/portal": "^1.0.14",

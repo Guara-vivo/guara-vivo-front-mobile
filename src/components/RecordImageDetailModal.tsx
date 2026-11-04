@@ -1,20 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import {
-	Modal,
-	Pressable,
-	ScrollView,
-	Text,
-	View,
-} from 'react-native'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Modal, Pressable, ScrollView, Text, View } from 'react-native'
 import { Image } from 'expo-image'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
 import type { RecordDetailItem } from '../types/records'
-import { calculateAccuracySummary, type Size } from '../utils/detectionFormatters'
-import { AccuracySummarySection } from './recordImage/AccuracySummarySection'
+import { averageScore, getConfidenceLevel } from '../utils/confidence'
+import type { Size } from '../utils/detectionFormatters'
+import { ConfidenceBanner } from './recordImage/ConfidenceBanner'
+import { getDetectionScore } from './recordImage/DetectionCard'
 import { DetectionOverlay } from './recordImage/DetectionOverlay'
 import { DetectionsSection } from './recordImage/DetectionsSection'
-import { colors } from '../constants/theme'
+import { colors, spacing } from '../constants/theme'
 
 interface RecordImageDetailModalProps {
 	visible: boolean
@@ -35,6 +32,7 @@ export function RecordImageDetailModal({
 	onImageChange,
 	record,
 }: RecordImageDetailModalProps) {
+	const insets = useSafeAreaInsets()
 	// Tamanho original vem do onLoad da própria imagem exibida (sem baixar a foto duas vezes).
 	const [imageSize, setImageSize] = useState<Size | null>(null)
 	const [containerSize, setContainerSize] = useState<Size | null>(null)
@@ -44,9 +42,14 @@ export function RecordImageDetailModal({
 	}, [imageUri])
 
 	const imageAnalysis = record.image_analyses?.[imageIndex]
+	const detections = imageAnalysis?.detections
 	const canGoPrevious = imageIndex > 0
 	const canGoNext = imageIndex < totalImages - 1
-	const summary = calculateAccuracySummary(imageAnalysis?.detections)
+
+	const level = useMemo(() => {
+		const score = averageScore((detections ?? []).map(getDetectionScore))
+		return score === null ? null : getConfidenceLevel(score)
+	}, [detections])
 
 	const handleImageChange = (nextIndex: number) => {
 		if (nextIndex < 0 || nextIndex >= totalImages) {
@@ -57,133 +60,105 @@ export function RecordImageDetailModal({
 	}
 
 	return (
-		<Modal
-			visible={visible}
-			transparent
-			animationType="fade"
-			onRequestClose={onClose}
-		>
-			<View style={appStyles.recordImageModalBackdrop}>
-				<View style={appStyles.recordImageModalCard}>
-					<View style={appStyles.recordImageModalHeader}>
-						<Text style={appStyles.recordImageModalTitle}>
-							DETALHES DA IMAGEM
-						</Text>
-						<Pressable
-							onPress={onClose}
-							hitSlop={8}
-							accessibilityRole="button"
-							accessibilityLabel="Fechar"
-						>
-							<Ionicons name="close" size={24} color={colors.text} />
-						</Pressable>
-					</View>
-
-					<ScrollView
-						contentContainerStyle={appStyles.recordImageModalContent}
+		<Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+			<View style={appStyles.recordImageModalScreen} accessibilityViewIsModal>
+				<View style={[appStyles.recordImageModalTopBar, { paddingTop: insets.top }]}>
+					<Text style={appStyles.recordImageModalTitle} accessibilityRole="header">
+						Análise da imagem
+					</Text>
+					<Pressable
+						onPress={onClose}
+						hitSlop={8}
+						accessibilityRole="button"
+						accessibilityLabel="Fechar análise"
+						style={appStyles.headerActionButton}
 					>
-						{/* Image Preview */}
-						<View
-							style={appStyles.recordImageModalImageContainer}
-							onLayout={(e) => {
-								const { width, height } = e.nativeEvent.layout
-								setContainerSize({ width, height })
-							}}
-						>
-							{imageUri ? (
-								<>
-									<Image
-										source={{ uri: imageUri }}
-										style={appStyles.recordImageModalImage}
-										contentFit="contain"
-										cachePolicy="memory-disk"
-										onLoad={(event) =>
-											setImageSize({ width: event.source.width, height: event.source.height })
-										}
-										transition={150}
+						<Ionicons name="close" size={22} color={colors.text} />
+					</Pressable>
+				</View>
+
+				<ScrollView
+					contentContainerStyle={[
+						appStyles.recordImageModalContent,
+						{ paddingBottom: insets.bottom + spacing.xl },
+					]}
+				>
+					<View
+						style={appStyles.recordImageModalImageContainer}
+						onLayout={(e) => {
+							const { width, height } = e.nativeEvent.layout
+							setContainerSize({ width, height })
+						}}
+					>
+						{imageUri ? (
+							<>
+								<Image
+									source={{ uri: imageUri }}
+									style={appStyles.recordImageModalImage}
+									contentFit="contain"
+									cachePolicy="memory-disk"
+									accessibilityLabel={`Foto ${imageIndex + 1} de ${totalImages}`}
+									onLoad={(event) =>
+										setImageSize({ width: event.source.width, height: event.source.height })
+									}
+									transition={150}
+								/>
+								{imageSize && containerSize && detections && (
+									<DetectionOverlay
+										detections={detections}
+										containerSize={containerSize}
+										imageSize={imageSize}
 									/>
-									{imageSize && containerSize && imageAnalysis?.detections && (
-										<DetectionOverlay
-											detections={imageAnalysis.detections}
-											containerSize={containerSize}
-											imageSize={imageSize}
-										/>
-									)}
-								</>
-							) : (
-								<View style={appStyles.recordImageModalImagePlaceholder}>
-									<Ionicons
-										name="camera-outline"
-										size={48}
-										color={colors.accentSoft}
-									/>
-								</View>
-							)}
-
-							{totalImages > 1 && canGoPrevious && onImageChange && (
-								<Pressable
-									onPress={() => handleImageChange(imageIndex - 1)}
-									accessibilityRole="button"
-									accessibilityLabel="Imagem anterior"
-									style={[
-										appStyles.recordImageModalArrow,
-										appStyles.recordImageModalArrowLeft,
-									]}
-								>
-									<Ionicons name="chevron-back" size={24} color={colors.onColor} />
-								</Pressable>
-							)}
-
-							{totalImages > 1 && canGoNext && onImageChange && (
-								<Pressable
-									onPress={() => handleImageChange(imageIndex + 1)}
-									accessibilityRole="button"
-									accessibilityLabel="Próxima imagem"
-									style={[
-										appStyles.recordImageModalArrow,
-										appStyles.recordImageModalArrowRight,
-									]}
-								>
-									<Ionicons name="chevron-forward" size={24} color={colors.onColor} />
-								</Pressable>
-							)}
-						</View>
-
-						{/* Image Index Label */}
-						<View style={appStyles.recordImageModalIndexBadge}>
-							<Text style={appStyles.recordImageModalIndexText}>
-								Imagem {imageIndex + 1} de {totalImages}
-							</Text>
-						</View>
-
-						{/* Summary of Detections */}
-						{imageAnalysis && summary && <AccuracySummarySection summary={summary} />}
-
-						{/* Per-Individual Detections */}
-						{imageAnalysis ? (
-							<DetectionsSection analysis={imageAnalysis} />
+								)}
+							</>
 						) : (
-							<View style={appStyles.recordImageModalSection}>
-								<View style={appStyles.recordImageModalEmptyState}>
-									<Text style={appStyles.recordImageModalEmptyText}>
-										Aguardando análise desta imagem...
-									</Text>
-								</View>
+							<View style={appStyles.recordImageModalImagePlaceholder}>
+								<Ionicons name="camera-outline" size={48} color={colors.onColor} />
 							</View>
 						)}
-					</ScrollView>
 
-					<View style={appStyles.recordImageModalActions}>
-						<Pressable
-							onPress={onClose}
-							style={appStyles.recordImageModalCloseButton}
-						>
-							<Text style={appStyles.recordImageModalCloseButtonText}>
-								FECHAR
+						{totalImages > 1 && canGoPrevious && onImageChange && (
+							<Pressable
+								onPress={() => handleImageChange(imageIndex - 1)}
+								accessibilityRole="button"
+								accessibilityLabel="Imagem anterior"
+								style={[appStyles.recordImageModalArrow, appStyles.recordImageModalArrowLeft]}
+							>
+								<Ionicons name="chevron-back" size={24} color={colors.onColor} />
+							</Pressable>
+						)}
+
+						{totalImages > 1 && canGoNext && onImageChange && (
+							<Pressable
+								onPress={() => handleImageChange(imageIndex + 1)}
+								accessibilityRole="button"
+								accessibilityLabel="Próxima imagem"
+								style={[appStyles.recordImageModalArrow, appStyles.recordImageModalArrowRight]}
+							>
+								<Ionicons name="chevron-forward" size={24} color={colors.onColor} />
+							</Pressable>
+						)}
+
+						<View style={appStyles.recordImageModalIndexBadge}>
+							<Text style={appStyles.recordImageModalIndexText}>
+								{`${imageIndex + 1} de ${totalImages}`}
 							</Text>
-						</Pressable>
+						</View>
 					</View>
-				</View>
+
+					{imageAnalysis ? (
+						<>
+							<ConfidenceBanner level={level} detectionCount={imageAnalysis.detections.length} />
+							<DetectionsSection analysis={imageAnalysis} />
+						</>
+					) : (
+						<View style={appStyles.recordImageEmpty}>
+							<Text style={appStyles.recordImageEmptyText}>
+								Aguardando análise desta imagem...
+							</Text>
+						</View>
+					)}
+				</ScrollView>
 			</View>
 		</Modal>
 	)

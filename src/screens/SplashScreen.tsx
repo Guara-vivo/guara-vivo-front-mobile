@@ -3,7 +3,7 @@ import { ActivityIndicator, Image, View } from 'react-native'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 
-const welcomeLogo = require('../assets/images/Logo Fonte Clara.png')
+const welcomeLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
 
 type SplashScreenProps = {
 	isLoading?: boolean

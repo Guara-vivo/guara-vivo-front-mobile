@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react'
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
@@ -16,22 +15,22 @@ type PreferenceId = 'newRecords' | 'mapUpdates' | 'monthlyReport' | 'systemAlert
 const PREFERENCES: { id: PreferenceId; title: string; subtitle: string }[] = [
 	{
 		id: 'newRecords',
-		title: 'Novos Registros',
+		title: 'Novos registros',
 		subtitle: 'Receba notificações sobre novos avistamentos',
 	},
 	{
 		id: 'mapUpdates',
-		title: 'Atualizações de Mapas',
+		title: 'Atualizações de mapas',
 		subtitle: 'Notifique quando houver mudanças nos mapas de calor',
 	},
 	{
 		id: 'monthlyReport',
-		title: 'Relatório Mensal',
+		title: 'Relatório mensal',
 		subtitle: 'Resumo mensal de atividades e estatísticas',
 	},
 	{
 		id: 'systemAlerts',
-		title: 'Alertas do Sistema',
+		title: 'Alertas do sistema',
 		subtitle: 'Avisos importantes e atualizações do aplicativo',
 	},
 ]
@@ -56,16 +55,9 @@ export function NotificationsScreen() {
 		<View style={appStyles.profileScreen}>
 			<Header title="Notificações" leftIcon={<HeaderBackButton onPress={goBack} />} />
 
-			<ScrollView contentContainerStyle={appStyles.profileContent} style={appStyles.screen}>
+			<ScrollView contentContainerStyle={appStyles.settingsContent}>
 				<View style={appStyles.notificationsCard}>
-					<View style={appStyles.notificationsTitleRow}>
-						<Ionicons name="notifications-outline" size={17} color={colors.secondary} />
-						<Text accessibilityRole="header" style={appStyles.notificationsTitle}>
-							PREFERÊNCIAS DE NOTIFICAÇÃO
-						</Text>
-					</View>
-
-					{PREFERENCES.map((item) => (
+					{PREFERENCES.map((item, index) => (
 						<Pressable
 							key={item.id}
 							onPress={() => toggle(item.id)}
@@ -73,7 +65,10 @@ export function NotificationsScreen() {
 							accessibilityLabel={item.title}
 							accessibilityHint={item.subtitle}
 							accessibilityState={{ checked: enabled[item.id] }}
-							style={appStyles.notificationsItem}
+							style={[
+								appStyles.notificationsItem,
+								index > 0 && appStyles.notificationsItemDivider,
+							]}
 						>
 							<View style={appStyles.notificationsTextWrap}>
 								<Text style={appStyles.notificationsItemTitle}>{item.title}</Text>

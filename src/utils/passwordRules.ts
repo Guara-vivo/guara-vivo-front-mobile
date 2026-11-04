@@ -40,3 +40,18 @@ export function getPasswordHint(password: string) {
 	if (!isPasswordLongEnough(password)) return PASSWORD_RULE_HINT
 	return isPasswordWithinLimit(password) ? 'Senha válida' : PASSWORD_TOO_LONG_HINT
 }
+
+export type PasswordRuleStatus = {
+	minLength: boolean
+	matches: boolean
+	withinByteLimit: boolean
+}
+
+// Estado de cada regra para a lista que acende no cadastro e na troca de senha.
+export function getPasswordRuleStatus(password: string, confirm: string): PasswordRuleStatus {
+	return {
+		minLength: isPasswordLongEnough(password),
+		matches: password.length > 0 && password === confirm,
+		withinByteLimit: isPasswordWithinLimit(password),
+	}
+}

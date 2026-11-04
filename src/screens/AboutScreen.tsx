@@ -1,13 +1,11 @@
 import React from 'react'
 import { ScrollView, Image, Text, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 import { HeaderBackButton } from '../components/HeaderBackButton'
-import { colors } from '../constants/theme'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 const aboutLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
@@ -17,7 +15,7 @@ export function AboutScreen() {
 	return (
 		<View style={appStyles.profileScreen}>
 			<Header
-				title="Sobre o App"
+				title="Sobre o app"
 				leftIcon={
 					<HeaderBackButton onPress={() => navigation.goBack()} />
 				}
@@ -25,7 +23,7 @@ export function AboutScreen() {
 
 
 			<ScrollView
-				contentContainerStyle={appStyles.profileContent}
+				contentContainerStyle={appStyles.settingsContent}
 			>
 
 				<View style={appStyles.aboutCard}>
@@ -34,18 +32,11 @@ export function AboutScreen() {
 						style={appStyles.aboutLogo}
 						resizeMode="contain"
 					/>
-					<Text style={appStyles.aboutAppName}>GUARÁVIVO</Text>
+					
 					<Text style={appStyles.aboutVersion}>Versão 1.0.0</Text>
 
 					<View style={appStyles.aboutSection}>
-						<View style={appStyles.aboutSectionTitleRow}>
-							<Ionicons
-								name="information-circle-outline"
-								size={16}
-								color={colors.secondary}
-							/>
-							<Text style={appStyles.aboutSectionTitle}>SOBRE O PROJETO</Text>
-						</View>
+						<Text style={appStyles.aboutSectionTitle}>Sobre o projeto</Text>
 						<Text style={appStyles.aboutBodyText}>
 							Sistema de auxílio ao monitoramento e proteção do Guará na ARIE. O
 							aplicativo facilita o registro de avistamentos, análise de
@@ -56,7 +47,7 @@ export function AboutScreen() {
 					</View>
 
 					<View style={appStyles.aboutSection}>
-						<Text style={appStyles.aboutSectionTitle}>FUNCIONALIDADES</Text>
+						<Text style={appStyles.aboutSectionTitle}>Funcionalidades</Text>
 						<View style={appStyles.aboutBulletRow}>
 							<Text style={appStyles.aboutBulletDot}>•</Text>
 							<Text style={appStyles.aboutBulletText}>
@@ -84,7 +75,7 @@ export function AboutScreen() {
 					</View>
 
 					<View style={appStyles.aboutSection}>
-						<Text style={appStyles.aboutSectionTitle}>DESENVOLVEDORES</Text>
+						<Text style={appStyles.aboutSectionTitle}>Desenvolvedores</Text>
 						<Text style={appStyles.aboutBodyText}>
 							Desenvolvido para a ARIE - Área de Relevante Interesse Ecológico
 						</Text>

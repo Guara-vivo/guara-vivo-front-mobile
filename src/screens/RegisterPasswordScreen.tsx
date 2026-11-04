@@ -1,171 +1,84 @@
 import React, { useState } from 'react'
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
+import { PasswordRules } from '../components/PasswordRules'
+import { AuthField } from '../components/auth/AuthField'
+import { AuthFrame } from '../components/auth/AuthFrame'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
-import { appStyles } from '../styles/appStyles'
 import {
+	getPasswordRuleStatus,
 	isPasswordLongEnough,
 	isPasswordWithinLimit,
 	MAX_PASSWORD_BYTES,
 	MIN_PASSWORD_LENGTH,
-	PASSWORD_RULE_HINT,
 } from '../utils/passwordRules'
 import type { AuthStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
-export function RegisterPasswordScreen({
-	onSuccess,
-}: {
-	onSuccess: () => void
-}) {
+export function RegisterPasswordScreen({ onSuccess }: { onSuccess: () => void }) {
 	const navigation = useNavigation<NavigationProp>()
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
-	const [showPassword, setShowPassword] = useState(false)
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-	const [feedback, setFeedback] = useState<{
-		title: string
-		message: string
-	} | null>(null)
-
-	const showErrorFeedback = (title: string, message: string) => {
-		setFeedback({ title, message })
-	}
+	const [feedback, setFeedback] = useState<{ title: string; message: string } | null>(null)
+	const status = getPasswordRuleStatus(password, confirmPassword)
 
 	const handleFinish = () => {
 		if (!isPasswordLongEnough(password)) {
-			showErrorFeedback('Senha fraca', `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`)
+			setFeedback({ title: 'Senha fraca', message: `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.` })
 			return
 		}
 
 		if (!isPasswordWithinLimit(password)) {
-			showErrorFeedback(
-				'Senha muito longa',
-				`Use no máximo ${MAX_PASSWORD_BYTES} bytes (acentos e símbolos ocupam mais de 1).`,
-			)
+			setFeedback({
+				title: 'Senha muito longa',
+				message: `Use no máximo ${MAX_PASSWORD_BYTES} bytes (acentos e símbolos ocupam mais de 1).`,
+			})
 			return
 		}
 
 		if (password !== confirmPassword) {
-			showErrorFeedback(
-				'Senhas diferentes',
-				'A confirmação não confere com a senha.',
-			)
+			setFeedback({ title: 'Senhas diferentes', message: 'A confirmação não confere com a senha.' })
 			return
 		}
 
 		onSuccess()
-		// Navigation is now handled by RootNavigator reacting to isAuthenticated
+		// A navegação é feita pelo RootNavigator, que reage a isAuthenticated.
 	}
 
 	return (
-		<View style={appStyles.registerAccountScreen}>
-			<ScrollView
-				contentContainerStyle={appStyles.authContent}
-				style={appStyles.screen}
-				keyboardShouldPersistTaps="handled"
+		<>
+			<AuthFrame
+				title="Crie sua senha"
+				subtitle="Você vai usar ela, junto com o e-mail, para entrar."
+				onBack={() => navigation.goBack()}
+				step={{ current: 2, total: 2 }}
+				footer={<ActionButton title="Continuar" onPress={handleFinish} />}
 			>
-				<View style={appStyles.registerHeaderRow}>
-					<Pressable
-						onPress={() => navigation.goBack()}
-						accessibilityRole="button"
-						accessibilityLabel="Voltar"
-						hitSlop={10}
-						style={appStyles.registerBackButton}
-					>
-						<Ionicons name="chevron-back" size={24} color={colors.text} />
-					</Pressable>
-					<Text style={appStyles.registerHeaderTitle}>Crie sua senha</Text>
-				</View>
-
-				<View style={appStyles.registerAccountTopWrap}>
-					<View style={appStyles.registerPasswordFieldBlock}>
-						<View style={appStyles.registerPasswordInputRow}>
-							<TextInput
-								value={password}
-								onChangeText={setPassword}
-								placeholder="Senha"
-								placeholderTextColor={colors.placeholder}
-								secureTextEntry={!showPassword}
-								autoCapitalize="none"
-								autoCorrect={false}
-								autoComplete="new-password"
-								textContentType="newPassword"
-								returnKeyType="next"
-								accessibilityLabel="Senha"
-								style={appStyles.registerPasswordInput}
-							/>
-							<Pressable
-								onPress={() => setShowPassword((current) => !current)}
-								accessibilityRole="button"
-								accessibilityLabel={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-								hitSlop={10}
-								style={appStyles.registerPasswordEyeButton}
-							>
-								<Ionicons
-									name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-									size={20}
-									color={colors.muted}
-								/>
-							</Pressable>
-						</View>
-						<View style={appStyles.registerPasswordDivider} />
-						<Text style={appStyles.registerPasswordHint}>
-							{PASSWORD_RULE_HINT}
-						</Text>
-					</View>
-
-					<View style={appStyles.registerPasswordFieldBlock}>
-						<View style={appStyles.registerPasswordInputRow}>
-							<TextInput
-								value={confirmPassword}
-								onChangeText={setConfirmPassword}
-								placeholder="Confirmar senha"
-								placeholderTextColor={colors.placeholder}
-								secureTextEntry={!showConfirmPassword}
-								autoCapitalize="none"
-								autoCorrect={false}
-								autoComplete="new-password"
-								textContentType="newPassword"
-								returnKeyType="go"
-								onSubmitEditing={handleFinish}
-								accessibilityLabel="Confirmar senha"
-								style={appStyles.registerPasswordInput}
-							/>
-							<Pressable
-								onPress={() => setShowConfirmPassword((current) => !current)}
-								accessibilityRole="button"
-								accessibilityLabel={
-									showConfirmPassword ? 'Ocultar confirmação da senha' : 'Mostrar confirmação da senha'
-								}
-								hitSlop={10}
-								style={appStyles.registerPasswordEyeButton}
-							>
-								<Ionicons
-									name={showConfirmPassword ? 'eye-outline' : 'eye-off-outline'}
-									size={20}
-									color={colors.muted}
-								/>
-							</Pressable>
-						</View>
-						<View style={appStyles.registerPasswordDivider} />
-					</View>
-				</View>
-
-				<View style={appStyles.authButtonWrap}>
-					<ActionButton
-						title="CONTINUAR"
-						onPress={handleFinish}
-						containerStyle={appStyles.authPrimaryButton}
-						textStyle={appStyles.authPrimaryButtonText}
-					/>
-				</View>
-			</ScrollView>
+				<AuthField
+					label="Senha"
+					value={password}
+					onChangeText={setPassword}
+					secure
+					autoComplete="new-password"
+					textContentType="newPassword"
+					returnKeyType="next"
+					hasError={!status.withinByteLimit}
+				/>
+				<AuthField
+					label="Confirmar senha"
+					value={confirmPassword}
+					onChangeText={setConfirmPassword}
+					secure
+					autoComplete="new-password"
+					textContentType="newPassword"
+					returnKeyType="go"
+					onSubmitEditing={handleFinish}
+				/>
+				<PasswordRules status={status} />
+			</AuthFrame>
 
 			{feedback ? (
 				<FeedbackModal
@@ -178,7 +91,7 @@ export function RegisterPasswordScreen({
 					onConfirm={() => setFeedback(null)}
 				/>
 			) : null}
-		</View>
+		</>
 	)
 }
 

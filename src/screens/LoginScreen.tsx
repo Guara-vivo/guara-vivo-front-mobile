@@ -1,15 +1,10 @@
 import React, { useRef, useState } from 'react'
-import {
-	Pressable,
-	ScrollView,
-	Text,
-	TextInput,
-	View,
-} from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { Pressable, Text, TextInput, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import FeedbackModal from '../components/FeedbackModal'
 import { ComingSoonModal } from '../components/ComingSoonModal'
+import { AuthField } from '../components/auth/AuthField'
+import { AuthFrame } from '../components/auth/AuthFrame'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { ApiError } from '../services/apiClient'
@@ -21,33 +16,21 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
-export function LoginScreen({
-	onSuccess,
-}: {
-	onSuccess: (user: UserRead) => void
-}) {
+export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void }) {
 	const navigation = useNavigation<NavigationProp>()
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
-	const [showPassword, setShowPassword] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [showForgotNotice, setShowForgotNotice] = useState(false)
 	const passwordInputRef = useRef<TextInput>(null)
-	const [feedback, setFeedback] = useState<{
-		title: string
-		message: string
-	} | null>(null)
-
-	const showErrorFeedback = (title: string, message: string) => {
-		setFeedback({ title, message })
-	}
+	const [feedback, setFeedback] = useState<{ title: string; message: string } | null>(null)
 
 	const handleLogin = async () => {
 		if (!email || !password) {
-			showErrorFeedback(
-				'Campos obrigatórios',
-				'Preencha e-mail e senha para continuar.',
-			)
+			setFeedback({
+				title: 'Campos obrigatórios',
+				message: 'Preencha e-mail e senha para continuar.',
+			})
 			return
 		}
 
@@ -55,16 +38,20 @@ export function LoginScreen({
 			setIsLoading(true)
 			const response = await login(email.trim(), password)
 			onSuccess(response.user)
-			// Navigation is now handled by RootNavigator reacting to isAuthenticated
+			// A navegação é feita pelo RootNavigator, que reage a isAuthenticated.
 		} catch (error) {
-			// So uma resposta da API indica credenciais erradas; o resto e conexao.
+			// Só uma resposta da API indica credenciais erradas; o resto é conexão.
 			if (error instanceof ApiError && error.status < 500) {
-				showErrorFeedback('Falha no login', 'Confira e-mail e senha e tente novamente.')
+				setFeedback({
+					title: 'Falha no login',
+					message: 'Confira e-mail e senha e tente novamente.',
+				})
 			} else {
-				showErrorFeedback(
-					'Sem conexão',
-					'Não foi possível falar com o servidor. Verifique sua internet e tente novamente.',
-				)
+				setFeedback({
+					title: 'Sem conexão',
+					message:
+						'Não foi possível falar com o servidor. Verifique sua internet e tente novamente.',
+				})
 			}
 		} finally {
 			setIsLoading(false)
@@ -72,104 +59,66 @@ export function LoginScreen({
 	}
 
 	return (
-		<View style={appStyles.loginScreen}>
-			<ScrollView
-				contentContainerStyle={appStyles.loginContent}
-				style={appStyles.screen}
-				keyboardShouldPersistTaps="handled"
-			>
-				<View style={appStyles.loginHeaderRow}>
-					<Pressable
-						onPress={() => navigation.goBack()}
-						accessibilityRole="button"
-						accessibilityLabel="Voltar"
-						hitSlop={10}
-						style={appStyles.loginBackButton}
-					>
-						<Ionicons name="chevron-back" size={24} color={colors.text} />
-					</Pressable>
-					<Text style={appStyles.loginTitle}>Acessar conta</Text>
-				</View>
-
-				<View style={appStyles.loginFields}>
-					<View style={appStyles.loginFieldWrap}>
-						<TextInput
-							value={email}
-							onChangeText={setEmail}
-							placeholder="E-mail de acesso"
-							keyboardType="email-address"
-							autoCapitalize="none"
-							autoCorrect={false}
-							autoComplete="email"
-							textContentType="emailAddress"
-							returnKeyType="next"
-							onSubmitEditing={() => passwordInputRef.current?.focus()}
-							blurOnSubmit={false}
-							accessibilityLabel="E-mail de acesso"
-							editable={!isLoading}
-							placeholderTextColor={colors.placeholder}
-							style={appStyles.loginInput}
+		<>
+			<AuthFrame
+				title="Entrar"
+				subtitle="Use o e-mail e a senha da sua conta."
+				onBack={() => navigation.goBack()}
+				footer={
+					<>
+						<ActionButton
+							title={isLoading ? 'Entrando...' : 'Entrar'}
+							onPress={handleLogin}
+							disabled={isLoading}
 						/>
-						<View style={appStyles.loginDivider} />
-					</View>
-
-					<View style={appStyles.loginFieldWrap}>
-						<View style={appStyles.loginPasswordRow}>
-							<TextInput
-								ref={passwordInputRef}
-								value={password}
-								onChangeText={setPassword}
-								placeholder="Senha de acesso"
-								secureTextEntry={!showPassword}
-								autoCapitalize="none"
-								autoCorrect={false}
-								autoComplete="current-password"
-								textContentType="password"
-								returnKeyType="go"
-								onSubmitEditing={handleLogin}
-								accessibilityLabel="Senha de acesso"
-								editable={!isLoading}
-								placeholderTextColor={colors.placeholder}
-								style={[appStyles.loginInput, appStyles.loginPasswordInput]}
-							/>
+						<View style={appStyles.authBelowRow}>
+							<Text style={appStyles.authBelowText}>Ainda não tem conta?</Text>
 							<Pressable
-								onPress={() => setShowPassword((current) => !current)}
+								onPress={() => navigation.navigate('RegisterEmail')}
 								accessibilityRole="button"
-								accessibilityLabel={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
-								hitSlop={10}
-								style={appStyles.loginEyeButton}
+								accessibilityLabel="Criar conta"
+								hitSlop={8}
 							>
-								<Ionicons
-									name={showPassword ? 'eye' : 'eye-off-outline'}
-									size={22}
-									color={colors.muted}
-								/>
+								<Text style={appStyles.authLink}>Criar conta</Text>
 							</Pressable>
 						</View>
-						<View style={appStyles.loginDivider} />
-					</View>
-
-						<Pressable
-							onPress={() => setShowForgotNotice(true)}
-							accessibilityRole="button"
-							accessibilityLabel="Recuperar senha"
-							hitSlop={{ left: 8, right: 8 }}
-							style={appStyles.loginForgotButton}
-					>
-						<Text style={appStyles.loginForgot}>Recuperar senha</Text>
-					</Pressable>
-				</View>
-
-				<View style={appStyles.loginButtonWrap}>
-					<ActionButton
-						title={isLoading ? 'ACESSANDO...' : 'ACESSAR'}
-						onPress={handleLogin}
-						disabled={isLoading}
-						containerStyle={appStyles.loginPrimaryButton}
-						textStyle={appStyles.loginPrimaryButtonLabel}
-					/>
-				</View>
-			</ScrollView>
+					</>
+				}
+			>
+				<AuthField
+					label="E-mail"
+					value={email}
+					onChangeText={setEmail}
+					keyboardType="email-address"
+					autoComplete="email"
+					textContentType="emailAddress"
+					returnKeyType="next"
+					onSubmitEditing={() => passwordInputRef.current?.focus()}
+					blurOnSubmit={false}
+					editable={!isLoading}
+				/>
+				<AuthField
+					ref={passwordInputRef}
+					label="Senha"
+					value={password}
+					onChangeText={setPassword}
+					secure
+					autoComplete="current-password"
+					textContentType="password"
+					returnKeyType="go"
+					onSubmitEditing={handleLogin}
+					editable={!isLoading}
+				/>
+				<Pressable
+					onPress={() => setShowForgotNotice(true)}
+					accessibilityRole="button"
+					accessibilityLabel="Recuperar senha"
+					hitSlop={{ left: 8, right: 8 }}
+					style={appStyles.authLinkButton}
+				>
+					<Text style={appStyles.authLink}>Esqueci minha senha</Text>
+				</Pressable>
+			</AuthFrame>
 
 			<ComingSoonModal
 				visible={showForgotNotice}
@@ -188,7 +137,7 @@ export function LoginScreen({
 					onConfirm={() => setFeedback(null)}
 				/>
 			) : null}
-		</View>
+		</>
 	)
 }
 

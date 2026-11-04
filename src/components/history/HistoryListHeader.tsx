@@ -4,7 +4,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import type { SortOrder } from '../../utils/historyRecords'
 import { formatDate, formatTime } from '../../utils/recordFormatters'
-import { ScreenCard } from '../common'
 import { colors } from '../../constants/theme'
 
 type Props = {
@@ -30,26 +29,25 @@ function HistoryListHeaderBase({
 	const staleIso = staleSince !== null ? new Date(staleSince).toISOString() : null
 
 	return (
-		<>
+		<View style={appStyles.historyHeaderGroup}>
 			{staleIso !== null ? (
 				<Text style={appStyles.historyEmptyText}>
 					{`Sem conexão com o servidor. Mostrando dados de ${formatDate(staleIso)} às ${formatTime(staleIso)}.`}
 				</Text>
 			) : null}
-			<ScreenCard style={appStyles.historySearchCard}>
+
+			<View style={appStyles.historySearchRow}>
 				<View style={appStyles.historySearchInputWrap}>
-					<Ionicons name="search-outline" size={19} color={colors.accent} />
+					<Ionicons name="search-outline" size={20} color={colors.muted} />
 					<TextInput
 						value={searchTerm}
 						onChangeText={onSearchChange}
 						accessibilityLabel="Buscar registros"
-						placeholder="Buscar por local, data..."
+						placeholder="Buscar por local ou data"
 						placeholderTextColor={colors.placeholder}
 						style={appStyles.historySearchInput}
 					/>
 				</View>
-
-				<View style={appStyles.historyActionRow}>
 				<Pressable
 					onPress={onOpenFilters}
 					accessibilityRole="button"
@@ -61,29 +59,31 @@ function HistoryListHeaderBase({
 						disabled && appStyles.historyFilterButtonDisabled,
 					]}
 				>
-					<Ionicons name="funnel-outline" size={17} color={colors.secondary} />
-					<Text style={appStyles.historyFilterButtonText}>FILTROS</Text>
+					<Ionicons name="options-outline" size={22} color={colors.text} />
 				</Pressable>
+			</View>
 
-				<Pressable
-					onPress={onToggleSort}
-					accessibilityRole="button"
-					accessibilityLabel={sortOrder === "desc" ? "Ordenação: mais recentes primeiro. Alternar" : "Ordenação: mais antigos primeiro. Alternar"}
-					accessibilityState={{ disabled: !!disabled }}
-					disabled={disabled}
-					style={[
-						appStyles.historyFilterButton,
-						disabled && appStyles.historyFilterButtonDisabled,
-					]}
-				>
-					<Ionicons name="swap-vertical" size={17} color={colors.secondary} />
-					<Text style={appStyles.historyFilterButtonText}>
-						{sortOrder === 'desc' ? 'MAIS RECENTES' : 'MAIS ANTIGOS'}
-					</Text>
-				</Pressable>
-				</View>
-			</ScreenCard>
-		</>
+			<Pressable
+				onPress={onToggleSort}
+				accessibilityRole="button"
+				accessibilityLabel={
+					sortOrder === 'desc'
+						? 'Ordenação: mais recentes primeiro. Alternar'
+						: 'Ordenação: mais antigos primeiro. Alternar'
+				}
+				accessibilityState={{ disabled: !!disabled }}
+				disabled={disabled}
+				style={[
+					appStyles.historySortPill,
+					disabled && appStyles.historyFilterButtonDisabled,
+				]}
+			>
+				<Ionicons name="swap-vertical" size={16} color={colors.secondary} />
+				<Text style={appStyles.historySortPillText}>
+					{sortOrder === 'desc' ? 'Mais recentes' : 'Mais antigos'}
+				</Text>
+			</Pressable>
+		</View>
 	)
 }
 

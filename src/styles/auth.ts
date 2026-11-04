@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing, fontSize } from '../constants/theme'
-import { screenGutter, palette, basePrimaryButton, basePrimaryButtonLabel } from './shared'
+import { colors, fontSize, radius, spacing, fontFamily } from '../constants/theme'
+import { cornerRadius, screenGutter } from './shared'
 
 export const authStyles = StyleSheet.create<Record<string, any>>({
+	// Splash e boas-vindas (fundo branco, logo escura)
 	splashScreen: {
 		justifyContent: 'center',
-		color: colors.secondary,
 		backgroundColor: colors.surface,
 	},
 	splashContent: {
@@ -15,230 +15,196 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	splashLogo: {
 		alignSelf: 'center',
 		width: 300,
-		height: 240,
+		aspectRatio: 16 / 9,
 	},
 	splashLoadingIndicator: {
 		marginTop: spacing.lg,
 	},
-	welcomeLogo: {
-		width: '80%',
-		maxWidth: 320,
-		height: 250,
-	},
 	welcomeScreen: {
 		flex: 1,
 		backgroundColor: colors.surface,
-		paddingHorizontal: spacing.md,
-		paddingBottom: spacing.md,
+		paddingHorizontal: screenGutter,
+		paddingBottom: spacing.lg,
 	},
-	welcomeContent: {
+	welcomeBody: {
 		flex: 1,
-		justifyContent: 'center',
 		alignItems: 'center',
-		paddingTop: spacing.lg,
-		gap: spacing.xl,
+		justifyContent: 'center',
+		gap: spacing.sm,
+	},
+	welcomeLogo: {
+		width: '100%',
+		maxWidth: 340,
+		aspectRatio: 16 / 9,
+	},
+	welcomeTagline: {
+		color: colors.muted,
+		fontSize: fontSize.bodyLarge,
+		lineHeight: 22,
+		textAlign: 'center',
+		maxWidth: 280,
 	},
 	welcomeActions: {
 		width: '100%',
-		alignItems: 'center',
+		gap: spacing.sm2,
 	},
-	welcomeSpacer: {
-		height: spacing.lg,
-	},
-	welcomePrimaryButton: {
-		...basePrimaryButton,
-		backgroundColor: colors.text,
-	},
-	welcomePrimaryButtonLabel: {
-		...basePrimaryButtonLabel,
-		color: colors.surface,
-	},
-	welcomeTextButton: {
-		alignItems: 'center',
-		paddingVertical: spacing.sm,
-		paddingHorizontal: spacing.sm2,
-		backgroundColor: 'transparent',
-	},
-	welcomeTextButtonLabel: {
-		color: colors.text,
-		fontWeight: '600',
-		fontSize: fontSize.bodyLarge,
-	},
-	loginScreen: {
+
+	// Moldura das telas de login e cadastro
+	authScreen: {
 		flex: 1,
 		backgroundColor: colors.surface,
 	},
-	loginContent: {
+	authScroll: {
 		flexGrow: 1,
-		backgroundColor: colors.surface,
-		paddingTop: 48,
+		paddingTop: spacing.md,
 		paddingHorizontal: screenGutter,
 		paddingBottom: spacing.lg,
 	},
-	loginHeaderRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.sm,
-		marginBottom: 56,
-	},
-	loginTitle: {
-		color: colors.text,
-		fontSize: fontSize.headline,
-		lineHeight: 26,
-	},
-	loginBackButton: {
-		width: 28,
-		height: 28,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	loginFields: {
-		gap: spacing.sm2,
-	},
-	loginFieldWrap: {
-		gap: spacing.xs,
-	},
-	loginInput: {
-		minHeight: 48,
-		paddingHorizontal: 0,
-		paddingVertical: spacing.xs,
-		fontSize: fontSize.body,
-		lineHeight: 20,
-		color: colors.text,
-		backgroundColor: 'transparent',
-	},
-	loginDivider: {
-		height: 1,
-		backgroundColor: colors.border,
-	},
-	loginPasswordRow: {
+	authHeaderRow: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
+		minHeight: 44,
 	},
-	loginPasswordInput: {
-		flex: 1,
-		minHeight: 48,
-	},
-	loginEyeButton: {
-		width: 40,
-		height: 40,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	loginForgotButton: {
-		minHeight: 48,
-		justifyContent: 'center',
-		alignSelf: 'flex-start',
-	},
-	loginForgot: {
-		color: colors.secondary,
+	authStepText: {
+		color: colors.muted,
 		fontSize: fontSize.body,
 	},
-	loginButtonWrap: {
-		marginTop: 44,
-		alignItems: 'center',
-	},
-	loginPrimaryButton: {
-		...basePrimaryButton,
-		backgroundColor: palette.text,
-		width: '86%',
-		maxWidth: 360,
-	},
-	authContent: {
-		flexGrow: 1,
-		backgroundColor: colors.surface,
-		paddingTop: 48,
-		paddingHorizontal: screenGutter,
-		paddingBottom: spacing.lg,
-	},
-	authButtonWrap: {
-		marginTop: 44,
-		alignItems: 'center',
-	},
-	authPrimaryButton: {
-		...basePrimaryButton,
-		backgroundColor: palette.text,
-		width: '86%',
-		maxWidth: 360,
-	},
-	authPrimaryButtonText: {
-		...basePrimaryButtonLabel,
-	},
-	loginPrimaryButtonLabel: {
-		...basePrimaryButtonLabel,
-	},
-	registerAccountScreen: {
-		flex: 1,
-		backgroundColor: colors.surface,
-	},
-	registerHeaderRow: {
+	authProgress: {
 		flexDirection: 'row',
-		alignItems: 'center',
 		gap: spacing.sm,
-		marginBottom: 56,
+		marginTop: spacing.md,
 	},
-	registerBackButton: {
-		width: 28,
-		height: 28,
-		alignItems: 'center',
-		justifyContent: 'center',
+	authProgressBar: {
+		flex: 1,
+		height: 4,
+		borderRadius: 2,
+		backgroundColor: colors.border,
 	},
-	registerAccountTopWrap: {
+	authProgressBarDone: {
+		backgroundColor: colors.primary,
+	},
+	authTitle: {
+		color: colors.text,
+		fontSize: 43,
+		lineHeight: 50,
+		fontFamily: fontFamily.display,
+		marginTop: spacing.lg,
+	},
+	authSubtitle: {
+		color: colors.muted,
+		fontSize: fontSize.bodyLarge,
+		lineHeight: 22,
+		marginTop: spacing.xs,
+	},
+	authBody: {
+		marginTop: spacing.lg,
 		gap: spacing.md,
 	},
-	registerAccountFieldBlock: {
+	authFooter: {
+		paddingHorizontal: screenGutter,
+		paddingTop: spacing.sm2,
+		paddingBottom: spacing.md,
+		backgroundColor: colors.surface,
+		gap: spacing.sm2,
+	},
+
+	// Campo com rótulo fixo acima
+	authFieldWrap: {
 		gap: spacing.xs,
 	},
-	registerAccountInput: {
-		minHeight: 48,
-		color: palette.text,
-		fontSize: fontSize.body,
-		lineHeight: 20,
-		paddingVertical: spacing.xs,
-		paddingHorizontal: 0,
+	authFieldLabel: {
+		color: colors.muted,
+		fontSize: fontSize.caption,
+		fontWeight: '600',
 	},
-	registerAccountDivider: {
-		height: 1,
-		backgroundColor: palette.border,
-		marginTop: 1,
-	},
-	registerPasswordFieldBlock: {
-		gap: 2,
-	},
-	registerPasswordInputRow: {
-		minHeight: 48,
+	authFieldRow: {
+		minHeight: 52,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: spacing.sm,
+		borderRadius: cornerRadius,
+		borderWidth: 1.5,
+		borderColor: 'transparent',
+		backgroundColor: colors.field,
+		paddingLeft: spacing.md,
+		paddingRight: spacing.xs,
 	},
-	registerPasswordInput: {
+	authFieldRowFocused: {
+		backgroundColor: colors.surface,
+		borderColor: colors.secondary,
+	},
+	authFieldRowError: {
+		borderColor: colors.primary,
+	},
+	authFieldInput: {
 		flex: 1,
-		color: palette.text,
-		fontSize: fontSize.body,
-		lineHeight: 20,
-		paddingVertical: 2,
-		paddingHorizontal: 0,
+		minHeight: 48,
+		color: colors.text,
+		fontSize: fontSize.bodyLarge,
+		paddingVertical: 0,
 	},
-	registerPasswordDivider: {
-		height: 1,
-		backgroundColor: palette.border,
-		marginTop: 0,
-	},
-	registerPasswordEyeButton: {
-		width: 40,
-		height: 40,
+	authFieldEye: {
+		width: 44,
+		height: 44,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
-	registerPasswordHint: {
-		color: colors.muted,
-		fontSize: fontSize.caption,
-		lineHeight: 14,
+	authLinkButton: {
+		alignSelf: 'flex-end',
+		minHeight: 44,
+		justifyContent: 'center',
 	},
-	registerHeaderTitle: {
+	authLink: {
+		color: colors.secondary,
+		fontSize: fontSize.body,
+		fontWeight: '600',
+	},
+	authBelowRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: spacing.xs,
+	},
+	authBelowText: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+	},
+
+	// Lista de regras da senha (acende conforme a pessoa digita)
+	authRules: {
+		gap: spacing.sm,
+		marginTop: spacing.xs,
+	},
+	authRuleRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm2,
+	},
+	authRuleMark: {
+		width: 20,
+		height: 20,
+		borderRadius: radius.pill,
+		borderWidth: 1.5,
+		borderColor: colors.borderStrong,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	authRuleMarkOk: {
+		backgroundColor: colors.success,
+		borderColor: colors.success,
+	},
+	authRuleMarkBad: {
+		backgroundColor: colors.dangerBg,
+		borderColor: colors.dangerText,
+	},
+	authRuleText: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+	},
+	authRuleTextOk: {
 		color: colors.text,
-		fontSize: fontSize.headline,
-		lineHeight: 26,
+	},
+	authRuleTextBad: {
+		color: colors.dangerText,
 	},
 })

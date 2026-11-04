@@ -1,3 +1,32 @@
+const WEEKDAYS = [
+	'Domingo',
+	'Segunda-feira',
+	'Terça-feira',
+	'Quarta-feira',
+	'Quinta-feira',
+	'Sexta-feira',
+	'Sábado',
+]
+
+export const MONTHS = [
+	'janeiro',
+	'fevereiro',
+	'março',
+	'abril',
+	'maio',
+	'junho',
+	'julho',
+	'agosto',
+	'setembro',
+	'outubro',
+	'novembro',
+	'dezembro',
+]
+
+export function formatLongDate(now: Date) {
+	return `${WEEKDAYS[now.getDay()]}, ${now.getDate()} de ${MONTHS[now.getMonth()]}`
+}
+
 export function formatLastUpdatedAt(
 	lastUpdatedAt: Date | null,
 	now = new Date(),

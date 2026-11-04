@@ -6,9 +6,11 @@ import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 import { HeaderBackButton } from '../components/HeaderBackButton'
-import { PasswordField } from '../components/PasswordField'
+import { PasswordRules } from '../components/PasswordRules'
+import { AuthField } from '../components/auth/AuthField'
+import { ActionButton } from '../components/common'
 import { ComingSoonModal } from '../components/ComingSoonModal'
-import { getPasswordHint } from '../utils/passwordRules'
+import { getPasswordRuleStatus } from '../utils/passwordRules'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
@@ -25,6 +27,7 @@ export function ChangePasswordScreen() {
 	const navigation = useNavigation<NavigationProp>()
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const [showComingSoon, setShowComingSoon] = useState(false)
+	const status = getPasswordRuleStatus(state.newPassword, state.confirmPassword)
 
 	const goBack = useCallback(() => navigation.goBack(), [navigation])
 
@@ -33,51 +36,50 @@ export function ChangePasswordScreen() {
 			style={appStyles.profileScreen}
 			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
 		>
-			<Header title="Editar Senha" leftIcon={<HeaderBackButton onPress={goBack} />} />
+			<Header title="Alterar senha" leftIcon={<HeaderBackButton onPress={goBack} />} />
 
 			<ScrollView
-				contentContainerStyle={appStyles.profileContent}
+				contentContainerStyle={appStyles.settingsContent}
 				keyboardShouldPersistTaps="handled"
 			>
 				<View style={appStyles.changePasswordCard}>
-					<PasswordField
-						label="SENHA ATUAL"
+					<AuthField
+						label="Senha atual"
+						secure
 						value={state.currentPassword}
 						onChangeText={(value) => dispatch({ field: 'currentPassword', value })}
 						autoComplete="current-password"
 					/>
-					<PasswordField
-						label="NOVA SENHA"
+					<AuthField
+						label="Nova senha"
+						secure
 						value={state.newPassword}
 						onChangeText={(value) => dispatch({ field: 'newPassword', value })}
-						hint={getPasswordHint(state.newPassword)}
 						autoComplete="new-password"
+						hasError={!status.withinByteLimit}
 					/>
-					<PasswordField
-						label="CONFIRMAR NOVA SENHA"
+					<AuthField
+						label="Confirmar nova senha"
+						secure
 						value={state.confirmPassword}
 						onChangeText={(value) => dispatch({ field: 'confirmPassword', value })}
 						autoComplete="new-password"
 					/>
-
-					<View style={appStyles.changePasswordActionsRow}>
-						<Pressable
-							onPress={() => setShowComingSoon(true)}
-							accessibilityRole="button"
-							style={appStyles.changePasswordPrimaryAction}
-						>
-							<Text style={appStyles.changePasswordPrimaryActionText}>ALTERAR SENHA</Text>
-						</Pressable>
-						<Pressable
-							onPress={goBack}
-							accessibilityRole="button"
-							style={appStyles.changePasswordSecondaryAction}
-						>
-							<Text style={appStyles.changePasswordSecondaryActionText}>CANCELAR</Text>
-						</Pressable>
-					</View>
+					<PasswordRules status={status} />
 				</View>
 			</ScrollView>
+
+			<View style={appStyles.settingsFooter}>
+				<ActionButton title="Alterar senha" onPress={() => setShowComingSoon(true)} />
+				<Pressable
+					onPress={goBack}
+					accessibilityRole="button"
+					accessibilityLabel="Cancelar"
+					style={appStyles.settingsCancelButton}
+				>
+					<Text style={appStyles.settingsCancelText}>Cancelar</Text>
+				</Pressable>
+			</View>
 
 			<ComingSoonModal
 				visible={showComingSoon}

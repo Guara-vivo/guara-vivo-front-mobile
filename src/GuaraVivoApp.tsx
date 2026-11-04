@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Alert, StatusBar } from 'react-native'
 import { SafeAreaProvider, SafeAreaView, type Edge } from 'react-native-safe-area-context'
+import { useFonts } from 'expo-font'
+import {
+	BarlowCondensed_600SemiBold,
+	BarlowCondensed_700Bold,
+} from '@expo-google-fonts/barlow-condensed'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { PortalProvider } from '@gorhom/portal'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
@@ -64,6 +69,12 @@ export default function GuaraVivoApp() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
 	const [isSessionReady, setIsSessionReady] = useState(false)
 	const [currentUser, setCurrentUser] = useState<UserRead | null>(null)
+	// Se a fonte falhar, segue com a fonte do sistema (fontError) em vez de travar na abertura.
+	const [fontsLoaded, fontError] = useFonts({
+		BarlowCondensed_600SemiBold,
+		BarlowCondensed_700Bold,
+	})
+	const fontsSettled = fontsLoaded || fontError !== null
 
 	usePendingRecordsSync(isAuthenticated ? (currentUser?.id ?? null) : null)
 
@@ -122,7 +133,7 @@ export default function GuaraVivoApp() {
 	}
 
 	const renderScreen = () => {
-		if (!isSessionReady) {
+		if (!isSessionReady || !fontsSettled) {
 			return <SplashScreen isLoading />
 		}
 

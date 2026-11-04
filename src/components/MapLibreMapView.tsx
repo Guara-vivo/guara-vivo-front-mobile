@@ -1,4 +1,4 @@
-import MapView, { Circle, Marker } from 'react-native-maps'
+import MapView, { Circle } from 'react-native-maps'
 import { ActivityIndicator, Text, View } from 'react-native'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { MapLayerId } from '../config/map'
@@ -13,6 +13,7 @@ import {
 } from '../utils/mapZoneStyle'
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { RecordMarker } from './map/RecordMarker'
+import { ZoneMarker } from './map/ZoneMarker'
 import { UserLocationMarker } from './map/UserLocationMarker'
 import { colors } from '../constants/theme'
 
@@ -29,6 +30,8 @@ type Props = {
 	selectedZoneId?: number | null
 	selectedRecordId?: number | null
 	isLoadingData?: boolean
+	// Muda a cada toque em "ir para minha localização".
+	recenterKey?: number
 }
 
 function MapLibreMapViewBase({
@@ -41,6 +44,7 @@ function MapLibreMapViewBase({
 	selectedZoneId,
 	selectedRecordId,
 	isLoadingData = false,
+	recenterKey = 0,
 }: Props) {
 	const mapRef = useRef<MapView>(null)
 	const cameraInitializedRef = useRef(false)
@@ -79,6 +83,14 @@ function MapLibreMapViewBase({
 		}
 	}, [cameraTargetRegion, hasLocationTarget, initialRegionReady, locationReady, mapReady])
 
+	useEffect(() => {
+		if (recenterKey === 0 || !hasLocationTarget) {
+			return
+		}
+
+		mapRef.current?.animateToRegion(cameraTargetRegion, CAMERA_ANIMATION_DURATION_MS)
+	}, [recenterKey, cameraTargetRegion, hasLocationTarget])
+
 	const visibleZones = useMemo(
 		() => filterZonesByLayer(zones, selectedLayer),
 		[selectedLayer, zones],
@@ -109,20 +121,14 @@ function MapLibreMapViewBase({
 		}
 
 		return visibleZones.map((zone) => (
-			<Marker
+			<ZoneMarker
 				key={`zone-press-${zone.id}`}
-				coordinate={{
-					latitude: zone.latitude,
-					longitude: zone.longitude,
-				}}
-				onPress={() => onZonePress(zone)}
-				anchor={{ x: 0.5, y: 0.5 }}
-				zIndex={0}
-			>
-				<View style={styles.zonePressMarker} />
-			</Marker>
+				zone={zone}
+				selected={zone.id === selectedZoneId}
+				onPress={onZonePress}
+			/>
 		))
-	}, [onZonePress, visibleZones])
+	}, [onZonePress, selectedZoneId, visibleZones])
 
 	const selectedRecordMarkers = useMemo(() => {
 		return visibleRecordMarkers.map((record) => {
