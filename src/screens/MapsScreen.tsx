@@ -273,6 +273,7 @@ export function MapsScreen() {
 				) : null}
 				<View style={appStyles.mapReloadOverlay}>
 					<View style={appStyles.mapTopRightActions}>
+						{ctx.canManageZones ? (
 						<Pressable
 							onPress={handleToggleSelectionMode}
 								accessibilityRole="button"
@@ -292,6 +293,7 @@ export function MapsScreen() {
 								color={colors.onColor}
 							/>
 						</Pressable>
+						) : null}
 						<Pressable
 							onPress={handleReloadZones}
 								accessibilityRole="button"

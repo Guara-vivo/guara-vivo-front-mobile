@@ -19,6 +19,7 @@ interface MapZoneDetailContextType {
 	selectedRecordId: number | null
 	showDeleteConfirm: boolean
 	isDeleting: boolean
+	canManageZones: boolean
 
 	openSheet: (zone: MapZoneRead) => void
 	closeSheet: () => void
@@ -34,7 +35,13 @@ interface MapZoneDetailContextType {
 
 const MapZoneDetailContext = createContext<MapZoneDetailContextType | null>(null)
 
-export function MapZoneDetailProvider({ children }: { children: React.ReactNode }) {
+export function MapZoneDetailProvider({
+	children,
+	canManageZones = false,
+}: {
+	children: React.ReactNode
+	canManageZones?: boolean
+}) {
 	const [selectedZone, setSelectedZone] = useState<MapZoneRead | null>(null)
 	const [zoneRecords, setZoneRecords] = useState<MapZoneRecordRead[]>([])
 	const [isZoneRecordsLoading, setIsZoneRecordsLoading] = useState(false)
@@ -150,6 +157,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 			selectedRecordId,
 			showDeleteConfirm,
 			isDeleting,
+			canManageZones,
 			openSheet,
 			closeSheet,
 			setSelectedRecordId,
@@ -163,7 +171,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 		}),
 		[
 			selectedZone, zoneRecords, isZoneRecordsLoading, zoneRecordsError,
-			selectedRecordId, showDeleteConfirm, isDeleting,
+			selectedRecordId, showDeleteConfirm, isDeleting, canManageZones,
 			openSheet, closeSheet, setSelectedRecordId, onRecordMarkerPress,
 			openDeleteConfirm, closeDeleteConfirm, deleteZone,
 			registerScrollToRecord, scrollToRecord, registerOnZoneDeleted,

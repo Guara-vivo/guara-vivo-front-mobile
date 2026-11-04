@@ -133,7 +133,7 @@ export default function GuaraVivoApp() {
 			>
 				<RecordProgressProvider isEnabled={isAuthenticated}>
 					<NavigationContainer ref={navigationRef}>
-						<MapZoneDetailProvider>
+						<MapZoneDetailProvider canManageZones={currentUser?.is_admin === true}>
 							<RootNavigator
 								isAuthenticated={isAuthenticated}
 								currentUser={currentUser}
