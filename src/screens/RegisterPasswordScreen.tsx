@@ -8,6 +8,8 @@ import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import {
 	isPasswordLongEnough,
+	isPasswordWithinLimit,
+	MAX_PASSWORD_BYTES,
 	MIN_PASSWORD_LENGTH,
 	PASSWORD_RULE_HINT,
 } from '../utils/passwordRules'
@@ -38,6 +40,14 @@ export function RegisterPasswordScreen({
 	const handleFinish = () => {
 		if (!isPasswordLongEnough(password)) {
 			showErrorFeedback('Senha fraca', `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`)
+			return
+		}
+
+		if (!isPasswordWithinLimit(password)) {
+			showErrorFeedback(
+				'Senha muito longa',
+				`Use no máximo ${MAX_PASSWORD_BYTES} bytes (acentos e símbolos ocupam mais de 1).`,
+			)
 			return
 		}
 
