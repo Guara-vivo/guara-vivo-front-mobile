@@ -9,6 +9,7 @@ import React, {
 } from 'react'
 import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
 import { getMapZoneRecords, deleteMapZone } from '../services/mapZonesApi'
+import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 
 interface MapZoneDetailContextType {
 	selectedZone: MapZoneRead | null
@@ -18,6 +19,7 @@ interface MapZoneDetailContextType {
 	selectedRecordId: number | null
 	showDeleteConfirm: boolean
 	isDeleting: boolean
+	canManageZones: boolean
 
 	openSheet: (zone: MapZoneRead) => void
 	closeSheet: () => void
@@ -33,7 +35,13 @@ interface MapZoneDetailContextType {
 
 const MapZoneDetailContext = createContext<MapZoneDetailContextType | null>(null)
 
-export function MapZoneDetailProvider({ children }: { children: React.ReactNode }) {
+export function MapZoneDetailProvider({
+	children,
+	canManageZones = false,
+}: {
+	children: React.ReactNode
+	canManageZones?: boolean
+}) {
 	const [selectedZone, setSelectedZone] = useState<MapZoneRead | null>(null)
 	const [zoneRecords, setZoneRecords] = useState<MapZoneRecordRead[]>([])
 	const [isZoneRecordsLoading, setIsZoneRecordsLoading] = useState(false)
@@ -80,7 +88,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 			})
 			.catch((error: unknown) => {
 				if (mounted && error instanceof Error && error.name !== 'AbortError') {
-					setZoneRecordsError(error.message)
+					setZoneRecordsError(getLoadErrorMessage(error, 'Não foi possível carregar os registros desta área.'))
 				}
 			})
 			.finally(() => {
@@ -149,6 +157,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 			selectedRecordId,
 			showDeleteConfirm,
 			isDeleting,
+			canManageZones,
 			openSheet,
 			closeSheet,
 			setSelectedRecordId,
@@ -162,7 +171,7 @@ export function MapZoneDetailProvider({ children }: { children: React.ReactNode 
 		}),
 		[
 			selectedZone, zoneRecords, isZoneRecordsLoading, zoneRecordsError,
-			selectedRecordId, showDeleteConfirm, isDeleting,
+			selectedRecordId, showDeleteConfirm, isDeleting, canManageZones,
 			openSheet, closeSheet, setSelectedRecordId, onRecordMarkerPress,
 			openDeleteConfirm, closeDeleteConfirm, deleteZone,
 			registerScrollToRecord, scrollToRecord, registerOnZoneDeleted,

@@ -245,8 +245,9 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
 		height: 66,
-		paddingTop: spacing.sm,
-		paddingBottom: spacing.sm2,
+		// Sem padding vertical: o conjunto ícone + rótulo centraliza na altura da barra.
+		paddingTop: 0,
+		paddingBottom: 0,
 		paddingHorizontal: spacing.sm,
 	},
 	bottomNavItem: {
@@ -262,12 +263,13 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 	},
 	bottomNavTabContent: {
-		minWidth: 68,
+		minWidth: 0,
+		width: '100%',
 		height: 50,
 		alignItems: 'center',
 		justifyContent: 'center',
 		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.sm,
+		paddingHorizontal: 0,
 		paddingVertical: spacing.xs,
 		gap: 2,
 	},
@@ -277,7 +279,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	bottomNavLabel: {
 		color: colors.muted,
 		width: '100%',
-		fontSize: fontSize.caption,
+		fontSize: fontSize.micro,
 		textTransform: 'uppercase',
 		textAlign: 'center',
 	},

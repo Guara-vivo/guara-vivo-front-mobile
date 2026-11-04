@@ -188,16 +188,18 @@ export function MapZoneDetailSheet() {
                   </Text>
                 </View>
                 <View style={appStyles.mapZoneInfoHeaderActions}>
-                  <Pressable
-                    onPress={handleDeletePress}
-                    accessibilityRole="button"
-                    accessibilityLabel="Excluir área"
-                    disabled={ctx.isDeleting}
-                    hitSlop={8}
-                    style={appStyles.mapZoneInfoDeleteIconButton}
-                  >
-                    <Ionicons name="trash-outline" size={17} color={colors.onColor} />
-                  </Pressable>
+                  {ctx.canManageZones ? (
+                    <Pressable
+                      onPress={handleDeletePress}
+                      accessibilityRole="button"
+                      accessibilityLabel="Excluir área"
+                      disabled={ctx.isDeleting}
+                      hitSlop={8}
+                      style={appStyles.mapZoneInfoDeleteIconButton}
+                    >
+                      <Ionicons name="trash-outline" size={17} color={colors.onColor} />
+                    </Pressable>
+                  ) : null}
                   <Pressable
                     onPress={handleCloseZoneDetail}
                     accessibilityRole="button"

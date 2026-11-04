@@ -1,7 +1,6 @@
 import React from 'react'
 import { Image, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { spacing } from '../constants/theme'
 import { ActionButton } from '../components/common'
 import { appStyles } from '../styles/appStyles'
 import type { AuthStackParamList } from '../types/navigation'
@@ -19,7 +18,7 @@ export function WelcomeScreen() {
 			<View style={appStyles.welcomeContent}>
 				<Image
 					source={welcomeLogo}
-						accessibilityLabel="Guará Vivo"
+					accessibilityLabel="Guará Vivo"
 					style={appStyles.welcomeLogo}
 					resizeMode="contain"
 				/>
@@ -31,7 +30,7 @@ export function WelcomeScreen() {
 						containerStyle={appStyles.welcomePrimaryButton}
 						textStyle={appStyles.welcomePrimaryButtonLabel}
 					/>
-					<View style={{ height: spacing.lg }} />
+					<View style={appStyles.welcomeSpacer} />
 					<View style={appStyles.welcomeActions}>
 						<ActionButton
 							title="CRIAR CONTA"

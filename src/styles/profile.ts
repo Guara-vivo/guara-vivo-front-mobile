@@ -48,7 +48,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileEditButton: {
 		minWidth: 114,
-		minHeight: 36,
+		minHeight: 48,
 		borderRadius: cornerRadius,
 		backgroundColor: colors.secondary,
 		alignItems: 'center',
@@ -77,7 +77,7 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 		marginBottom: 2,
 	},
 	profileMenuItem: {
-		minHeight: 42,
+		minHeight: 48,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm2,

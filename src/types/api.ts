@@ -10,6 +10,8 @@ export type UserRead = {
 	id: number
 	name: string
 	email: string
+	// Ausente em cache de versoes antigas e em APIs sem o campo: tratar como false.
+	is_admin?: boolean
 }
 
 export type LoginResponse = {

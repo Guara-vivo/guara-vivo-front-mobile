@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Text, View } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { HomeScreen } from '../screens/HomeScreen'
@@ -9,10 +9,12 @@ import { ProfileScreen } from '../screens/ProfileScreen'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import { Ionicons } from '@expo/vector-icons'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { MainTabParamList } from '../types/navigation'
 import type { UserRead } from '../types/api'
 
 const Tab = createBottomTabNavigator<MainTabParamList>()
+const BASE_TAB_BAR_HEIGHT = 66
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 type TabBarIconProps = { color: string; focused: boolean }
 type TabIconProps = TabBarIconProps & { label: string; icon: IoniconName }
@@ -28,8 +30,9 @@ function TabIcon({ color, focused, label, icon }: TabIconProps) {
 			<Ionicons name={icon} size={23} color={color} />
 			<Text
 				numberOfLines={1}
+				allowFontScaling={false}
 				adjustsFontSizeToFit
-				minimumFontScale={0.85}
+				minimumFontScale={0.9}
 				style={[
 					appStyles.bottomNavLabel,
 					{ color },
@@ -68,11 +71,21 @@ type MainTabsProps = {
 }
 
 export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
+	// Soma o inset do sistema (gestos/botões) à altura da barra, para o branco ir até o fim da tela.
+	const { bottom: bottomInset } = useSafeAreaInsets()
+	const tabBarStyle = useMemo(
+		() => [
+			appStyles.bottomNav,
+			{ height: BASE_TAB_BAR_HEIGHT + bottomInset, paddingBottom: bottomInset },
+		],
+		[bottomInset],
+	)
+
 	return (
 		<Tab.Navigator
 			screenOptions={{
 				headerShown: false,
-				tabBarStyle: appStyles.bottomNav,
+				tabBarStyle,
 				tabBarIconStyle: appStyles.bottomNavIcon,
 				tabBarShowLabel: false,
 				tabBarActiveTintColor: colors.primary,

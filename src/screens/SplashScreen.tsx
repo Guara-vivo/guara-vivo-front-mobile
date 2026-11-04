@@ -22,11 +22,11 @@ export function SplashScreen({ isLoading = false, onFinish }: SplashScreenProps)
 
 	return (
 		<View style={[appStyles.screen, appStyles.splashScreen]}>
-			<View style={{ alignItems: 'center', justifyContent: 'center' }}>
+			<View style={appStyles.splashContent}>
 				<Image
 					source={welcomeLogo}
-						accessibilityLabel="Guará Vivo"
-					style={[appStyles.splashLogo, { alignSelf: 'center' }]}
+					accessibilityLabel="Guará Vivo"
+					style={appStyles.splashLogo}
 					resizeMode="contain"
 				/>
 				{isLoading ? (

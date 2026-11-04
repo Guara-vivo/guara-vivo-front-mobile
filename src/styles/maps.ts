@@ -50,7 +50,7 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: spacing.sm2,
+		paddingHorizontal: spacing.xs,
 		gap: spacing.xs,
 	},
 	mapsFilterButtonActive: {
@@ -60,9 +60,14 @@ export const mapsStyles = StyleSheet.create<Record<string, any>>({
 	mapsFilterButtonIcon: {
 		marginTop: -1,
 	},
+	mapsFilterDot: {
+		width: 9,
+		height: 9,
+		borderRadius: radius.pill,
+	},
 	mapsFilterButtonLabel: {
 		color: colors.text,
-		fontSize: fontSize.caption,
+		fontSize: fontSize.micro,
 		textTransform: 'uppercase',
 	},
 	mapsFilterButtonLabelActive: {

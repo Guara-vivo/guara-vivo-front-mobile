@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Alert, StatusBar } from 'react-native'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaProvider, SafeAreaView, type Edge } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { PortalProvider } from '@gorhom/portal'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
@@ -25,6 +25,9 @@ import {
 } from './utils/mapZoneDetailVisibility'
 import type { UserRead } from './types/api'
 import type { RootStackParamList } from './types/navigation'
+
+// A borda inferior fica de fora: a barra de abas soma o inset do sistema e estende o branco até o fim da tela.
+const SAFE_AREA_EDGES: Edge[] = ['top', 'left', 'right']
 
 
 function MapZoneDetailSheetWrapper() {
@@ -130,7 +133,7 @@ export default function GuaraVivoApp() {
 			>
 				<RecordProgressProvider isEnabled={isAuthenticated}>
 					<NavigationContainer ref={navigationRef}>
-						<MapZoneDetailProvider>
+						<MapZoneDetailProvider canManageZones={currentUser?.is_admin === true}>
 							<RootNavigator
 								isAuthenticated={isAuthenticated}
 								currentUser={currentUser}
@@ -159,7 +162,7 @@ export default function GuaraVivoApp() {
 			<PortalProvider>
 				<BottomSheetModalProvider>
 					<ErrorBoundary>
-							<SafeAreaView style={safeAreaStyle}>
+							<SafeAreaView style={safeAreaStyle} edges={SAFE_AREA_EDGES}>
 								<StatusBar barStyle="dark-content" backgroundColor={statusBarColor} />
 								{renderScreen()}
 							</SafeAreaView>

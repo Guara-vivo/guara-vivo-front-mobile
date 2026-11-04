@@ -26,7 +26,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		textTransform: 'uppercase',
 	},
 	changePasswordInputRow: {
-		minHeight: 42,
+		minHeight: 48,
 		borderRadius: cornerRadius,
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
@@ -38,7 +38,7 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.sm,
 	},
 	changePasswordInput: {
-		minHeight: 42,
+		minHeight: 48,
 		borderRadius: cornerRadius,
 		borderWidth: 1,
 		borderColor: colors.secondaryLight,
@@ -54,8 +54,8 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		paddingVertical: 0,
 	},
 	changePasswordEyeButton: {
-		width: 30,
-		height: 30,
+		width: 40,
+		height: 40,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
@@ -86,12 +86,14 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		flex: 1,
 		minHeight: 42,
 		borderRadius: cornerRadius,
-		backgroundColor: colors.secondary,
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.secondary,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	changePasswordSecondaryActionText: {
-		color: colors.surface,
+		color: colors.secondary,
 		fontSize: fontSize.caption,
 
 		textTransform: 'uppercase',
@@ -192,6 +194,12 @@ export const settingsStyles = StyleSheet.create<Record<string, any>>({
 		flexDirection: 'row',
 		alignItems: 'flex-start',
 		gap: spacing.sm,
+	},
+	aboutBulletText: {
+		flex: 1,
+		color: colors.text,
+		fontSize: fontSize.body,
+		lineHeight: 25,
 	},
 	aboutBulletDot: {
 		color: colors.primary,
