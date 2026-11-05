@@ -1,10 +1,10 @@
 import { FlatList, Pressable, Text, View } from 'react-native'
-import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
 import { useImageCarousel } from '../../hooks/useImageCarousel'
 import { appStyles } from '../../styles/appStyles'
 import { colors } from '../../constants/theme'
 import { HeaderBackButton } from '../HeaderBackButton'
+import { SkeletonImage } from '../SkeletonImage'
 
 type Props = {
 	imageUris: string[]
@@ -54,14 +54,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 								accessibilityLabel={`Abrir análise da imagem ${index + 1}`}
 								style={appStyles.recordDetailCarouselImagePressable}
 							>
-								<Image
-									source={{ uri: imageUri }}
-									style={appStyles.recordDetailCarouselImage}
-									contentFit="cover"
-									cachePolicy="memory-disk"
-									recyclingKey={imageUri}
-									transition={150}
-								/>
+								<SkeletonImage uri={imageUri} style={appStyles.recordDetailCarouselImage} />
 							</Pressable>
 						) : (
 							<View style={appStyles.recordDetailCarouselPlaceholder}>

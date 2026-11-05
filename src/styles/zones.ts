@@ -80,6 +80,10 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 34,
 		fontFamily: fontFamily.display,
 	},
+	mapZoneInfoValueSkeleton: {
+		height: 34,
+		justifyContent: 'center',
+	},
 	mapZoneInfoValueSmall: {
 		color: colors.text,
 		fontSize: fontSize.bodyLarge,

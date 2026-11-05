@@ -54,8 +54,15 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		paddingHorizontal: screenGutter,
 		paddingVertical: spacing.lg,
 	},
-	recordDetailLoadingIcon: {
-		marginBottom: spacing.sm,
+	recordDetailSkeletonTitle: {
+		marginVertical: spacing.xs,
+	},
+	recordDetailSkeletonBadge: {
+		margin: spacing.md,
+		marginTop: 0,
+	},
+	recordDetailSkeletonBlock: {
+		gap: spacing.sm,
 	},
 	recordDetailEmptyText: {
 		color: colors.muted,

@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Image } from 'expo-image'
 import { useNavigation } from '@react-navigation/native'
 import { colors } from '../constants/theme'
+import { Skeleton } from '../components/Skeleton'
+import { SkeletonImage } from '../components/SkeletonImage'
 import { useHistoryRecords } from '../hooks/useHistoryRecords'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
@@ -26,7 +27,26 @@ function getLatest(records: RecordItem[]) {
 	}, null)
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+function Stat({
+	value,
+	label,
+	loading,
+}: {
+	value: number
+	label: string
+	loading: boolean
+}) {
+	if (loading) {
+		return (
+			<View style={appStyles.homeStat} accessible accessibilityLabel={`Carregando ${label}`}>
+				<View style={appStyles.homeStatSkeleton}>
+					<Skeleton width={44} height={30} radius={8} />
+				</View>
+				<Text style={appStyles.homeStatLabel}>{label}</Text>
+			</View>
+		)
+	}
+
 	return (
 		<View style={appStyles.homeStat} accessible accessibilityLabel={`${value} ${label}`}>
 			<Text style={appStyles.homeStatValue}>{value}</Text>
@@ -35,9 +55,22 @@ function Stat({ value, label }: { value: number; label: string }) {
 	)
 }
 
+function LatestSkeleton() {
+	return (
+		<View style={appStyles.homeLatest} accessible accessibilityLabel="Carregando último avistamento">
+			<Skeleton width={56} height={56} radius={8} />
+			<View style={appStyles.homeLatestText}>
+				<Skeleton width="55%" height={18} radius={6} />
+				<Skeleton width="80%" height={14} radius={6} style={appStyles.homeSkeletonLine} />
+			</View>
+		</View>
+	)
+}
+
 export function HomeScreen({ userName }: { userName?: string | null }) {
 	const navigation = useNavigation<MainTabNavigationProp>()
-	const { allRecords, loadError, staleSince } = useHistoryRecords()
+	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
+		useHistoryRecords()
 	const now = new Date()
 	const summary = useMemo(() => summarizeRecords(allRecords, new Date()), [allRecords])
 	const latest = useMemo(() => getLatest(allRecords), [allRecords])
@@ -47,7 +80,9 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 	const photo = latest?.images?.[0]
 	const guaras = latest?.ibis_quantity ?? 0
 
-	const syncText = waiting
+	const syncText = isLoading
+		? 'Atualizando…'
+		: waiting
 		? `${waiting} ${waiting === 1 ? 'registro aguardando' : 'registros aguardando'} envio`
 		: loadError || staleSince
 			? 'Sem conexão · mostrando os dados guardados'
@@ -58,6 +93,14 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 		<ScrollView
 			style={appStyles.homeScreen}
 			contentContainerStyle={appStyles.homeContent}
+			refreshControl={
+				<RefreshControl
+					refreshing={isRefreshing}
+					onRefresh={handleRefresh}
+					colors={[colors.secondary]}
+					tintColor={colors.secondary}
+				/>
+			}
 		>
 			<Text style={appStyles.homeBrand} accessibilityRole="header">
 				GUARÁ<Text style={appStyles.homeBrandAccent}>VIVO</Text>
@@ -82,15 +125,21 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			</Pressable>
 
 			<View style={appStyles.homeStatRow}>
-				<Stat value={summary.weekRecords} label="registros nesta semana" />
-				<Stat value={summary.ibis} label="guarás avistados" />
-				<Stat value={summary.areas} label={summary.areas === 1 ? 'área mapeada' : 'áreas mapeadas'} />
+				<Stat loading={isLoading} value={summary.weekRecords} label="registros nesta semana" />
+				<Stat loading={isLoading} value={summary.ibis} label="guarás avistados" />
+				<Stat
+					loading={isLoading}
+					value={summary.areas}
+					label={summary.areas === 1 ? 'área mapeada' : 'áreas mapeadas'}
+				/>
 			</View>
 
 			<Text style={appStyles.homeSectionTitle} accessibilityRole="header">
 				Último avistamento
 			</Text>
-			{latest ? (
+			{isLoading ? (
+				<LatestSkeleton />
+			) : latest ? (
 				<Pressable
 					onPress={() => navigation.navigate('RecordDetail', { recordId: latest.id })}
 					disabled={Boolean(latest.sync_state)}
@@ -99,7 +148,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 					style={appStyles.homeLatest}
 				>
 					{photo ? (
-						<Image source={{ uri: photo }} style={appStyles.homeLatestThumb} contentFit="cover" />
+						<SkeletonImage uri={photo} style={appStyles.homeLatestThumb} />
 					) : (
 						<View style={[appStyles.homeLatestThumb, appStyles.homeLatestThumbEmpty]}>
 							<Ionicons name="image-outline" size={22} color={colors.muted} />
@@ -130,13 +179,17 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			)}
 
 			<View style={appStyles.homeSync} accessibilityRole="text" accessibilityLiveRegion="polite">
-				<View style={[appStyles.homeSyncDot, !syncOk && appStyles.homeSyncDotWarn]}>
-					<Ionicons
-						name={syncOk ? 'checkmark' : 'cloud-offline-outline'}
-						size={12}
-						color={colors.onColor}
-					/>
-				</View>
+				{isLoading ? (
+					<ActivityIndicator size="small" color={colors.muted} style={appStyles.homeSyncSpinner} />
+				) : (
+					<View style={[appStyles.homeSyncDot, !syncOk && appStyles.homeSyncDotWarn]}>
+						<Ionicons
+							name={syncOk ? 'checkmark' : 'cloud-offline-outline'}
+							size={12}
+							color={colors.onColor}
+						/>
+					</View>
+				)}
 				<Text style={appStyles.homeSyncText}>{syncText}</Text>
 			</View>
 		</ScrollView>

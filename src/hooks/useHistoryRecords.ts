@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AppState } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 import { useRecordProgress } from '../contexts/RecordProgressContext'
 import {
 	getActivePendingRecords,
@@ -12,8 +14,16 @@ import {
 } from '../services/recordsService'
 import { loadPersistedRecords } from '../services/recordsStore'
 import type { RecordItem } from '../types/records'
-import { isActiveAnalysisStatus, mergeProgressUpdates } from '../utils/historyRecords'
+import {
+	mergeProgressUpdates,
+	needsRecordsRefresh,
+} from '../utils/historyRecords'
 import { mergeHistoryRecords } from '../utils/pendingRecords'
+import { createRefreshScheduler } from '../utils/refreshScheduler'
+
+const SILENT_REFRESH_MIN_INTERVAL_MS = 5000
+// O servidor pode devolver dados antigos (cache) logo após a análise terminar: confirma de novo.
+const CONFIRM_REFRESH_DELAY_MS = 6000
 
 // Lista do histórico: cache, rede, cópia guardada no aparelho, fila offline e progresso em tempo real.
 export function useHistoryRecords() {
@@ -129,25 +139,90 @@ export function useHistoryRecords() {
 		}
 	}, [])
 
-	const hasActiveAnalysis = useMemo(
-		() => records.some((record) => isActiveAnalysisStatus(record.status)),
-		[records],
+	const recordsRef = useRef(records)
+	recordsRef.current = records
+	const mountedRef = useRef(true)
+	const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+	// Recarrega a lista sem mexer nos indicadores de carregamento (a tela continua como está).
+	const refreshNow = useCallback(async () => {
+		try {
+			const items = await fetchRecords({ force: true })
+			if (mountedRef.current) {
+				setRecords(items)
+				setStaleSince(null)
+				setLoadError(false)
+			}
+		} catch {
+			// Sem rede ou API fora: mantém o que já está na tela; o próximo gatilho tenta de novo.
+		}
+	}, [])
+
+	// O agendador limita a frequência sem descartar pedidos (um pedido cedo demais é adiado).
+	const scheduler = useMemo(
+		() => createRefreshScheduler(() => void refreshNow(), SILENT_REFRESH_MIN_INTERVAL_MS),
+		[refreshNow],
 	)
+	const refreshSilently = useCallback(() => scheduler.trigger(), [scheduler])
 
 	useEffect(() => {
-		if (!hasActiveAnalysis) {
-			return
+		mountedRef.current = true
+		return () => {
+			mountedRef.current = false
+			scheduler.cancel()
+			clearTimeout(confirmTimerRef.current)
 		}
+	}, [scheduler])
 
+	// Recarrega agora e confirma de novo depois: a primeira resposta pode vir do cache do servidor.
+	const refreshAndConfirm = useCallback(() => {
+		scheduler.trigger()
+		clearTimeout(confirmTimerRef.current)
+		confirmTimerRef.current = setTimeout(() => scheduler.trigger(), CONFIRM_REFRESH_DELAY_MS)
+	}, [scheduler])
+
+	// Progresso em tempo real: a lista (em qualquer aba) acompanha as análises sem precisar de
+	// um registro ativo já na tela, e recarrega quando uma análise termina.
+	useEffect(() => {
 		return addRecordProgressListener({
 			onSnapshot: (snapshot) => {
+				const needsRefresh = needsRecordsRefresh(recordsRef.current, snapshot)
 				setRecords((current) => mergeProgressUpdates(current, snapshot))
+				if (needsRefresh) {
+					refreshAndConfirm()
+				}
 			},
 			onProgress: (progress) => {
+				const needsRefresh = needsRecordsRefresh(recordsRef.current, [progress])
 				setRecords((current) => mergeProgressUpdates(current, [progress]))
+				if (needsRefresh) {
+					refreshAndConfirm()
+				}
 			},
 		})
-	}, [addRecordProgressListener, hasActiveAnalysis])
+	}, [addRecordProgressListener, refreshAndConfirm])
+
+	// Atualiza sozinha quando a internet volta e quando o app volta ao primeiro plano.
+	useEffect(() => {
+		let wasOnline: boolean | null = null
+		const unsubscribeNetInfo = NetInfo.addEventListener((state) => {
+			const online = Boolean(state.isConnected) && state.isInternetReachable !== false
+			if (online && wasOnline === false) {
+				refreshSilently()
+			}
+			wasOnline = online
+		})
+		const appStateSubscription = AppState.addEventListener('change', (next) => {
+			if (next === 'active' && !isRecordsCacheFresh()) {
+				refreshSilently()
+			}
+		})
+
+		return () => {
+			unsubscribeNetInfo()
+			appStateSubscription.remove()
+		}
+	}, [refreshSilently])
 
 	const handleRefresh = async () => {
 		setIsRefreshing(true)

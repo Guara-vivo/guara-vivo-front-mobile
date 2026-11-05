@@ -5,6 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AiAnalysisCard } from '../components/recordDetail/AiAnalysisCard'
 import { ImageCarouselCard } from '../components/recordDetail/ImageCarouselCard'
 import { RecordDetailMessage } from '../components/recordDetail/RecordDetailMessage'
+import { RecordDetailSkeleton } from '../components/recordDetail/RecordDetailSkeleton'
 import { RecordInfoCard } from '../components/recordDetail/RecordInfoCard'
 import { RecordLocationCard } from '../components/recordDetail/RecordLocationCard'
 import RecordImageDetailModal from '../components/RecordImageDetailModal'
@@ -20,15 +21,13 @@ export function RecordDetailScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, 'RecordDetail'>>()
 	const recordId = route.params?.recordId
 
-	const { record, isLoading, isRefreshing, handleRefresh } =
+	const { record, isLoading, isRefreshing, isFetchingDetail, handleRefresh } =
 		useRecordDetail(recordId)
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 	const goBack = () => navigation.goBack()
 
 	if (isLoading) {
-		return (
-			<RecordDetailMessage onBack={goBack} message="Carregando registro..." loading />
-		)
+		return <RecordDetailSkeleton onBack={goBack} />
 	}
 
 	if (!record) {
@@ -36,6 +35,8 @@ export function RecordDetailScreen() {
 	}
 
 	const imageUris = record.images ?? []
+	// O resumo (sem análises) aparece primeiro; até chegar o detalhe, mostra esqueleto em vez de "sem análise".
+	const detailPending = isFetchingDetail && record.image_analyses === undefined
 
 	return (
 		<View style={appStyles.recordDetailScreen}>
@@ -56,8 +57,12 @@ export function RecordDetailScreen() {
 					onImagePress={setSelectedImageIndex}
 					onBack={goBack}
 				/>
-				<RecordInfoCard record={record} />
-				<AiAnalysisCard record={record} onOpen={() => setSelectedImageIndex(0)} />
+				<RecordInfoCard record={record} loading={detailPending} />
+				<AiAnalysisCard
+					record={record}
+					onOpen={() => setSelectedImageIndex(0)}
+					loading={detailPending}
+				/>
 				<RecordLocationCard record={record} />
 			</ScrollView>
 

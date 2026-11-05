@@ -94,6 +94,17 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		lineHeight: 16,
 		marginTop: 2,
 	},
+	homeStatSkeleton: {
+		height: 43,
+		justifyContent: 'center',
+	},
+	homeSkeletonLine: {
+		marginTop: spacing.sm,
+	},
+	homeSyncSpinner: {
+		width: 20,
+		height: 20,
+	},
 	homeSectionTitle: {
 		color: colors.text,
 		fontSize: fontSize.title,

@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native'
-import { Image } from 'expo-image'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../styles/appStyles'
 import type { RecordDetailItem } from '../types/records'
 import { averageScore, getConfidenceLevel } from '../utils/confidence'
 import type { Size } from '../utils/detectionFormatters'
+import { SkeletonImage } from './SkeletonImage'
 import { ConfidenceBanner } from './recordImage/ConfidenceBanner'
 import { getDetectionScore } from './recordImage/DetectionCard'
 import { DetectionOverlay } from './recordImage/DetectionOverlay'
@@ -92,16 +92,14 @@ export function RecordImageDetailModal({
 					>
 						{imageUri ? (
 							<>
-								<Image
-									source={{ uri: imageUri }}
+								<SkeletonImage
+									uri={imageUri}
 									style={appStyles.recordImageModalImage}
 									contentFit="contain"
-									cachePolicy="memory-disk"
 									accessibilityLabel={`Foto ${imageIndex + 1} de ${totalImages}`}
 									onLoad={(event) =>
 										setImageSize({ width: event.source.width, height: event.source.height })
 									}
-									transition={150}
 								/>
 								{imageSize && containerSize && detections && (
 									<DetectionOverlay

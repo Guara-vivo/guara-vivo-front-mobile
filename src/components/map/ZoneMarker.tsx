@@ -5,6 +5,8 @@ import type { MapZoneRead } from '../../types/api'
 type Props = {
 	zone: MapZoneRead
 	selected: boolean
+	// Há outra área selecionada: este marcador fica cinza, como o círculo do raio.
+	dimmed?: boolean
 	onPress: (zone: MapZoneRead) => void
 }
 
@@ -15,9 +17,15 @@ const ZONE_IMAGES = {
 	feedingSelected: require('../../assets/images/zone-feeding-selected.png'),
 	nest: require('../../assets/images/zone-nest.png'),
 	nestSelected: require('../../assets/images/zone-nest-selected.png'),
+	feedingMuted: require('../../assets/images/zone-feeding-muted.png'),
+	nestMuted: require('../../assets/images/zone-nest-muted.png'),
 }
 
-function getZoneImage(isNest: boolean, selected: boolean) {
+function getZoneImage(isNest: boolean, selected: boolean, dimmed: boolean) {
+	if (dimmed && !selected) {
+		return isNest ? ZONE_IMAGES.nestMuted : ZONE_IMAGES.feedingMuted
+	}
+
 	if (isNest) {
 		return selected ? ZONE_IMAGES.nestSelected : ZONE_IMAGES.nest
 	}
@@ -27,7 +35,7 @@ function getZoneImage(isNest: boolean, selected: boolean) {
 
 // Ponto da área no centro do círculo: vermelho com talher = alimentação, azul com casa = ninho.
 // O selecionado fica maior, então a cor não é a única pista.
-function ZoneMarkerBase({ zone, selected, onPress }: Props) {
+function ZoneMarkerBase({ zone, selected, dimmed = false, onPress }: Props) {
 	const isNest = zone.type === 'nest'
 
 	return (
@@ -36,7 +44,7 @@ function ZoneMarkerBase({ zone, selected, onPress }: Props) {
 			onPress={() => onPress(zone)}
 			anchor={{ x: 0.5, y: 0.5 }}
 			zIndex={selected ? 2 : 1}
-			image={getZoneImage(isNest, selected)}
+			image={getZoneImage(isNest, selected, dimmed)}
 			accessibilityLabel={`${isNest ? 'Ninho' : 'Área de alimentação'} ${zone.name}`}
 		/>
 	)

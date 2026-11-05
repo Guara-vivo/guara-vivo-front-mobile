@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import {
-  ActivityIndicator,
   Animated,
   Pressable,
   ScrollView,
@@ -13,6 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
+import { Skeleton } from './Skeleton'
 import { appStyles } from '../styles/appStyles'
 import { formatDate, formatTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
@@ -245,11 +245,17 @@ export function MapZoneDetailSheet() {
                   <Text style={appStyles.mapZoneInfoLabel}>de raio</Text>
                 </View>
                 <View style={appStyles.mapZoneInfoMetric}>
-                  <Text style={appStyles.mapZoneInfoValue}>
-                    {ctx.isZoneRecordsLoading ? '–' : visibleZoneRecords.length}
-                  </Text>
+                  {ctx.isZoneRecordsLoading ? (
+                    <View style={appStyles.mapZoneInfoValueSkeleton}>
+                      <Skeleton width={32} height={26} radius={6} />
+                    </View>
+                  ) : (
+                    <Text style={appStyles.mapZoneInfoValue}>{visibleZoneRecords.length}</Text>
+                  )}
                   <Text style={appStyles.mapZoneInfoLabel}>
-                    {visibleZoneRecords.length === 1 ? 'registro' : 'registros'}
+                    {!ctx.isZoneRecordsLoading && visibleZoneRecords.length === 1
+                      ? 'registro'
+                      : 'registros'}
                   </Text>
                 </View>
                 <View style={appStyles.mapZoneInfoMetric}>
@@ -273,11 +279,24 @@ export function MapZoneDetailSheet() {
                   Registros na área
                 </Text>
                 {ctx.isZoneRecordsLoading ? (
-                  <View style={appStyles.mapZoneRecordsStatusRow}>
-                    <ActivityIndicator size="small" color={colors.secondary} />
-                    <Text style={appStyles.mapZoneRecordsStatusText}>
-                      Carregando registros...
-                    </Text>
+                  <View
+                    accessible
+                    accessibilityLabel="Carregando registros da área"
+                    accessibilityLiveRegion="polite"
+                  >
+                    {[0, 1].map((index) => (
+                      <View key={index} style={appStyles.mapZoneRecordRow}>
+                        <View style={appStyles.mapZoneRecordMainRow}>
+                          <Skeleton width={56} height={18} radius={6} />
+                          <Skeleton width={110} height={14} radius={6} />
+                        </View>
+                        <Skeleton width="45%" height={14} radius={6} />
+                        <View style={appStyles.mapZoneRecordFooter}>
+                          <Skeleton width={72} height={24} radius={12} />
+                          <Skeleton width={92} height={16} radius={6} />
+                        </View>
+                      </View>
+                    ))}
                   </View>
                 ) : ctx.zoneRecordsError ? (
                   <Text style={appStyles.mapZoneRecordsErrorText}>

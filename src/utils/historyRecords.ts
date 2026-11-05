@@ -33,6 +33,25 @@ export function mergeProgressUpdates(
 	})
 }
 
+// A lista só traz status e progresso; quando uma análise termina (a quantidade de guarás e as
+// fotos mudam) ou chega um registro que a lista não conhece, é preciso buscar a lista de novo.
+export function needsRecordsRefresh(
+	records: RecordItem[],
+	updates: RecordProgressUpdate[],
+) {
+	const byId = new Map(records.map((record) => [record.id, record]))
+
+	return updates.some((update) => {
+		const known = byId.get(update.id)
+
+		if (!known) {
+			return true
+		}
+
+		return isActiveAnalysisStatus(known.status) && !isActiveAnalysisStatus(update.status)
+	})
+}
+
 // Ordena por data sem alterar a lista original.
 export function sortRecordsByDate<T extends Pick<RecordItem, 'datetime'>>(
 	records: T[],

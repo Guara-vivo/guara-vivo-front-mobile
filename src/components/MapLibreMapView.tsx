@@ -125,6 +125,7 @@ function MapLibreMapViewBase({
 				key={`zone-press-${zone.id}`}
 				zone={zone}
 				selected={zone.id === selectedZoneId}
+				dimmed={selectedZoneId !== null && selectedZoneId !== undefined}
 				onPress={onZonePress}
 			/>
 		))
@@ -189,8 +190,14 @@ function MapLibreMapViewBase({
 			) : null}
 			{showMapLoading ? (
 				<View pointerEvents="none" style={styles.recordsLoadingOverlay}>
-					<ActivityIndicator size="large" color={colors.text} />
-					<Text style={styles.loadingText}>Preparando mapa...</Text>
+					<View
+						style={styles.recordsLoadingPill}
+						accessibilityLiveRegion="polite"
+						accessibilityLabel="Carregando mapa"
+					>
+						<ActivityIndicator size="small" color={colors.secondary} />
+						<Text style={styles.loadingText}>Carregando mapa…</Text>
+					</View>
 				</View>
 			) : null}
 			{!locationReady ? (

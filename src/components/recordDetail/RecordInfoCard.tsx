@@ -1,11 +1,13 @@
 import React from 'react'
 import { Text, View } from 'react-native'
+import { Skeleton } from '../Skeleton'
 import { appStyles } from '../../styles/appStyles'
 import type { RecordDetailItem } from '../../services/recordsService'
 import { formatDate, formatTime } from '../../utils/recordFormatters'
 
 // Título do registro: quantidade de guarás, comportamentos (chips) e linha "Registro #id · data e hora".
-export function RecordInfoCard({ record }: { record: RecordDetailItem }) {
+// Com `loading`, a quantidade (que o resumo ainda pode trazer desatualizada) vira um esqueleto.
+export function RecordInfoCard({ record, loading = false }: { record: RecordDetailItem; loading?: boolean }) {
 	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'guará' : 'guarás'}`
 	const behaviors = String(record.flock_size)
 		.split(',')
@@ -14,9 +16,13 @@ export function RecordInfoCard({ record }: { record: RecordDetailItem }) {
 
 	return (
 		<View style={appStyles.recordDetailTitleBlock}>
-			<Text style={appStyles.recordDetailTitle} accessibilityRole="header">
-				{quantityLabel}
-			</Text>
+			{loading ? (
+				<Skeleton width={160} height={38} radius={8} style={appStyles.recordDetailSkeletonTitle} />
+			) : (
+				<Text style={appStyles.recordDetailTitle} accessibilityRole="header">
+					{quantityLabel}
+				</Text>
+			)}
 			{behaviors.length > 0 ? (
 				<View style={appStyles.recordDetailChipRow}>
 					{behaviors.map((behavior) => (

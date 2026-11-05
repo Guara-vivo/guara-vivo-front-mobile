@@ -1,9 +1,9 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Image } from 'expo-image'
 import { formatTime } from '../utils/recordFormatters'
 import AnalysisProgressIndicator from './AnalysisProgressIndicator'
+import { SkeletonImage } from './SkeletonImage'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 import { colors } from '../constants/theme'
@@ -34,10 +34,9 @@ function HistoryRecordCardBase({
 	const content = (
 		<>
 			{photo ? (
-				<Image
-					source={{ uri: photo }}
+				<SkeletonImage
+					uri={photo}
 					style={appStyles.historyRecordThumb}
-					contentFit="cover"
 					accessibilityLabel={`Foto do registro ${item.id}`}
 				/>
 			) : (

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, fontSize, radius, spacing } from '../../constants/theme'
+import { overlayShadow } from '../../styles/shared'
 
 export const mapViewStyles = StyleSheet.create({
 	container: {
@@ -18,15 +19,23 @@ export const mapViewStyles = StyleSheet.create({
 	},
 	recordsLoadingOverlay: {
 		...StyleSheet.absoluteFillObject,
-		backgroundColor: 'rgba(244, 245, 247, 0.5)',
 		justifyContent: 'center',
 		alignItems: 'center',
-		flexDirection: 'column',
-		gap: spacing.md,
+	},
+	recordsLoadingPill: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm2,
+		borderRadius: radius.pill,
+		backgroundColor: colors.surface,
+		...overlayShadow,
 	},
 	loadingText: {
 		fontSize: fontSize.body,
-		color: colors.muted,
+		fontWeight: '600',
+		color: colors.text,
 	},
 	zonePressMarker: {
 		width: 44,

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../../constants/theme'
+import { Skeleton } from '../Skeleton'
 import { appStyles } from '../../styles/appStyles'
 import type { RecordDetailItem } from '../../services/recordsService'
 import { averageScore, getConfidenceLevel, type ConfidenceLevel } from '../../utils/confidence'
@@ -28,10 +29,12 @@ const LEVEL_BADGE: Record<ConfidenceLevel, { label: string; box: object; text: o
 type Props = {
 	record: RecordDetailItem
 	onOpen: () => void
+	// O detalhe completo (com as análises) ainda está chegando.
+	loading?: boolean
 }
 
 // Cartão "Análise por IA": selo com a confiança média das detecções; toque abre a análise da primeira foto.
-export function AiAnalysisCard({ record, onOpen }: Props) {
+export function AiAnalysisCard({ record, onOpen, loading = false }: Props) {
 	const level = useMemo(() => {
 		const scores = (record.image_analyses ?? []).flatMap((analysis) =>
 			analysis.detections.map(getDetectionScore),
@@ -48,6 +51,23 @@ export function AiAnalysisCard({ record, onOpen }: Props) {
 		: waiting
 			? 'A análise ainda está em andamento.'
 			: 'Este registro não tem análise.'
+
+	if (loading) {
+		return (
+			<View style={appStyles.recordDetailCard} accessibilityLabel="Carregando análise por IA" accessibilityLiveRegion="polite">
+				<View style={appStyles.recordDetailCardHeader}>
+					<View style={appStyles.recordDetailCardIcon}>
+						<Ionicons name="sparkles-outline" size={20} color={colors.secondary} />
+					</View>
+					<View style={appStyles.recordDetailCardTitleWrap}>
+						<Text style={appStyles.recordDetailCardTitle}>Análise por IA</Text>
+						<Skeleton width="80%" height={14} />
+					</View>
+				</View>
+				<Skeleton width={110} height={24} radius={999} style={appStyles.recordDetailSkeletonBadge} />
+			</View>
+		)
+	}
 
 	return (
 		<Pressable
