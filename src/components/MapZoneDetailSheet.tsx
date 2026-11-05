@@ -115,7 +115,7 @@ export function MapZoneDetailSheet() {
   const recordScrollRef = useRef<ScrollView>(null)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
   const RECORD_ROW_HEIGHT = 108
-  const recordListHeight = useRef(new Animated.Value(RECORD_ROW_HEIGHT)).current
+  const MAX_VISIBLE_ROWS = 4
 
   const snapPoints = ['35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
@@ -148,16 +148,13 @@ export function MapZoneDetailSheet() {
     ctx.registerScrollToRecord(scrollToRecordRow)
   }, [ctx, scrollToRecordRow])
 
+  // A altura da lista já nasce com até 4 linhas: enquanto a folha sobe, os registros já aparecem
+  // (antes ela só crescia depois de soltar). Na posição baixa, o excesso fica abaixo da tela.
   const handleSheetChange = useCallback(
     (index: number) => {
-      Animated.timing(recordListHeight, {
-        toValue: index <= 0 ? RECORD_ROW_HEIGHT : RECORD_ROW_HEIGHT * 4,
-        duration: 250,
-        useNativeDriver: false,
-      }).start()
       if (index === -1) ctx.closeSheet()
     },
-    [ctx, recordListHeight],
+    [ctx],
   )
 
   const handleCloseZoneDetail = useCallback(() => {
@@ -287,7 +284,7 @@ export function MapZoneDetailSheet() {
                     {ctx.zoneRecordsError}
                   </Text>
                 ) : visibleZoneRecords.length > 0 ? (
-                    <Animated.View style={{ height: recordListHeight }}>
+                    <View style={{ height: RECORD_ROW_HEIGHT * Math.min(visibleZoneRecords.length, MAX_VISIBLE_ROWS) }}>
                     <ScrollView
                       ref={recordScrollRef}
                       snapToInterval={RECORD_ROW_HEIGHT}
@@ -306,7 +303,7 @@ export function MapZoneDetailSheet() {
                         />
                       ))}
                     </ScrollView>
-                    </Animated.View>
+                    </View>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
                     Nenhum registro com guarás identificados nesta área.
