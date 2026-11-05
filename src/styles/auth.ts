@@ -15,7 +15,7 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 	splashLogo: {
 		alignSelf: 'center',
 		width: 300,
-		aspectRatio: 16 / 9,
+		height: 169,
 	},
 	splashLoadingIndicator: {
 		marginTop: spacing.lg,

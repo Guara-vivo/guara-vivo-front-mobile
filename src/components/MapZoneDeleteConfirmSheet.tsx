@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import { appStyles } from '../styles/appStyles'
 import { colors } from '../constants/theme'
@@ -46,8 +47,13 @@ export function MapZoneDeleteConfirmSheet({
 				}
 			}}
 		>
-			<BottomSheetView style={{ flex: 1, alignItems: 'center', padding: 24 }}>
-				<Text style={appStyles.zoneModalTitle}>Excluir área?</Text>
+			<BottomSheetView style={appStyles.zoneDeleteSheetContent}>
+				<View style={appStyles.zoneDeleteIconWrap}>
+					<Ionicons name="trash-outline" size={26} color={colors.dangerText} />
+				</View>
+				<Text accessibilityRole="header" style={appStyles.zoneModalTitle}>
+					Excluir esta área?
+				</Text>
 				<Text style={appStyles.zoneDeleteConfirmText}>
 					Essa ação não pode ser desfeita.
 				</Text>
@@ -62,7 +68,7 @@ export function MapZoneDeleteConfirmSheet({
 						accessibilityLabel="Cancelar"
 						disabled={isDeleting}
 					>
-						<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
+						<Text style={appStyles.zoneDeleteCancelText}>Cancelar</Text>
 					</Pressable>
 					<Pressable
 						style={[

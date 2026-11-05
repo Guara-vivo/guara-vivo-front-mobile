@@ -68,13 +68,16 @@ function HistoryRecordCardBase({
 						</Text>
 					</View>
 				) : (
-					<View style={appStyles.historyTagRow}>
-						{behaviorTags.map((tag) => (
-							<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
-								<Text style={appStyles.historyTagChipText}>{tag}</Text>
-							</View>
-						))}
-					</View>
+					<>
+						<View style={appStyles.historyTagRow}>
+							{behaviorTags.map((tag) => (
+								<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
+									<Text style={appStyles.historyTagChipText}>{tag}</Text>
+								</View>
+							))}
+						</View>
+						<AnalysisProgressIndicator progress={analysisProgress} status={item.status} />
+					</>
 				)}
 			</View>
 
@@ -86,10 +89,7 @@ function HistoryRecordCardBase({
 						color={syncState === 'failed' ? colors.dangerText : colors.warning}
 					/>
 				) : (
-					<>
-						<AnalysisProgressIndicator progress={analysisProgress} status={item.status} />
-						<Ionicons name="chevron-forward" size={18} color={colors.muted} />
-					</>
+					<Ionicons name="chevron-forward" size={18} color={colors.muted} />
 				)}
 			</View>
 		</>

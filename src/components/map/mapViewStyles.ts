@@ -60,26 +60,6 @@ export const mapViewStyles = StyleSheet.create({
 		shadowRadius: 8,
 		elevation: 8,
 	},
-	zoneMarker: {
-		width: 32,
-		height: 32,
-		borderRadius: radius.pill,
-		alignItems: 'center',
-		justifyContent: 'center',
-		borderWidth: 2,
-		borderColor: colors.surface,
-	},
-	zoneMarkerFeeding: {
-		backgroundColor: colors.primary,
-	},
-	zoneMarkerNest: {
-		backgroundColor: colors.secondary,
-	},
-	zoneMarkerSelected: {
-		width: 42,
-		height: 42,
-		borderWidth: 3,
-	},
 	recordMarkerInner: {
 		alignItems: 'center',
 		justifyContent: 'center',

@@ -4,18 +4,40 @@ import { screenGutter, screenBottomPadding } from './shared'
 
 export const recordStyles = StyleSheet.create<Record<string, any>>({
 	analysisProgressWrap: {
-		width: 38,
-		height: 38,
-		alignItems: 'center',
-		justifyContent: 'center',
-		flexShrink: 0,
+		gap: spacing.xs,
+		marginTop: spacing.xs,
 	},
-	analysisProgressText: {
-		position: 'absolute',
-		color: colors.text,
-		fontSize: 7,
-		lineHeight: 12,
-		textAlign: 'center',
+	analysisProgressTrack: {
+		height: 6,
+		borderRadius: radius.pill,
+		backgroundColor: colors.field,
+		overflow: 'hidden',
+	},
+	analysisProgressFill: {
+		height: '100%',
+		borderRadius: radius.pill,
+		backgroundColor: colors.secondary,
+	},
+	analysisProgressLabel: {
+		color: colors.secondary,
+		fontSize: fontSize.caption,
+		fontWeight: '600',
+	},
+	analysisFailedChip: {
+		alignSelf: 'flex-start',
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.xs,
+		marginTop: spacing.xs,
+		paddingHorizontal: spacing.sm2,
+		paddingVertical: spacing.xs,
+		borderRadius: radius.pill,
+		backgroundColor: colors.redSoft,
+	},
+	analysisFailedText: {
+		color: colors.dangerText,
+		fontSize: fontSize.caption,
+		fontWeight: '600',
 	},
 	recordDetailScreen: {
 		flex: 1,
