@@ -3,12 +3,22 @@ import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../../constants/theme'
 import { appStyles } from '../../styles/appStyles'
+import { WARNING_CODES } from '../../utils/analysisWarningCodes'
+import {
+	getWarningMessage,
+	getWarningMessages,
+	needsAttention,
+	type AnalysisStatus,
+} from '../../utils/analysisWarnings'
 import type { ConfidenceLevel } from '../../utils/confidence'
 
 type Props = {
 	// null: a imagem não tem detecções para avaliar
 	level: ConfidenceLevel | null
 	detectionCount: number
+	// Vindos da API; ausentes em registros antigos
+	status?: AnalysisStatus | null
+	avisos?: string[]
 }
 
 type Variant = {
@@ -20,7 +30,45 @@ type Variant = {
 	textStyle: object
 }
 
-function getVariant(level: ConfidenceLevel | null, count: number): Variant {
+const ATTENTION_TITLES: Record<string, string> = {
+	sem_ave: 'Nenhuma ave encontrada',
+	sem_guara: 'Nenhum guará identificado',
+}
+
+const ATTENTION_FALLBACK_CODES: Record<string, string> = {
+	sem_ave: WARNING_CODES.noBird,
+	sem_guara: WARNING_CODES.noIbis,
+}
+
+// Aviso da API (foto fora das melhores condições): vale mais que a nota de confiança.
+function getAttentionVariant(status: AnalysisStatus | null, avisos: string[]): Variant {
+	const messages = getWarningMessages(avisos)
+	const fallback = status ? ATTENTION_FALLBACK_CODES[status] : undefined
+	const text =
+		messages.length > 0
+			? messages.join(' ')
+			: getWarningMessage(fallback ?? 'foto_com_ressalvas')
+
+	return {
+		icon: 'alert-circle',
+		iconColor: colors.warning,
+		title: (status && ATTENTION_TITLES[status]) || 'Foto fora das melhores condições',
+		text,
+		box: appStyles.recordImageBannerMedium,
+		textStyle: appStyles.recordImageBannerTextMedium,
+	}
+}
+
+function getVariant(
+	level: ConfidenceLevel | null,
+	count: number,
+	status: AnalysisStatus | null,
+	avisos: string[],
+): Variant {
+	if (needsAttention(status, avisos)) {
+		return getAttentionVariant(status, avisos)
+	}
+
 	const guaras = `${count} ${count === 1 ? 'guará' : 'guarás'}`
 
 	if (level === 'alta') {
@@ -67,8 +115,8 @@ function getVariant(level: ConfidenceLevel | null, count: number): Variant {
 }
 
 // Faixa de resumo da análise: cor, ícone e texto dizem o mesmo (a cor nunca é a única pista).
-export function ConfidenceBanner({ level, detectionCount }: Props) {
-	const variant = getVariant(level, detectionCount)
+export function ConfidenceBanner({ level, detectionCount, status = null, avisos = [] }: Props) {
+	const variant = getVariant(level, detectionCount, status, avisos)
 
 	return (
 		<View

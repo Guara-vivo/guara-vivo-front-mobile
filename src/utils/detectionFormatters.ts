@@ -66,6 +66,7 @@ export function getPlumageLabel(color: string): string {
 		cinza: 'Cinza',
 		red: 'Vermelho',
 		gray: 'Cinza',
+		indefinido: 'Indefinida',
 	}
 	return colorMap[color.toLowerCase()] || color
 }
@@ -76,6 +77,7 @@ export function getLifeStageLabel(stage: string): string {
 		filhote: 'Filhote',
 		adult: 'Adulto',
 		chick: 'Filhote',
+		indefinido: 'Indefinida',
 	}
 	return stageMap[stage.toLowerCase()] || stage
 }

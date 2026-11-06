@@ -1,3 +1,4 @@
+import type { AnalysisStatus } from '../utils/analysisWarnings'
 import type { LinkedMapZoneRead } from './api'
 
 export type RecordItem = {
@@ -25,6 +26,9 @@ export type RecordItem = {
 export type RawDetection = {
 	cor: string
 	fase_vida: string
+	// Registros antigos não trazem estes campos
+	status_analise?: 'ok' | 'atencao' | null
+	avisos?: string[] | null
 	acuracia: {
 		deteccao_yolo: number
 		classificacao_guara: number
@@ -49,6 +53,9 @@ export type ImageAnalysisItem = {
 	ibis_quantity: number
 	created_at: string
 	raw_result?: string | null
+	// Lidos de `raw_result.result`; ausentes em registros antigos
+	status_analise?: AnalysisStatus | null
+	avisos?: string[]
 	detections: DetectionItem[]
 }
 

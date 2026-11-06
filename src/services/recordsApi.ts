@@ -8,6 +8,7 @@ import type {
 	RecordSummaryRead,
 } from '../types/api'
 import type { RecordDetailItem, RecordItem } from '../types/records'
+import { parseImageResult } from '../utils/analysisWarnings'
 
 const behaviorLabels: Record<BirdBehavior, string> = {
 	'alimentando-se': 'Alimentando',
@@ -61,6 +62,7 @@ export function mapRecordDetailToRecordItem(
 			const detections = record.ibis.filter(
 				(ibis) => ibis.analysis_image_id === img.id
 			)
+			const { status, avisos } = parseImageResult(img.raw_result)
 
 			return {
 				id: img.id,
@@ -69,6 +71,8 @@ export function mapRecordDetailToRecordItem(
 				ibis_quantity: img.ibis_quantity,
 				created_at: img.created_at,
 				raw_result: img.raw_result,
+				status_analise: status,
+				avisos,
 				detections: detections.map((ibis) => {
 					// Parse raw_detection if available
 					let parsed_detection = null

@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import type { DetectionItem } from '../../types/records'
 import { averageScore, formatPercent, isLowScore } from '../../utils/confidence'
+import { getWarningMessages } from '../../utils/analysisWarnings'
 import {
 	BBOX_COLORS,
 	getLifeStageLabel,
@@ -70,12 +71,15 @@ export function DetectionCard({ detection, index }: Props) {
 			return typeof value === 'number' && Number.isFinite(value) && isLowScore(value)
 		})
 
+	const warningMessages = getWarningMessages(detection.raw_detection?.avisos)
+	const hasWarning = warningMessages.length > 0
+
 	return (
 		<View style={appStyles.recordImageDetection}>
 			<Pressable
 				onPress={() => setExpanded((current) => !current)}
 				accessibilityRole="button"
-				accessibilityLabel={`Guará ${index + 1}, nota geral ${formatPercent(score)}`}
+				accessibilityLabel={`Guará ${index + 1}, nota geral ${formatPercent(score)}${hasWarning ? ', com aviso' : ''}`}
 				accessibilityState={{ expanded }}
 				style={appStyles.recordImageDetectionHeader}
 			>
@@ -84,6 +88,7 @@ export function DetectionCard({ detection, index }: Props) {
 					<Text style={appStyles.recordImageDetectionName}>Guará {index + 1}</Text>
 					<Text style={appStyles.recordImageDetectionMeta}>
 						{getPlumageLabel(detection.color)} · {getLifeStageLabel(detection.age_group)}
+						{hasWarning ? ' · Com aviso' : ''}
 					</Text>
 				</View>
 				<Text
@@ -112,6 +117,11 @@ export function DetectionCard({ detection, index }: Props) {
 							Esta detecção não trouxe notas detalhadas.
 						</Text>
 					)}
+					{warningMessages.map((message) => (
+						<Text key={message} style={appStyles.recordImageLowNotice} accessibilityRole="alert">
+							{message}
+						</Text>
+					))}
 					{hasLowScore ? (
 						<Text style={appStyles.recordImageLowNotice} accessibilityRole="alert">
 							Alguma nota está abaixo de 70%. Confira este guará na foto.
