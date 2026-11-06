@@ -55,7 +55,7 @@ export function ActionButton({
 				containerStyle,
 			]}
 		>
-			<View style={appStyles.actionButtonContent}>
+			<View style={[appStyles.actionButtonContent, !fullWidth && appStyles.actionButtonContentAuto]}>
 				{leftIcon ? (
 					<View style={appStyles.actionButtonIconLeft}>{leftIcon}</View>
 				) : null}

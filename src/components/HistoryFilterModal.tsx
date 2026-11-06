@@ -1,14 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import {
 	BottomSheetBackdrop,
 	BottomSheetModal,
 	BottomSheetScrollView,
 	type BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet'
+import { colors } from '../constants/theme'
 import { useMapZoneOptions } from '../hooks/useMapZoneOptions'
 import type { HistoryFilterState } from '../hooks/useHistoryFilters'
 import { appStyles } from '../styles/appStyles'
+import { ActionButton } from './common'
 import { BehaviorsFilter } from './history/filters/BehaviorsFilter'
 import { FilterSection, type FilterFieldSetter } from './history/filters/FilterSection'
 import { LocationFilter } from './history/filters/LocationFilter'
@@ -85,17 +88,27 @@ export function HistoryFilterModal({
 				}
 			}}
 		>
-			<View style={appStyles.historyModalHeader}>
-				<Text style={appStyles.historyModalTitle}>FILTROS</Text>
+			<View style={appStyles.filterHeader}>
+				<Text style={appStyles.filterTitle} accessibilityRole="header">
+					Filtros
+				</Text>
+				<Pressable
+					onPress={() => bottomSheetRef.current?.dismiss()}
+					accessibilityRole="button"
+					accessibilityLabel="Fechar filtros"
+					style={appStyles.filterClose}
+				>
+					<Ionicons name="close" size={22} color={colors.text} />
+				</Pressable>
 			</View>
 
 			<BottomSheetScrollView
-				contentContainerStyle={appStyles.historyModalContent}
+				contentContainerStyle={appStyles.filterContent}
 				keyboardShouldPersistTaps="handled"
 			>
 				<FilterSection
 					iconName="calendar-outline"
-					title="PERÍODO"
+					title="Período"
 					isOpen={openSections.period}
 					onToggle={() => toggleSection('period')}
 				>
@@ -104,7 +117,7 @@ export function HistoryFilterModal({
 
 				<FilterSection
 					iconName="location-outline"
-					title="LOCALIZAÇÃO"
+					title="Localização"
 					isOpen={openSections.location}
 					onToggle={() => toggleSection('location')}
 				>
@@ -113,7 +126,7 @@ export function HistoryFilterModal({
 
 				<FilterSection
 					iconName="people-outline"
-					title="QUANTIDADE DE INDIVÍDUOS"
+					title="Quantidade de guarás"
 					isOpen={openSections.quantity}
 					onToggle={() => toggleSection('quantity')}
 				>
@@ -122,7 +135,7 @@ export function HistoryFilterModal({
 
 				<FilterSection
 					iconName="walk-outline"
-					title="COMPORTAMENTOS"
+					title="Comportamentos"
 					isOpen={openSections.behaviors}
 					onToggle={() => toggleSection('behaviors')}
 				>
@@ -133,14 +146,20 @@ export function HistoryFilterModal({
 				</FilterSection>
 			</BottomSheetScrollView>
 
-			<View style={appStyles.historyModalActions}>
-				<Pressable onPress={clearFilters} accessibilityRole="button" accessibilityLabel="Limpar filtros" style={appStyles.historyClearButton}>
-					<Text style={appStyles.historyClearButtonText}>LIMPAR</Text>
-				</Pressable>
-
-				<Pressable onPress={applyFilters} accessibilityRole="button" accessibilityLabel="Aplicar filtros" style={appStyles.historyApplyButton}>
-					<Text style={appStyles.historyApplyButtonText}>APLICAR FILTROS</Text>
-				</Pressable>
+			<View style={appStyles.filterActions}>
+				<ActionButton
+					title="Limpar"
+					variant="outline"
+					fullWidth={false}
+					containerStyle={appStyles.filterAction}
+					onPress={clearFilters}
+				/>
+				<ActionButton
+					title="Aplicar filtros"
+					fullWidth={false}
+					containerStyle={appStyles.filterAction}
+					onPress={applyFilters}
+				/>
 			</View>
 		</BottomSheetModal>
 	)

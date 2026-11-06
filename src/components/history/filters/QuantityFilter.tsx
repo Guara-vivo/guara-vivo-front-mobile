@@ -11,36 +11,55 @@ type Props = {
 	setField: FilterFieldSetter
 }
 
-// Conteúdo da seção QUANTIDADE DE INDIVÍDUOS: mínimo e máximo.
+function QuantityInput({
+	title,
+	label,
+	placeholder,
+	value,
+	onChangeText,
+}: {
+	title: string
+	label: string
+	placeholder: string
+	value: string
+	onChangeText: (value: string) => void
+}) {
+	return (
+		<View style={appStyles.filterColumn}>
+			<Text style={appStyles.filterLabel}>{title}</Text>
+			<View style={appStyles.filterField}>
+				<BottomSheetTextInput
+					value={value}
+					onChangeText={onChangeText}
+					placeholder={placeholder}
+					accessibilityLabel={label}
+					placeholderTextColor={colors.placeholder}
+					keyboardType="numeric"
+					style={appStyles.filterFieldInput}
+				/>
+			</View>
+		</View>
+	)
+}
+
+// Conteúdo da seção Quantidade de guarás: mínimo e máximo.
 export function QuantityFilter({ draftFilters, setField }: Props) {
 	return (
-		<>
-			<View style={appStyles.historyDateLabelsRow}>
-				<Text style={appStyles.historySmallLabel}>Mínimo</Text>
-				<Text style={appStyles.historySmallLabel}>Máximo</Text>
-			</View>
-
-			<View style={appStyles.historyDateRow}>
-				<BottomSheetTextInput
-					value={draftFilters.minQuantity}
-					onChangeText={(value) => setField('minQuantity', value)}
-					placeholder="Min"
-					accessibilityLabel="Quantidade mínima"
-					placeholderTextColor={colors.placeholder}
-					keyboardType="numeric"
-					style={appStyles.historyHalfInput}
-				/>
-
-				<BottomSheetTextInput
-					value={draftFilters.maxQuantity}
-					onChangeText={(value) => setField('maxQuantity', value)}
-					placeholder="Max"
-					accessibilityLabel="Quantidade máxima"
-					placeholderTextColor={colors.placeholder}
-					keyboardType="numeric"
-					style={appStyles.historyHalfInput}
-				/>
-			</View>
-		</>
+		<View style={appStyles.filterRow}>
+			<QuantityInput
+				title="Mínimo"
+				label="Quantidade mínima"
+				placeholder="0"
+				value={draftFilters.minQuantity}
+				onChangeText={(value) => setField('minQuantity', value)}
+			/>
+			<QuantityInput
+				title="Máximo"
+				label="Quantidade máxima"
+				placeholder="Sem limite"
+				value={draftFilters.maxQuantity}
+				onChangeText={(value) => setField('maxQuantity', value)}
+			/>
+		</View>
 	)
 }

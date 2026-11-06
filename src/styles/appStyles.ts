@@ -10,6 +10,7 @@ import { profileStyles } from './profile'
 import { settingsStyles } from './settings'
 import { recordImageStyles } from './recordImage'
 import { datePickerStyles } from './datePicker'
+import { filtersStyles } from './filters'
 import { skeletonStyles } from './skeleton'
 
 // Estilos organizados por assunto em arquivos separados; este objeto junta todos
@@ -27,5 +28,6 @@ export const appStyles = {
 	...settingsStyles,
 	...recordImageStyles,
 	...datePickerStyles,
+	...filtersStyles,
 	...skeletonStyles,
 }

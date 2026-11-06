@@ -64,8 +64,17 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 	recordDetailSkeletonBlock: {
 		gap: spacing.sm,
 	},
+	recordDetailStateIcon: {
+		width: 72,
+		height: 72,
+		borderRadius: radius.pill,
+		backgroundColor: colors.blueSoft,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginBottom: spacing.md,
+	},
 	recordDetailRetryButton: {
-		marginTop: spacing.md,
+		marginTop: spacing.lg,
 		paddingHorizontal: spacing.lg,
 	},
 	recordDetailEmptyText: {

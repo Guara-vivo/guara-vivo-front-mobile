@@ -16,47 +16,47 @@ function DateInput({
 	value,
 	onChangeText,
 	label,
+	title,
 }: {
 	label: string
+	title: string
 	value: string
 	onChangeText: (value: string) => void
 }) {
 	return (
-		<View style={appStyles.historyDateInputWrap}>
-			<BottomSheetTextInput
-				accessibilityLabel={label}
-				value={value}
-				onChangeText={onChangeText}
-				placeholder="dd/mm/aaaa"
-				placeholderTextColor={colors.placeholder}
-				style={appStyles.historyDateInput}
-			/>
-			<Ionicons accessible={false} name="calendar-outline" size={14} color={colors.text} />
+		<View style={appStyles.filterColumn}>
+			<Text style={appStyles.filterLabel}>{title}</Text>
+			<View style={appStyles.filterField}>
+				<BottomSheetTextInput
+					accessibilityLabel={label}
+					value={value}
+					onChangeText={onChangeText}
+					placeholder="dd/mm/aaaa"
+					placeholderTextColor={colors.placeholder}
+					style={appStyles.filterFieldInput}
+				/>
+				<Ionicons accessible={false} name="calendar-outline" size={18} color={colors.muted} />
+			</View>
 		</View>
 	)
 }
 
-// Conteúdo da seção PERÍODO: data inicial e final.
+// Conteúdo da seção Período: data inicial e final.
 export function PeriodFilter({ draftFilters, setField }: Props) {
 	return (
-		<>
-			<View style={appStyles.historyDateLabelsRow}>
-				<Text style={appStyles.historySmallLabel}>De</Text>
-				<Text style={appStyles.historySmallLabel}>Até</Text>
-			</View>
-
-			<View style={appStyles.historyDateRow}>
-				<DateInput
-					label="Data inicial"
-					value={draftFilters.fromDate}
-					onChangeText={(value) => setField('fromDate', value)}
-				/>
-				<DateInput
-					label="Data final"
-					value={draftFilters.toDate}
-					onChangeText={(value) => setField('toDate', value)}
-				/>
-			</View>
-		</>
+		<View style={appStyles.filterRow}>
+			<DateInput
+				title="De"
+				label="Data inicial"
+				value={draftFilters.fromDate}
+				onChangeText={(value) => setField('fromDate', value)}
+			/>
+			<DateInput
+				title="Até"
+				label="Data final"
+				value={draftFilters.toDate}
+				onChangeText={(value) => setField('toDate', value)}
+			/>
+		</View>
 	)
 }
