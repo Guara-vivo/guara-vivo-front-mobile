@@ -48,7 +48,7 @@ export default {
 			],
 			adaptiveIcon: {
 				foregroundImage: './src/assets/images/adaptive_icon.png',
-				backgroundColor: '#F1F1F1',
+				backgroundColor: '#7FA8E6',
 			},
 			softwareKeyboardLayoutMode: 'pan',
 		},
