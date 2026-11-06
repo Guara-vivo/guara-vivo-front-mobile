@@ -16,6 +16,8 @@ import { ActionButton } from './common'
 const WEEK_LABELS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 
 type Props = {
+	// Título da folha (padrão: data do avistamento).
+	title?: string
 	value: Date | null
 	onConfirm: (date: Date) => void
 	onClose: () => void
@@ -27,7 +29,7 @@ function sameDay(a: Date, b: Date) {
 
 // Calendário em pt-BR numa folha inferior; não deixa escolher dias futuros. Deve ser montado só
 // quando for aberto (abre ao montar e avisa por onClose ao fechar), como o modal de filtros.
-export function DatePickerSheet({ value, onConfirm, onClose }: Props) {
+export function DatePickerSheet({ title = 'Data do avistamento', value, onConfirm, onClose }: Props) {
 	const sheetRef = useRef<BottomSheetModal>(null)
 	const today = new Date()
 	const [draft, setDraft] = useState<Date>(value ?? today)
@@ -82,7 +84,7 @@ export function DatePickerSheet({ value, onConfirm, onClose }: Props) {
 		>
 			<BottomSheetView style={appStyles.dateSheetContent} accessibilityViewIsModal>
 				<Text style={appStyles.dateSheetTitle} accessibilityRole="header">
-					Data do avistamento
+					{title}
 				</Text>
 
 				<View style={appStyles.dateShortcutRow}>

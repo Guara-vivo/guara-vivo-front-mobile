@@ -6,6 +6,7 @@ import {
 	formatLocationLabel,
 } from '../utils/recordFormatters'
 import type { RecordItem } from '../types/records'
+import { parseInputDate } from '../utils/inputDate'
 
 const SEARCH_DEBOUNCE_MS = 250
 
@@ -25,32 +26,6 @@ const defaultFilters: HistoryFilterState = {
 	minQuantity: '',
 	maxQuantity: '',
 	behaviors: [],
-}
-
-function parseInputDate(value: string) {
-	const match = value.trim().match(/^(\d{2})\/(\d{2})\/(\d{4})$/)
-
-	if (!match) {
-		return null
-	}
-
-	const day = Number(match[1])
-	const month = Number(match[2])
-	const year = Number(match[3])
-	const parsed = new Date(year, month - 1, day, 0, 0, 0, 0)
-
-	// Validate that the parsed date components match the original values
-	// (rejects overflow like 32/01 → February)
-	if (
-		Number.isNaN(parsed.getTime()) ||
-		parsed.getDate() !== day ||
-		parsed.getMonth() !== month - 1 ||
-		parsed.getFullYear() !== year
-	) {
-		return null
-	}
-
-	return parsed
 }
 
 const parseBehaviorTags = (value: string) =>

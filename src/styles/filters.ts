@@ -87,6 +87,16 @@ export const filtersStyles = StyleSheet.create<Record<string, any>>({
 		alignItems: 'center',
 		gap: spacing.sm,
 	},
+	filterFieldPressable: {
+		flex: 1,
+		minHeight: 48,
+		justifyContent: 'center',
+	},
+	// Texto (não input) dentro do botão de data: sem flex, senão ele encosta no topo.
+	filterFieldText: {
+		color: colors.text,
+		fontSize: fontSize.bodyLarge,
+	},
 	filterFieldInput: {
 		flex: 1,
 		color: colors.text,
@@ -103,6 +113,22 @@ export const filtersStyles = StyleSheet.create<Record<string, any>>({
 	filterPickerInput: {
 		color: colors.text,
 	} as ViewStyle,
+	filterNotice: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: spacing.sm,
+		borderRadius: radius.sm,
+		backgroundColor: colors.warningSoft,
+		padding: spacing.sm2,
+	},
+	filterNoticeText: {
+		flex: 1,
+		color: colors.warning,
+		fontSize: fontSize.body,
+	},
+	filterFieldPlaceholder: {
+		color: colors.placeholder,
+	},
 	filterChipRow: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',

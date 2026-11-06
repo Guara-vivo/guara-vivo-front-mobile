@@ -131,6 +131,8 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historySyncChip: {
 		alignSelf: 'flex-start',
+		alignItems: 'center',
+		justifyContent: 'center',
 		paddingHorizontal: spacing.sm,
 		paddingVertical: 2,
 		borderRadius: radius.pill,
@@ -140,6 +142,8 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.dangerBg,
 	},
 	historySyncChipText: {
+		textAlign: 'center',
+		includeFontPadding: false,
 		color: colors.warning,
 		fontSize: fontSize.caption,
 		fontWeight: '700',

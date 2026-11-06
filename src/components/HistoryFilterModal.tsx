@@ -36,7 +36,7 @@ export function HistoryFilterModal({
 	onClose: () => void
 }) {
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
-	const zones = useMapZoneOptions()
+	const { zones, failed: zonesFailed } = useMapZoneOptions()
 	const [openSections, setOpenSections] = useState<Record<HistoryFilterSection, boolean>>({
 		period: false,
 		location: false,
@@ -121,7 +121,12 @@ export function HistoryFilterModal({
 					isOpen={openSections.location}
 					onToggle={() => toggleSection('location')}
 				>
-					<LocationFilter draftFilters={draftFilters} setField={setField} zones={zones} />
+					<LocationFilter
+						draftFilters={draftFilters}
+						setField={setField}
+						zones={zones}
+						zonesFailed={zonesFailed}
+					/>
 				</FilterSection>
 
 				<FilterSection

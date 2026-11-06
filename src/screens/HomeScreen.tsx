@@ -6,6 +6,7 @@ import { colors } from '../constants/theme'
 import { Skeleton } from '../components/Skeleton'
 import { SkeletonImage } from '../components/SkeletonImage'
 import { useHistoryRecords } from '../hooks/useHistoryRecords'
+import { useIsOnline } from '../hooks/useIsOnline'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabNavigationProp } from '../types/navigation'
 import AnalysisProgressIndicator from '../components/AnalysisProgressIndicator'
@@ -63,6 +64,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 	const navigation = useNavigation<MainTabNavigationProp>()
 	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
 		useHistoryRecords()
+	const online = useIsOnline()
 	const now = new Date()
 	const summary = useMemo(() => summarizeRecords(allRecords, new Date()), [allRecords])
 	const latest = useMemo(() => getLatestRecord(allRecords), [allRecords])
@@ -78,10 +80,10 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 		? 'Atualizando…'
 		: waiting
 		? `${waiting} ${waiting === 1 ? 'registro aguardando' : 'registros aguardando'} envio`
-		: loadError || staleSince
+		: !online || loadError || staleSince
 			? 'Sem conexão · mostrando os dados guardados'
 			: 'Tudo sincronizado'
-	const syncOk = !waiting && !loadError && !staleSince
+	const syncOk = online && !waiting && !loadError && !staleSince
 
 	return (
 		<ScrollView

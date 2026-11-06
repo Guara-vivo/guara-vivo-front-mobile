@@ -12,6 +12,7 @@ import { useHistoryRecords } from '../hooks/useHistoryRecords'
 import { discardPendingRecord } from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabNavigationProp } from '../types/navigation'
+import { useIsOnline } from '../hooks/useIsOnline'
 import { groupRecordsByDay, type HistoryRow } from '../utils/dayGroups'
 import { sortRecordsByRecency, type SortOrder } from '../utils/historyRecords'
 
@@ -20,6 +21,7 @@ export function HistoryScreen() {
 	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
 		useHistoryRecords()
 	const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
+	const online = useIsOnline()
 
 	const {
 		searchTerm,
@@ -94,6 +96,7 @@ export function HistoryScreen() {
 					ListHeaderComponent={
 						<HistoryListHeader
 							staleSince={staleSince}
+							offline={!online}
 							searchTerm={searchTerm}
 							onSearchChange={setSearchTerm}
 							onOpenFilters={openFilters}

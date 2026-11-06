@@ -1,3 +1,5 @@
+import NetInfo from '@react-native-community/netinfo'
+import { isOnlineState } from '../utils/connectivity'
 import { API_URL, apiFetch } from './apiClient'
 import { getAccessToken } from './tokenStorage'
 import type { RecordStatus } from '../types/api'
@@ -90,6 +92,8 @@ export async function subscribeRecordProgress({
 	let reconnectTimer: ReturnType<typeof setTimeout> | undefined
 	let inactivityTimer: ReturnType<typeof setTimeout> | undefined
 	let isActive = true
+	// Cada abertura de socket tem um número; só a mais recente vale (evita dois sockets ao reconectar).
+	let generation = 0
 
 	if (!apiUrl) {
 		return () => {}
@@ -140,6 +144,7 @@ export async function subscribeRecordProgress({
 	}
 
 	const openSocket = async () => {
+		const current = ++generation
 		let token = await getAccessToken()
 
 		// Depois de falhas seguidas, o token pode ter expirado: uma chamada autenticada
@@ -155,7 +160,7 @@ export async function subscribeRecordProgress({
 			token = await getAccessToken()
 		}
 
-		if (!isActive || !token) {
+		if (!isActive || !token || current !== generation) {
 			return
 		}
 
@@ -212,10 +217,50 @@ export async function subscribeRecordProgress({
 		}
 	}
 
+	// Quando a internet volta, o socket antigo pode estar morto sem avisar (e o próximo retry pode
+	// demorar até 30 s): descarta e conecta de novo na hora, começando o backoff do zero.
+	const reconnectNow = () => {
+		if (!isActive) {
+			return
+		}
+
+		clearReconnectTimer()
+		clearInactivityTimer()
+		reconnectDelay = INITIAL_RECONNECT_DELAY_MS
+		const previous = socket
+		socket = undefined
+
+		if (previous) {
+			previous.onopen = null
+			previous.onmessage = null
+			previous.onerror = null
+			previous.onclose = null
+			try {
+				previous.close()
+			} catch {
+				// Já estava fechado.
+			}
+		}
+
+		void openSocket()
+	}
+
+	let wasOnline: boolean | null = null
+	const unsubscribeNetInfo = NetInfo.addEventListener((state) => {
+		const online = isOnlineState(state)
+
+		if (online && wasOnline === false) {
+			reconnectNow()
+		}
+
+		wasOnline = online
+	})
+
 	await openSocket()
 
 	return () => {
 		isActive = false
+		unsubscribeNetInfo()
 		clearReconnectTimer()
 		clearInactivityTimer()
 
