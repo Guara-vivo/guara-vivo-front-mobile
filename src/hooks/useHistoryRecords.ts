@@ -22,8 +22,6 @@ import { mergeHistoryRecords } from '../utils/pendingRecords'
 import { createRefreshScheduler } from '../utils/refreshScheduler'
 
 const SILENT_REFRESH_MIN_INTERVAL_MS = 5000
-// O servidor pode devolver dados antigos (cache) logo após a análise terminar: confirma de novo.
-const CONFIRM_REFRESH_DELAY_MS = 6000
 
 // Lista do histórico: cache, rede, cópia guardada no aparelho, fila offline e progresso em tempo real.
 export function useHistoryRecords() {
@@ -142,7 +140,6 @@ export function useHistoryRecords() {
 	const recordsRef = useRef(records)
 	recordsRef.current = records
 	const mountedRef = useRef(true)
-	const confirmTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
 	// Recarrega a lista sem mexer nos indicadores de carregamento (a tela continua como está).
 	const refreshNow = useCallback(async () => {
@@ -170,15 +167,7 @@ export function useHistoryRecords() {
 		return () => {
 			mountedRef.current = false
 			scheduler.cancel()
-			clearTimeout(confirmTimerRef.current)
 		}
-	}, [scheduler])
-
-	// Recarrega agora e confirma de novo depois: a primeira resposta pode vir do cache do servidor.
-	const refreshAndConfirm = useCallback(() => {
-		scheduler.trigger()
-		clearTimeout(confirmTimerRef.current)
-		confirmTimerRef.current = setTimeout(() => scheduler.trigger(), CONFIRM_REFRESH_DELAY_MS)
 	}, [scheduler])
 
 	// Progresso em tempo real: a lista (em qualquer aba) acompanha as análises sem precisar de
@@ -189,18 +178,18 @@ export function useHistoryRecords() {
 				const needsRefresh = needsRecordsRefresh(recordsRef.current, snapshot)
 				setRecords((current) => mergeProgressUpdates(current, snapshot))
 				if (needsRefresh) {
-					refreshAndConfirm()
+					refreshSilently()
 				}
 			},
 			onProgress: (progress) => {
 				const needsRefresh = needsRecordsRefresh(recordsRef.current, [progress])
 				setRecords((current) => mergeProgressUpdates(current, [progress]))
 				if (needsRefresh) {
-					refreshAndConfirm()
+					refreshSilently()
 				}
 			},
 		})
-	}, [addRecordProgressListener, refreshAndConfirm])
+	}, [addRecordProgressListener, refreshSilently])
 
 	// Atualiza sozinha quando a internet volta e quando o app volta ao primeiro plano.
 	useEffect(() => {
