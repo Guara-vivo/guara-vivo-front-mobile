@@ -1,6 +1,6 @@
 import { StyleSheet, ViewStyle } from 'react-native'
 import { colors, spacing, fontSize, radius } from '../constants/theme'
-import { screenGutter, screenBottomPadding, cornerRadius } from './shared'
+import { screenGutter, screenBottomPadding } from './shared'
 
 export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyScreen: {
@@ -131,6 +131,8 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 	},
 	historySyncChip: {
 		alignSelf: 'flex-start',
+		alignItems: 'center',
+		justifyContent: 'center',
 		paddingHorizontal: spacing.sm,
 		paddingVertical: 2,
 		borderRadius: radius.pill,
@@ -140,6 +142,8 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.dangerBg,
 	},
 	historySyncChipText: {
+		textAlign: 'center',
+		includeFontPadding: false,
 		color: colors.warning,
 		fontSize: fontSize.caption,
 		fontWeight: '700',
@@ -185,157 +189,4 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.border,
 		width: 42,
 	} as ViewStyle,
-	historyModalHeader: {
-		minHeight: 60,
-		paddingHorizontal: spacing.md,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.border,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	historyModalTitle: {
-		color: colors.secondary,
-		fontSize: fontSize.headline,
-		textTransform: 'uppercase',
-	},
-	historyModalContent: {
-		paddingHorizontal: spacing.md,
-		paddingTop: spacing.md,
-		paddingBottom: spacing.md,
-		gap: spacing.md,
-	},
-	historyFilterSection: {
-		gap: spacing.sm2,
-		paddingVertical: spacing.xs,
-	} as ViewStyle,
-	historyFilterSectionHeader: {
-		minHeight: 42,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.background,
-		paddingHorizontal: spacing.sm2,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: spacing.sm,
-	},
-	historyFilterSectionTitleRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.sm,
-	},
-	historyFilterSectionTitle: {
-		color: colors.text,
-		fontSize: fontSize.body,
-
-		textTransform: 'uppercase',
-	},
-	historyDateLabelsRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingRight: spacing.sm2,
-	},
-	historySmallLabel: {
-		color: colors.muted,
-		fontSize: fontSize.caption,
-
-		width: '48%',
-	},
-	historyDateRow: {
-		flexDirection: 'row',
-		gap: spacing.sm,
-	},
-	historyDateInputWrap: {
-		flex: 1,
-		minHeight: 40,
-		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.secondaryLight,
-		backgroundColor: colors.surface,
-		paddingHorizontal: spacing.sm2,
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: spacing.sm,
-	},
-	historyDateInput: {
-		flex: 1,
-		color: colors.text,
-		fontSize: fontSize.body,
-		paddingVertical: 0,
-	},
-	historyHalfInput: {
-		flex: 1,
-		minHeight: 40,
-		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.secondaryLight,
-		backgroundColor: colors.surface,
-		paddingHorizontal: spacing.sm2,
-		color: colors.text,
-		fontSize: fontSize.body,
-	},
-	historyBehaviorList: {
-		gap: spacing.sm,
-	},
-	historyBehaviorItem: {
-		minHeight: 36,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.background,
-		flexDirection: 'row',
-		alignItems: 'center',
-		paddingHorizontal: spacing.sm2,
-		gap: spacing.sm2,
-	},
-	historyBehaviorCheckbox: {
-		width: 12,
-		height: 12,
-		alignItems: 'center',
-		justifyContent: 'center',
-		backgroundColor: colors.surface,
-	},
-	historyBehaviorCheckboxActive: {
-		backgroundColor: colors.secondary,
-		borderColor: colors.secondary,
-	},
-	historyBehaviorLabel: {
-		color: colors.text,
-		fontSize: fontSize.bodyLarge,
-	},
-	historyModalActions: {
-		borderTopWidth: 1,
-		borderTopColor: colors.border,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm2,
-		flexDirection: 'row',
-		gap: spacing.sm2,
-	},
-	historyClearButton: {
-		flex: 1,
-		minHeight: 36,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.border,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	historyClearButtonText: {
-		color: colors.text,
-		fontSize: fontSize.caption,
-
-		textTransform: 'uppercase',
-	},
-	historyApplyButton: {
-		flex: 1,
-		minHeight: 36,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.secondary,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	historyApplyButtonText: {
-		color: colors.surface,
-		fontSize: fontSize.caption,
-
-		textTransform: 'uppercase',
-	},
 })

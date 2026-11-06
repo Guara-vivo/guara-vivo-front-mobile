@@ -18,29 +18,29 @@ type Props = {
 	children: React.ReactNode
 }
 
-// Seção recolhível do modal de filtros: cabeçalho clicável e conteúdo só quando aberta.
+// Seção recolhível do modal de filtros: cartão com cabeçalho clicável e conteúdo só quando aberta.
 export function FilterSection({ iconName, title, isOpen, onToggle, children }: Props) {
 	return (
-		<View style={appStyles.historyFilterSection}>
+		<View style={appStyles.filterSection}>
 			<Pressable
 				onPress={onToggle}
 				accessibilityRole="button"
 				accessibilityLabel={title}
 				accessibilityState={{ expanded: isOpen }}
-				style={appStyles.historyFilterSectionHeader}
+				style={appStyles.filterSectionHeader}
 			>
-				<View style={appStyles.historyFilterSectionTitleRow}>
-					<Ionicons name={iconName} size={15} color={colors.primary} />
-					<Text style={appStyles.historyFilterSectionTitle}>{title}</Text>
+				<View style={appStyles.filterSectionIcon}>
+					<Ionicons name={iconName} size={20} color={colors.secondary} />
 				</View>
+				<Text style={appStyles.filterSectionTitle}>{title}</Text>
 				<Ionicons
 					name={isOpen ? 'chevron-up' : 'chevron-down'}
-					size={18}
-					color={colors.text}
+					size={20}
+					color={colors.muted}
 				/>
 			</Pressable>
 
-			{isOpen ? children : null}
+			{isOpen ? <View style={appStyles.filterSectionBody}>{children}</View> : null}
 		</View>
 	)
 }

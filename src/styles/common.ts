@@ -108,6 +108,10 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		justifyContent: 'center',
 		width: '100%',
 	},
+	// Botão que não ocupa a largura toda: o conteúdo acompanha o texto (senão o texto quebra em duas linhas).
+	actionButtonContentAuto: {
+		width: 'auto',
+	},
 	actionButtonIconLeft: {
 		marginRight: spacing.sm2,
 	},

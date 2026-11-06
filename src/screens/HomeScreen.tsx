@@ -6,6 +6,7 @@ import { colors } from '../constants/theme'
 import { Skeleton } from '../components/Skeleton'
 import { SkeletonImage } from '../components/SkeletonImage'
 import { useHistoryRecords } from '../hooks/useHistoryRecords'
+import { useIsOnline } from '../hooks/useIsOnline'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabNavigationProp } from '../types/navigation'
 import AnalysisProgressIndicator from '../components/AnalysisProgressIndicator'
@@ -61,8 +62,11 @@ function LatestSkeleton() {
 
 export function HomeScreen({ userName }: { userName?: string | null }) {
 	const navigation = useNavigation<MainTabNavigationProp>()
-	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
+	const { allRecords, isLoading, isRecovering, isRefreshing, loadError, staleSince, handleRefresh } =
 		useHistoryRecords()
+	const online = useIsOnline()
+	// Esqueleto também quando a lista incompleta (offline/zerada) está sendo corrigida ao voltar a internet.
+	const loading = isLoading || isRecovering
 	const now = new Date()
 	const summary = useMemo(() => summarizeRecords(allRecords, new Date()), [allRecords])
 	const latest = useMemo(() => getLatestRecord(allRecords), [allRecords])
@@ -74,14 +78,16 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 	// Em análise a contagem ainda é 0: mostra esqueleto e a barra de progresso, como no histórico.
 	const analyzing = Boolean(latest && isAnalysisInProgress(latest))
 
-	const syncText = isLoading
+	const syncText = loading
 		? 'Atualizando…'
 		: waiting
 		? `${waiting} ${waiting === 1 ? 'registro aguardando' : 'registros aguardando'} envio`
-		: loadError || staleSince
+		: !online || loadError || staleSince
 			? 'Sem conexão · mostrando os dados guardados'
 			: 'Tudo sincronizado'
-	const syncOk = !waiting && !loadError && !staleSince
+	// Os números vêm só do que está guardado no aparelho (sem internet, ou lista que não carregou).
+	const partialNumbers = !loading && (!online || Boolean(staleSince) || loadError)
+	const syncOk = online && !waiting && !loadError && !staleSince
 
 	return (
 		<ScrollView
@@ -119,19 +125,28 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			</Pressable>
 
 			<View style={appStyles.homeStatRow}>
-				<Stat loading={isLoading} value={summary.weekRecords} label="registros nesta semana" />
-				<Stat loading={isLoading} value={summary.ibis} label="guarás avistados" />
+				<Stat loading={loading} value={summary.weekRecords} label="registros nesta semana" />
+				<Stat loading={loading} value={summary.ibis} label="guarás avistados" />
 				<Stat
-					loading={isLoading}
+					loading={loading}
 					value={summary.areas}
 					label={summary.areas === 1 ? 'área mapeada' : 'áreas mapeadas'}
 				/>
 			</View>
 
+			{partialNumbers ? (
+				<View style={appStyles.homeOfflineNote} accessibilityRole="alert" accessibilityLiveRegion="polite">
+					<Ionicons name="cloud-offline-outline" size={16} color={colors.warning} />
+					<Text style={appStyles.homeOfflineNoteText}>
+						Sem internet: os números mostram só o que está guardado neste aparelho.
+					</Text>
+				</View>
+			) : null}
+
 			<Text style={appStyles.homeSectionTitle} accessibilityRole="header">
 				Último avistamento
 			</Text>
-			{isLoading ? (
+			{loading ? (
 				<LatestSkeleton />
 			) : latest ? (
 				<Pressable
@@ -199,7 +214,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			)}
 
 			<View style={appStyles.homeSync} accessibilityRole="text" accessibilityLiveRegion="polite">
-				{isLoading ? (
+				{loading ? (
 					<ActivityIndicator size="small" color={colors.muted} style={appStyles.homeSyncSpinner} />
 				) : (
 					<View style={[appStyles.homeSyncDot, !syncOk && appStyles.homeSyncDotWarn]}>

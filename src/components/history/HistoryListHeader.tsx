@@ -8,6 +8,8 @@ import { colors } from '../../constants/theme'
 
 type Props = {
 	staleSince: number | null
+	// Sem internet agora (mesmo que a lista tenha vindo da rede há pouco).
+	offline?: boolean
 	searchTerm: string
 	onSearchChange: (value: string) => void
 	onOpenFilters: () => void
@@ -19,6 +21,7 @@ type Props = {
 // Topo da lista: aviso de dados offline, busca, filtros e ordenação.
 function HistoryListHeaderBase({
 	staleSince,
+	offline = false,
 	searchTerm,
 	onSearchChange,
 	onOpenFilters,
@@ -33,6 +36,10 @@ function HistoryListHeaderBase({
 			{staleIso !== null ? (
 				<Text style={appStyles.historyEmptyText}>
 					{`Sem conexão com o servidor. Mostrando dados de ${formatDate(staleIso)} às ${formatTime(staleIso)}.`}
+				</Text>
+			) : offline ? (
+				<Text style={appStyles.historyEmptyText}>
+					Sem conexão com a internet. Os registros podem estar desatualizados.
 				</Text>
 			) : null}
 

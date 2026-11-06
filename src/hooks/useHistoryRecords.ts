@@ -30,6 +30,8 @@ export function useHistoryRecords() {
 	const [records, setRecords] = useState<RecordItem[]>(cachedRecords ?? [])
 	const [isLoading, setIsLoading] = useState(!cachedRecords)
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	// Recarga silenciosa que corrige dados incompletos (começou offline ou lista zerada): a tela mostra esqueleto.
+	const [isRecovering, setIsRecovering] = useState(false)
 	const [loadError, setLoadError] = useState(false)
 	const [pendingRecords, setPendingRecords] = useState<PendingRecord[]>([])
 	// Data da ultima atualizacao quando a lista vem do aparelho (sem conexao com a API)
@@ -139,10 +141,18 @@ export function useHistoryRecords() {
 
 	const recordsRef = useRef(records)
 	recordsRef.current = records
+	const unreliableRef = useRef(false)
+	unreliableRef.current = staleSince !== null || loadError || records.length === 0
 	const mountedRef = useRef(true)
 
 	// Recarrega a lista sem mexer nos indicadores de carregamento (a tela continua como está).
 	const refreshNow = useCallback(async () => {
+		const recovering = unreliableRef.current
+
+		if (recovering && mountedRef.current) {
+			setIsRecovering(true)
+		}
+
 		try {
 			const items = await fetchRecords({ force: true })
 			if (mountedRef.current) {
@@ -152,6 +162,10 @@ export function useHistoryRecords() {
 			}
 		} catch {
 			// Sem rede ou API fora: mantém o que já está na tela; o próximo gatilho tenta de novo.
+		} finally {
+			if (recovering && mountedRef.current) {
+				setIsRecovering(false)
+			}
 		}
 	}, [])
 
@@ -233,6 +247,7 @@ export function useHistoryRecords() {
 		allRecords,
 		isLoading,
 		isRefreshing,
+		isRecovering,
 		loadError,
 		staleSince,
 		handleRefresh,

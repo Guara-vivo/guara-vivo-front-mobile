@@ -10,10 +10,10 @@ type Props = {
 	onToggle: (behavior: string) => void
 }
 
-// Conteúdo da seção COMPORTAMENTOS: caixas de seleção por comportamento.
+// Conteúdo da seção Comportamentos: chips que se marcam e desmarcam (vários ao mesmo tempo).
 export function BehaviorsFilter({ selected, onToggle }: Props) {
 	return (
-		<View style={appStyles.historyBehaviorList}>
+		<View style={appStyles.filterChipRow}>
 			{behaviorOptions.map((behavior) => {
 				const active = selected.includes(behavior)
 
@@ -24,19 +24,12 @@ export function BehaviorsFilter({ selected, onToggle }: Props) {
 						accessibilityRole="checkbox"
 						accessibilityState={{ checked: active }}
 						accessibilityLabel={behavior}
-						style={appStyles.historyBehaviorItem}
+						style={[appStyles.filterChip, active && appStyles.filterChipActive]}
 					>
-						<View
-							style={[
-								appStyles.historyBehaviorCheckbox,
-								active && appStyles.historyBehaviorCheckboxActive,
-							]}
-						>
-							{active ? (
-								<Ionicons name="checkmark" size={12} color={colors.onColor} />
-							) : null}
-						</View>
-						<Text style={appStyles.historyBehaviorLabel}>{behavior}</Text>
+						{active ? <Ionicons name="checkmark" size={16} color={colors.onColor} /> : null}
+						<Text style={[appStyles.filterChipText, active && appStyles.filterChipTextActive]}>
+							{behavior}
+						</Text>
 					</Pressable>
 				)
 			})}
