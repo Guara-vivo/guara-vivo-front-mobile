@@ -40,12 +40,15 @@ export function RegisterImagePicker({
 					{isPicking ? (
 						<ActivityIndicator size="large" color={colors.secondary} />
 					) : (
-						<Ionicons name="camera-outline" size={44} color={colors.accentSoft} />
+						<Ionicons name="camera-outline" size={28} color={colors.secondary} />
 					)}
 				</View>
 				<Text style={appStyles.registerDropZoneTitle}>
-					{isPicking ? 'Preparando imagens...' : 'Clique para adicionar fotos'}
+					{isPicking ? 'Preparando imagens...' : 'Toque para adicionar fotos'}
 				</Text>
+				{isPicking ? null : (
+					<Text style={appStyles.registerDropZoneHint}>Você pode escolher mais de uma</Text>
+				)}
 			</Pressable>
 
 			{images.length > 0 ? (

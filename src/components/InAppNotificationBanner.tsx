@@ -38,11 +38,16 @@ export function InAppNotificationBanner({
 					isError && appStyles.inAppNotificationBannerError,
 				]}
 			>
-				<View style={appStyles.inAppNotificationIconWrap}>
+				<View
+					style={[
+						appStyles.inAppNotificationIconWrap,
+						isError && appStyles.inAppNotificationIconWrapError,
+					]}
+				>
 					<Ionicons
 						name={isError ? 'alert-circle' : 'checkmark-circle'}
-						size={22}
-						color={isError ? colors.primary : colors.success}
+						size={26}
+						color={isError ? colors.dangerText : colors.success}
 					/>
 				</View>
 

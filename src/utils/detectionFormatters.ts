@@ -60,11 +60,6 @@ export function calculateAccuracySummary(
 	}
 }
 
-export function formatPercent(value: number | undefined): string {
-	if (typeof value !== 'number') return 'N/A'
-	return `${(value * 100).toFixed(1)}%`
-}
-
 export function getPlumageLabel(color: string): string {
 	const colorMap: Record<string, string> = {
 		vermelho: 'Vermelho',

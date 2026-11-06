@@ -1,6 +1,5 @@
 import {
 	calculateAccuracySummary,
-	formatPercent,
 	getBboxRect,
 	getDetectionBbox,
 	getLifeStageLabel,
@@ -46,13 +45,6 @@ describe('calculateAccuracySummary', () => {
 
 		expect(summary?.deteccao_yolo).toBeCloseTo(0.7)
 		expect(summary?.classificacao_cor).toBeCloseTo(0.75)
-	})
-})
-
-describe('formatPercent', () => {
-	it('formata decimais como porcentagem e trata ausencia', () => {
-		expect(formatPercent(0.9567)).toBe('95.7%')
-		expect(formatPercent(undefined)).toBe('N/A')
 	})
 })
 

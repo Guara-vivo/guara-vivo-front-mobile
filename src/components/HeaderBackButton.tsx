@@ -4,17 +4,17 @@ import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 
-// Botão "voltar" da faixa azul do Header (telas de perfil/configurações).
+// Botão "voltar" circular do Header (telas de perfil, configurações e detalhe).
 export function HeaderBackButton({ onPress }: { onPress: () => void }) {
 	return (
 		<Pressable
 			onPress={onPress}
 			accessibilityRole="button"
 			accessibilityLabel="Voltar"
-			hitSlop={12}
+			hitSlop={4}
 			style={appStyles.headerActionButton}
 		>
-			<Ionicons name="chevron-back" size={24} color={colors.onColor} />
+			<Ionicons name="chevron-back" size={22} color={colors.text} />
 		</Pressable>
 	)
 }

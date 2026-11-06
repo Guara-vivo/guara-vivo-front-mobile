@@ -15,6 +15,8 @@ export function useRecordDetail(recordId: number | undefined) {
 		() => !(recordId && getCachedRecordDetailSnapshot(recordId)),
 	)
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	// A busca do detalhe completo (com as análises) está em andamento.
+	const [isFetchingDetail, setIsFetchingDetail] = useState(true)
 
 	useEffect(() => {
 		const controller = new AbortController()
@@ -38,6 +40,7 @@ export function useRecordDetail(recordId: number | undefined) {
 
 		if (hasCachedRecord && isRecordDetailCacheFresh(recordId)) {
 			setIsLoading(false)
+			setIsFetchingDetail(false)
 			return () => {
 				mounted = false
 				controller.abort()
@@ -45,6 +48,7 @@ export function useRecordDetail(recordId: number | undefined) {
 		}
 
 		setIsLoading(!hasCachedRecord)
+		setIsFetchingDetail(true)
 		fetchRecordDetail(recordId, { force: hasCachedRecord }, controller.signal)
 			.then((item) => {
 				if (mounted) {
@@ -57,6 +61,10 @@ export function useRecordDetail(recordId: number | undefined) {
 				}
 			})
 			.finally(() => {
+				if (mounted) {
+					setIsFetchingDetail(false)
+				}
+
 				if (mounted && !hasCachedRecord) {
 					setIsLoading(false)
 				}
@@ -86,5 +94,5 @@ export function useRecordDetail(recordId: number | undefined) {
 		}
 	}
 
-	return { record, isLoading, isRefreshing, handleRefresh }
+	return { record, isLoading, isRefreshing, isFetchingDetail, handleRefresh }
 }

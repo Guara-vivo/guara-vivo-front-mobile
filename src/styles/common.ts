@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native'
-import { colors, radius, spacing, fontSize } from '../constants/theme'
-import { screenGutter, cornerRadius, unifiedShadow, overlayShadow } from './shared'
+import { colors, radius, spacing, fontSize, fontFamily } from '../constants/theme'
+import { screenGutter, cornerRadius, overlayShadow } from './shared'
 
 export const commonStyles = StyleSheet.create<Record<string, any>>({
 	app: {
@@ -19,26 +19,30 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		elevation: 1000,
 	},
 	inAppNotificationBanner: {
-		minHeight: 74,
-		borderRadius: radius.md,
+		minHeight: 76,
+		borderRadius: radius.lg,
 		backgroundColor: colors.surface,
 		borderWidth: 1,
-		borderLeftWidth: 5,
 		borderColor: colors.border,
-		borderLeftColor: colors.success,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm,
+		padding: spacing.sm2,
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: spacing.sm,
+		gap: spacing.sm2,
 		...overlayShadow,
 	},
 	inAppNotificationBannerError: {
-		borderLeftColor: colors.primary,
+		borderColor: colors.redSoft,
 	},
 	inAppNotificationIconWrap: {
-		width: 28,
+		width: 44,
+		height: 44,
+		borderRadius: radius.pill,
 		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.successSoft,
+	},
+	inAppNotificationIconWrapError: {
+		backgroundColor: colors.redSoft,
 	},
 	inAppNotificationTextWrap: {
 		flex: 1,
@@ -46,12 +50,13 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	inAppNotificationTitle: {
 		color: colors.text,
-		fontSize: fontSize.body,
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
 	},
 	inAppNotificationMessage: {
 		color: colors.muted,
-		fontSize: fontSize.caption,
-		lineHeight: 17,
+		fontSize: fontSize.body,
+		lineHeight: 19,
 	},
 	inAppNotificationCloseButton: {
 		width: 28,
@@ -63,19 +68,23 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.xs,
 	},
 	fieldLabel: {
-		color: colors.text,
-		fontSize: fontSize.body,
-		textTransform: 'uppercase',
+		color: colors.muted,
+		fontSize: fontSize.caption,
+		fontWeight: '600',
 	},
 	textField: {
-		backgroundColor: colors.background,
-		borderWidth: 1,
-		borderColor: colors.border,
+		backgroundColor: colors.field,
+		borderWidth: 1.5,
+		borderColor: 'transparent',
 		borderRadius: cornerRadius,
 		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.md,
+		minHeight: 52,
 		fontSize: fontSize.bodyLarge,
 		color: colors.text,
+	},
+	textFieldFocused: {
+		backgroundColor: colors.surface,
+		borderColor: colors.secondary,
 	},
 	textFieldMultiline: {
 		minHeight: 110,
@@ -83,7 +92,7 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	},
 	actionButton: {
 		minHeight: 52,
-		borderRadius: cornerRadius,
+		borderRadius: radius.lg,
 		alignItems: 'center',
 		justifyContent: 'center',
 		paddingHorizontal: spacing.md,
@@ -109,11 +118,12 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		backgroundColor: colors.primary,
 	},
 	actionButtonSecondary: {
-		backgroundColor: colors.secondary,
+		backgroundColor: 'transparent',
+		borderColor: colors.borderStrong,
 	},
 	actionButtonOutline: {
-		backgroundColor: 'transparent',
-		borderColor: colors.secondary,
+		backgroundColor: colors.blueSoft,
+		borderColor: colors.blueSoft,
 	},
 	actionButtonGhost: {
 		backgroundColor: 'transparent',
@@ -126,15 +136,18 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		opacity: 0.45,
 	},
 	actionButtonText: {
-		color: colors.surface,
+		color: colors.onColor,
 		fontSize: fontSize.bodyLarge,
-		textTransform: 'uppercase',
+		fontWeight: '600',
+	},
+	actionButtonTextSecondary: {
+		color: colors.text,
 	},
 	actionButtonTextOutline: {
 		color: colors.secondary,
 	},
 	actionButtonTextGhost: {
-		color: colors.primary,
+		color: colors.secondary,
 	},
 	feedbackModalBackdrop: {
 		flex: 1,
@@ -166,7 +179,6 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.secondary,
 		fontSize: fontSize.title,
 		textAlign: 'center',
-		textTransform: 'uppercase',
 	},
 	feedbackModalMessage: {
 		color: colors.muted,
@@ -180,26 +192,24 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		marginTop: spacing.sm,
 	},
 	header: {
-		backgroundColor: colors.secondary,
+		backgroundColor: colors.background,
 		flexDirection: 'row',
 		alignItems: 'center',
 		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.md,
-		height: 56,
+		height: 64,
 		width: '100%',
 		alignSelf: 'stretch',
-		...unifiedShadow,
 	},
 	headerLeft: {
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	appHeaderTitle: {
-		color: colors.surface,
-		marginLeft: spacing.md,
-		fontSize: fontSize.title,
-		lineHeight: 22,
-		textTransform: 'uppercase',
+		color: colors.text,
+		marginLeft: spacing.sm2,
+		fontSize: fontSize.display + 6,
+		lineHeight: 40,
+		fontFamily: fontFamily.display,
 	},
 	headerRight: {
 		alignItems: 'center',
@@ -207,7 +217,14 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 		marginLeft: spacing.sm,
 	},
 	headerActionButton: {
-		marginTop: 1,
+		width: 40,
+		height: 40,
+		borderRadius: radius.pill,
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.border,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	headerWrap: {
 		gap: spacing.xs,
@@ -223,7 +240,6 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	backButtonText: {
 		color: colors.secondary,
 		fontSize: fontSize.caption,
-		textTransform: 'uppercase',
 	},
 	headerTitle: {
 		color: colors.text,
@@ -237,14 +253,13 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	sectionTitle: {
 		color: colors.secondary,
 		fontSize: fontSize.caption,
-		textTransform: 'uppercase',
 	},
 	bottomNav: {
 		flexDirection: 'row',
 		backgroundColor: colors.surface,
 		borderTopWidth: 1,
 		borderTopColor: colors.border,
-		height: 66,
+		height: 72,
 		// Sem padding vertical: o conjunto ícone + rótulo centraliza na altura da barra.
 		paddingTop: 0,
 		paddingBottom: 0,
@@ -265,25 +280,42 @@ export const commonStyles = StyleSheet.create<Record<string, any>>({
 	bottomNavTabContent: {
 		minWidth: 0,
 		width: '100%',
-		height: 50,
 		alignItems: 'center',
 		justifyContent: 'center',
-		borderRadius: cornerRadius,
-		paddingHorizontal: 0,
-		paddingVertical: spacing.xs,
-		gap: 2,
+		gap: 3,
 	},
-	bottomNavTabContentActive: {
-		backgroundColor: 'transparent',
+	bottomNavTabContentActive: {},
+	bottomNavPill: {
+		width: 52,
+		height: 30,
+		borderRadius: radius.pill,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	bottomNavPillActive: {
+		backgroundColor: colors.blueSoft,
+	},
+	bottomNavRegisterButton: {
+		width: 48,
+		height: 48,
+		borderRadius: radius.pill,
+		backgroundColor: colors.primary,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	bottomNavLabel: {
 		color: colors.muted,
 		width: '100%',
 		fontSize: fontSize.micro,
-		textTransform: 'uppercase',
+		fontWeight: '500',
 		textAlign: 'center',
 	},
 	bottomNavLabelActive: {
+		color: colors.secondary,
+		fontWeight: '700',
+	},
+	bottomNavLabelRegister: {
 		color: colors.primary,
+		fontWeight: '700',
 	},
 })

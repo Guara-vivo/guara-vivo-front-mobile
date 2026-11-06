@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import {
-  ActivityIndicator,
   Animated,
   Pressable,
   ScrollView,
@@ -13,6 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
+import { Skeleton } from './Skeleton'
 import { appStyles } from '../styles/appStyles'
 import { formatDate, formatTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
@@ -82,20 +82,28 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
             {formatDate(record.date_time)} às {formatTime(record.date_time)}
           </Text>
         </View>
-        <Text style={appStyles.mapZoneRecordAuthor}>{record.author_name}</Text>
-        <Text style={appStyles.mapZoneRecordMeta}>
-          {record.ibis_quantity ?? 0}{' '}
-          {(record.ibis_quantity ?? 0) === 1 ? 'Guará' : 'Guarás'}
+        <Text numberOfLines={1} style={appStyles.mapZoneRecordAuthor}>
+          {record.author_name}
         </Text>
       </Pressable>
-      <Pressable
-        onPress={() => onOpenDetails(record.id)}
-        accessibilityRole="button"
-        accessibilityLabel={`Ver detalhes do registro ${record.id}`}
-        style={appStyles.mapZoneRecordDetailsButton}
-      >
-        <Text style={appStyles.mapZoneRecordDetailsButtonText}>VER DETALHES</Text>
-      </Pressable>
+      <View style={appStyles.mapZoneRecordFooter}>
+        <View style={appStyles.mapZoneRecordChip}>
+          <Text style={appStyles.mapZoneRecordChipText}>
+            {record.ibis_quantity ?? 0}{' '}
+            {(record.ibis_quantity ?? 0) === 1 ? 'guará' : 'guarás'}
+          </Text>
+        </View>
+        <Pressable
+          onPress={() => onOpenDetails(record.id)}
+          accessibilityRole="button"
+          accessibilityLabel={`Ver detalhes do registro ${record.id}`}
+          hitSlop={8}
+          style={appStyles.mapZoneRecordDetailsButton}
+        >
+          <Text style={appStyles.mapZoneRecordDetailsButtonText}>Ver detalhes</Text>
+          <Ionicons name="chevron-forward" size={16} color={colors.secondary} />
+        </Pressable>
+      </View>
     </View>
   )
 }
@@ -107,7 +115,7 @@ export function MapZoneDetailSheet() {
   const recordScrollRef = useRef<ScrollView>(null)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
   const RECORD_ROW_HEIGHT = 108
-  const recordListHeight = useRef(new Animated.Value(RECORD_ROW_HEIGHT)).current
+  const MAX_VISIBLE_ROWS = 4
 
   const snapPoints = ['35%', '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
@@ -140,16 +148,13 @@ export function MapZoneDetailSheet() {
     ctx.registerScrollToRecord(scrollToRecordRow)
   }, [ctx, scrollToRecordRow])
 
+  // A altura da lista já nasce com até 4 linhas: enquanto a folha sobe, os registros já aparecem
+  // (antes ela só crescia depois de soltar). Na posição baixa, o excesso fica abaixo da tela.
   const handleSheetChange = useCallback(
     (index: number) => {
-      Animated.timing(recordListHeight, {
-        toValue: index <= 0 ? RECORD_ROW_HEIGHT : RECORD_ROW_HEIGHT * 4,
-        duration: 250,
-        useNativeDriver: false,
-      }).start()
       if (index === -1) ctx.closeSheet()
     },
-    [ctx, recordListHeight],
+    [ctx],
   )
 
   const handleCloseZoneDetail = useCallback(() => {
@@ -180,9 +185,28 @@ export function MapZoneDetailSheet() {
         {ctx.selectedZone && (
             <>
               <View style={appStyles.mapZoneInfoHeader}>
-                <View>
-                  <Text style={appStyles.mapZoneInfoEyebrow}>Área selecionada</Text>
-                  <Text style={appStyles.mapZoneInfoTitle}>{ctx.selectedZone.name}</Text>
+                <View
+                  style={[
+                    appStyles.mapZoneInfoBadge,
+                    ctx.selectedZone.type === 'nest'
+                      ? appStyles.mapZoneInfoBadgeNest
+                      : appStyles.mapZoneInfoBadgeFeeding,
+                  ]}
+                >
+                  <Ionicons
+                    name={ctx.selectedZone.type === 'nest' ? 'home' : 'restaurant'}
+                    size={22}
+                    color={ctx.selectedZone.type === 'nest' ? colors.secondary : colors.primary}
+                  />
+                </View>
+                <View style={appStyles.mapZoneInfoHeaderText}>
+                  <Text
+                    numberOfLines={2}
+                    accessibilityRole="header"
+                    style={appStyles.mapZoneInfoTitle}
+                  >
+                    {ctx.selectedZone.name}
+                  </Text>
                   <Text style={appStyles.mapZoneInfoType}>
                     {formatZoneType(ctx.selectedZone.type)}
                   </Text>
@@ -197,7 +221,7 @@ export function MapZoneDetailSheet() {
                       hitSlop={8}
                       style={appStyles.mapZoneInfoDeleteIconButton}
                     >
-                      <Ionicons name="trash-outline" size={17} color={colors.onColor} />
+                      <Ionicons name="trash-outline" size={18} color={colors.dangerText} />
                     </Pressable>
                   ) : null}
                   <Pressable
@@ -208,51 +232,78 @@ export function MapZoneDetailSheet() {
                     hitSlop={8}
                     style={appStyles.mapZoneInfoCloseButton}
                   >
-                    <Ionicons name="close" size={18} color={colors.onColor} />
+                    <Ionicons name="close" size={20} color={colors.muted} />
                   </Pressable>
                 </View>
               </View>
 
               <View style={appStyles.mapZoneInfoGrid}>
                 <View style={appStyles.mapZoneInfoMetric}>
-                  <Text style={appStyles.mapZoneInfoLabel}>Raio</Text>
                   <Text style={appStyles.mapZoneInfoValue}>
                     {ctx.selectedZone.radius_meters} m
                   </Text>
+                  <Text style={appStyles.mapZoneInfoLabel}>de raio</Text>
                 </View>
                 <View style={appStyles.mapZoneInfoMetric}>
-                  <Text style={appStyles.mapZoneInfoLabel}>Criada</Text>
-                  <Text style={appStyles.mapZoneInfoValue}>
+                  {ctx.isZoneRecordsLoading ? (
+                    <View style={appStyles.mapZoneInfoValueSkeleton}>
+                      <Skeleton width={32} height={26} radius={6} />
+                    </View>
+                  ) : (
+                    <Text style={appStyles.mapZoneInfoValue}>{visibleZoneRecords.length}</Text>
+                  )}
+                  <Text style={appStyles.mapZoneInfoLabel}>
+                    {!ctx.isZoneRecordsLoading && visibleZoneRecords.length === 1
+                      ? 'registro'
+                      : 'registros'}
+                  </Text>
+                </View>
+                <View style={appStyles.mapZoneInfoMetric}>
+                  <Text style={appStyles.mapZoneInfoValueSmall}>
                     {formatZoneDate(ctx.selectedZone.created_at)}
                   </Text>
+                  <Text style={appStyles.mapZoneInfoLabel}>criada em</Text>
                 </View>
               </View>
 
-              <Text style={appStyles.mapZoneInfoCoordinates}>
-                {ctx.selectedZone.latitude.toFixed(5)},{' '}
-                {ctx.selectedZone.longitude.toFixed(5)}
-              </Text>
+              <View style={appStyles.mapZoneInfoCoordinatesRow}>
+                <Ionicons name="location-outline" size={16} color={colors.muted} />
+                <Text style={appStyles.mapZoneInfoCoordinates}>
+                  {ctx.selectedZone.latitude.toFixed(5)},{' '}
+                  {ctx.selectedZone.longitude.toFixed(5)}
+                </Text>
+              </View>
 
               <View style={appStyles.mapZoneRecordsSection}>
-                <View style={appStyles.mapZoneRecordsHeader}>
-                  <Text style={appStyles.mapZoneInfoLabel}>Registros na área</Text>
-                  <Text style={appStyles.mapZoneRecordsCount}>
-                    {visibleZoneRecords.length}
-                  </Text>
-                </View>
+                <Text accessibilityRole="header" style={appStyles.mapZoneRecordsTitle}>
+                  Registros na área
+                </Text>
                 {ctx.isZoneRecordsLoading ? (
-                  <View style={appStyles.mapZoneRecordsStatusRow}>
-                    <ActivityIndicator size="small" color={colors.secondary} />
-                    <Text style={appStyles.mapZoneRecordsStatusText}>
-                      Carregando registros...
-                    </Text>
+                  <View
+                    accessible
+                    accessibilityLabel="Carregando registros da área"
+                    accessibilityLiveRegion="polite"
+                  >
+                    {[0, 1].map((index) => (
+                      <View key={index} style={appStyles.mapZoneRecordRow}>
+                        <View style={appStyles.mapZoneRecordMainRow}>
+                          <Skeleton width={56} height={18} radius={6} />
+                          <Skeleton width={110} height={14} radius={6} />
+                        </View>
+                        <Skeleton width="45%" height={14} radius={6} />
+                        <View style={appStyles.mapZoneRecordFooter}>
+                          <Skeleton width={72} height={24} radius={12} />
+                          <Skeleton width={92} height={16} radius={6} />
+                        </View>
+                      </View>
+                    ))}
                   </View>
                 ) : ctx.zoneRecordsError ? (
                   <Text style={appStyles.mapZoneRecordsErrorText}>
                     {ctx.zoneRecordsError}
                   </Text>
                 ) : visibleZoneRecords.length > 0 ? (
-                    <Animated.View style={{ height: recordListHeight }}>
+                    <View style={{ height: RECORD_ROW_HEIGHT * Math.min(visibleZoneRecords.length, MAX_VISIBLE_ROWS) }}>
                     <ScrollView
                       ref={recordScrollRef}
                       snapToInterval={RECORD_ROW_HEIGHT}
@@ -271,7 +322,7 @@ export function MapZoneDetailSheet() {
                         />
                       ))}
                     </ScrollView>
-                    </Animated.View>
+                    </View>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
                     Nenhum registro com guarás identificados nesta área.

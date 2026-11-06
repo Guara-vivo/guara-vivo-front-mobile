@@ -1,6 +1,6 @@
 import { StyleSheet, ViewStyle } from 'react-native'
-import { colors, spacing, fontSize } from '../constants/theme'
-import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
+import { colors, spacing, fontSize, radius } from '../constants/theme'
+import { screenGutter, screenBottomPadding, cornerRadius } from './shared'
 
 export const historyStyles = StyleSheet.create<Record<string, any>>({
 	historyScreen: {
@@ -14,148 +14,149 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		paddingTop: spacing.md,
 		gap: spacing.sm2,
 	},
-	historySearchCard: {
-		borderRadius: cornerRadius,
-		borderWidth: 0,
-		...unifiedShadow,
+	historyHeaderGroup: {
+		gap: spacing.sm2,
+	},
+	historyDiscardButton: {
+		marginTop: spacing.sm,
+	},
+	historySearchRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm,
 	},
 	historySearchInputWrap: {
-		minHeight: 42,
-		borderWidth: 1,
-		borderColor: colors.secondaryLight,
-		borderRadius: cornerRadius,
+		flex: 1,
+		minHeight: 48,
+		borderRadius: radius.md,
 		paddingHorizontal: spacing.sm2,
 		flexDirection: 'row',
 		alignItems: 'center',
-		backgroundColor: colors.surface,
+		gap: spacing.sm,
+		backgroundColor: colors.field,
 	},
 	historySearchInput: {
 		flex: 1,
 		color: colors.text,
-		fontSize: fontSize.body,
+		fontSize: fontSize.bodyLarge,
 		paddingVertical: 0,
 	},
-	historyActionRow: {
-		flexDirection: 'row',
-		gap: spacing.sm,
-	},
 	historyFilterButton: {
-		flex: 1,
-		minHeight: 44,
-		borderRadius: cornerRadius,
-		borderWidth: 1,
-		borderColor: colors.secondary,
-		backgroundColor: colors.surface,
-		flexDirection: 'row',
+		width: 48,
+		height: 48,
+		borderRadius: radius.md,
+		backgroundColor: colors.field,
 		alignItems: 'center',
 		justifyContent: 'center',
-		gap: spacing.sm,
 	},
 	historyFilterButtonDisabled: {
 		opacity: 0.45,
 	},
-	historyFilterButtonText: {
+	historySortPill: {
+		alignSelf: 'flex-start',
+		minHeight: 36,
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.xs,
+		paddingHorizontal: spacing.sm2,
+		borderRadius: radius.pill,
+		backgroundColor: colors.blueSoft,
+	},
+	historySortPillText: {
 		color: colors.secondary,
 		fontSize: fontSize.body,
-		textTransform: 'uppercase',
+		fontWeight: '600',
+	},
+	historyDayHeader: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+		fontWeight: '700',
+		marginTop: spacing.sm,
 	},
 	historyRecordCard: {
-		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.sm2,
+		flexDirection: 'row',
+		alignItems: 'center',
 		gap: spacing.sm2,
-		...unifiedShadow,
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.md,
+		padding: spacing.sm2,
 	},
-	historyRecordTopRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: spacing.sm,
-	},
-	historyRecordTopInfo: {
-		flex: 1,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.sm,
-	},
-	historyRecordIdBadge: {
-		minWidth: 45,
-		height: 26,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.primary,
+	historyRecordThumb: {
+		width: 72,
+		height: 72,
+		borderRadius: radius.sm,
+		backgroundColor: colors.field,
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingHorizontal: spacing.sm,
 	},
-	historyRecordIdText: {
-		color: colors.surface,
-		fontSize: fontSize.caption,
-	},
-	historyRecordDateRow: {
-		flexShrink: 1,
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.sm,
-	},
-	historyRecordDateText: {
-		color: colors.text,
-		fontSize: fontSize.caption,
-	},
-	historyRecordDateDot: {
-		color: colors.text,
-		fontSize: fontSize.caption,
-	},
-	historyRecordInfoRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'flex-start',
-		gap: spacing.sm,
-	},
-	historyRecordInfoText: {
+	historyRecordBody: {
 		flex: 1,
-		color: colors.text,
-		fontSize: fontSize.caption,
+		gap: 2,
 	},
-	historyRecordCountText: {
+	historyRecordTitle: {
 		color: colors.text,
-		fontSize: fontSize.caption,
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
 	},
-	historyRecordFooterRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		gap: spacing.sm,
+	historyRecordMeta: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+	},
+	historyRecordSide: {
+		alignItems: 'flex-end',
+		justifyContent: 'center',
+		gap: spacing.xs,
 	},
 	historyTagRow: {
-		flex: 1,
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		gap: spacing.sm,
+		gap: spacing.xs,
+		marginTop: spacing.xs,
 	},
 	historyTagChip: {
-		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.xs,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.splash,
+		paddingHorizontal: spacing.sm,
+		paddingVertical: 2,
+		borderRadius: radius.pill,
+		backgroundColor: colors.blueSoft,
 	},
 	historyTagChipText: {
 		color: colors.secondary,
 		fontSize: fontSize.caption,
-		textTransform: 'uppercase',
+		fontWeight: '600',
+	},
+	historySyncChip: {
+		alignSelf: 'flex-start',
+		paddingHorizontal: spacing.sm,
+		paddingVertical: 2,
+		borderRadius: radius.pill,
+		backgroundColor: colors.warningSoft,
+	},
+	historySyncChipFailed: {
+		backgroundColor: colors.dangerBg,
+	},
+	historySyncChipText: {
+		color: colors.warning,
+		fontSize: fontSize.caption,
+		fontWeight: '700',
+	},
+	historySyncChipTextFailed: {
+		color: colors.dangerText,
 	},
 	historyDetailButton: {
 		minHeight: 44,
-		paddingHorizontal: spacing.md,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.secondary,
+		paddingHorizontal: spacing.sm2,
+		borderRadius: radius.md,
+		borderWidth: 1,
+		borderColor: colors.borderStrong,
 		alignItems: 'center',
 		justifyContent: 'center',
 	},
 	historyDetailButtonText: {
-		color: colors.surface,
+		color: colors.dangerText,
 		fontSize: fontSize.body,
-		textTransform: 'uppercase',
+		fontWeight: '600',
 	},
 	historyEmptyWrap: {
 		flex: 1,

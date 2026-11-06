@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { BehaviorsCard } from '../components/recordDetail/BehaviorsCard'
+import { AiAnalysisCard } from '../components/recordDetail/AiAnalysisCard'
 import { ImageCarouselCard } from '../components/recordDetail/ImageCarouselCard'
-import { RecordDetailHeader } from '../components/recordDetail/RecordDetailHeader'
 import { RecordDetailMessage } from '../components/recordDetail/RecordDetailMessage'
+import { RecordDetailSkeleton } from '../components/recordDetail/RecordDetailSkeleton'
 import { RecordInfoCard } from '../components/recordDetail/RecordInfoCard'
+import { RecordLocationCard } from '../components/recordDetail/RecordLocationCard'
 import RecordImageDetailModal from '../components/RecordImageDetailModal'
 import { colors } from '../constants/theme'
 import { useRecordDetail } from '../hooks/useRecordDetail'
@@ -20,15 +21,13 @@ export function RecordDetailScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, 'RecordDetail'>>()
 	const recordId = route.params?.recordId
 
-	const { record, isLoading, isRefreshing, handleRefresh } =
+	const { record, isLoading, isRefreshing, isFetchingDetail, handleRefresh } =
 		useRecordDetail(recordId)
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 	const goBack = () => navigation.goBack()
 
 	if (isLoading) {
-		return (
-			<RecordDetailMessage onBack={goBack} message="Carregando registro..." loading />
-		)
+		return <RecordDetailSkeleton onBack={goBack} />
 	}
 
 	if (!record) {
@@ -36,33 +35,36 @@ export function RecordDetailScreen() {
 	}
 
 	const imageUris = record.images ?? []
+	// O resumo (sem análises) aparece primeiro; até chegar o detalhe, mostra esqueleto em vez de "sem análise".
+	const detailPending = isFetchingDetail && record.image_analyses === undefined
 
 	return (
 		<View style={appStyles.recordDetailScreen}>
-			<RecordDetailHeader onBack={goBack} />
-
-			<View style={appStyles.screen}>
-				<ScrollView
-					style={appStyles.screen}
-					contentContainerStyle={appStyles.recordDetailContent}
-					alwaysBounceVertical
-					refreshControl={
-						<RefreshControl
-							refreshing={isRefreshing}
-							onRefresh={handleRefresh}
-							colors={[colors.secondary]}
-							tintColor={colors.secondary}
-						/>
-					}
-				>
-					<ImageCarouselCard
-						imageUris={imageUris}
-						onImagePress={setSelectedImageIndex}
+			<ScrollView
+				contentContainerStyle={appStyles.recordDetailContent}
+				alwaysBounceVertical
+				refreshControl={
+					<RefreshControl
+						refreshing={isRefreshing}
+						onRefresh={handleRefresh}
+						colors={[colors.secondary]}
+						tintColor={colors.secondary}
 					/>
-					<RecordInfoCard record={record} />
-					<BehaviorsCard flockSize={record.flock_size} />
-				</ScrollView>
-			</View>
+				}
+			>
+				<ImageCarouselCard
+					imageUris={imageUris}
+					onImagePress={setSelectedImageIndex}
+					onBack={goBack}
+				/>
+				<RecordInfoCard record={record} loading={detailPending} />
+				<AiAnalysisCard
+					record={record}
+					onOpen={() => setSelectedImageIndex(0)}
+					loading={detailPending}
+				/>
+				<RecordLocationCard record={record} />
+			</ScrollView>
 
 			{selectedImageIndex !== null && (
 				<RecordImageDetailModal

@@ -6,16 +6,19 @@ import DateTimePicker, {
 import { Ionicons } from '@expo/vector-icons'
 import { appStyles } from '../../styles/appStyles'
 import { colors } from '../../constants/theme'
+import { formatRelativeDay } from '../../utils/dayLabels'
+import { formatTime } from '../../utils/recordFormatters'
+import { DatePickerSheet } from '../DatePickerSheet'
 
 type Props = {
-	date: Date | null
-	time: Date | null
+	date: Date
+	time: Date
 	disabled: boolean
 	onDateChange: (date: Date) => void
 	onTimeChange: (time: Date) => void
 }
 
-// Campos de data e hora do avistamento; o seletor nativo abre ao tocar no campo.
+// Data (calendário em pt-BR) e hora (seletor nativo) do avistamento; já vêm preenchidas com o momento atual.
 export function RegisterDateTimeFields({
 	date,
 	time,
@@ -23,23 +26,11 @@ export function RegisterDateTimeFields({
 	onDateChange,
 	onTimeChange,
 }: Props) {
-	const [showDatePicker, setShowDatePicker] = useState(false)
+	const [showDateSheet, setShowDateSheet] = useState(false)
 	const [showTimePicker, setShowTimePicker] = useState(false)
 
-	const dateLabel = date?.toLocaleDateString('pt-BR')
-	const timeLabel = time?.toLocaleTimeString('pt-BR', {
-		hour: '2-digit',
-		minute: '2-digit',
-	})
-
-	const handleDateChange = (event: DateTimePickerEvent, value?: Date) => {
-		setShowDatePicker(false)
-		if (event.type !== 'set' || !value) {
-			return
-		}
-
-		onDateChange(value)
-	}
+	const dateLabel = formatRelativeDay(date.toISOString(), new Date())
+	const timeLabel = formatTime(time.toISOString())
 
 	const handleTimeChange = (event: DateTimePickerEvent, value?: Date) => {
 		setShowTimePicker(false)
@@ -54,58 +45,39 @@ export function RegisterDateTimeFields({
 		<>
 			<View style={appStyles.registerDateRow}>
 				<Pressable
-					onPress={() => !disabled && setShowDatePicker(true)}
+					onPress={() => setShowDateSheet(true)}
 					accessibilityRole="button"
-					accessibilityLabel={`Data do avistamento: ${dateLabel ?? "não informada"}`}
-					accessibilityState={{ disabled: !!disabled }}
+					accessibilityLabel={`Data do avistamento: ${dateLabel}. Alterar`}
+					accessibilityState={{ disabled }}
 					disabled={disabled}
 					style={appStyles.registerDateField}
 				>
-					<Text
-						style={[
-							appStyles.registerDateFieldText,
-							!dateLabel && appStyles.registerDateFieldPlaceholder,
-						]}
-					>
-						{dateLabel ?? 'Insira a data...'}
-					</Text>
-					<Ionicons name="calendar-outline" size={16} color={colors.secondary} />
+					<Ionicons name="calendar-outline" size={20} color={colors.secondary} />
+					<Text style={appStyles.registerDateFieldText}>{dateLabel}</Text>
 				</Pressable>
 
 				<Pressable
-					onPress={() => !disabled && setShowTimePicker(true)}
+					onPress={() => setShowTimePicker(true)}
 					accessibilityRole="button"
-					accessibilityLabel={`Hora do avistamento: ${timeLabel ?? "não informada"}`}
-					accessibilityState={{ disabled: !!disabled }}
+					accessibilityLabel={`Hora do avistamento: ${timeLabel}. Alterar`}
+					accessibilityState={{ disabled }}
 					disabled={disabled}
 					style={appStyles.registerDateField}
 				>
-					<Text
-						style={[
-							appStyles.registerDateFieldText,
-							!timeLabel && appStyles.registerDateFieldPlaceholder,
-						]}
-					>
-						{timeLabel ?? 'Insira a hora...'}
-					</Text>
-					<Ionicons name="time-outline" size={16} color={colors.secondary} />
+					<Ionicons name="time-outline" size={20} color={colors.secondary} />
+					<Text style={appStyles.registerDateFieldText}>{timeLabel}</Text>
 				</Pressable>
 			</View>
 
-			{showDatePicker ? (
-				<DateTimePicker
-					mode="date"
-					value={date ?? new Date()}
-					onChange={handleDateChange}
-				/>
-			) : null}
+			<DatePickerSheet
+				visible={showDateSheet}
+				value={date}
+				onConfirm={onDateChange}
+				onClose={() => setShowDateSheet(false)}
+			/>
 
 			{showTimePicker ? (
-				<DateTimePicker
-					mode="time"
-					value={time ?? new Date()}
-					onChange={handleTimeChange}
-				/>
+				<DateTimePicker mode="time" value={time} is24Hour onChange={handleTimeChange} />
 			) : null}
 		</>
 	)

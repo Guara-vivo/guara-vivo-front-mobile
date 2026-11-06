@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native'
-import { colors, spacing, fontSize, radius } from '../constants/theme'
+import { colors, spacing, fontSize, radius, fontFamily } from '../constants/theme'
 import { screenGutter, screenBottomPadding, cornerRadius, unifiedShadow } from './shared'
 
 export const profileStyles = StyleSheet.create<Record<string, any>>({
@@ -9,87 +9,101 @@ export const profileStyles = StyleSheet.create<Record<string, any>>({
 	},
 	profileContent: {
 		paddingHorizontal: screenGutter,
-		paddingBottom: screenBottomPadding,
 		paddingTop: spacing.lg,
-		gap: spacing.lg,
+		paddingBottom: screenBottomPadding,
+		gap: spacing.md,
 	},
-	profileHeroCard: {
+	profileTitle: {
+		color: colors.text,
+		fontSize: 40,
+		lineHeight: 48,
+		fontFamily: fontFamily.display,
+	},
+	profileUserCard: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.md,
 		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.sm2,
-		paddingVertical: 20,
-		alignItems: 'center',
-		...unifiedShadow,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.lg,
+		padding: spacing.md,
 	},
-	profileAvatarCircle: {
-		width: 104,
-		height: 104,
-		borderRadius: radius.pill,
-		borderWidth: 2.8,
-		borderColor: colors.secondary,
-		alignItems: 'center',
-		justifyContent: 'center',
-		marginBottom: spacing.sm,
+	profileUserInfo: {
+		flex: 1,
 	},
 	profileHeroName: {
 		color: colors.text,
-		fontSize: fontSize.bodyLarge,
-		lineHeight: 18,
-
-		textAlign: 'center',
+		fontSize: fontSize.title,
+		fontWeight: '700',
 	},
 	profileHeroEmail: {
 		color: colors.muted,
-		fontSize: fontSize.caption,
-		lineHeight: 15,
-
-		textAlign: 'center',
-		marginBottom: spacing.sm2,
+		fontSize: fontSize.body,
 	},
 	profileEditButton: {
-		minWidth: 114,
-		minHeight: 48,
-		borderRadius: cornerRadius,
-		backgroundColor: colors.secondary,
-		alignItems: 'center',
+		minHeight: 44,
 		justifyContent: 'center',
-		paddingHorizontal: spacing.md,
+		paddingHorizontal: spacing.sm2,
+		borderRadius: radius.pill,
+		backgroundColor: colors.blueSoft,
 	},
 	profileEditButtonText: {
-		color: colors.surface,
-		fontSize: fontSize.body,
-
-		textTransform: 'uppercase',
-	},
-	profileMenuCard: {
-		backgroundColor: colors.surface,
-		borderRadius: cornerRadius,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.md,
-		gap: spacing.sm2,
-		...unifiedShadow,
-	},
-	profileMenuTitle: {
 		color: colors.secondary,
 		fontSize: fontSize.body,
-
-		textTransform: 'uppercase',
-		marginBottom: 2,
+		fontWeight: '700',
+	},
+	profileGroupTitle: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+		fontWeight: '700',
+		marginTop: spacing.sm,
+	},
+	profileGroupCard: {
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.md,
+		overflow: 'hidden',
 	},
 	profileMenuItem: {
-		minHeight: 48,
+		minHeight: 60,
 		flexDirection: 'row',
 		alignItems: 'center',
 		gap: spacing.sm2,
-		paddingHorizontal: spacing.sm,
+		paddingHorizontal: spacing.sm2,
+	},
+	profileMenuItemDivider: {
+		borderTopWidth: 1,
+		borderTopColor: colors.border,
+	},
+	profileMenuIcon: {
+		width: 36,
+		height: 36,
+		borderRadius: radius.sm,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: colors.blueSoft,
 	},
 	profileMenuItemText: {
+		flex: 1,
 		color: colors.text,
-		fontSize: fontSize.body,
+		fontSize: fontSize.bodyLarge,
+	},
+	profileLogoutButton: {
+		minHeight: 56,
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: spacing.sm,
+		borderRadius: radius.md,
+		backgroundColor: colors.redSoft,
+		marginTop: spacing.sm,
 	},
 	profileMenuItemTextLogout: {
-		color: colors.primary,
-		fontSize: fontSize.body,
+		color: colors.dangerText,
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
 	},
 	logoutOverlayContainer: {
 		position: 'absolute' as const,

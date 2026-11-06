@@ -7,8 +7,6 @@ import {
 	Text,
 	View,
 } from 'react-native'
-import Header from '../components/Header'
-import { ScreenCard } from '../components/common'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { LastUpdatedPill } from '../components/map/LastUpdatedPill'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
@@ -20,7 +18,7 @@ import type { MapLayerId } from '../config/map'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { invalidateRecordsCache } from '../services/recordsService'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
-import { filterZonesByLayer, getLayerBadgeText } from '../utils/mapZoneStyle'
+import { filterZonesByLayer } from '../utils/mapZoneStyle'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 import { colors } from '../constants/theme'
 
@@ -30,9 +28,9 @@ type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 type LayerButton = { id: MapLayerId; label: string; icon: IoniconName }
 
 const LAYER_BUTTONS: LayerButton[] = [
-	{ id: 'all', label: 'TODOS', icon: 'layers-outline' },
-	{ id: 'feeding', label: 'ALIMENTAÇÃO', icon: 'fish' },
-	{ id: 'nests', label: 'NINHOS', icon: 'home' },
+	{ id: 'all', label: 'Todos', icon: 'layers-outline' },
+	{ id: 'feeding', label: 'Alimentação', icon: 'fish' },
+	{ id: 'nests', label: 'Ninhos', icon: 'home' },
 ]
 
 export function MapsScreen() {
@@ -45,6 +43,7 @@ export function MapsScreen() {
 	const [showZoneModal, setShowZoneModal] = useState(false)
 	const [creatingZone, setCreatingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
+	const [recenterKey, setRecenterKey] = useState(0)
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
@@ -58,8 +57,7 @@ export function MapsScreen() {
 		() => filterZonesByLayer(zones, selectedLayer).length,
 		[zones, selectedLayer],
 	)
-	const layerCountLabel = getLayerBadgeText(selectedLayer)
-
+	
 	const loadZones = useCallback(async (signal?: AbortSignal) => {
 		try {
 			setIsZonesLoading(true)
@@ -176,83 +174,7 @@ export function MapsScreen() {
 
 	return (
 		<View style={appStyles.mapsScreen}>
-			<Header title="Mapas" />
-			<View style={[appStyles.screen, appStyles.mapsContent]}>
-				<ScreenCard style={appStyles.mapsFilterCard}>
-					<View style={appStyles.mapsFilterTitleRow}>
-						<Ionicons name="layers-outline" size={18} color={colors.secondary} />
-						<Text style={appStyles.sectionTitle}>CAMADA</Text>
-						<Text
-							style={appStyles.mapsFilterCount}
-							accessibilityLiveRegion="polite"
-							accessibilityLabel={`${visibleZoneCount} ${layerCountLabel} no mapa`}
-						>
-							<Text style={appStyles.mapsFilterCountValue}>{visibleZoneCount}</Text>{' '}
-							{layerCountLabel}
-						</Text>
-					</View>
-
-					<View style={appStyles.mapsFilterRow}>
-						{LAYER_BUTTONS.map((item) => {
-							const active = selectedLayer === item.id
-
-							return (
-								<Pressable
-									key={item.id}
-									onPress={() => setSelectedLayer(item.id)}
-										accessibilityRole="radio"
-										accessibilityState={{ selected: active }}
-										accessibilityLabel={`Camada ${item.label}`}
-										hitSlop={{ top: 8, bottom: 8 }}
-									style={[
-										appStyles.mapsFilterButton,
-										active && appStyles.mapsFilterButtonActive,
-									]}
-								>
-									{item.id === 'feeding' ? (
-										<View
-											style={[
-												appStyles.mapsFilterButtonIcon,
-												appStyles.mapsFilterDot,
-												{ backgroundColor: active ? colors.surface : colors.danger },
-											]}
-										/>
-									) : (
-										<Ionicons
-											name={item.icon}
-											size={15}
-											color={active ? colors.onColor : colors.secondary}
-											style={appStyles.mapsFilterButtonIcon}
-										/>
-									)}
-									<Text
-										numberOfLines={1}
-										adjustsFontSizeToFit
-										minimumFontScale={0.85}
-										style={[
-											appStyles.mapsFilterButtonLabel,
-											active && appStyles.mapsFilterButtonLabelActive,
-										]}
-									>
-										{item.label}
-									</Text>
-								</Pressable>
-							)
-						})}
-					</View>
-				</ScreenCard>
-
-				{zonesError && (
-					<View
-							style={appStyles.zoneErrorBanner}
-							accessibilityRole="alert"
-							accessibilityLiveRegion="polite"
-						>
-						<Text style={appStyles.zoneErrorText}>{zonesError}</Text>
-					</View>
-				)}
-
-			<ScreenCard style={appStyles.mapsMapCard}>
+			<View style={appStyles.mapsMapArea}>
 				<MapLibreMapView
 					selectedLayer={selectedLayer}
 					zones={zones}
@@ -263,68 +185,125 @@ export function MapsScreen() {
 					selectedZoneId={ctx.selectedZone?.id ?? null}
 					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}
+					recenterKey={recenterKey}
 				/>
-				{selectionMode ? (
-					<View style={appStyles.mapSelectionInstructionOverlay}>
-						<Text style={appStyles.mapSelectionInstructionText}>
-							Toque no mapa para escolher a área
-						</Text>
+
+				<View style={appStyles.mapsChipsRow} accessibilityRole="radiogroup">
+					{LAYER_BUTTONS.map((item) => {
+						const active = selectedLayer === item.id
+
+						return (
+							<Pressable
+								key={item.id}
+								onPress={() => setSelectedLayer(item.id)}
+								accessibilityRole="radio"
+								accessibilityState={{ selected: active }}
+								accessibilityLabel={`Camada ${item.label}`}
+								hitSlop={{ top: 4, bottom: 4 }}
+								style={[appStyles.mapsChip, active && appStyles.mapsChipActive]}
+							>
+								{item.id === 'all' ? (
+									<Ionicons
+										name="layers-outline"
+										size={16}
+										color={active ? colors.onColor : colors.text}
+									/>
+								) : (
+									<View
+										style={[
+											appStyles.mapsChipDot,
+											item.id === 'nests' && appStyles.mapsChipDotNest,
+										]}
+									/>
+								)}
+								<Text
+									style={[appStyles.mapsChipLabel, active && appStyles.mapsChipLabelActive]}
+								>
+									{item.label}
+								</Text>
+							</Pressable>
+						)
+					})}
+				</View>
+
+				<LastUpdatedPill
+					lastUpdatedAt={lastUpdatedAt}
+					countLabel={`${visibleZoneCount} ${visibleZoneCount === 1 ? 'área' : 'áreas'}`}
+				/>
+
+				{zonesError ? (
+					<View
+						style={[appStyles.zoneErrorBanner, appStyles.mapsErrorBanner]}
+						accessibilityRole="alert"
+						accessibilityLiveRegion="polite"
+					>
+						<Text style={appStyles.zoneErrorText}>{zonesError}</Text>
 					</View>
 				) : null}
-				<View style={appStyles.mapReloadOverlay}>
-					<View style={appStyles.mapTopRightActions}>
-						{ctx.canManageZones ? (
+
+				{selectionMode ? (
+					<View style={appStyles.mapSelectionInstructionOverlay} pointerEvents="none">
+						<View style={appStyles.mapSelectionInstructionPill}>
+							<Text style={appStyles.mapSelectionInstructionText}>
+								Toque no mapa para escolher a área
+							</Text>
+						</View>
+					</View>
+				) : null}
+
+				<View style={appStyles.mapsSideButtons}>
+					{ctx.canManageZones ? (
 						<Pressable
 							onPress={handleToggleSelectionMode}
-								accessibilityRole="button"
-								accessibilityLabel={selectionMode ? 'Cancelar seleção de área' : 'Adicionar área'}
-								hitSlop={4}
-								accessibilityState={{ disabled: creatingZone }}
+							accessibilityRole="button"
+							accessibilityLabel={selectionMode ? 'Cancelar seleção de área' : 'Adicionar área'}
+							accessibilityState={{ disabled: creatingZone }}
 							disabled={creatingZone}
 							style={[
-								appStyles.mapAreaButton,
-								selectionMode && appStyles.mapAreaButtonCancel,
-								creatingZone && appStyles.mapReloadButtonDisabled,
+								appStyles.mapsSideButton,
+								appStyles.mapsSideButtonAccent,
+								creatingZone && appStyles.mapsSideButtonDisabled,
 							]}
 						>
 							<Ionicons
 								name={selectionMode ? 'close' : 'add'}
-								size={18}
+								size={24}
 								color={colors.onColor}
 							/>
 						</Pressable>
-						) : null}
-						<Pressable
-							onPress={handleReloadZones}
-								accessibilityRole="button"
-								accessibilityLabel="Atualizar áreas"
-								hitSlop={4}
-								accessibilityState={{ busy: isReloading, disabled: isReloading }}
-							disabled={isReloading}
-							style={[
-								appStyles.mapReloadButton,
-								isReloading && appStyles.mapReloadButtonDisabled,
-							]}
-						>
-							{isReloading ? (
-								<ActivityIndicator size="small" color={colors.onColor} />
-							) : (
-								<Ionicons name="refresh" size={18} color={colors.onColor} />
-							)}
-						</Pressable>
-					</View>
-					<LastUpdatedPill lastUpdatedAt={lastUpdatedAt} />
+					) : null}
+					<Pressable
+						onPress={() => setRecenterKey((key) => key + 1)}
+						accessibilityRole="button"
+						accessibilityLabel="Ir para minha localização"
+						style={appStyles.mapsSideButton}
+					>
+						<Ionicons name="locate" size={22} color={colors.secondary} />
+					</Pressable>
+					<Pressable
+						onPress={handleReloadZones}
+						accessibilityRole="button"
+						accessibilityLabel="Atualizar áreas"
+						accessibilityState={{ busy: isReloading, disabled: isReloading }}
+						disabled={isReloading}
+						style={[appStyles.mapsSideButton, isReloading && appStyles.mapsSideButtonDisabled]}
+					>
+						{isReloading ? (
+							<ActivityIndicator size="small" color={colors.secondary} />
+						) : (
+							<Ionicons name="refresh" size={22} color={colors.secondary} />
+						)}
+					</Pressable>
 				</View>
-			</ScreenCard>
 			</View>
 
-		{showZoneModal && (
-			<MapZoneSelectionModal
-				onConfirm={handleCreateZone}
-				onCancel={handleCancelModal}
-				isSubmitting={creatingZone}
-			/>
-		)}
+			{showZoneModal && (
+				<MapZoneSelectionModal
+					onConfirm={handleCreateZone}
+					onCancel={handleCancelModal}
+					isSubmitting={creatingZone}
+				/>
+			)}
 		</View>
 	)
 }

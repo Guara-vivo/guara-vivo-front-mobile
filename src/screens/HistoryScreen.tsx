@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { FlatList, RefreshControl, View } from 'react-native'
+import { FlatList, RefreshControl, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Header from '../components/Header'
 import HistoryFilterModal from '../components/HistoryFilterModal'
@@ -12,9 +12,8 @@ import { useHistoryRecords } from '../hooks/useHistoryRecords'
 import { discardPendingRecord } from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabNavigationProp } from '../types/navigation'
-import type { RecordItem } from '../types/records'
+import { groupRecordsByDay, type HistoryRow } from '../utils/dayGroups'
 import { sortRecordsByDate, type SortOrder } from '../utils/historyRecords'
-import { recordKey } from '../utils/pendingRecords'
 
 export function HistoryScreen() {
 	const navigation = useNavigation<MainTabNavigationProp>()
@@ -54,15 +53,25 @@ export function HistoryScreen() {
 
 	const closeFilters = useCallback(() => setIsFilterOpen(false), [setIsFilterOpen])
 
+	const rows = useMemo(
+		() => groupRecordsByDay(orderedRecords, new Date()),
+		[orderedRecords],
+	)
+
 	const renderItem = useCallback(
-		({ item }: { item: RecordItem }) => (
-			<HistoryRecordCard
-				item={item}
-				analysisProgress={item.analysis_progress}
-				onOpenRecord={openRecord}
-				onDiscard={discardPendingRecord}
-			/>
-		),
+		({ item }: { item: HistoryRow }) =>
+			item.kind === 'header' ? (
+				<Text style={appStyles.historyDayHeader} accessibilityRole="header">
+					{item.label}
+				</Text>
+			) : (
+				<HistoryRecordCard
+					item={item.item}
+					analysisProgress={item.item.analysis_progress}
+					onOpenRecord={openRecord}
+					onDiscard={discardPendingRecord}
+				/>
+			),
 		[openRecord],
 	)
 
@@ -72,8 +81,8 @@ export function HistoryScreen() {
 			<View style={appStyles.screen}>
 				<FlatList
 					contentContainerStyle={appStyles.historyContent}
-					data={orderedRecords}
-					keyExtractor={recordKey}
+					data={rows}
+					keyExtractor={(row) => row.key}
 					refreshControl={
 						<RefreshControl
 							refreshing={isRefreshing}

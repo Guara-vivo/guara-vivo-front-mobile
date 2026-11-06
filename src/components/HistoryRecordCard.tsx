@@ -1,11 +1,9 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import {
-	formatDate,
-	formatTime,
-} from '../utils/recordFormatters'
+import { formatTime } from '../utils/recordFormatters'
 import AnalysisProgressIndicator from './AnalysisProgressIndicator'
+import { SkeletonImage } from './SkeletonImage'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
 import { colors } from '../constants/theme'
@@ -29,92 +27,101 @@ function HistoryRecordCardBase({
 	const areaLabel = item.map_zones.length
 		? item.map_zones.map((zone) => zone.name).join(' · ')
 		: 'Sem área'
+	const photo = item.images?.[0]
+	const guaras = `${item.ibis_quantity} ${item.ibis_quantity === 1 ? 'guará' : 'guarás'}`
+	const meta = `${formatTime(item.datetime)}${syncState ? '' : ` · #${item.id}`} · ${areaLabel}`
 
-	return (
-		<View style={appStyles.historyRecordCard}>
-			<View style={appStyles.historyRecordTopRow}>
-				<View style={appStyles.historyRecordTopInfo}>
-					<View style={appStyles.historyRecordIdBadge}>
-						<Text style={appStyles.historyRecordIdText}>
-							{syncState === 'failed'
-								? 'RECUSADO'
-								: syncState
-									? 'AGUARDANDO ENVIO'
-									: `#${String(item.id).padStart(3, '0')}`}
-						</Text>
-					</View>
-
-					<View style={appStyles.historyRecordDateRow}>
-						<Ionicons name="calendar-outline" size={18} color={colors.accent} />
-						<Text style={appStyles.historyRecordDateText}>
-							{formatDate(item.datetime)}
-						</Text>
-						<Text style={appStyles.historyRecordDateDot}>•</Text>
-						<Text style={appStyles.historyRecordDateText}>
-							{formatTime(item.datetime)}
-						</Text>
-					</View>
+	const content = (
+		<>
+			{photo ? (
+				<SkeletonImage
+					uri={photo}
+					style={appStyles.historyRecordThumb}
+					accessibilityLabel={`Foto do registro ${item.id}`}
+				/>
+			) : (
+				<View style={appStyles.historyRecordThumb}>
+					<Ionicons name="image-outline" size={24} color={colors.muted} />
 				</View>
+			)}
 
+			<View style={appStyles.historyRecordBody}>
+				<Text style={appStyles.historyRecordTitle}>{guaras}</Text>
+				<Text numberOfLines={1} style={appStyles.historyRecordMeta}>
+					{meta}
+				</Text>
 				{syncState ? (
-					<Ionicons
-						name={syncState === 'failed' ? 'alert-circle' : 'cloud-upload-outline'}
-						size={26}
-						color={syncState === 'failed' ? colors.primary : colors.accent}
-					/>
+					<View
+						style={[
+							appStyles.historySyncChip,
+							syncState === 'failed' && appStyles.historySyncChipFailed,
+						]}
+					>
+						<Text
+							style={[
+								appStyles.historySyncChipText,
+								syncState === 'failed' && appStyles.historySyncChipTextFailed,
+							]}
+						>
+							{syncState === 'failed' ? 'Recusado' : 'Aguardando envio'}
+						</Text>
+					</View>
 				) : (
-					<AnalysisProgressIndicator
-						progress={analysisProgress}
-						status={item.status}
-					/>
+					<>
+						<View style={appStyles.historyTagRow}>
+							{behaviorTags.map((tag) => (
+								<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
+									<Text style={appStyles.historyTagChipText}>{tag}</Text>
+								</View>
+							))}
+						</View>
+						<AnalysisProgressIndicator progress={analysisProgress} status={item.status} />
+					</>
 				)}
 			</View>
 
-			<View style={appStyles.historyRecordInfoRow}>
-				<Ionicons name="map-outline" size={18} color={colors.primary} />
-				<Text numberOfLines={1} style={appStyles.historyRecordInfoText}>
-					{areaLabel}
-				</Text>
-				<Ionicons name="eye-outline" size={18} color={colors.primary} />
-				<Text style={appStyles.historyRecordCountText}>
-					{item.ibis_quantity} {item.ibis_quantity === 1 ? 'Guará' : 'Guarás'}
-				</Text>
+			<View style={appStyles.historyRecordSide}>
+				{syncState ? (
+					<Ionicons
+						name={syncState === 'failed' ? 'alert-circle' : 'cloud-upload-outline'}
+						size={24}
+						color={syncState === 'failed' ? colors.dangerText : colors.warning}
+					/>
+				) : (
+					<Ionicons name="chevron-forward" size={18} color={colors.muted} />
+				)}
 			</View>
+		</>
+	)
 
-			<View style={appStyles.historyRecordFooterRow}>
-				<View style={appStyles.historyTagRow}>
-					{behaviorTags.map((tag) => (
-						<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
-							<Text style={appStyles.historyTagChipText}>{tag}</Text>
-						</View>
-					))}
-				</View>
-
+	if (syncState) {
+		return (
+			<View>
+				<View style={appStyles.historyRecordCard}>{content}</View>
 				{syncState === 'failed' && item.client_uuid && onDiscard ? (
 					<Pressable
 						onPress={() => onDiscard(item.client_uuid as string)}
 						accessibilityRole="button"
 						hitSlop={4}
 						accessibilityLabel="Descartar registro recusado"
-						style={appStyles.historyDetailButton}
+						style={[appStyles.historyDetailButton, appStyles.historyDiscardButton]}
 					>
-						<Text style={appStyles.historyDetailButtonText}>DESCARTAR REGISTRO</Text>
-					</Pressable>
-				) : null}
-
-				{!syncState ? (
-					<Pressable
-						onPress={() => onOpenRecord(item.id)}
-						accessibilityRole="button"
-						hitSlop={4}
-						accessibilityLabel={`Ver detalhes do registro ${item.id}`}
-						style={appStyles.historyDetailButton}
-					>
-						<Text style={appStyles.historyDetailButtonText}>VER DETALHES</Text>
+						<Text style={appStyles.historyDetailButtonText}>Descartar registro</Text>
 					</Pressable>
 				) : null}
 			</View>
-		</View>
+		)
+	}
+
+	return (
+		<Pressable
+			onPress={() => onOpenRecord(item.id)}
+			accessibilityRole="button"
+			accessibilityLabel={`Ver detalhes do registro ${item.id}: ${guaras}, ${areaLabel}`}
+			style={appStyles.historyRecordCard}
+		>
+			{content}
+		</Pressable>
 	)
 }
 

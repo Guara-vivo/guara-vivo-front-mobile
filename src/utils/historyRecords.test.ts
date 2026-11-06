@@ -2,6 +2,7 @@ import type { RecordItem } from '../types/records'
 import {
 	isActiveAnalysisStatus,
 	mergeProgressUpdates,
+	needsRecordsRefresh,
 	sortRecordsByDate,
 } from './historyRecords'
 
@@ -55,5 +56,41 @@ describe('sortRecordsByDate', () => {
 	it('não altera a lista original', () => {
 		sortRecordsByDate(list, 'asc')
 		expect(list.map((item) => item.id)).toEqual([1, 2, 3])
+	})
+})
+
+describe("needsRecordsRefresh", () => {
+	const known = [record(1, "2026-01-01T10:00:00Z")] // processing
+
+	it("pede recarregar quando a análise de um registro conhecido termina", () => {
+		expect(
+			needsRecordsRefresh(known, [{ id: 1, status: "completed", analysis_progress: 100 }]),
+		).toBe(true)
+		expect(
+			needsRecordsRefresh(known, [{ id: 1, status: "failed", analysis_progress: 40 }]),
+		).toBe(true)
+	})
+
+	it("pede recarregar quando chega um registro que a lista não tem", () => {
+		expect(
+			needsRecordsRefresh(known, [{ id: 9, status: "processing", analysis_progress: 5 }]),
+		).toBe(true)
+	})
+
+	it("não recarrega só por avanço de progresso", () => {
+		expect(
+			needsRecordsRefresh(known, [{ id: 1, status: "processing", analysis_progress: 60 }]),
+		).toBe(false)
+	})
+
+	it("não recarrega quando o registro já estava concluído", () => {
+		const done = [{ ...known[0], status: "completed" }] as unknown as RecordItem[]
+		expect(
+			needsRecordsRefresh(done, [{ id: 1, status: "completed", analysis_progress: 100 }]),
+		).toBe(false)
+	})
+
+	it("não recarrega sem atualizações", () => {
+		expect(needsRecordsRefresh(known, [])).toBe(false)
 	})
 })

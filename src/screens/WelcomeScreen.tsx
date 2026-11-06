@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, View } from 'react-native'
+import { Image, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { ActionButton } from '../components/common'
 import { appStyles } from '../styles/appStyles'
@@ -8,38 +8,36 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
 type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
-const welcomeLogo = require('../assets/images/Logo Fonte Clara.png')
+// Versão da logo com texto escuro, própria para fundo branco.
+const welcomeLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
 
 export function WelcomeScreen() {
 	const navigation = useNavigation<NavigationProp>()
 
 	return (
 		<View style={appStyles.welcomeScreen}>
-			<View style={appStyles.welcomeContent}>
+			<View style={appStyles.welcomeBody}>
 				<Image
 					source={welcomeLogo}
 					accessibilityLabel="Guará Vivo"
 					style={appStyles.welcomeLogo}
 					resizeMode="contain"
 				/>
+				<Text style={appStyles.welcomeTagline}>
+					Monitoramento e proteção do guará na ARIE
+				</Text>
+			</View>
 
-				<View style={appStyles.welcomeActions}>
-					<ActionButton
-						title="Acessar minha conta"
-						onPress={() => navigation.navigate('Login')}
-						containerStyle={appStyles.welcomePrimaryButton}
-						textStyle={appStyles.welcomePrimaryButtonLabel}
-					/>
-					<View style={appStyles.welcomeSpacer} />
-					<View style={appStyles.welcomeActions}>
-						<ActionButton
-							title="CRIAR CONTA"
-							onPress={() => navigation.navigate('RegisterEmail')}
-							containerStyle={appStyles.welcomeTextButton}
-							textStyle={appStyles.welcomeTextButtonLabel}
-						/>
-					</View>
-				</View>
+			<View style={appStyles.welcomeActions}>
+				<ActionButton
+					title="Entrar na minha conta"
+					onPress={() => navigation.navigate('Login')}
+				/>
+				<ActionButton
+					title="Criar conta"
+					variant="secondary"
+					onPress={() => navigation.navigate('RegisterEmail')}
+				/>
 			</View>
 		</View>
 	)

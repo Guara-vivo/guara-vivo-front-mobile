@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
@@ -62,6 +62,7 @@ export function ActionButton({
 				<Text
 					style={[
 						appStyles.actionButtonText,
+						variant === 'secondary' && appStyles.actionButtonTextSecondary,
 						variant === 'outline' && appStyles.actionButtonTextOutline,
 						variant === 'ghost' && appStyles.actionButtonTextGhost,
 						textStyle,
@@ -86,19 +87,27 @@ export function TextField({
 	keyboardType = 'default',
 	multiline = false,
 }: TextFieldProps) {
+	const [focused, setFocused] = useState(false)
+
 	return (
 		<View style={appStyles.fieldWrapper}>
 			{label ? <Text style={appStyles.fieldLabel}>{label}</Text> : null}
 			<TextInput
-					accessibilityLabel={label ?? placeholder}
+				accessibilityLabel={label ?? placeholder}
 				value={value}
 				onChangeText={onChangeText}
 				placeholder={placeholder}
-				placeholderTextColor={colors.muted}
+				placeholderTextColor={colors.placeholder}
 				secureTextEntry={secureTextEntry}
 				keyboardType={keyboardType}
 				multiline={multiline}
-				style={[appStyles.textField, multiline && appStyles.textFieldMultiline]}
+				onFocus={() => setFocused(true)}
+				onBlur={() => setFocused(false)}
+				style={[
+					appStyles.textField,
+					multiline && appStyles.textFieldMultiline,
+					focused && appStyles.textFieldFocused,
+				]}
 			/>
 		</View>
 	)

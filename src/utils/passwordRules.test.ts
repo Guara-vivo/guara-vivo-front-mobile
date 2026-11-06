@@ -1,4 +1,5 @@
 import {
+	getPasswordRuleStatus,
 	getPasswordByteLength,
 	getPasswordHint,
 	isPasswordLongEnough,
@@ -38,5 +39,32 @@ describe('passwordRules', () => {
 		expect(getPasswordHint('abc')).toBe(PASSWORD_RULE_HINT)
 		expect(getPasswordHint('abcdefgh')).toBe('Senha válida')
 		expect(getPasswordHint('ã'.repeat(40))).toBe(PASSWORD_TOO_LONG_HINT)
+	})
+})
+
+describe('getPasswordRuleStatus', () => {
+	it('minLength é falso com 7 caracteres e verdadeiro com 8', () => {
+		expect(getPasswordRuleStatus('1234567', '1234567').minLength).toBe(false)
+		expect(getPasswordRuleStatus('12345678', '12345678').minLength).toBe(true)
+	})
+
+	it('withinByteLimit é falso com 73 bytes ASCII', () => {
+		expect(getPasswordRuleStatus('a'.repeat(73), '').withinByteLimit).toBe(false)
+		expect(getPasswordRuleStatus('a'.repeat(72), '').withinByteLimit).toBe(true)
+	})
+
+	it('withinByteLimit conta bytes UTF-8: 37 caracteres "ç" são 74 bytes', () => {
+		expect(getPasswordRuleStatus('ç'.repeat(37), '').withinByteLimit).toBe(false)
+		expect(getPasswordRuleStatus('ç'.repeat(36), '').withinByteLimit).toBe(true)
+	})
+
+	it('matches é falso com confirmação vazia e verdadeiro com senhas iguais', () => {
+		expect(getPasswordRuleStatus('12345678', '').matches).toBe(false)
+		expect(getPasswordRuleStatus('12345678', '12345679').matches).toBe(false)
+		expect(getPasswordRuleStatus('12345678', '12345678').matches).toBe(true)
+	})
+
+	it('senha vazia não casa com confirmação vazia', () => {
+		expect(getPasswordRuleStatus('', '').matches).toBe(false)
 	})
 })

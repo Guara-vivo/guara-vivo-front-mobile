@@ -1,18 +1,22 @@
-import { Animated, Text, View } from 'react-native'
+import { Animated } from 'react-native'
 import { Marker } from 'react-native-maps'
-import { Ionicons } from '@expo/vector-icons'
 import type { MapZoneRecordRead } from '../../types/api'
-import { mapViewStyles as styles } from './mapViewStyles'
-import { colors } from '../../constants/theme'
 
 type RecordMarkerProps = {
 	record: MapZoneRecordRead
 	focused: boolean
-	opacity: Animated.Value
+	// Mantido pela API do hook de fade; marcador de imagem estática não anima opacidade.
+	opacity?: Animated.Value
 	onPress?: (recordId: number) => void
 }
 
-export function RecordMarker({ record, focused, opacity, onPress }: RecordMarkerProps) {
+// Imagens estáticas (PNG @1x/2x/3x): o Android corta marcadores feitos de View quando o tamanho
+// muda (acontecia ao selecionar). Guará nas cores originais; o anel vermelho vira azul e o marcador
+// cresce quando o registro está em foco.
+const RECORD_IMAGE = require('../../assets/images/record-marker.png')
+const RECORD_IMAGE_FOCUSED = require('../../assets/images/record-marker-selected.png')
+
+export function RecordMarker({ record, focused, onPress }: RecordMarkerProps) {
 	return (
 		<Marker
 			coordinate={{
@@ -22,19 +26,8 @@ export function RecordMarker({ record, focused, opacity, onPress }: RecordMarker
 			onPress={onPress ? () => onPress(record.id) : undefined}
 			anchor={{ x: 0.5, y: 0.5 }}
 			zIndex={focused ? 201 : 200}
-		>
-			<Animated.View
-				style={[
-					styles.recordMarkerOuter,
-					focused ? styles.recordMarkerOuterFocused : null,
-					{ opacity },
-				]}
-			>
-				<View style={styles.recordMarkerInner}>
-					<Ionicons name="eye" size={12} color={colors.onColor} />
-				</View>
-				<Text style={styles.recordMarkerText}>{record.ibis_quantity ?? 0}</Text>
-			</Animated.View>
-		</Marker>
+			image={focused ? RECORD_IMAGE_FOCUSED : RECORD_IMAGE}
+			accessibilityLabel={`Registro ${record.id}, ${record.ibis_quantity ?? 0} guarás`}
+		/>
 	)
 }

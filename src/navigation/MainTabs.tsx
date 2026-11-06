@@ -14,30 +14,25 @@ import type { MainTabParamList } from '../types/navigation'
 import type { UserRead } from '../types/api'
 
 const Tab = createBottomTabNavigator<MainTabParamList>()
-const BASE_TAB_BAR_HEIGHT = 66
+const BASE_TAB_BAR_HEIGHT = 72
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 type TabBarIconProps = { color: string; focused: boolean }
-type TabIconProps = TabBarIconProps & { label: string; icon: IoniconName }
+type TabIconProps = TabBarIconProps & {
+	label: string
+	icon: IoniconName
+	focusedIcon: IoniconName
+}
 
-function TabIcon({ color, focused, label, icon }: TabIconProps) {
+function TabIcon({ color, focused, label, icon, focusedIcon }: TabIconProps) {
 	return (
-		<View
-			style={[
-				appStyles.bottomNavTabContent,
-				focused && appStyles.bottomNavTabContentActive,
-			]}
-		>
-			<Ionicons name={icon} size={23} color={color} />
+		<View style={appStyles.bottomNavTabContent}>
+			<View style={[appStyles.bottomNavPill, focused && appStyles.bottomNavPillActive]}>
+				<Ionicons name={focused ? focusedIcon : icon} size={23} color={color} />
+			</View>
 			<Text
 				numberOfLines={1}
 				allowFontScaling={false}
-				adjustsFontSizeToFit
-				minimumFontScale={0.9}
-				style={[
-					appStyles.bottomNavLabel,
-					{ color },
-					focused && appStyles.bottomNavLabelActive,
-				]}
+				style={[appStyles.bottomNavLabel, { color }, focused && appStyles.bottomNavLabelActive]}
 			>
 				{label}
 			</Text>
@@ -45,24 +40,39 @@ function TabIcon({ color, focused, label, icon }: TabIconProps) {
 	)
 }
 
-function HomeTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Início" icon="home-outline" />
+// Botão central de Registrar: a ação mais usada do app, sempre em vermelho e dentro da barra
+// (fora dela o Android não entrega o toque).
+function RegisterTabIcon() {
+	return (
+		<View style={appStyles.bottomNavTabContent}>
+			<View style={appStyles.bottomNavRegisterButton}>
+				<Ionicons name="add" size={28} color={colors.onColor} />
+			</View>
+			<Text
+				numberOfLines={1}
+				allowFontScaling={false}
+				style={[appStyles.bottomNavLabel, appStyles.bottomNavLabelRegister]}
+			>
+				Registrar
+			</Text>
+		</View>
+	)
 }
 
-function RegisterTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Registrar" icon="location-outline" />
+function HomeTabIcon(props: TabBarIconProps) {
+	return <TabIcon {...props} label="Início" icon="home-outline" focusedIcon="home" />
 }
 
 function MapsTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Mapas" icon="map-outline" />
+	return <TabIcon {...props} label="Mapas" icon="map-outline" focusedIcon="map" />
 }
 
 function HistoryTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Histórico" icon="list-outline" />
+	return <TabIcon {...props} label="Histórico" icon="list" focusedIcon="list" />
 }
 
 function ProfileTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Perfil" icon="person-outline" />
+	return <TabIcon {...props} label="Perfil" icon="person-outline" focusedIcon="person" />
 }
 
 type MainTabsProps = {
@@ -88,17 +98,26 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				tabBarStyle,
 				tabBarIconStyle: appStyles.bottomNavIcon,
 				tabBarShowLabel: false,
-				tabBarActiveTintColor: colors.primary,
+				tabBarActiveTintColor: colors.secondary,
 				tabBarInactiveTintColor: colors.muted,
 				tabBarItemStyle: appStyles.bottomNavItem,
 			}}
 		>
-			<Tab.Screen 
-				name="Home" 
-				component={HomeScreen} 
+			<Tab.Screen
+				name="Home"
 				options={{
 					tabBarIcon: HomeTabIcon,
 					tabBarAccessibilityLabel: 'Início',
+				}}
+			>
+				{() => <HomeScreen userName={currentUser?.name} />}
+			</Tab.Screen>
+			<Tab.Screen 
+				name="Maps" 
+				component={MapsScreen} 
+				options={{
+					tabBarIcon: MapsTabIcon,
+					tabBarAccessibilityLabel: 'Mapas',
 				}}
 			/>
 			<Tab.Screen 
@@ -107,14 +126,8 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				options={{
 					tabBarIcon: RegisterTabIcon,
 					tabBarAccessibilityLabel: 'Registrar',
-				}}
-			/>
-			<Tab.Screen 
-				name="Maps" 
-				component={MapsScreen} 
-				options={{
-					tabBarIcon: MapsTabIcon,
-					tabBarAccessibilityLabel: 'Mapas',
+					// O registro em passos ocupa a tela toda: a barra volta ao sair dele.
+					tabBarStyle: [tabBarStyle, { display: 'none' }],
 				}}
 			/>
 			<Tab.Screen 

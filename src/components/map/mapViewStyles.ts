@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native'
 import { colors, fontSize, radius, spacing } from '../../constants/theme'
+import { overlayShadow } from '../../styles/shared'
 
 export const mapViewStyles = StyleSheet.create({
 	container: {
@@ -18,15 +19,23 @@ export const mapViewStyles = StyleSheet.create({
 	},
 	recordsLoadingOverlay: {
 		...StyleSheet.absoluteFillObject,
-		backgroundColor: 'rgba(244, 245, 247, 0.5)',
 		justifyContent: 'center',
 		alignItems: 'center',
-		flexDirection: 'column',
-		gap: spacing.md,
+	},
+	recordsLoadingPill: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm,
+		paddingHorizontal: spacing.md,
+		paddingVertical: spacing.sm2,
+		borderRadius: radius.pill,
+		backgroundColor: colors.surface,
+		...overlayShadow,
 	},
 	loadingText: {
 		fontSize: fontSize.body,
-		color: colors.muted,
+		fontWeight: '600',
+		color: colors.text,
 	},
 	zonePressMarker: {
 		width: 44,
@@ -34,60 +43,5 @@ export const mapViewStyles = StyleSheet.create({
 		borderRadius: radius.pill,
 		backgroundColor: 'rgba(255, 255, 255, 0.01)',
 		zIndex: 0,
-	},
-	recordMarkerOuter: {
-		minWidth: 28,
-		height: 28,
-		borderRadius: 18,
-		paddingHorizontal: spacing.xs,
-		backgroundColor: 'rgba(242, 32, 31, 0.92)',
-		borderWidth: 2,
-		borderColor: colors.surface,
-		alignItems: 'center',
-		justifyContent: 'center',
-		flexDirection: 'row',
-		shadowColor: colors.primary,
-		shadowOpacity: 0.25,
-		shadowOffset: { width: 0, height: 2 },
-		shadowRadius: 6,
-		elevation: 5,
-	},
-	recordMarkerOuterFocused: {
-		backgroundColor: colors.secondary,
-		borderColor: colors.surface,
-		shadowColor: colors.secondary,
-		shadowOpacity: 0.35,
-		shadowRadius: 8,
-		elevation: 8,
-	},
-	recordMarkerInner: {
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	recordMarkerText: {
-		color: colors.onColor,
-		fontSize: fontSize.caption,
-		fontWeight: '900',
-		lineHeight: 10,
-	},
-	userMarkerContainer: {
-		width: 54,
-		height: 54,
-	},
-	userMarkerCircle: {
-		width: 24,
-		height: 24,
-		borderRadius: radius.pill,
-		backgroundColor: colors.secondary,
-		borderWidth: 1,
-		borderColor: colors.surface,
-    alignItems: 'center',
-    padding: spacing.xs,
-		justifyContent: 'center',
-		shadowColor: colors.secondary,
-		shadowOpacity: 0.4,
-		shadowOffset: { width: 0, height: 2 },
-		shadowRadius: 8,
-		elevation: 5,
 	},
 })

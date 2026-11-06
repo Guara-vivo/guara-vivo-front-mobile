@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../../constants/theme'
 import type { Coordinates } from '../../hooks/useRegisterLocation'
 import { mapStyle } from '../../config/mapStyle'
-import { mapViewStyles } from '../map/mapViewStyles'
+import { UserLocationMarker } from '../map/UserLocationMarker'
 import { registerStyles as styles } from './registerStyles'
 
 type Props = {
@@ -47,16 +47,10 @@ export function LocationPickerModal({
 					onPress={(e) => onSelect(e.nativeEvent.coordinate)}
 			>
 				{userLocation && (
-					<Marker
-						coordinate={userLocation}
-						anchor={{ x: 0.5, y: 0.5 }}
-					>
-						<View style={mapViewStyles.userMarkerContainer}>
-							<View style={mapViewStyles.userMarkerCircle}>
-								<Ionicons name="navigate" size={16} color={colors.onColor} />
-							</View>
-						</View>
-					</Marker>
+					<UserLocationMarker
+						latitude={userLocation.latitude}
+						longitude={userLocation.longitude}
+					/>
 				)}
 				{tempLocation && (
 					<Marker coordinate={tempLocation} />

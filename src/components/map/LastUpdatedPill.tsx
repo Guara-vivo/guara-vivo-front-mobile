@@ -5,9 +5,15 @@ import { formatLastUpdatedAt } from '../../utils/timeFormatters'
 
 const TICK_MS = 60000
 
-// Selo "Atualizado há X min". Guarda o relógio aqui dentro para que o passar do tempo
+// Selo "N áreas · atualizado há X min". Guarda o relógio aqui dentro para que o passar do tempo
 // re-renderize só o selo, e não a tela de mapas inteira.
-function LastUpdatedPillBase({ lastUpdatedAt }: { lastUpdatedAt: Date | null }) {
+function LastUpdatedPillBase({
+	lastUpdatedAt,
+	countLabel,
+}: {
+	lastUpdatedAt: Date | null
+	countLabel: string
+}) {
 	const [now, setNow] = useState(() => new Date())
 
 	useEffect(() => {
@@ -16,9 +22,15 @@ function LastUpdatedPillBase({ lastUpdatedAt }: { lastUpdatedAt: Date | null }) 
 		return () => clearInterval(interval)
 	}, [lastUpdatedAt])
 
+	const text = `${countLabel} · ${formatLastUpdatedAt(lastUpdatedAt, now).toLowerCase()}`
+
 	return (
-		<View style={appStyles.mapReloadTextPill}>
-			<Text style={appStyles.mapReloadText}>{formatLastUpdatedAt(lastUpdatedAt, now)}</Text>
+		<View
+			style={appStyles.mapsCountPill}
+			accessibilityLiveRegion="polite"
+			accessibilityLabel={text}
+		>
+			<Text style={appStyles.mapsCountText}>{text}</Text>
 		</View>
 	)
 }

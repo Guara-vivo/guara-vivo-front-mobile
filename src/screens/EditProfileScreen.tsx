@@ -5,7 +5,6 @@ import {
 	Pressable,
 	ScrollView,
 	Text,
-	TextInput,
 	View,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -14,8 +13,10 @@ import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 import { HeaderBackButton } from '../components/HeaderBackButton'
+import { Avatar } from '../components/Avatar'
+import { AuthField } from '../components/auth/AuthField'
+import { ActionButton } from '../components/common'
 import { ComingSoonModal } from '../components/ComingSoonModal'
-import { colors } from '../constants/theme'
 import type { UserRead } from '../types/api'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
@@ -57,71 +58,51 @@ export function EditProfileScreen({ user }: { user: UserRead | null }) {
 			style={appStyles.profileScreen}
 			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
 		>
-				<Header
-					title="Editar Perfil"
-					leftIcon={
-							<HeaderBackButton onPress={() => navigation.goBack()} />
-					}
-				/>
+			<Header
+				title="Editar perfil"
+				leftIcon={<HeaderBackButton onPress={() => navigation.goBack()} />}
+			/>
 
 			<ScrollView
-				contentContainerStyle={appStyles.profileContent}
+				contentContainerStyle={appStyles.settingsContent}
 				keyboardShouldPersistTaps="handled"
 			>
+				<View style={appStyles.settingsAvatarWrap}>
+					<Avatar name={state.name} size={88} />
+				</View>
+
 				<View style={appStyles.changePasswordCard}>
-					<Text style={appStyles.changePasswordLabel}>NOME</Text>
-					<TextInput
+					<AuthField
+						label="Nome"
 						value={state.name}
-						onChangeText={(text) =>
-							dispatch({ type: 'SET_NAME', payload: text })
-						}
-						placeholder="Nome completo"
-						accessibilityLabel="Nome"
+						onChangeText={(text) => dispatch({ type: 'SET_NAME', payload: text })}
 						autoComplete="name"
 						textContentType="name"
-						placeholderTextColor={colors.placeholder}
-						style={appStyles.changePasswordInput}
 					/>
-
-					<Text style={appStyles.changePasswordLabel}>E-MAIL</Text>
-					<TextInput
+					<AuthField
+						label="E-mail"
 						value={state.email}
-						onChangeText={(text) =>
-							dispatch({ type: 'SET_EMAIL', payload: text })
-						}
-						placeholder="E-mail"
-						accessibilityLabel="E-mail"
-						placeholderTextColor={colors.placeholder}
+						onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
 						keyboardType="email-address"
 						autoCapitalize="none"
 						autoCorrect={false}
 						autoComplete="email"
 						textContentType="emailAddress"
-						style={appStyles.changePasswordInput}
 					/>
-
-					<View style={appStyles.changePasswordActionsRow}>
-						<Pressable
-							onPress={() => setShowComingSoon(true)}
-							accessibilityRole="button"
-							style={appStyles.changePasswordPrimaryAction}
-						>
-							<Text style={appStyles.changePasswordPrimaryActionText}>
-								SALVAR
-							</Text>
-						</Pressable>
-						<Pressable
-							onPress={() => navigation.goBack()}
-							accessibilityRole="button"
-							style={appStyles.changePasswordSecondaryAction}
-						>
-							<Text style={appStyles.changePasswordSecondaryActionText}>
-								CANCELAR
-							</Text>
-						</Pressable>
-					</View>
 				</View>
 			</ScrollView>
+
+			<View style={appStyles.settingsFooter}>
+				<ActionButton title="Salvar" onPress={() => setShowComingSoon(true)} />
+				<Pressable
+					onPress={() => navigation.goBack()}
+					accessibilityRole="button"
+					accessibilityLabel="Cancelar"
+					style={appStyles.settingsCancelButton}
+				>
+					<Text style={appStyles.settingsCancelText}>Cancelar</Text>
+				</Pressable>
+			</View>
 
 			<ComingSoonModal
 				visible={showComingSoon}

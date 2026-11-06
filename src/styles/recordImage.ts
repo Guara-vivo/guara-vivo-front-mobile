@@ -1,51 +1,36 @@
 import { StyleSheet } from 'react-native'
-import { colors, fontSize, radius, spacing } from '../constants/theme'
-import { cornerRadius } from './shared'
+import { colors, spacing, fontSize, radius } from '../constants/theme'
+import { screenGutter } from './shared'
 
 export const recordImageStyles = StyleSheet.create<Record<string, any>>({
-	recordImageModalBackdrop: {
+	recordImageModalScreen: {
 		flex: 1,
-		backgroundColor: colors.scrim,
-		justifyContent: 'center',
-		alignItems: 'center',
+		backgroundColor: colors.background,
 	},
-	recordImageModalCard: {
-		backgroundColor: colors.surface,
-		borderRadius: radius.md,
-		maxHeight: '90%',
-		maxWidth: '95%',
-		width: '100%',
-		overflow: 'hidden',
-	},
-	recordImageModalHeader: {
-		minHeight: 56,
-		paddingHorizontal: spacing.md,
-		borderBottomWidth: 1,
-		borderBottomColor: colors.border,
+	recordImageModalTopBar: {
+		minHeight: 64,
+		paddingHorizontal: screenGutter,
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
 	},
 	recordImageModalTitle: {
-		color: colors.secondary,
+		color: colors.text,
 		fontSize: fontSize.title,
-		textTransform: 'uppercase',
+		fontWeight: '700',
 	},
 	recordImageModalContent: {
-		paddingHorizontal: spacing.md,
-		paddingTop: spacing.md,
-		paddingBottom: spacing.md,
+		paddingHorizontal: screenGutter,
+		paddingBottom: spacing.xl,
 		gap: spacing.md,
 	},
 	recordImageModalImageContainer: {
-		borderRadius: radius.sm,
-		backgroundColor: colors.background,
-		minHeight: 240,
-		maxHeight: 320,
-		alignItems: 'center',
-		justifyContent: 'center',
+		width: '100%',
+		height: 320,
+		borderRadius: radius.lg,
 		overflow: 'hidden',
 		position: 'relative',
+		backgroundColor: colors.text,
 	},
 	recordImageModalImage: {
 		width: '100%',
@@ -56,190 +41,176 @@ export const recordImageStyles = StyleSheet.create<Record<string, any>>({
 		height: '100%',
 		alignItems: 'center',
 		justifyContent: 'center',
-		backgroundColor: colors.background,
 	},
 	recordImageModalArrow: {
 		position: 'absolute',
 		top: '50%',
-		width: 42,
-		height: 42,
+		width: 44,
+		height: 44,
 		borderRadius: radius.pill,
 		backgroundColor: colors.mediaBadge,
 		alignItems: 'center',
 		justifyContent: 'center',
-		transform: [{ translateY: -21 }],
+		transform: [{ translateY: -22 }],
 	},
 	recordImageModalArrowLeft: {
-		left: 12,
+		left: spacing.sm,
 	},
 	recordImageModalArrowRight: {
-		right: 12,
+		right: spacing.sm,
 	},
 	recordImageModalIndexBadge: {
-		alignSelf: 'center',
-		backgroundColor: colors.surface,
+		position: 'absolute',
+		left: spacing.sm2,
+		bottom: spacing.sm2,
 		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.sm,
-		borderRadius: radius.lg,
+		paddingVertical: spacing.xs,
+		borderRadius: radius.pill,
+		backgroundColor: colors.mediaBadge,
 	},
 	recordImageModalIndexText: {
-		color: colors.text,
+		color: colors.onColor,
 		fontSize: fontSize.caption,
-		textTransform: 'uppercase',
-	},
-	recordImageModalSection: {
-		gap: spacing.sm2,
-	},
-	recordImageModalSectionTitleRow: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.sm,
+		fontWeight: '600',
 	},
 	recordImageModalSectionTitle: {
 		color: colors.text,
-		fontSize: fontSize.body,
-		textTransform: 'uppercase',
+		fontSize: fontSize.title,
+		fontWeight: '700',
 	},
-	recordImageModalIbisList: {
+	recordImageList: {
 		gap: spacing.sm,
 	},
-	recordImageModalIbisColorBadge: {
-		width: 32,
-		height: 32,
-		borderRadius: radius.sm,
-		backgroundColor: colors.secondary,
+	recordImageBanner: {
+		flexDirection: 'row',
 		alignItems: 'center',
-		justifyContent: 'center',
+		gap: spacing.sm2,
+		padding: spacing.md,
+		borderRadius: radius.md,
 	},
-	recordImageModalIbisInfo: {
+	recordImageBannerHigh: {
+		backgroundColor: colors.successSoft,
+	},
+	recordImageBannerMedium: {
+		backgroundColor: colors.warningSoft,
+	},
+	recordImageBannerLow: {
+		backgroundColor: colors.dangerBg,
+	},
+	recordImageBannerNeutral: {
+		backgroundColor: colors.field,
+	},
+	recordImageBannerBody: {
 		flex: 1,
 		gap: 2,
 	},
-	recordImageModalIbisIndex: {
+	recordImageBannerTitle: {
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
+	},
+	recordImageBannerText: {
+		fontSize: fontSize.body,
+		lineHeight: 20,
+	},
+	recordImageBannerTextHigh: {
+		color: colors.success,
+	},
+	recordImageBannerTextMedium: {
+		color: colors.warning,
+	},
+	recordImageBannerTextLow: {
+		color: colors.dangerText,
+	},
+	recordImageBannerTextNeutral: {
+		color: colors.muted,
+	},
+	recordImageDetection: {
+		backgroundColor: colors.surface,
+		borderWidth: 1,
+		borderColor: colors.border,
+		borderRadius: radius.md,
+		overflow: 'hidden',
+	},
+	recordImageDetectionHeader: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm2,
+		padding: spacing.sm2,
+		minHeight: 64,
+	},
+	recordImageDetectionSwatch: {
+		width: 14,
+		height: 14,
+		borderRadius: radius.pill,
+	},
+	recordImageDetectionInfo: {
+		flex: 1,
+	},
+	recordImageDetectionName: {
+		color: colors.text,
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
+	},
+	recordImageDetectionMeta: {
+		color: colors.muted,
+		fontSize: fontSize.body,
+	},
+	recordImageDetectionScore: {
+		color: colors.text,
+		fontSize: fontSize.bodyLarge,
+		fontWeight: '700',
+	},
+	recordImageDetectionScoreLow: {
+		color: colors.warning,
+	},
+	recordImageDetectionBody: {
+		paddingHorizontal: spacing.sm2,
+		paddingBottom: spacing.sm2,
+		gap: spacing.sm2,
+	},
+	recordImageBarRow: {
+		gap: spacing.xs,
+	},
+	recordImageBarLabelRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
+	recordImageBarLabel: {
 		color: colors.text,
 		fontSize: fontSize.body,
 	},
-	recordImageModalEmptyState: {
-		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.md,
-		alignItems: 'center',
-		justifyContent: 'center',
-		backgroundColor: colors.background,
-		borderRadius: radius.sm,
-	},
-	recordImageModalEmptyText: {
-		color: colors.muted,
+	recordImageBarValue: {
+		color: colors.text,
 		fontSize: fontSize.body,
-		textAlign: 'center',
+		fontWeight: '600',
 	},
-	recordImageModalActions: {
-		borderTopWidth: 1,
-		borderTopColor: colors.border,
-		paddingHorizontal: spacing.md,
-		paddingVertical: spacing.sm2,
-		flexDirection: 'row',
-		gap: spacing.sm2,
+	recordImageBarTrack: {
+		height: 8,
+		borderRadius: radius.pill,
+		backgroundColor: colors.border,
+		overflow: 'hidden',
 	},
-	recordImageModalCloseButton: {
-		flex: 1,
-		minHeight: 40,
-		borderRadius: cornerRadius,
+	recordImageBarFill: {
+		height: 8,
+		borderRadius: radius.pill,
 		backgroundColor: colors.secondary,
-		alignItems: 'center',
-		justifyContent: 'center',
 	},
-	recordImageModalCloseButtonText: {
-		color: colors.surface,
+	recordImageBarFillLow: {
+		backgroundColor: colors.warning,
+	},
+	recordImageLowNotice: {
+		color: colors.warning,
 		fontSize: fontSize.body,
-		textTransform: 'uppercase',
+		lineHeight: 20,
 	},
-	recordImageModalSummaryGrid: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		justifyContent: 'space-between',
-		rowGap: spacing.sm2,
-		marginBottom: spacing.sm2,
+	recordImageEmpty: {
+		padding: spacing.md,
+		borderRadius: radius.md,
+		backgroundColor: colors.field,
 	},
-	recordImageModalAccuracyItem: {
-		width: '48%',
-		flexGrow: 0,
-		flexShrink: 0,
-		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.sm,
-		backgroundColor: colors.background,
-		borderRadius: radius.sm,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	recordImageModalAccuracyLabel: {
-		fontSize: fontSize.caption,
+	recordImageEmptyText: {
 		color: colors.muted,
-		marginBottom: spacing.xs,
+		fontSize: fontSize.bodyLarge,
 		textAlign: 'center',
-	},
-	recordImageModalAccuracyValue: {
-		fontSize: fontSize.body,
-		color: colors.secondary,
-	},
-	recordImageModalIbisItemExpanded: {
-		paddingHorizontal: spacing.sm2,
-		paddingVertical: spacing.sm2,
-		marginBottom: spacing.sm,
-		backgroundColor: colors.background,
-		borderRadius: radius.sm,
-		borderLeftWidth: 3,
-		borderLeftColor: colors.secondary,
-	},
-	recordImageModalIbisHeader: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		gap: spacing.sm,
-		marginBottom: spacing.sm2,
-	},
-	recordImageModalIbisDetails: {
-		gap: spacing.sm,
-	},
-	recordImageModalDetailRow: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: spacing.xs,
-	},
-	recordImageModalDetailLabel: {
-		fontSize: fontSize.caption,
-		color: colors.muted,
-	},
-	recordImageModalDetailValue: {
-		fontSize: fontSize.caption,
-		color: colors.secondary,
-	},
-	recordImageModalAccuraciesContainer: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		justifyContent: 'space-between',
-		rowGap: spacing.sm,
-		marginTop: spacing.sm,
-		paddingTop: spacing.sm,
-		borderTopWidth: 1,
-		borderTopColor: colors.border,
-	},
-	recordImageModalAccuracySmall: {
-		width: '48%',
-		flexGrow: 0,
-		flexShrink: 0,
-		paddingHorizontal: spacing.sm,
-		paddingVertical: spacing.sm,
-		backgroundColor: colors.splash,
-		borderRadius: radius.sm,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	recordImageModalAccuracySmallLabel: {
-		fontSize: fontSize.caption,
-		color: colors.muted,
-		marginBottom: 2,
-	},
-	recordImageModalAccuracySmallValue: {
-		fontSize: fontSize.caption,
-		color: colors.secondary,
 	},
 })
