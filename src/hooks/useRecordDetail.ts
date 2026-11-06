@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
 	fetchRecordDetail,
 	getCachedRecordDetailSnapshot,
 	isRecordDetailCacheFresh,
 	type RecordDetailItem,
 } from '../services/recordsService'
+import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 
 // Carrega o detalhe de um registro (cache primeiro, rede em seguida) e expõe o pull-to-refresh.
 export function useRecordDetail(recordId: number | undefined) {
@@ -15,6 +16,9 @@ export function useRecordDetail(recordId: number | undefined) {
 		() => !(recordId && getCachedRecordDetailSnapshot(recordId)),
 	)
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	// Texto da falha ao carregar (ex.: sem internet) quando não há nada guardado para mostrar.
+	const [loadError, setLoadError] = useState<string | null>(null)
+	const [reloadKey, setReloadKey] = useState(0)
 	// A busca do detalhe completo (com as análises) está em andamento.
 	const [isFetchingDetail, setIsFetchingDetail] = useState(true)
 
@@ -31,6 +35,7 @@ export function useRecordDetail(recordId: number | undefined) {
 			}
 		}
 
+		setLoadError(null)
 		const cached = getCachedRecordDetailSnapshot(recordId)
 		const hasCachedRecord = Boolean(cached)
 
@@ -58,6 +63,12 @@ export function useRecordDetail(recordId: number | undefined) {
 			.catch((error) => {
 				if (mounted && error.name !== 'AbortError') {
 					setRecord(cached)
+
+					if (!cached) {
+						setLoadError(
+							getLoadErrorMessage(error, 'Não foi possível carregar o registro. Tente de novo.'),
+						)
+					}
 				}
 			})
 			.finally(() => {
@@ -74,7 +85,12 @@ export function useRecordDetail(recordId: number | undefined) {
 			mounted = false
 			controller.abort()
 		}
-	}, [recordId])
+	}, [recordId, reloadKey])
+
+	const retry = useCallback(() => {
+		setIsLoading(true)
+		setReloadKey((key) => key + 1)
+	}, [])
 
 	const handleRefresh = async () => {
 		if (!recordId) {
@@ -94,5 +110,5 @@ export function useRecordDetail(recordId: number | undefined) {
 		}
 	}
 
-	return { record, isLoading, isRefreshing, isFetchingDetail, handleRefresh }
+	return { record, isLoading, isRefreshing, isFetchingDetail, loadError, retry, handleRefresh }
 }

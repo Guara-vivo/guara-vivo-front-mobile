@@ -1,8 +1,10 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { isAnalysisInProgress } from '../utils/historyRecords'
 import { formatTime } from '../utils/recordFormatters'
 import AnalysisProgressIndicator from './AnalysisProgressIndicator'
+import { Skeleton } from './Skeleton'
 import { SkeletonImage } from './SkeletonImage'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
@@ -28,6 +30,9 @@ function HistoryRecordCardBase({
 		? item.map_zones.map((zone) => zone.name).join(' · ')
 		: 'Sem área'
 	const photo = item.images?.[0]
+	// Enquanto a IA analisa (ou o registro espera para ser enviado), a contagem 0 não vale: mostra
+	// esqueleto no lugar.
+	const analyzing = isAnalysisInProgress(item)
 	const guaras = `${item.ibis_quantity} ${item.ibis_quantity === 1 ? 'guará' : 'guarás'}`
 	const meta = `${formatTime(item.datetime)}${syncState ? '' : ` · #${item.id}`} · ${areaLabel}`
 
@@ -46,7 +51,13 @@ function HistoryRecordCardBase({
 			)}
 
 			<View style={appStyles.historyRecordBody}>
-				<Text style={appStyles.historyRecordTitle}>{guaras}</Text>
+				{syncState === 'failed' ? (
+					<Text style={appStyles.historyRecordTitle}>Não enviado</Text>
+				) : analyzing || syncState ? (
+					<Skeleton width={96} height={20} radius={6} style={appStyles.historyRecordTitleSkeleton} />
+				) : (
+					<Text style={appStyles.historyRecordTitle}>{guaras}</Text>
+				)}
 				<Text numberOfLines={1} style={appStyles.historyRecordMeta}>
 					{meta}
 				</Text>
@@ -117,7 +128,7 @@ function HistoryRecordCardBase({
 		<Pressable
 			onPress={() => onOpenRecord(item.id)}
 			accessibilityRole="button"
-			accessibilityLabel={`Ver detalhes do registro ${item.id}: ${guaras}, ${areaLabel}`}
+			accessibilityLabel={`Ver detalhes do registro ${item.id}: ${syncState === 'failed' ? 'não enviado' : analyzing || syncState ? 'sem contagem ainda' : guaras}, ${areaLabel}`}
 			style={appStyles.historyRecordCard}
 		>
 			{content}

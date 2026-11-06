@@ -17,6 +17,9 @@ export type RecordItem = {
 	// Presente so em registros ainda guardados no aparelho (nao existem na API)
 	sync_state?: 'pending' | 'failed'
 	sync_error?: string | null
+	// A análise acabou em tempo real, mas a lista ainda não foi recarregada: a contagem de guarás
+	// (0) é antiga. Some quando a lista da API chega.
+	count_pending?: boolean
 }
 
 export type RawDetection = {

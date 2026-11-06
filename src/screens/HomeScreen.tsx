@@ -7,8 +7,9 @@ import { Skeleton } from '../components/Skeleton'
 import { SkeletonImage } from '../components/SkeletonImage'
 import { useHistoryRecords } from '../hooks/useHistoryRecords'
 import { appStyles } from '../styles/appStyles'
-import type { RecordItem } from '../types/records'
 import type { MainTabNavigationProp } from '../types/navigation'
+import AnalysisProgressIndicator from '../components/AnalysisProgressIndicator'
+import { getLatestRecord, isAnalysisInProgress } from '../utils/historyRecords'
 import { summarizeRecords } from '../utils/homeSummary'
 import { formatTime } from '../utils/recordFormatters'
 import { formatLongDate } from '../utils/timeFormatters'
@@ -16,15 +17,6 @@ import { formatRelativeDay } from '../utils/dayLabels'
 
 function firstName(name?: string | null) {
 	return name?.trim().split(/\s+/)[0] || null
-}
-
-function getLatest(records: RecordItem[]) {
-	return records.reduce<RecordItem | null>((latest, item) => {
-		if (!latest) return item
-		return new Date(item.datetime).getTime() > new Date(latest.datetime).getTime()
-			? item
-			: latest
-	}, null)
 }
 
 function Stat({
@@ -73,12 +65,14 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 		useHistoryRecords()
 	const now = new Date()
 	const summary = useMemo(() => summarizeRecords(allRecords, new Date()), [allRecords])
-	const latest = useMemo(() => getLatest(allRecords), [allRecords])
+	const latest = useMemo(() => getLatestRecord(allRecords), [allRecords])
 	const waiting = allRecords.filter((item) => item.sync_state).length
 	const greeting = firstName(userName)
 	const behavior = latest?.flock_size ? String(latest.flock_size).split(',')[0].trim() : ''
 	const photo = latest?.images?.[0]
 	const guaras = latest?.ibis_quantity ?? 0
+	// Em análise a contagem ainda é 0: mostra esqueleto e a barra de progresso, como no histórico.
+	const analyzing = Boolean(latest && isAnalysisInProgress(latest))
 
 	const syncText = isLoading
 		? 'Atualizando…'
@@ -144,7 +138,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 					onPress={() => navigation.navigate('RecordDetail', { recordId: latest.id })}
 					disabled={Boolean(latest.sync_state)}
 					accessibilityRole="button"
-					accessibilityLabel={`Ver registro ${latest.id}`}
+					accessibilityLabel={`Ver registro ${latest.id}${analyzing ? ', em análise' : ''}`}
 					style={appStyles.homeLatest}
 				>
 					{photo ? (
@@ -155,13 +149,39 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 						</View>
 					)}
 					<View style={appStyles.homeLatestText}>
-						<Text style={appStyles.homeLatestTitle}>
-							{guaras} {guaras === 1 ? 'guará' : 'guarás'}
-						</Text>
+						{latest.sync_state === 'failed' ? (
+							<Text style={appStyles.homeLatestTitle}>Não enviado</Text>
+						) : analyzing || latest.sync_state ? (
+							<Skeleton width={96} height={18} radius={6} />
+						) : (
+							<Text style={appStyles.homeLatestTitle}>
+								{guaras} {guaras === 1 ? 'guará' : 'guarás'}
+							</Text>
+						)}
 						<Text style={appStyles.homeLatestMeta}>
 							{formatRelativeDay(latest.datetime, now)}, {formatTime(latest.datetime)}
 							{latest.sync_state ? '' : ` · #${latest.id}`}
 						</Text>
+						{latest.sync_state ? (
+							<View
+								style={[
+									appStyles.historySyncChip,
+									appStyles.homeLatestSyncChip,
+									latest.sync_state === 'failed' && appStyles.historySyncChipFailed,
+								]}
+							>
+								<Text
+									style={[
+										appStyles.historySyncChipText,
+										latest.sync_state === 'failed' && appStyles.historySyncChipTextFailed,
+									]}
+								>
+									{latest.sync_state === 'failed' ? 'Recusado' : 'Aguardando envio'}
+								</Text>
+							</View>
+						) : analyzing ? (
+							<AnalysisProgressIndicator progress={latest.analysis_progress} status={latest.status} />
+						) : null}
 					</View>
 					{behavior ? (
 						<View style={appStyles.homeLatestChip}>

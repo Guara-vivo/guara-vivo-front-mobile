@@ -1,9 +1,11 @@
 import type { RecordItem } from '../types/records'
 import {
 	isActiveAnalysisStatus,
+	isAnalysisInProgress,
 	mergeProgressUpdates,
 	needsRecordsRefresh,
-	sortRecordsByDate,
+	getLatestRecord,
+	sortRecordsByRecency,
 } from './historyRecords'
 
 const record = (id: number, datetime: string) =>
@@ -38,27 +40,74 @@ describe('mergeProgressUpdates', () => {
 	})
 })
 
-describe('sortRecordsByDate', () => {
-	const list = [
-		record(1, '2026-01-02T10:00:00Z'),
-		record(2, '2026-01-03T10:00:00Z'),
-		record(3, '2026-01-01T10:00:00Z'),
-	]
+describe('contagem após o fim da análise', () => {
+	const active = record(1, '2026-01-01T10:00:00Z')
 
-	it('ordena do mais recente para o mais antigo em desc', () => {
-		expect(sortRecordsByDate(list, 'desc').map((item) => item.id)).toEqual([2, 1, 3])
+	it('marca a contagem como pendente quando a análise termina em tempo real', () => {
+		const [result] = mergeProgressUpdates([active], [
+			{ id: 1, status: 'completed', analysis_progress: 100 },
+		] as never)
+
+		expect(result.count_pending).toBe(true)
+		expect(isAnalysisInProgress(result)).toBe(true)
 	})
 
-	it('ordena do mais antigo para o mais recente em asc', () => {
-		expect(sortRecordsByDate(list, 'asc').map((item) => item.id)).toEqual([3, 1, 2])
+	it('não marca quando o registro já estava concluído', () => {
+		const done = { ...active, status: 'completed' } as RecordItem
+		const [result] = mergeProgressUpdates([done], [
+			{ id: 1, status: 'completed', analysis_progress: 100 },
+		] as never)
+
+		expect(result.count_pending).toBeUndefined()
+		expect(isAnalysisInProgress(result)).toBe(false)
 	})
 
-	it('não altera a lista original', () => {
-		sortRecordsByDate(list, 'asc')
-		expect(list.map((item) => item.id)).toEqual([1, 2, 3])
+	it('considera em análise enquanto ativo e não considera registro só do aparelho', () => {
+		expect(isAnalysisInProgress(active)).toBe(true)
+		expect(isAnalysisInProgress({ ...active, sync_state: 'pending' } as RecordItem)).toBe(false)
 	})
 })
 
+describe('sortRecordsByRecency', () => {
+	// A data do avistamento pode ser retroativa; a ordem vale pela criação (id).
+	const list = [
+		record(1, '2026-01-02T10:00:00Z'),
+		record(3, '2026-01-01T10:00:00Z'),
+		record(2, '2026-01-03T10:00:00Z'),
+	]
+
+	it('ordena do mais recente para o mais antigo pelo id em desc', () => {
+		expect(sortRecordsByRecency(list, 'desc').map((item) => item.id)).toEqual([3, 2, 1])
+	})
+
+	it('ordena do mais antigo para o mais recente pelo id em asc', () => {
+		expect(sortRecordsByRecency(list, 'asc').map((item) => item.id)).toEqual([1, 2, 3])
+	})
+
+	it('coloca o registro ainda não enviado como o mais recente', () => {
+		const pending = { ...record(0, '2025-12-01T10:00:00Z'), sync_state: 'pending' } as unknown as RecordItem
+
+		expect(sortRecordsByRecency([...list, pending], 'desc')[0]).toBe(pending)
+		expect(sortRecordsByRecency([...list, pending], 'asc').at(-1)).toBe(pending)
+	})
+
+	it('não altera a lista original', () => {
+		sortRecordsByRecency(list, 'asc')
+		expect(list.map((item) => item.id)).toEqual([1, 3, 2])
+	})
+})
+
+describe('getLatestRecord', () => {
+	it('devolve o registro criado por último, mesmo com data retroativa', () => {
+		const list = [record(5, '2026-01-01T10:00:00Z'), record(4, '2026-01-09T10:00:00Z')]
+
+		expect(getLatestRecord(list)?.id).toBe(5)
+	})
+
+	it('devolve null sem registros', () => {
+		expect(getLatestRecord([])).toBeNull()
+	})
+})
 describe("needsRecordsRefresh", () => {
 	const known = [record(1, "2026-01-01T10:00:00Z")] // processing
 

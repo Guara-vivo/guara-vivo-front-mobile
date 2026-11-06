@@ -13,7 +13,7 @@ import { discardPendingRecord } from '../services/offlineQueue'
 import { appStyles } from '../styles/appStyles'
 import type { MainTabNavigationProp } from '../types/navigation'
 import { groupRecordsByDay, type HistoryRow } from '../utils/dayGroups'
-import { sortRecordsByDate, type SortOrder } from '../utils/historyRecords'
+import { sortRecordsByRecency, type SortOrder } from '../utils/historyRecords'
 
 export function HistoryScreen() {
 	const navigation = useNavigation<MainTabNavigationProp>()
@@ -36,7 +36,7 @@ export function HistoryScreen() {
 	} = useHistoryFilters(allRecords)
 
 	const orderedRecords = useMemo(
-		() => sortRecordsByDate(filteredRecords, sortOrder),
+		() => sortRecordsByRecency(filteredRecords, sortOrder),
 		[filteredRecords, sortOrder],
 	)
 
