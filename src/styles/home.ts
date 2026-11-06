@@ -74,6 +74,20 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		gap: spacing.sm,
 		marginTop: spacing.md,
 	},
+	homeOfflineNote: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: spacing.sm,
+		marginTop: spacing.sm2,
+		padding: spacing.sm2,
+		borderRadius: radius.md,
+		backgroundColor: colors.warningSoft,
+	},
+	homeOfflineNoteText: {
+		flex: 1,
+		color: colors.warning,
+		fontSize: fontSize.body,
+	},
 	homeStat: {
 		flex: 1,
 		backgroundColor: colors.surface,
