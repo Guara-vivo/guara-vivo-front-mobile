@@ -69,12 +69,13 @@ export function RegisterDateTimeFields({
 				</Pressable>
 			</View>
 
-			<DatePickerSheet
-				visible={showDateSheet}
-				value={date}
-				onConfirm={onDateChange}
-				onClose={() => setShowDateSheet(false)}
-			/>
+			{showDateSheet ? (
+				<DatePickerSheet
+					value={date}
+					onConfirm={onDateChange}
+					onClose={() => setShowDateSheet(false)}
+				/>
+			) : null}
 
 			{showTimePicker ? (
 				<DateTimePicker mode="time" value={time} is24Hour onChange={handleTimeChange} />

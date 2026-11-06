@@ -140,6 +140,9 @@ export const homeStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: fontSize.bodyLarge,
 		fontWeight: '700',
 	},
+	homeLatestSyncChip: {
+		marginTop: spacing.xs,
+	},
 	homeLatestMeta: {
 		color: colors.muted,
 		fontSize: fontSize.body,

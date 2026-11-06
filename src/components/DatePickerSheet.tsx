@@ -16,7 +16,6 @@ import { ActionButton } from './common'
 const WEEK_LABELS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 
 type Props = {
-	visible: boolean
 	value: Date | null
 	onConfirm: (date: Date) => void
 	onClose: () => void
@@ -26,8 +25,9 @@ function sameDay(a: Date, b: Date) {
 	return a.toDateString() === b.toDateString()
 }
 
-// Calendário em pt-BR numa folha inferior; não deixa escolher dias futuros.
-export function DatePickerSheet({ visible, value, onConfirm, onClose }: Props) {
+// Calendário em pt-BR numa folha inferior; não deixa escolher dias futuros. Deve ser montado só
+// quando for aberto (abre ao montar e avisa por onClose ao fechar), como o modal de filtros.
+export function DatePickerSheet({ value, onConfirm, onClose }: Props) {
 	const sheetRef = useRef<BottomSheetModal>(null)
 	const today = new Date()
 	const [draft, setDraft] = useState<Date>(value ?? today)
@@ -35,19 +35,8 @@ export function DatePickerSheet({ visible, value, onConfirm, onClose }: Props) {
 	const [viewMonth, setViewMonth] = useState((value ?? today).getMonth())
 
 	useEffect(() => {
-		if (!visible) {
-			sheetRef.current?.dismiss()
-			return
-		}
-
-		// Reabre sempre a partir do valor atual.
-		const start = value ?? new Date()
-		setDraft(start)
-		setViewYear(start.getFullYear())
-		setViewMonth(start.getMonth())
 		sheetRef.current?.present()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [visible])
+	}, [])
 
 	const renderBackdrop = useCallback(
 		(props: BottomSheetBackdropProps) => (

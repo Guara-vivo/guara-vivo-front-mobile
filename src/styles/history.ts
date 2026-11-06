@@ -100,6 +100,9 @@ export const historyStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: fontSize.bodyLarge,
 		fontWeight: '700',
 	},
+	historyRecordTitleSkeleton: {
+		marginVertical: 1,
+	},
 	historyRecordMeta: {
 		color: colors.muted,
 		fontSize: fontSize.body,

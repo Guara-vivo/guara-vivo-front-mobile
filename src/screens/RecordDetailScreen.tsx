@@ -21,13 +21,17 @@ export function RecordDetailScreen() {
 	const route = useRoute<RouteProp<RootStackParamList, 'RecordDetail'>>()
 	const recordId = route.params?.recordId
 
-	const { record, isLoading, isRefreshing, isFetchingDetail, handleRefresh } =
+	const { record, isLoading, isRefreshing, isFetchingDetail, loadError, retry, handleRefresh } =
 		useRecordDetail(recordId)
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
 	const goBack = () => navigation.goBack()
 
 	if (isLoading) {
 		return <RecordDetailSkeleton onBack={goBack} />
+	}
+
+	if (!record && loadError) {
+		return <RecordDetailMessage onBack={goBack} message={loadError} onRetry={retry} />
 	}
 
 	if (!record) {
