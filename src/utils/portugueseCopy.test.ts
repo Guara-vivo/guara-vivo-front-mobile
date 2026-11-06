@@ -10,6 +10,7 @@ const filesToCheck = [
 	'src/components/Avatar.tsx',
 	'src/components/DatePickerSheet.tsx',
 	'src/components/recordImage/ConfidenceBanner.tsx',
+	'src/utils/analysisWarnings.ts',
 	'src/components/recordImage/DetectionCard.tsx',
 	'src/components/recordDetail/AiAnalysisCard.tsx',
 	'src/components/recordDetail/RecordLocationCard.tsx',

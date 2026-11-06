@@ -146,7 +146,12 @@ export function RecordImageDetailModal({
 
 					{imageAnalysis ? (
 						<>
-							<ConfidenceBanner level={level} detectionCount={imageAnalysis.detections.length} />
+							<ConfidenceBanner
+								level={level}
+								detectionCount={imageAnalysis.detections.length}
+								status={imageAnalysis.status_analise}
+								avisos={imageAnalysis.avisos}
+							/>
 							<DetectionsSection analysis={imageAnalysis} />
 						</>
 					) : (

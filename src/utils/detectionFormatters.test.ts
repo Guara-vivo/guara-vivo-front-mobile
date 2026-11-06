@@ -56,6 +56,8 @@ describe('rotulos', () => {
 		expect(getLifeStageLabel('chick')).toBe('Filhote')
 		expect(getLifeStageLabel('Adulto')).toBe('Adulto')
 		expect(getLifeStageLabel('jovem')).toBe('jovem')
+		expect(getPlumageLabel('indefinido')).toBe('Indefinida')
+		expect(getLifeStageLabel('indefinido')).toBe('Indefinida')
 	})
 })
 
