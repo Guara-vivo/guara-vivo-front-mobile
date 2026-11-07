@@ -56,6 +56,8 @@ export type ImageAnalysisItem = {
 	// Lidos de `raw_result.result`; ausentes em registros antigos
 	status_analise?: AnalysisStatus | null
 	avisos?: string[]
+	// Tamanho da foto original, base da escala das caixas; null em análises antigas
+	image_size?: { width: number; height: number } | null
 	detections: DetectionItem[]
 }
 

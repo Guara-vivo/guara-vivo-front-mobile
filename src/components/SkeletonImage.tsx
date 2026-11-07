@@ -11,15 +11,26 @@ type Props = {
 	transition?: number
 	onLoad?: (event: ImageLoadEventData) => void
 	accessibilityLabel?: string
+	// false: ao trocar a foto, mantém a anterior na tela até a nova carregar (sem esqueleto nem
+	// tela vazia entre as duas). Use em carrossel de uma foto só; listas devem reciclar (padrão).
+	recycle?: boolean
 }
 
 // Foto com esqueleto pulsando até carregar (em vez de um quadrado cinza parado).
-export function SkeletonImage({ uri, style, contentFit = 'cover', transition = 150, onLoad, accessibilityLabel }: Props) {
+export function SkeletonImage({
+	uri,
+	style,
+	contentFit = 'cover',
+	transition = 150,
+	onLoad,
+	accessibilityLabel,
+	recycle = true,
+}: Props) {
 	const [loaded, setLoaded] = useState(false)
 
 	useEffect(() => {
-		setLoaded(false)
-	}, [uri])
+		if (recycle) setLoaded(false)
+	}, [uri, recycle])
 
 	return (
 		<View style={[style, styles.container]}>
@@ -28,7 +39,7 @@ export function SkeletonImage({ uri, style, contentFit = 'cover', transition = 1
 				style={StyleSheet.absoluteFill}
 				contentFit={contentFit}
 				cachePolicy="memory-disk"
-				recyclingKey={uri}
+				recyclingKey={recycle ? uri : undefined}
 				transition={transition}
 				accessibilityLabel={accessibilityLabel}
 				onLoad={(event) => {

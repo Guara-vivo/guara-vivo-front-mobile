@@ -117,3 +117,33 @@ export function getBboxRect(bbox: Bbox, containerSize: Size, imageSize: Size) {
 		height: (bbox[3] - bbox[1]) * escala,
 	}
 }
+
+function toPositiveSize(width: unknown, height: unknown): Size | null {
+	const valid = (value: unknown): value is number =>
+		typeof value === 'number' && Number.isFinite(value) && value > 0
+
+	return valid(width) && valid(height) ? { width, height } : null
+}
+
+// Tamanho da foto original, o mesmo espaço de pixels do `bbox_xyxy`. O `onLoad` do expo-image
+// no Android informa o tamanho já reduzido, então a escala da caixa precisa deste valor.
+// A API manda `image_width`/`image_height` na análise da imagem (ou dentro do `raw_result`).
+export function parseOriginalImageSize(width: unknown, height: unknown, rawResult: unknown): Size | null {
+	const direct = toPositiveSize(width, height)
+
+	if (direct) return direct
+
+	try {
+		const parsed = typeof rawResult === 'string' ? JSON.parse(rawResult) : rawResult
+
+		if (parsed && typeof parsed === 'object') {
+			const { image_width, image_height } = parsed as { image_width?: unknown; image_height?: unknown }
+
+			return toPositiveSize(image_width, image_height)
+		}
+	} catch {
+		// JSON invalido: sem tamanho original.
+	}
+
+	return null
+}

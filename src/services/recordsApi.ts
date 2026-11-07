@@ -9,6 +9,7 @@ import type {
 } from '../types/api'
 import type { RecordDetailItem, RecordItem } from '../types/records'
 import { parseImageResult } from '../utils/analysisWarnings'
+import { parseOriginalImageSize } from '../utils/detectionFormatters'
 
 const behaviorLabels: Record<BirdBehavior, string> = {
 	'alimentando-se': 'Alimentando',
@@ -73,6 +74,7 @@ export function mapRecordDetailToRecordItem(
 				raw_result: img.raw_result,
 				status_analise: status,
 				avisos,
+				image_size: parseOriginalImageSize(img.image_width, img.image_height, img.raw_result),
 				detections: detections.map((ibis) => {
 					// Parse raw_detection if available
 					let parsed_detection = null
