@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -34,15 +34,18 @@ export function RecordImageDetailModal({
 }: RecordImageDetailModalProps) {
 	const insets = useSafeAreaInsets()
 	// Tamanho original vem do onLoad da própria imagem exibida (sem baixar a foto duas vezes).
-	const [imageSize, setImageSize] = useState<Size | null>(null)
+	// O tamanho fica amarrado à foto que o gerou: ao trocar de foto, as caixas novas não aparecem
+	// por um quadro sobre a foto anterior (o estado antigo ainda existe no render da troca).
+	const [loadedImage, setLoadedImage] = useState<{ uri: string; size: Size } | null>(null)
+	const imageSize = loadedImage?.uri === imageUri ? loadedImage.size : null
 	const [containerSize, setContainerSize] = useState<Size | null>(null)
-
-	useEffect(() => {
-		setImageSize(null)
-	}, [imageUri])
 
 	const imageAnalysis = record.image_analyses?.[imageIndex]
 	const detections = imageAnalysis?.detections
+	// A API informa o tamanho da foto original (base do bbox). O `onLoad` só serve de reserva para
+	// análises antigas: no Android ele reporta a imagem já reduzida e deixa a caixa torta em fotos grandes.
+	// As caixas só aparecem depois que a foto carrega (`imageSize`), para não piscar sobre a foto anterior.
+	const overlaySize = imageAnalysis?.image_size ?? imageSize
 	const canGoPrevious = imageIndex > 0
 	const canGoNext = imageIndex < totalImages - 1
 
@@ -96,16 +99,21 @@ export function RecordImageDetailModal({
 									uri={imageUri}
 									style={appStyles.recordImageModalImage}
 									contentFit="contain"
+									recycle={false}
+									transition={0}
 									accessibilityLabel={`Foto ${imageIndex + 1} de ${totalImages}`}
 									onLoad={(event) =>
-										setImageSize({ width: event.source.width, height: event.source.height })
+										setLoadedImage({
+											uri: imageUri,
+											size: { width: event.source.width, height: event.source.height },
+										})
 									}
 								/>
-								{imageSize && containerSize && detections && (
+								{imageSize && overlaySize && containerSize && detections && (
 									<DetectionOverlay
 										detections={detections}
 										containerSize={containerSize}
-										imageSize={imageSize}
+										imageSize={overlaySize}
 									/>
 								)}
 							</>

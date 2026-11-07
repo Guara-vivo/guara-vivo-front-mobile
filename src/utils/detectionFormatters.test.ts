@@ -4,6 +4,7 @@ import {
 	getDetectionBbox,
 	getLifeStageLabel,
 	getPlumageLabel,
+	parseOriginalImageSize,
 } from './detectionFormatters'
 import type { DetectionItem } from '../types/records'
 
@@ -81,5 +82,26 @@ describe('getBboxRect', () => {
 		const rect = getBboxRect([10, 20, 60, 70], { width: 400, height: 400 }, { width: 200, height: 100 })
 
 		expect(rect).toEqual({ x: 20, y: 140, width: 100, height: 100 })
+	})
+})
+
+describe('parseOriginalImageSize', () => {
+	it('usa os campos de topo quando validos', () => {
+		expect(parseOriginalImageSize(3069, 4604, null)).toEqual({ width: 3069, height: 4604 })
+	})
+
+	it('cai para o raw_result (texto JSON ou objeto) quando faltam os campos de topo', () => {
+		const raw = { image_width: 800, image_height: 600 }
+
+		expect(parseOriginalImageSize(undefined, undefined, JSON.stringify(raw))).toEqual({ width: 800, height: 600 })
+		expect(parseOriginalImageSize(null, null, raw)).toEqual({ width: 800, height: 600 })
+	})
+
+	it('devolve null para valores ausentes, zero, negativos ou nao numericos', () => {
+		expect(parseOriginalImageSize(undefined, undefined, null)).toBeNull()
+		expect(parseOriginalImageSize(0, 100, null)).toBeNull()
+		expect(parseOriginalImageSize(100, -1, null)).toBeNull()
+		expect(parseOriginalImageSize('100', 100, null)).toBeNull()
+		expect(parseOriginalImageSize(undefined, undefined, 'nao e json')).toBeNull()
 	})
 })

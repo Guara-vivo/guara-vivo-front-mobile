@@ -85,6 +85,9 @@ export type AnalysisImageRead = {
 	image_url: string
 	ibis_quantity: number
 	raw_result?: string | null
+	// Tamanho da foto original (mesmo espaço de pixels do bbox_xyxy); ausente em análises antigas
+	image_width?: number | null
+	image_height?: number | null
 	created_at: string
 }
 
