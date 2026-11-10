@@ -35,6 +35,12 @@ jest.mock('./tokenStorage', () => ({
 	}),
 }))
 
+const mockNet = { isConnected: true as boolean | null, isInternetReachable: true as boolean | null }
+jest.mock('@react-native-community/netinfo', () => ({
+	__esModule: true,
+	default: { fetch: jest.fn(async () => mockNet) },
+}))
+
 const user = { id: 2, name: 'Teste', email: 'teste@guaravivo.com' }
 const fetchMock = jest.fn()
 
@@ -106,14 +112,43 @@ describe('restoreSession', () => {
 		expect(mockTokens.access).toBe('a')
 	})
 
-	it('has no session without a token, and without cache it ends on a network error', async () => {
+	it('has no session without a token', async () => {
 		mockTokens.access = null
 		expect(await restoreSession()).toBeNull()
+	})
 
-		mockTokens.access = 'a'
+	it('without cache and without network shows the login but keeps the tokens', async () => {
 		fetchMock.mockRejectedValueOnce(new TypeError('Network request failed'))
+
 		expect(await restoreSession()).toBeNull()
-		expect(mockTokens.access).toBeNull()
+		expect(mockTokens.access).toBe('a')
+		expect(mockTokens.refresh).toBe('r')
+	})
+
+	it('opens offline straight from the cache, without calling the API', async () => {
+		fetchMock.mockResolvedValueOnce(respond(200, user))
+		await restoreSession()
+		fetchMock.mockClear()
+
+		mockNet.isConnected = false
+		try {
+			expect(await restoreSession()).toEqual(user)
+		} finally {
+			mockNet.isConnected = true
+		}
+
+		expect(fetchMock).not.toHaveBeenCalled()
+		expect(mockTokens.access).toBe('a')
+	})
+
+	it('keeps the session when the refresh answers 5xx', async () => {
+		fetchMock.mockResolvedValueOnce(respond(200, user))
+		await restoreSession()
+
+		fetchMock.mockResolvedValueOnce(respond(401)).mockResolvedValueOnce(respond(503))
+
+		expect(await restoreSession()).toEqual(user)
+		expect(mockTokens.refresh).toBe('r')
 	})
 })
 

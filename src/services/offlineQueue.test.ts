@@ -50,7 +50,10 @@ jest.mock('expo-file-system', () => {
 })
 jest.mock('./recordsApi', () => ({ uploadRecord: jest.fn() }))
 jest.mock('./recordsCache', () => ({ invalidateRecordsCache: jest.fn() }))
-jest.mock('./tokenStorage', () => ({ getAccessToken: jest.fn(async () => 'token') }))
+jest.mock('./apiClient', () => ({
+	...jest.requireActual('./apiClient'),
+	getFreshAccessToken: jest.fn(async () => 'token'),
+}))
 
 const upload = uploadRecord as jest.Mock
 
