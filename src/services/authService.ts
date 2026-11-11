@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import NetInfo from '@react-native-community/netinfo'
 import { ApiError, apiFetch } from './apiClient'
+import { isOnlineState } from '../utils/connectivity'
 import { invalidateRecordsCache } from './recordsCache'
 import { clearPersistedRecords } from './recordsStore'
 import {
@@ -85,11 +87,29 @@ export async function getCurrentUser(token: string): Promise<UserRead> {
 	return response.json() as Promise<UserRead>
 }
 
+async function isDeviceOffline() {
+	try {
+		return !isOnlineState(await NetInfo.fetch())
+	} catch {
+		return false
+	}
+}
+
 export async function restoreSession() {
 	const token = await getToken()
 
 	if (!token) {
 		return null
+	}
+
+	// Sem rede nao ha o que validar: abre direto com os dados locais, sem esperar timeout.
+	// Token vencido nao e motivo de logout; a renovacao acontece quando houver conexao.
+	if (await isDeviceOffline()) {
+		const cached = await readCachedUser()
+
+		if (cached) {
+			return cached
+		}
 	}
 
 	try {
@@ -109,6 +129,11 @@ export async function restoreSession() {
 			if (cached) {
 				return cached
 			}
+
+			// Sem rede e sem usuario guardado (app atualizado, nunca abriu online): nao ha
+			// como entrar, mas apagar os tokens deslogaria quem so esta sem sinal. Mostra o
+			// login e mantem a sessao para a proxima abertura com internet.
+			return null
 		}
 
 		await clearToken()

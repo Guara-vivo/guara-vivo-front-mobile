@@ -1,10 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { randomUUID } from 'expo-crypto'
 import { Directory, File, Paths } from 'expo-file-system'
-import { ApiError } from './apiClient'
+import { ApiError, getFreshAccessToken } from './apiClient'
 import { uploadRecord } from './recordsApi'
 import { invalidateRecordsCache } from './recordsCache'
-import { getAccessToken } from './tokenStorage'
 import type { BirdBehavior, ReactNativeFile } from '../types/api'
 
 // Fila local de registros: o app guarda o registro (e as fotos) no aparelho e envia
@@ -269,7 +268,16 @@ async function runFlush(): Promise<FlushResult> {
 	const queue = (await getPendingRecords(userId)).filter((r) => r.status === 'pending')
 
 	for (const record of queue) {
-		const token = await getAccessToken()
+		// Renova antes de enviar: com token vencido o upload (ate 120 s) voltaria 401. Sem
+		// rede, ou com a sessao encerrada (refresh recusado), para sem tocar na fila: os
+		// registros continuam no aparelho e saem quando o mesmo usuario voltar a entrar.
+		let token: string | null
+		try {
+			token = await getFreshAccessToken()
+		} catch {
+			result.stopped = true
+			break
+		}
 		if (!token) {
 			result.stopped = true
 			break

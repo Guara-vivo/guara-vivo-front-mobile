@@ -1,10 +1,12 @@
 import { Platform } from 'react-native'
 import {
 	clearTokens,
+	getAccessToken,
 	getRefreshToken,
 	saveTokens,
 } from './tokenStorage'
 import type { LoginResponse } from '../types/api'
+import { isAccessTokenFresh } from '../utils/tokenExpiry'
 
 const DEV_API_URL = Platform.select({
 	android: 'http://192.168.18.145:8001',
@@ -90,6 +92,8 @@ async function fetchWithTimeout(url: string, options: RequestInit) {
 	}
 }
 
+// Uma renovacao por vez: o refresh token e de uso unico (rotacao), entao duas chamadas
+// concorrentes com o mesmo token fariam a segunda levar 401 e derrubar a sessao.
 let refreshRequest: Promise<LoginResponse> | null = null
 
 function hasAuthorizationHeader(headers: HeadersInit | undefined) {
@@ -121,32 +125,51 @@ function withAuthorizationHeader(
 	}
 }
 
-async function refreshAccessToken() {
+async function requestTokenRefresh(): Promise<LoginResponse> {
+	// Le o token dentro da vez da fila: quem chega depois ja enxerga o token rotacionado.
 	const refreshToken = await getRefreshToken()
 
 	if (!refreshToken) {
 		throw new Error('Missing refresh token')
 	}
 
-	if (!refreshRequest) {
-		refreshRequest = fetchWithTimeout(`${API_URL}/users/refresh`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ refresh_token: refreshToken }),
-		})
-			.then(async (response) => {
-				if (!response.ok) {
-					throw new RefreshRejectedError(`Token refresh failed: ${response.status}`)
-				}
+	const response = await fetchWithTimeout(`${API_URL}/users/refresh`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ refresh_token: refreshToken }),
+	})
 
-				return response.json() as Promise<LoginResponse>
-			})
-			.then(async (result) => {
-				await saveTokens({
-					accessToken: result.access_token,
-					refreshToken: result.refresh_token,
-				})
-				return result
+	if (response.status === 401) {
+		throw new RefreshRejectedError('Token refresh rejected')
+	}
+
+	// 5xx, 429 etc.: o servidor nao disse que a sessao acabou, so que nao deu agora.
+	if (!response.ok) {
+		throw new ApiError(response.status, await response.text())
+	}
+
+	const result = (await response.json()) as LoginResponse
+
+	// O refresh token antigo ja foi consumido: grava o novo antes de qualquer outra coisa.
+	await saveTokens({
+		accessToken: result.access_token,
+		refreshToken: result.refresh_token,
+	})
+
+	return result
+}
+
+// So um 401 do POST /users/refresh encerra a sessao (tokens apagados e app volta ao login).
+// Rede, timeout e 5xx sobem como erro comum e mantem os tokens.
+export function refreshAccessToken() {
+	if (!refreshRequest) {
+		refreshRequest = requestTokenRefresh()
+			.catch(async (error) => {
+				if (error instanceof RefreshRejectedError) {
+					await clearTokens()
+					sessionExpiredHandler?.()
+				}
+				throw error
 			})
 			.finally(() => {
 				refreshRequest = null
@@ -156,23 +179,60 @@ async function refreshAccessToken() {
 	return refreshRequest
 }
 
+function bearerToken(headers: HeadersInit | undefined) {
+	const value = new Headers(headers).get('Authorization')
+	return value?.replace(/^Bearer\s+/i, '') ?? null
+}
+
+// Access token pronto para uso. Renova antes se estiver vencido ou perto disso, para que
+// um envio grande (fila offline) nao va com token vencido e volte 401. Sem rede o erro
+// sobe e a sessao fica intacta; devolve null so quando a sessao acabou (refresh recusado)
+// ou nao ha token.
+export async function getFreshAccessToken(): Promise<string | null> {
+	const token = await getAccessToken()
+
+	if (token && isAccessTokenFresh(token, Date.now())) {
+		return token
+	}
+
+	if (!(await getRefreshToken())) {
+		return token
+	}
+
+	try {
+		return (await refreshAccessToken()).access_token
+	} catch (error) {
+		if (error instanceof RefreshRejectedError) {
+			return null
+		}
+		throw error
+	}
+}
+
 export async function apiFetch(path: string, options: RequestInit = {}) {
 	let response = await fetchWithTimeout(`${API_URL}${path}`, options)
 
 	if (response.status === 401 && hasAuthorizationHeader(options.headers)) {
 		try {
-			const refreshed = await refreshAccessToken()
+			// Outra requisicao pode ja ter renovado enquanto esta estava no ar: o refresh
+			// token antigo nao vale mais, entao so repete com o token novo, sem renovar.
+			const current = await getAccessToken()
+			const usedToken = bearerToken(options.headers)
+			const accessToken =
+				current && current !== usedToken
+					? current
+					: (await refreshAccessToken()).access_token
+
 			response = await fetchWithTimeout(
 				`${API_URL}${path}`,
-				withAuthorizationHeader(options, refreshed.access_token),
+				withAuthorizationHeader(options, accessToken),
 			)
 		} catch (error) {
-			// Sem rede durante o refresh nao e sessao invalida: mantem os tokens.
+			// Refresh recusado: a sessao ja foi encerrada em refreshAccessToken; devolve o
+			// 401 original. Qualquer outra falha (rede, 5xx) mantem a sessao e sobe.
 			if (!(error instanceof RefreshRejectedError)) {
 				throw error
 			}
-			await clearTokens()
-			sessionExpiredHandler?.()
 		}
 	}
 

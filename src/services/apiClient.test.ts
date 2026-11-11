@@ -2,6 +2,7 @@ import {
 	ApiError,
 	apiFetch,
 	apiGetJson,
+	getFreshAccessToken,
 	RequestTimeoutError,
 	setSessionExpiredHandler,
 } from './apiClient'
@@ -9,6 +10,7 @@ import {
 const mockTokens = { access: 'a' as string | null, refresh: 'r' as string | null }
 
 jest.mock('./tokenStorage', () => ({
+	getAccessToken: jest.fn(async () => mockTokens.access),
 	getRefreshToken: jest.fn(async () => mockTokens.refresh),
 	saveTokens: jest.fn(async (t: { accessToken: string; refreshToken: string }) => {
 		mockTokens.access = t.accessToken
@@ -78,6 +80,58 @@ describe('apiFetch', () => {
 		expect(mockTokens.refresh).toBe('r')
 	})
 
+	it('nao encerra a sessao quando o refresh responde 5xx', async () => {
+		const onExpired = jest.fn()
+		setSessionExpiredHandler(onExpired)
+		fetchMock.mockResolvedValueOnce(respond(401)).mockResolvedValueOnce(respond(503))
+
+		await expect(apiFetch('/records', authed)).rejects.toMatchObject({ status: 503 })
+
+		expect(onExpired).not.toHaveBeenCalled()
+		expect(mockTokens.refresh).toBe('r')
+	})
+
+	it('renova uma vez so quando varias requisicoes levam 401 juntas', async () => {
+		const onExpired = jest.fn()
+		setSessionExpiredHandler(onExpired)
+		fetchMock.mockImplementation(async (url: string, init: RequestInit) => {
+			if (url.endsWith('/users/refresh')) {
+				// O token de uso unico so vale na primeira vez.
+				return JSON.parse(init.body as string).refresh_token === 'r'
+					? respond(200, { access_token: 'n', refresh_token: 'm' })
+					: respond(401)
+			}
+			return new Headers(init.headers).get('Authorization') === 'Bearer n'
+				? respond(200, { ok: true })
+				: respond(401)
+		})
+
+		const results = await Promise.all([
+			apiFetch('/a', authed),
+			apiFetch('/b', authed),
+			apiFetch('/c', authed),
+		])
+
+		expect(results.map((r) => r.status)).toEqual([200, 200, 200])
+		expect(
+			fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/users/refresh')),
+		).toHaveLength(1)
+		expect(onExpired).not.toHaveBeenCalled()
+		expect(mockTokens.refresh).toBe('m')
+	})
+
+	it('usa o token ja renovado por outra requisicao em vez de gastar o refresh de novo', async () => {
+		mockTokens.access = 'novo' // outra requisicao ja renovou; esta ainda usa o 'a' antigo
+		mockTokens.refresh = 'm'
+		fetchMock.mockResolvedValueOnce(respond(401)).mockResolvedValueOnce(respond(200, {}))
+
+		const response = await apiFetch('/records', authed)
+
+		expect(response.status).toBe(200)
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+		expect(String(fetchMock.mock.calls[1][0])).not.toContain('/users/refresh')
+	})
+
 	it('repete a requisicao com o token renovado', async () => {
 		fetchMock
 			.mockResolvedValueOnce(respond(401))
@@ -123,6 +177,45 @@ describe('apiFetch', () => {
 		controller.abort()
 
 		await expect(request).rejects.toMatchObject({ name: 'AbortError' })
+	})
+})
+
+describe('getFreshAccessToken', () => {
+	const jwt = (exp: number) =>
+		`x.${Buffer.from(JSON.stringify({ exp })).toString('base64url')}.y`
+
+	it('devolve o token sem renovar quando ainda vale', async () => {
+		mockTokens.access = jwt(Date.now() / 1000 + 3600)
+
+		await expect(getFreshAccessToken()).resolves.toBe(mockTokens.access)
+		expect(fetchMock).not.toHaveBeenCalled()
+	})
+
+	it('renova antes quando o token venceu', async () => {
+		mockTokens.access = jwt(Date.now() / 1000 - 10)
+		fetchMock.mockResolvedValueOnce(respond(200, { access_token: 'n', refresh_token: 'm' }))
+
+		await expect(getFreshAccessToken()).resolves.toBe('n')
+		expect(mockTokens.refresh).toBe('m')
+	})
+
+	it('sem rede levanta o erro e mantem a sessao', async () => {
+		mockTokens.access = jwt(Date.now() / 1000 - 10)
+		fetchMock.mockRejectedValueOnce(new TypeError('Network request failed'))
+
+		await expect(getFreshAccessToken()).rejects.toThrow('Network request failed')
+		expect(mockTokens.refresh).toBe('r')
+	})
+
+	it('devolve null e encerra a sessao quando o refresh e recusado', async () => {
+		const onExpired = jest.fn()
+		setSessionExpiredHandler(onExpired)
+		mockTokens.access = jwt(Date.now() / 1000 - 10)
+		fetchMock.mockResolvedValueOnce(respond(401))
+
+		await expect(getFreshAccessToken()).resolves.toBeNull()
+		expect(onExpired).toHaveBeenCalledTimes(1)
+		expect(mockTokens.refresh).toBeNull()
 	})
 })
 
