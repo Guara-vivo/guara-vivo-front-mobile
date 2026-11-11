@@ -24,7 +24,7 @@ export default {
 	expo: {
 		name: 'GuaráVivo',
 		slug: 'guaravivo',
-		version: '0.1.0',
+		version: '0.1.1',
 		orientation: 'portrait',
 		userInterfaceStyle: 'light',
 		splash: {
