@@ -7,10 +7,11 @@ import { AuthField } from '../components/auth/AuthField'
 import { AuthFrame } from '../components/auth/AuthFrame'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
-import { ApiError } from '../services/apiClient'
 import { login } from '../services/authService'
 import { appStyles } from '../styles/appStyles'
 import type { UserRead } from '../types/api'
+import { formatAppVersion } from '../utils/appVersion'
+import { getLoginErrorFeedback } from '../utils/loginErrorMessage'
 import type { AuthStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 
@@ -40,19 +41,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 			onSuccess(response.user)
 			// A navegação é feita pelo RootNavigator, que reage a isAuthenticated.
 		} catch (error) {
-			// Só uma resposta da API indica credenciais erradas; o resto é conexão.
-			if (error instanceof ApiError && error.status < 500) {
-				setFeedback({
-					title: 'Falha no login',
-					message: 'Confira e-mail e senha e tente novamente.',
-				})
-			} else {
-				setFeedback({
-					title: 'Sem conexão',
-					message:
-						'Não foi possível falar com o servidor. Verifique sua internet e tente novamente.',
-				})
-			}
+			setFeedback(getLoginErrorFeedback(error))
 		} finally {
 			setIsLoading(false)
 		}
@@ -82,6 +71,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 								<Text style={appStyles.authLink}>Criar conta</Text>
 							</Pressable>
 						</View>
+						<Text style={appStyles.authVersion}>{formatAppVersion()}</Text>
 					</>
 				}
 			>

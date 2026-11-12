@@ -47,6 +47,12 @@ export class RequestTimeoutError extends Error {
 	}
 }
 
+// O pedido nem chegou a ser respondido (sem rede, DNS, conexão recusada): no React Native
+// o fetch falha com TypeError "Network request failed". Timeout e ApiError não entram aqui.
+export function isNetworkFailure(error: unknown): boolean {
+	return error instanceof TypeError && /network request failed/i.test(error.message)
+}
+
 // Sem prazo, uma rede ruim deixa telas girando e a fila offline presa para sempre.
 const REQUEST_TIMEOUT_MS = 20000
 const UPLOAD_TIMEOUT_MS = 120000
