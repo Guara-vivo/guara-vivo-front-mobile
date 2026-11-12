@@ -37,8 +37,8 @@ export function MapZoneDeleteConfirmSheet({
 	return (
 		<BottomSheetModal
 			ref={bottomSheetRef}
-			snapPoints={['30%']}
-			enableDynamicSizing={false}
+			enableDynamicSizing
+			enablePanDownToClose={!isDeleting}
 			stackBehavior="push"
 			backdropComponent={renderBackdrop}
 			onChange={(index) => {
