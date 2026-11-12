@@ -1,6 +1,13 @@
 import { ApiError, RequestTimeoutError } from '../services/apiClient'
 import { getLoginErrorFeedback } from './loginErrorMessage'
 
+// apiClient importa tokenStorage, que usa o AsyncStorage nativo (indisponível no Jest).
+jest.mock('../services/tokenStorage', () => ({
+	getRefreshToken: jest.fn(),
+	saveTokens: jest.fn(),
+	clearTokens: jest.fn(),
+}))
+
 describe('getLoginErrorFeedback', () => {
 	it('trata resposta da API abaixo de 500 como credenciais erradas', () => {
 		for (const status of [400, 401, 403, 422]) {
