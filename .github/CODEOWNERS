@@ -1,0 +1,11 @@
+# Quem é chamado para revisar mudanças nestes arquivos (o GitHub pede a revisão
+# automaticamente no PR). Hoje só há uma conta com acesso ao repositório, então a
+# aprovação do dono ainda NÃO é obrigatória na proteção da main; ligar
+# "Require review from Code Owners" quando houver uma segunda pessoa.
+
+# Entrega do APK, scripts de release e o que usa a chave de assinatura.
+/.github/                  @akunzendorff
+/android/app/build.gradle  @akunzendorff
+/app.config.js             @akunzendorff
+/package.json              @akunzendorff
+/package-lock.json         @akunzendorff
