@@ -16,6 +16,7 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ### Corrigido
 - A tela "Sobre o app" mostrava "Versão 1.0.0" fixa; agora mostra a versão real instalada.
+- No detalhe do registro, a foto principal não fica mais em branco ao reabrir o mesmo registro (a foto era carregada duas vezes, em tamanhos diferentes, ao abrir a tela).
 
 ## [0.1.1] - 2026-11-11 (versionCode 2)
 
