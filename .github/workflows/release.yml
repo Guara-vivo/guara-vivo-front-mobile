@@ -134,7 +134,7 @@ jobs:
           sig=$("$bt/apksigner" verify --print-certs "$src")
           echo "$sig"
           # O prefixo varia: "Signer #1 ..." (Windows), "V2 Signer: ..." (runner Linux). Vários signatários viram várias linhas.
-          cert=$(echo "$sig" | sed -nE 's/^.*certificate SHA-1 digest:(.*)$/\1/p' | tr -d ':\r' | tr 'A-F' 'a-f' | sort -u)
+          cert=$(echo "$sig" | sed -nE 's/^.*certificate SHA-1 digest:(.*)$/\1/p' | tr -d ':[:space:]' | tr 'A-F' 'a-f' | sort -u)
           expected=$(echo "$EXPECTED_CERT_SHA1" | tr -d ':' | tr 'A-F' 'a-f')
           echo "Certificado do APK: $cert"
           if [ "$cert" != "$expected" ]; then
@@ -142,7 +142,7 @@ jobs:
             exit 1
           fi
 
-          badging=$("$bt/aapt2" dump badging "$src" | head -1)
+          badging=$("$bt/aapt2" dump badging "$src" | sed -n 1p)
           echo "$badging"
           case "$badging" in
             *"name='com.guaravivo.app'"*"versionCode='${VERSION_CODE}'"*"versionName='${VERSION}'"*) ;;
