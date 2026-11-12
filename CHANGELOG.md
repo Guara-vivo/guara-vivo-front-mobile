@@ -6,6 +6,10 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
+Nada ainda.
+
+## [0.1.2] - 2026-11-12 (versionCode 3)
+
 ### Adicionado
 - A versão do app aparece na tela de entrar, para o suporte saber o que está instalado mesmo sem conseguir logar.
 
