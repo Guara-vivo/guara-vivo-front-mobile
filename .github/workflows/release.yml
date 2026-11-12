@@ -133,8 +133,8 @@ jobs:
 
           sig=$("$bt/apksigner" verify --print-certs "$src")
           echo "$sig"
-          # Aceita "Signer #1 ..." e "Signer (minSdkVersion=...) ..."; vários signatários viram várias linhas.
-          cert=$(echo "$sig" | sed -nE 's/^Signer .*certificate SHA-1 digest: (.*)$/\1/p' | tr -d ':\r' | tr 'A-F' 'a-f' | sort -u)
+          # O prefixo varia: "Signer #1 ..." (Windows), "V2 Signer: ..." (runner Linux). Vários signatários viram várias linhas.
+          cert=$(echo "$sig" | sed -nE 's/^.*certificate SHA-1 digest:(.*)$/\1/p' | tr -d ':\r' | tr 'A-F' 'a-f' | sort -u)
           expected=$(echo "$EXPECTED_CERT_SHA1" | tr -d ':' | tr 'A-F' 'a-f')
           echo "Certificado do APK: $cert"
           if [ "$cert" != "$expected" ]; then
