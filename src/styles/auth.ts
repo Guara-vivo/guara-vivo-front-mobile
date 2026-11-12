@@ -169,6 +169,12 @@ export const authStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.muted,
 		fontSize: fontSize.body,
 	},
+	authVersion: {
+		color: colors.muted,
+		fontSize: fontSize.caption,
+		textAlign: 'center',
+		marginTop: spacing.sm,
+	},
 
 	// Lista de regras da senha (acende conforme a pessoa digita)
 	authRules: {

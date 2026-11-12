@@ -22,6 +22,8 @@ const filesToCheck = [
 	'src/screens/AboutScreen.tsx',
 	'src/screens/HistoryScreen.tsx',
 	'src/utils/loadErrorMessage.ts',
+	'src/utils/loginErrorMessage.ts',
+	'src/utils/appVersion.ts',
 	'src/screens/LoginScreen.tsx',
 	'src/screens/NotificationsScreen.tsx',
 	'src/screens/ProfileScreen.tsx',

@@ -184,6 +184,66 @@ describe('login / logout', () => {
 	})
 })
 
+describe('login: nova tentativa em falha de rede', () => {
+	const loginResponse = { access_token: 'novo-a', refresh_token: 'novo-r', user }
+
+	it('tenta de novo uma vez quando a rede falha e conclui o login', async () => {
+		fetchMock
+			.mockRejectedValueOnce(new TypeError('Network request failed'))
+			.mockResolvedValueOnce(respond(200, loginResponse))
+
+		const result = await login('teste@guaravivo.com', 'senha123')
+
+		expect(result.user).toEqual(user)
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+		expect(mockTokens.access).toBe('novo-a')
+	})
+
+	it('desiste depois da segunda falha de rede', async () => {
+		fetchMock
+			.mockRejectedValueOnce(new TypeError('Network request failed'))
+			.mockRejectedValueOnce(new TypeError('Network request failed'))
+
+		await expect(login('teste@guaravivo.com', 'senha123')).rejects.toBeInstanceOf(TypeError)
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+	})
+
+	it('não repete quando a API recusa as credenciais', async () => {
+		fetchMock.mockResolvedValueOnce(respond(401))
+
+		await expect(login('teste@guaravivo.com', 'errada')).rejects.toMatchObject({ status: 401 })
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('não repete quando a API responde 5xx', async () => {
+		fetchMock.mockResolvedValueOnce(respond(503))
+
+		await expect(login('teste@guaravivo.com', 'senha123')).rejects.toMatchObject({ status: 503 })
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('não repete em timeout: o servidor pode ter recebido o pedido', async () => {
+		jest.useFakeTimers()
+		try {
+			fetchMock.mockImplementation(
+				(_url: string, init: RequestInit) =>
+					new Promise((_resolve, reject) => {
+						init.signal?.addEventListener('abort', () => reject(new Error('aborted')))
+					}),
+			)
+
+			const pending = login('teste@guaravivo.com', 'senha123')
+			const assertion = expect(pending).rejects.toMatchObject({ name: 'TimeoutError' })
+			await jest.advanceTimersByTimeAsync(20001)
+			await assertion
+
+			expect(fetchMock).toHaveBeenCalledTimes(1)
+		} finally {
+			jest.useRealTimers()
+		}
+	})
+})
+
 describe('logout', () => {
 	it('descarta a lista de registros guardada em memoria', async () => {
 		setCachedRecords([{ id: 1 }] as never)
