@@ -144,15 +144,28 @@ const [state, dispatch] = useReducer(reducer, {
 
 O app ainda não está na Play Store: o APK é entregue direto à equipe e às usuárias, então o número da versão é o que permite saber o que cada pessoa tem instalado.
 
+### Modelo alvo (resumo)
+
+```
+feat/… fix/… chore/…  ──PR──►  develop  ──PR de release──►  main  ──(automático)──►  tag vX.Y.Z + APK assinado + GitHub Release
+                               (acumula)   versão + changelog   (só o que foi entregue)
+```
+
+1. Todo trabalho passa pela `develop`: as branches abrem PR para ela e as mudanças se acumulam lá, sem gerar APK.
+2. Quando o conjunto estiver pronto, prepara-se a release **na `develop`** (versão nos 3 lugares, `versionCode` e `CHANGELOG.md`) e abre-se **um** PR `develop` → `main`.
+3. O merge na `main` é o que dispara a entrega: tag `vX.Y.Z`, build do APK assinado com o `app.keystore`, renomeação `guaravivo-X.Y.Z-vcN-release.apk` e GitHub Release com o APK anexado. **Nada é feito direto na `main`** (exceto correção urgente, ver abaixo).
+4. **Situação hoje (2026-11-12):** a `develop` existe (foi avançada até a `main` em 2026-11-12; antes estava parada em março) e `main` e `develop` estão protegidas (ver "Proteção das branches"). A automação do passo 3 ainda não foi feita: o passo 3 é manual (ver "Fluxo de release", passos 4 a 6). Ela está descrita em "Automação do passo 3"; o `app.keystore` já foi autorizado a ir para os Secrets do GitHub, falta criar o workflow.
+
 - **Onde a versão vive (3 lugares, editados à mão e sempre juntos):** `app.config.js` (`version`), `package.json` (`version`) e `android/app/build.gradle` (`versionName` e `versionCode`). Esquecer um deles gera APK com número inconsistente.
 - **Semver (`MAJOR.MINOR.PATCH`):** correção pequena sobe o PATCH (0.1.1 → 0.1.2); funcionalidade nova sobe o MINOR (0.1.x → 0.2.0); enquanto o app estiver em fase de testes com a equipe, fica em `0.x`.
 - **`versionCode`:** sobe de 1 em 1 a cada APK entregue e nunca repete. O Android recusa instalar por cima um APK com `versionCode` menor ou igual ao instalado.
 - **Só sobe versão ao entregar um APK.** Mudanças vão se acumulando sem mexer na versão. Entre builds, o teste é `npm run android:install` (assinado com `debug.keystore`, não conta como versão e **nunca** é entregue).
-- **Branches (modelo `develop` → `main`; proposto, ainda não adotado: hoje os PRs vão para a `main` até a `develop` existir e a equipe confirmar):**
+- **Branches (modelo `develop` → `main`):** a branch padrão do repositório continua `main`, então ao abrir PR **escolha a `develop` como base**.
   - `main` guarda só o que foi entregue e deve estar sempre pronta para gerar APK (`typecheck`, `lint` e `test` passando). Cada release é uma tag nela.
   - `develop` acumula as mudanças. Branches de trabalho (`feat/...`, `fix/...`, `chore/...`) saem da `develop` e abrem PR para ela.
   - Correção urgente em produção: branch a partir da `main`, PR para a `main`, tag de patch, e depois trazer a correção de volta para a `develop`.
-  - Só o Vinicius cria a `develop` e muda a branch padrão dos PRs no GitHub; combinar antes com a equipe. Se o modelo valer, decidir junto para os outros repositórios (ex.: `guara-vivo-api`).
+  - **Proteção das branches (aplicada em 2026-11-12):** `main` só recebe mudança por PR (sem push direto, nem de admin), sem force-push e sem exclusão, e o PR precisa do check `checks` do CI (`.github/workflows/ci.yml`) verde. Nenhuma aprovação obrigatória (equipe pequena; quem abre pode mergear). `develop` aceita push, mas sem force-push e sem exclusão. O mesmo vale para a `main` dos outros repositórios públicos da organização (`guara-vivo-api`, `guara-vivo-worker`, `guara-vivo-identifier`, `website-equipe`) e para a `develop` da API; só a API e o front-mobile têm `develop`.
+  - Como a `main` não aceita mais push direto, **mudança de documentação também vai por PR**. Só quem é admin do repositório altera essas regras e os Secrets do GitHub.
 - **Fluxo de release:**
   1. Confirmar que `npm run typecheck`, `npm run lint` e `npm test` passam na `develop`.
   2. Na `develop`, mover o conteúdo de "Não lançado" do `CHANGELOG.md` para uma seção nova `## [X.Y.Z] - AAAA-MM-DD`, subir a versão nos 3 lugares e o `versionCode`, e conferir que `EXPO_PUBLIC_API_URL` aponta para `https://api.guaravivo.com.br` (é embutida no bundle no momento do build). Commit `chore(release): vX.Y.Z`.
@@ -160,7 +173,13 @@ O app ainda não está na Play Store: o APK é entregue direto à equipe e às u
   4. Com a `main` atualizada, criar a tag `vX.Y.Z` no commit do merge (`git tag vX.Y.Z`; só dar push da tag com autorização). O APK sai desse commit, para a tag apontar sempre para o que foi entregue.
   5. Build de publicação (assinado com `app.keystore`, sem `-PlocalDebugSign`) e conferência com `apksigner verify --print-certs`.
   6. Nome do APK: `guaravivo-X.Y.Z-vcN-release.apk`. Anexar à GitHub Release da tag, para ter o histórico de qual APK foi entregue.
-  7. (Depois) automatizar o passo 4 com uma GitHub Action que, ao entrar um merge na `main`, lê a versão do `package.json` e cria a tag e a Release.
+  7. Os passos 4 a 6 são o que a automação abaixo deve fazer sozinha depois do merge na `main`.
+- **Automação do passo 3 (proposta, não implementada):** uma GitHub Action (`.github/workflows/release.yml`) disparada **só** por `push` na `main`, nunca por PR (a chave de assinatura não pode ficar acessível a PR de fork, e o repositório é público). Ela deve:
+  - ler a versão do `package.json` e do `build.gradle`, e **falhar** se não baterem com `app.config.js` ou se a tag `vX.Y.Z` já existir (evita release repetida ou com número inconsistente);
+  - montar o ambiente (JDK, Android SDK, `npm ci`) e `EXPO_PUBLIC_API_URL=https://api.guaravivo.com.br`;
+  - decodificar o `app.keystore` a partir de GitHub Secrets (keystore em base64 mais `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_ALIAS` e `ANDROID_KEY_PASSWORD`), rodar `assembleRelease` sem `-PlocalDebugSign` e conferir com `apksigner verify --print-certs` que o SHA-1 é o de release (`7A:75:BB:5A:…:6C:36`);
+  - renomear o APK, calcular o SHA-256 e criar a tag e a GitHub Release com as notas da seção do `CHANGELOG.md` e o hash.
+  - Decisões antes de criar: colocar o `app.keystore` nos Secrets do GitHub (o build leva ~10 min por release e depende dessa chave fora da máquina da equipe); quem pode editar os Secrets e os workflows; proteger a `main` para só aceitar merge por PR.
 - **`CHANGELOG.md`:** em português, uma seção por versão (Adicionado, Alterado, Corrigido). Toda mudança visível ao usuário entra em "Não lançado" no mesmo PR que a introduz.
 - **Suporte:** ao investigar falha de uma usuária, confirme primeiro a versão instalada (Configurações > Apps > Guará Vivo). Instalar por cima só troca o app se o `versionCode` for maior.
 - **Pendente:** mostrar a versão dentro do app (Guara-vivo/documents#65) e, mais adiante, derivar os 3 números de uma fonte única.
