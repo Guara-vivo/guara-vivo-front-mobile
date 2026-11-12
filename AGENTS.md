@@ -225,7 +225,7 @@ feat/… fix/… chore/…  ──PR──►  develop  ──PR de release─�
 - Per-image analysis summary + per-individual detection details.
 
 ### ⚠️ Known Issues & Next Steps
-- **Telas ainda sem backend:** cadastro (`RegisterEmail`/`RegisterPassword` não criam conta), `ChangePasswordScreen`, `EditProfileScreen`, "Recuperar senha" e as preferências de `NotificationsScreen` são apenas visuais.
+- **Telas ainda sem backend:** cadastro (**fechado**: o `POST /users` foi fechado na API e "Criar conta" mostra `RegistrationClosedModal` em vez de abrir `RegisterEmail`/`RegisterPassword`, que seguem no `AuthStack` sem entrada para reabrir depois), `ChangePasswordScreen`, `EditProfileScreen`, "Recuperar senha" e as preferências de `NotificationsScreen` são apenas visuais.
 - **Keystore de release:** o `app.keystore` atual é diferente do que ficou no histórico público do git (confirmado pelo usuário em 2026-11-11), então não precisa gerar outro para publicar. Guarde-o fora do repositório (`android/app/app.keystore` está no `.gitignore`) e faça cópia segura: perdê-lo impede atualizar o app já instalado.
 - **Senha do `app.keystore`:** funciona (build de publicação assinado em 2026-11-10). Se o shell não tiver as variáveis `ANDROID_STORE_PASSWORD`/`ANDROID_KEY_ALIAS`/`ANDROID_KEY_PASSWORD`, o build de publicação falha; o fluxo de teste usa `-PlocalDebugSign`.
 - **Chave do Google Maps:** lida de `EXPO_PUBLIC_GOOGLE_MAPS_API_KEY` (variável de ambiente ou `.env`) pelo Gradle via `manifestPlaceholders`. Restringir por pacote e SHA-1 no Google Cloud.

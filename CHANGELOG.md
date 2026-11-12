@@ -6,7 +6,8 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
-Nada ainda.
+### Alterado
+- O cadastro de novas contas está fechado (a API não aceita mais o cadastro): "Criar conta", na tela inicial e na de entrar, mostra o aviso "Cadastro indisponível" em vez de abrir a tela de cadastro.
 
 ## [0.1.1] - 2026-11-11 (versionCode 2)
 

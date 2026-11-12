@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Image, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { RegistrationClosedModal } from '../components/auth/RegistrationClosedModal'
 import { ActionButton } from '../components/common'
 import { appStyles } from '../styles/appStyles'
 import type { AuthStackParamList } from '../types/navigation'
@@ -13,6 +14,7 @@ const welcomeLogo = require('../assets/images/Logo Simplificada Fonte Escura.png
 
 export function WelcomeScreen() {
 	const navigation = useNavigation<NavigationProp>()
+	const [showRegistrationClosed, setShowRegistrationClosed] = useState(false)
 
 	return (
 		<View style={appStyles.welcomeScreen}>
@@ -36,9 +38,14 @@ export function WelcomeScreen() {
 				<ActionButton
 					title="Criar conta"
 					variant="secondary"
-					onPress={() => navigation.navigate('RegisterEmail')}
+					onPress={() => setShowRegistrationClosed(true)}
 				/>
 			</View>
+
+			<RegistrationClosedModal
+				visible={showRegistrationClosed}
+				onClose={() => setShowRegistrationClosed(false)}
+			/>
 		</View>
 	)
 }
