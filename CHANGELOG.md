@@ -6,8 +6,16 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
+### Adicionado
+- A versão do app aparece na tela de entrar, para o suporte saber o que está instalado mesmo sem conseguir logar.
+
 ### Alterado
 - O cadastro de novas contas está fechado (a API não aceita mais o cadastro): "Criar conta", na tela inicial e na de entrar, mostra o aviso "Cadastro indisponível" em vez de abrir a tela de cadastro.
+- O login agora diferencia o motivo da falha: e-mail ou senha errados, sem conexão, conexão lenta, servidor indisponível e erro no próprio aparelho, cada um com sua mensagem. Antes, qualquer falha que não fosse resposta da API aparecia como "Sem conexão".
+- O login tenta de novo uma vez quando a rede falha antes de o servidor responder (não repete em timeout nem quando a API recusa).
+
+### Corrigido
+- A tela "Sobre o app" mostrava "Versão 1.0.0" fixa; agora mostra a versão real instalada.
 
 ## [0.1.1] - 2026-11-11 (versionCode 2)
 
