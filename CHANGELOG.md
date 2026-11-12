@@ -6,7 +6,8 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
-Nada ainda.
+### Corrigido
+- Na confirmação de excluir uma área do mapa, os botões "Cancelar" e "Excluir" ficavam cortados embaixo da tela; agora a folha cresce até caber o conteúdo.
 
 ## [0.1.2] - 2026-11-12 (versionCode 3)
 
