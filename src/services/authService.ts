@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import NetInfo from '@react-native-community/netinfo'
-import { ApiError, apiFetch } from './apiClient'
+import { ApiError, apiFetch, isNetworkFailure } from './apiClient'
 import { isOnlineState } from '../utils/connectivity'
 import { invalidateRecordsCache } from './recordsCache'
 import { clearPersistedRecords } from './recordsStore'
@@ -60,15 +60,31 @@ export async function clearToken() {
 	await clearTokens()
 }
 
+const LOGIN_RETRY_DELAY_MS = 400
+
 export async function login(
 	email: string,
 	password: string,
 ): Promise<LoginResponse> {
-	const response = await apiFetch('/users/login', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email, password }),
-	})
+	const request = () =>
+		apiFetch('/users/login', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ email, password }),
+		})
+
+	let response: Awaited<ReturnType<typeof request>>
+	try {
+		response = await request()
+	} catch (error) {
+		// Uma nova tentativa só quando o pedido nem foi respondido (rede). Timeout não
+		// repete: o servidor pode ter recebido o pedido. Erro da API também não.
+		if (!isNetworkFailure(error)) {
+			throw error
+		}
+		await new Promise((resolve) => setTimeout(resolve, LOGIN_RETRY_DELAY_MS))
+		response = await request()
+	}
 	const result = (await response.json()) as LoginResponse
 
 	await saveTokens({

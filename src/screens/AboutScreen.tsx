@@ -6,6 +6,7 @@ import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { Header } from '../components/Header'
 import { HeaderBackButton } from '../components/HeaderBackButton'
+import { formatAppVersion } from '../utils/appVersion'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 const aboutLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
@@ -33,7 +34,7 @@ export function AboutScreen() {
 						resizeMode="contain"
 					/>
 					
-					<Text style={appStyles.aboutVersion}>Versão 1.0.0</Text>
+					<Text style={appStyles.aboutVersion}>{formatAppVersion()}</Text>
 
 					<View style={appStyles.aboutSection}>
 						<Text style={appStyles.aboutSectionTitle}>Sobre o projeto</Text>

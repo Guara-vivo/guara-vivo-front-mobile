@@ -24,6 +24,10 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 		handleScrollEnd,
 		handleArrowPress,
 	} = useImageCarousel(imageSlots)
+	// As fotos só entram depois de medir a largura. Montá-las antes (com largura 1) fazia o
+	// expo-image carregar a foto duas vezes, em 2x818 e depois em 900x818; quando as duas
+	// cargas saíam do cache de memória (a partir da segunda abertura), a foto ficava invisível.
+	const slides = carouselWidth > 0 ? carouselImages : []
 
 	return (
 		<View
@@ -34,7 +38,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 		>
 			<FlatList
 				ref={carouselRef}
-				data={carouselImages}
+				data={slides}
 				style={appStyles.recordDetailCarouselList}
 				horizontal
 				pagingEnabled
@@ -45,7 +49,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 				keyExtractor={(imageUri, index) => `${imageUri ?? 'img'}-${index}`}
 				renderItem={({ item: imageUri, index }) => (
 					<View
-						style={[appStyles.recordDetailCarouselSlide, { width: carouselWidth || 1 }]}
+						style={[appStyles.recordDetailCarouselSlide, { width: carouselWidth }]}
 					>
 						{imageUri ? (
 							<Pressable

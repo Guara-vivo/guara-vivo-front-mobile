@@ -1,4 +1,4 @@
-import { ApiError, RequestTimeoutError } from '../services/apiClient'
+import { ApiError, RequestTimeoutError, isNetworkFailure } from '../services/apiClient'
 
 // Traduz falhas de carregamento em texto para o usuario. Mensagens internas do React
 // Native ou da API (ex.: "The specified blob is invalid") nao devem chegar a tela.
@@ -17,7 +17,7 @@ export function getLoadErrorMessage(error: unknown, fallback: string): string {
 		return fallback
 	}
 
-	if (error instanceof TypeError && /network request failed/i.test(error.message)) {
+	if (isNetworkFailure(error)) {
 		return 'Sem conexão com a internet. Verifique sua rede e tente atualizar.'
 	}
 
