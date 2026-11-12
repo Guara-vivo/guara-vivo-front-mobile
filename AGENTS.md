@@ -140,6 +140,31 @@ const [state, dispatch] = useReducer(reducer, {
 - Saúde Expo: `npx expo-doctor` deve passar (warnings não-críticos são OK).
 - Auditar dependências: `npm audit --omit=dev`. Os achados restantes vêm da cadeia de build (Babel, Metro, Expo CLI), fora do APK. O app está no Expo SDK 54; o upgrade de SDK é feito um por vez (hoje há SDKs até a 58) e foi adiado.
 
+## 🏷️ Versionamento e releases
+
+O app ainda não está na Play Store: o APK é entregue direto à equipe e às usuárias, então o número da versão é o que permite saber o que cada pessoa tem instalado.
+
+- **Onde a versão vive (3 lugares, editados à mão e sempre juntos):** `app.config.js` (`version`), `package.json` (`version`) e `android/app/build.gradle` (`versionName` e `versionCode`). Esquecer um deles gera APK com número inconsistente.
+- **Semver (`MAJOR.MINOR.PATCH`):** correção pequena sobe o PATCH (0.1.1 → 0.1.2); funcionalidade nova sobe o MINOR (0.1.x → 0.2.0); enquanto o app estiver em fase de testes com a equipe, fica em `0.x`.
+- **`versionCode`:** sobe de 1 em 1 a cada APK entregue e nunca repete. O Android recusa instalar por cima um APK com `versionCode` menor ou igual ao instalado.
+- **Só sobe versão ao entregar um APK.** Mudanças vão se acumulando sem mexer na versão. Entre builds, o teste é `npm run android:install` (assinado com `debug.keystore`, não conta como versão e **nunca** é entregue).
+- **Branches (modelo `develop` → `main`; proposto, ainda não adotado: hoje os PRs vão para a `main` até a `develop` existir e a equipe confirmar):**
+  - `main` guarda só o que foi entregue e deve estar sempre pronta para gerar APK (`typecheck`, `lint` e `test` passando). Cada release é uma tag nela.
+  - `develop` acumula as mudanças. Branches de trabalho (`feat/...`, `fix/...`, `chore/...`) saem da `develop` e abrem PR para ela.
+  - Correção urgente em produção: branch a partir da `main`, PR para a `main`, tag de patch, e depois trazer a correção de volta para a `develop`.
+  - Só o Vinicius cria a `develop` e muda a branch padrão dos PRs no GitHub; combinar antes com a equipe. Se o modelo valer, decidir junto para os outros repositórios (ex.: `guara-vivo-api`).
+- **Fluxo de release:**
+  1. Confirmar que `npm run typecheck`, `npm run lint` e `npm test` passam na `develop`.
+  2. Na `develop`, mover o conteúdo de "Não lançado" do `CHANGELOG.md` para uma seção nova `## [X.Y.Z] - AAAA-MM-DD`, subir a versão nos 3 lugares e o `versionCode`, e conferir que `EXPO_PUBLIC_API_URL` aponta para `https://api.guaravivo.com.br` (é embutida no bundle no momento do build). Commit `chore(release): vX.Y.Z`.
+  3. Abrir o PR de release `develop` → `main` e fazer o merge com **merge commit** (não squash: com squash a `develop` diverge da `main` e dá conflito na release seguinte).
+  4. Com a `main` atualizada, criar a tag `vX.Y.Z` no commit do merge (`git tag vX.Y.Z`; só dar push da tag com autorização). O APK sai desse commit, para a tag apontar sempre para o que foi entregue.
+  5. Build de publicação (assinado com `app.keystore`, sem `-PlocalDebugSign`) e conferência com `apksigner verify --print-certs`.
+  6. Nome do APK: `guaravivo-X.Y.Z-vcN-release.apk`. Anexar à GitHub Release da tag, para ter o histórico de qual APK foi entregue.
+  7. (Depois) automatizar o passo 4 com uma GitHub Action que, ao entrar um merge na `main`, lê a versão do `package.json` e cria a tag e a Release.
+- **`CHANGELOG.md`:** em português, uma seção por versão (Adicionado, Alterado, Corrigido). Toda mudança visível ao usuário entra em "Não lançado" no mesmo PR que a introduz.
+- **Suporte:** ao investigar falha de uma usuária, confirme primeiro a versão instalada (Configurações > Apps > Guará Vivo). Instalar por cima só troca o app se o `versionCode` for maior.
+- **Pendente:** mostrar a versão dentro do app (Guara-vivo/documents#65) e, mais adiante, derivar os 3 números de uma fonte única.
+
 ## Implementation Status by Category
 
 ### 🔐 Security (Recent)
