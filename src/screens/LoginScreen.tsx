@@ -5,6 +5,7 @@ import FeedbackModal from '../components/FeedbackModal'
 import { ComingSoonModal } from '../components/ComingSoonModal'
 import { AuthField } from '../components/auth/AuthField'
 import { AuthFrame } from '../components/auth/AuthFrame'
+import { RegistrationClosedModal } from '../components/auth/RegistrationClosedModal'
 import { ActionButton } from '../components/common'
 import { colors } from '../constants/theme'
 import { login } from '../services/authService'
@@ -23,6 +24,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 	const [password, setPassword] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
 	const [showForgotNotice, setShowForgotNotice] = useState(false)
+	const [showRegistrationClosed, setShowRegistrationClosed] = useState(false)
 	const passwordInputRef = useRef<TextInput>(null)
 	const [feedback, setFeedback] = useState<{ title: string; message: string } | null>(null)
 
@@ -63,7 +65,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 						<View style={appStyles.authBelowRow}>
 							<Text style={appStyles.authBelowText}>Ainda não tem conta?</Text>
 							<Pressable
-								onPress={() => navigation.navigate('RegisterEmail')}
+								onPress={() => setShowRegistrationClosed(true)}
 								accessibilityRole="button"
 								accessibilityLabel="Criar conta"
 								hitSlop={8}
@@ -109,6 +111,11 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 					<Text style={appStyles.authLink}>Esqueci minha senha</Text>
 				</Pressable>
 			</AuthFrame>
+
+			<RegistrationClosedModal
+				visible={showRegistrationClosed}
+				onClose={() => setShowRegistrationClosed(false)}
+			/>
 
 			<ComingSoonModal
 				visible={showForgotNotice}

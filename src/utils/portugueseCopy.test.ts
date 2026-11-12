@@ -6,6 +6,7 @@ const filesToCheck = [
 	'src/components/auth/AuthField.tsx',
 	'src/components/auth/AuthFrame.tsx',
 	'src/screens/WelcomeScreen.tsx',
+	'src/components/auth/RegistrationClosedModal.tsx',
 	'src/screens/HomeScreen.tsx',
 	'src/components/Avatar.tsx',
 	'src/components/DatePickerSheet.tsx',
