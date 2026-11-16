@@ -9,7 +9,11 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 ### Adicionado
 - O aplicativo agora também está em inglês (en-US). A bandeirinha na tela de boas-vindas e na de entrar mostra o idioma atual e troca para o outro com um toque; no Perfil, o grupo "Conta" tem a opção "Idioma". A escolha fica só no aparelho e, na primeira abertura, o app começa em português. As datas seguem o idioma (em inglês, mês antes do dia e horário de 12 h com AM/PM), e o mapa do Google continua em português.
 
+### Alterado
+- O filtro de período do histórico agora usa um calendário só: toque no dia inicial e depois no final, com a faixa pintada, e atalhos de 7 dias, 30 dias e este mês. A data inicial não pode mais ficar maior que a final.
+
 ### Corrigido
+- A folha de detalhes de uma área do mapa não fecha mais sem querer ao arrastar de volta para a posição original; agora só fecha com um arrasto longo para baixo (ou pelo X).
 - Na confirmação de excluir uma área do mapa, os botões "Cancelar" e "Excluir" ficavam cortados embaixo da tela; agora a folha cresce até caber o conteúdo.
 
 ## [0.1.2] - 2026-11-12 (versionCode 3)

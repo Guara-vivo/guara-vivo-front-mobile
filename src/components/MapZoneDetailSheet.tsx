@@ -19,6 +19,7 @@ import { appStyles } from '../styles/appStyles'
 import { countLabel } from '../utils/countLabel'
 import { formatDate, formatDateAtTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
+import { LOW_SNAP_FRACTION, shouldCloseOnRelease } from '../utils/sheetClose'
 import type { MapZoneRecordRead, MapZoneType } from '../types/api'
 import type { RootStackParamList } from '../types/navigation'
 import { colors } from '../constants/theme'
@@ -117,7 +118,8 @@ export function MapZoneDetailSheet() {
   const RECORD_ROW_HEIGHT = 108
   const MAX_VISIBLE_ROWS = 4
 
-  const snapPoints = ['35%', '80%']
+  const closingByCodeRef = useRef(false)
+  const snapPoints = [`${LOW_SNAP_FRACTION * 100}%`, '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
   const handleOpenZoneRecord = useCallback(
@@ -152,9 +154,25 @@ export function MapZoneDetailSheet() {
   // (antes ela só crescia depois de soltar). Na posição baixa, o excesso fica abaixo da tela.
   const handleSheetChange = useCallback(
     (index: number) => {
-      if (index === -1) ctx.closeSheet()
+      if (index === -1) {
+        closingByCodeRef.current = false
+        ctx.closeSheet()
+      }
     },
     [ctx],
+  )
+
+  // A biblioteca fecha a folha pela velocidade do arrasto (e fechava ao voltar de 80% para 35%). Ela avisa
+  // por `onAnimate` quando vai fechar; se o dedo não soltou bem abaixo da parada baixa, volta para ela
+  // (ver utils/sheetClose.ts). Fechamento pedido por nós (excluir) não é cancelado.
+  const handleSheetAnimate = useCallback(
+    (fromIndex: number, toIndex: number, fromPosition: number, toPosition: number) => {
+      if (toIndex !== -1 || closingByCodeRef.current) return
+      if (!shouldCloseOnRelease({ fromIndex, toIndex, fromPosition, toPosition })) {
+        bottomSheetRef.current?.snapToIndex(0)
+      }
+    },
+    [],
   )
 
   const handleCloseZoneDetail = useCallback(() => {
@@ -166,6 +184,7 @@ export function MapZoneDetailSheet() {
     const zoneId = ctx.selectedZone?.id
     if (zoneId === undefined) return
     ctx.openDeleteConfirm(zoneId)
+    closingByCodeRef.current = true
     bottomSheetRef.current?.close()
   }, [ctx])
 
@@ -176,6 +195,7 @@ export function MapZoneDetailSheet() {
       snapPoints={snapPoints}
       index={0}
       enablePanDownToClose
+      onAnimate={handleSheetAnimate}
       onChange={handleSheetChange}
       backgroundStyle={appStyles.zoneBottomSheetBackground}
       handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}

@@ -96,6 +96,25 @@ export const datePickerStyles = StyleSheet.create<Record<string, any>>({
 	dateDayTextDisabled: {
 		color: colors.borderStrong,
 	},
+	dateRangeHint: {
+		minHeight: 20,
+		color: colors.muted,
+		fontSize: fontSize.body,
+	},
+	// Faixa: o fundo ocupa a largura da célula; no início e no fim só a metade voltada para o meio.
+	dateRangeBand: {
+		...StyleSheet.absoluteFillObject,
+		// A célula tem 44 de altura e o círculo 40: a faixa acompanha o círculo e as semanas não se encostam.
+		top: 2,
+		bottom: 2,
+		backgroundColor: colors.redSoft,
+	},
+	dateRangeBandStart: {
+		left: '50%',
+	},
+	dateRangeBandEnd: {
+		right: '50%',
+	},
 	dateSheetActions: {
 		flexDirection: 'row',
 		gap: spacing.sm2,

@@ -39,5 +39,13 @@ export default {
 		previousMonth: 'Previous month',
 		nextMonth: 'Next month',
 		confirm: 'Confirm',
+		rangeTitle: 'Period',
+		pickStart: 'Tap the start day',
+		pickEnd: 'Now tap the end day',
+	},
+	shortcuts: {
+		last7: '7 days',
+		last30: '30 days',
+		thisMonth: 'This month',
 	},
 }
