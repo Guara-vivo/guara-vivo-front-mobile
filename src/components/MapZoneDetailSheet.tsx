@@ -4,6 +4,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  useWindowDimensions,
   View,
   type LayoutChangeEvent,
 } from 'react-native'
@@ -19,6 +20,7 @@ import { appStyles } from '../styles/appStyles'
 import { countLabel } from '../utils/countLabel'
 import { formatDate, formatDateAtTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
+import { shouldCloseOnRelease } from '../utils/sheetClose'
 import type { MapZoneRecordRead, MapZoneType } from '../types/api'
 import type { RootStackParamList } from '../types/navigation'
 import { colors } from '../constants/theme'
@@ -33,6 +35,7 @@ function formatZoneDate(value: string) {
   return formatDate(value)
 }
 
+const LOW_SNAP_FRACTION = 0.35
 const RECORD_FOCUS_IN_MS = 180
 const RECORD_FOCUS_OUT_MS = 450
 
@@ -117,7 +120,8 @@ export function MapZoneDetailSheet() {
   const RECORD_ROW_HEIGHT = 108
   const MAX_VISIBLE_ROWS = 4
 
-  const snapPoints = ['35%', '80%']
+  const { height: windowHeight } = useWindowDimensions()
+  const snapPoints = [`${LOW_SNAP_FRACTION * 100}%`, '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
   const handleOpenZoneRecord = useCallback(
@@ -157,6 +161,25 @@ export function MapZoneDetailSheet() {
     [ctx],
   )
 
+  // Sem `enablePanDownToClose` (a biblioteca fecha por velocidade): a folha só fecha quando o dedo
+  // solta bem abaixo da parada baixa (ver utils/sheetClose.ts). A altura aproxima a folha em 35%.
+  const handleSheetAnimate = useCallback(
+    (fromIndex: number, toIndex: number, fromPosition: number, toPosition: number) => {
+      if (
+        shouldCloseOnRelease({
+          fromIndex,
+          toIndex,
+          fromPosition,
+          toPosition,
+          sheetHeight: windowHeight * LOW_SNAP_FRACTION,
+        })
+      ) {
+        bottomSheetRef.current?.close()
+      }
+    },
+    [windowHeight],
+  )
+
   const handleCloseZoneDetail = useCallback(() => {
     if (ctx.isDeleting) return
     ctx.closeSheet()
@@ -175,7 +198,10 @@ export function MapZoneDetailSheet() {
       ref={bottomSheetRef}
       snapPoints={snapPoints}
       index={0}
-      enablePanDownToClose
+      enablePanDownToClose={false}
+      enableOverDrag
+      overDragResistanceFactor={1}
+      onAnimate={handleSheetAnimate}
       onChange={handleSheetChange}
       backgroundStyle={appStyles.zoneBottomSheetBackground}
       handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
