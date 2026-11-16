@@ -1,4 +1,4 @@
-import { login, logout, restoreSession } from './authService'
+import { login, logout, openSession, restoreSession } from './authService'
 import { getCachedRecordsSnapshot, setCachedRecords } from './recordsCache'
 import {
 	loadPersistedRecords,
@@ -149,6 +149,75 @@ describe('restoreSession', () => {
 
 		expect(await restoreSession()).toEqual(user)
 		expect(mockTokens.refresh).toBe('r')
+	})
+})
+
+describe('openSession', () => {
+	// Deixa o usuario guardado no aparelho, como depois de um login.
+	async function seedCache() {
+		fetchMock.mockResolvedValueOnce(respond(200, user))
+		await restoreSession()
+		fetchMock.mockReset()
+	}
+
+	it('opens straight from the cache without waiting for the API', async () => {
+		await seedCache()
+		let answer: (value: unknown) => void = () => {}
+		fetchMock.mockReturnValueOnce(new Promise((resolve) => (answer = resolve)))
+		const onRevalidated = jest.fn()
+
+		expect(await openSession(onRevalidated)).toEqual(user)
+		expect(onRevalidated).not.toHaveBeenCalled()
+
+		const fresh = { ...user, name: 'Nome novo' }
+		answer(respond(200, fresh))
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		expect(onRevalidated).toHaveBeenCalledWith(fresh)
+	})
+
+	it('reports the end of the session when the server rejects the token and the refresh', async () => {
+		await seedCache()
+		fetchMock.mockResolvedValueOnce(respond(401)).mockResolvedValueOnce(respond(401))
+		const onRevalidated = jest.fn()
+
+		expect(await openSession(onRevalidated)).toEqual(user)
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		expect(onRevalidated).toHaveBeenCalledWith(null)
+		expect(mockTokens.access).toBeNull()
+		expect(mockAsync.size).toBe(0)
+	})
+
+	it('keeps the user and the tokens when the check fails by network', async () => {
+		await seedCache()
+		fetchMock.mockRejectedValueOnce(new TypeError('Network request failed'))
+		const onRevalidated = jest.fn()
+
+		expect(await openSession(onRevalidated)).toEqual(user)
+		await new Promise((resolve) => setTimeout(resolve, 0))
+
+		expect(onRevalidated).toHaveBeenCalledWith(user)
+		expect(mockTokens.access).toBe('a')
+		expect(mockTokens.refresh).toBe('r')
+	})
+
+	it('without a saved user waits for the server, as before', async () => {
+		fetchMock.mockResolvedValueOnce(respond(200, user))
+		const onRevalidated = jest.fn()
+
+		expect(await openSession(onRevalidated)).toEqual(user)
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+		expect(onRevalidated).not.toHaveBeenCalled()
+	})
+
+	it('has no session without a token', async () => {
+		await seedCache()
+		mockTokens.access = null
+		const onRevalidated = jest.fn()
+
+		expect(await openSession(onRevalidated)).toBeNull()
+		expect(onRevalidated).not.toHaveBeenCalled()
 	})
 })
 

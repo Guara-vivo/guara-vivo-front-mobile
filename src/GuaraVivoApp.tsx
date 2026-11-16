@@ -18,7 +18,7 @@ import { InAppNotificationProvider } from './contexts/InAppNotificationContext'
 import { RecordProgressProvider } from './contexts/RecordProgressContext'
 import { colors } from './constants/theme'
 import { setSessionExpiredHandler } from './services/apiClient'
-import { clearExpiredSession, restoreSession } from './services/authService'
+import { clearExpiredSession, openSession } from './services/authService'
 import { usePendingRecordsSync } from './hooks/usePendingRecordsSync'
 import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
@@ -91,7 +91,26 @@ export default function GuaraVivoApp() {
 			}
 		})
 
-		restoreSession()
+		// Abre com o usuario guardado no aparelho e confere a sessao em segundo plano.
+		openSession((user) => {
+			if (!mounted) {
+				return
+			}
+
+			if (!user) {
+				// O servidor recusou a sessao: de volta ao login.
+				setCurrentUser(null)
+				setIsAuthenticated(false)
+				return
+			}
+
+			// Mesma pessoa com dados novos (nome, permissao de admin): so troca se mudou.
+			setCurrentUser((previous) =>
+				previous && previous.id === user.id && JSON.stringify(previous) !== JSON.stringify(user)
+					? user
+					: previous,
+			)
+		})
 			.then((user) => {
 				if (!mounted) {
 					return
