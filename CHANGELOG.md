@@ -10,6 +10,7 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 - O aplicativo agora também está em inglês (en-US). A bandeirinha na tela de boas-vindas e na de entrar mostra o idioma atual e troca para o outro com um toque; no Perfil, o grupo "Conta" tem a opção "Idioma". A escolha fica só no aparelho e, na primeira abertura, o app começa em português. As datas seguem o idioma (em inglês, mês antes do dia e horário de 12 h com AM/PM), e o mapa do Google continua em português.
 
 ### Alterado
+- O APK ficou bem menor (de cerca de 85 MB para cerca de 44 MB): a versão de instalação passa a levar só o que os celulares Android usam. Quem já tem o app instalado não precisa fazer nada; ele não roda mais em emulador x86 sem tradução ARM.
 - O filtro de período do histórico agora usa um calendário só: toque no dia inicial e depois no final, com a faixa pintada, e atalhos de 7 dias, 30 dias e este mês. A data inicial não pode mais ficar maior que a final.
 
 ### Corrigido
