@@ -4,7 +4,6 @@ import {
   Pressable,
   ScrollView,
   Text,
-  useWindowDimensions,
   View,
   type LayoutChangeEvent,
 } from 'react-native'
@@ -20,7 +19,7 @@ import { appStyles } from '../styles/appStyles'
 import { countLabel } from '../utils/countLabel'
 import { formatDate, formatDateAtTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
-import { shouldCloseOnRelease } from '../utils/sheetClose'
+import { LOW_SNAP_FRACTION, shouldCloseOnRelease } from '../utils/sheetClose'
 import type { MapZoneRecordRead, MapZoneType } from '../types/api'
 import type { RootStackParamList } from '../types/navigation'
 import { colors } from '../constants/theme'
@@ -35,7 +34,6 @@ function formatZoneDate(value: string) {
   return formatDate(value)
 }
 
-const LOW_SNAP_FRACTION = 0.35
 const RECORD_FOCUS_IN_MS = 180
 const RECORD_FOCUS_OUT_MS = 450
 
@@ -120,7 +118,7 @@ export function MapZoneDetailSheet() {
   const RECORD_ROW_HEIGHT = 108
   const MAX_VISIBLE_ROWS = 4
 
-  const { height: windowHeight } = useWindowDimensions()
+  const closingByCodeRef = useRef(false)
   const snapPoints = [`${LOW_SNAP_FRACTION * 100}%`, '80%']
   const visibleZoneRecords = getVisibleMapZoneRecords(ctx.zoneRecords)
 
@@ -156,28 +154,25 @@ export function MapZoneDetailSheet() {
   // (antes ela só crescia depois de soltar). Na posição baixa, o excesso fica abaixo da tela.
   const handleSheetChange = useCallback(
     (index: number) => {
-      if (index === -1) ctx.closeSheet()
+      if (index === -1) {
+        closingByCodeRef.current = false
+        ctx.closeSheet()
+      }
     },
     [ctx],
   )
 
-  // Sem `enablePanDownToClose` (a biblioteca fecha por velocidade): a folha só fecha quando o dedo
-  // solta bem abaixo da parada baixa (ver utils/sheetClose.ts). A altura aproxima a folha em 35%.
+  // A biblioteca fecha a folha pela velocidade do arrasto (e fechava ao voltar de 80% para 35%). Ela avisa
+  // por `onAnimate` quando vai fechar; se o dedo não soltou bem abaixo da parada baixa, volta para ela
+  // (ver utils/sheetClose.ts). Fechamento pedido por nós (excluir) não é cancelado.
   const handleSheetAnimate = useCallback(
     (fromIndex: number, toIndex: number, fromPosition: number, toPosition: number) => {
-      if (
-        shouldCloseOnRelease({
-          fromIndex,
-          toIndex,
-          fromPosition,
-          toPosition,
-          sheetHeight: windowHeight * LOW_SNAP_FRACTION,
-        })
-      ) {
-        bottomSheetRef.current?.close()
+      if (toIndex !== -1 || closingByCodeRef.current) return
+      if (!shouldCloseOnRelease({ fromIndex, toIndex, fromPosition, toPosition })) {
+        bottomSheetRef.current?.snapToIndex(0)
       }
     },
-    [windowHeight],
+    [],
   )
 
   const handleCloseZoneDetail = useCallback(() => {
@@ -189,6 +184,7 @@ export function MapZoneDetailSheet() {
     const zoneId = ctx.selectedZone?.id
     if (zoneId === undefined) return
     ctx.openDeleteConfirm(zoneId)
+    closingByCodeRef.current = true
     bottomSheetRef.current?.close()
   }, [ctx])
 
@@ -198,9 +194,7 @@ export function MapZoneDetailSheet() {
       ref={bottomSheetRef}
       snapPoints={snapPoints}
       index={0}
-      enablePanDownToClose={false}
-      enableOverDrag
-      overDragResistanceFactor={1}
+      enablePanDownToClose
       onAnimate={handleSheetAnimate}
       onChange={handleSheetChange}
       backgroundStyle={appStyles.zoneBottomSheetBackground}
