@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Marker } from 'react-native-maps'
 
 type Props = {
@@ -10,13 +11,15 @@ type Props = {
 const userLocationImage = require('../../assets/images/user-location.png')
 
 export function UserLocationMarker({ latitude, longitude }: Props) {
+	const { t } = useTranslation('map')
+
 	return (
 		<Marker
 			coordinate={{ latitude, longitude }}
 			anchor={{ x: 0.5, y: 0.5 }}
 			image={userLocationImage}
-			title="Sua localização"
-			description="Localização atual"
+			title={t('marker.userTitle')}
+			description={t('marker.userDescription')}
 		/>
 	)
 }

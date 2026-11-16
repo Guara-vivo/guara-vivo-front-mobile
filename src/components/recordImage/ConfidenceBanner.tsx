@@ -1,9 +1,12 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
+import i18n from '../../i18n'
 import { colors } from '../../constants/theme'
 import { appStyles } from '../../styles/appStyles'
 import { WARNING_CODES } from '../../utils/analysisWarningCodes'
+import { countLabel } from '../../utils/countLabel'
 import {
 	getWarningMessage,
 	getWarningMessages,
@@ -31,8 +34,8 @@ type Variant = {
 }
 
 const ATTENTION_TITLES: Record<string, string> = {
-	sem_ave: 'Nenhuma ave encontrada',
-	sem_guara: 'Nenhum guará identificado',
+	sem_ave: 'banner.noBirdTitle',
+	sem_guara: 'banner.noIbisTitle',
 }
 
 const ATTENTION_FALLBACK_CODES: Record<string, string> = {
@@ -52,7 +55,7 @@ function getAttentionVariant(status: AnalysisStatus | null, avisos: string[]): V
 	return {
 		icon: 'alert-circle',
 		iconColor: colors.warning,
-		title: (status && ATTENTION_TITLES[status]) || 'Foto fora das melhores condições',
+		title: i18n.t(`detail:${(status && ATTENTION_TITLES[status]) || 'banner.attentionTitle'}`),
 		text,
 		box: appStyles.recordImageBannerMedium,
 		textStyle: appStyles.recordImageBannerTextMedium,
@@ -69,14 +72,14 @@ function getVariant(
 		return getAttentionVariant(status, avisos)
 	}
 
-	const guaras = `${count} ${count === 1 ? 'guará' : 'guarás'}`
+	const guaras = countLabel(count)
 
 	if (level === 'alta') {
 		return {
 			icon: 'checkmark-circle',
 			iconColor: colors.success,
-			title: 'Alta confiança',
-			text: `${guaras} com notas altas. Você pode confiar neste resultado.`,
+			title: i18n.t('detail:banner.highTitle'),
+			text: i18n.t('detail:banner.highText', { guaras }),
 			box: appStyles.recordImageBannerHigh,
 			textStyle: appStyles.recordImageBannerTextHigh,
 		}
@@ -86,8 +89,8 @@ function getVariant(
 		return {
 			icon: 'alert-circle',
 			iconColor: colors.warning,
-			title: 'Confiança média',
-			text: `${guaras} com notas medianas. Vale conferir a foto.`,
+			title: i18n.t('detail:banner.mediumTitle'),
+			text: i18n.t('detail:banner.mediumText', { guaras }),
 			box: appStyles.recordImageBannerMedium,
 			textStyle: appStyles.recordImageBannerTextMedium,
 		}
@@ -97,8 +100,8 @@ function getVariant(
 		return {
 			icon: 'warning',
 			iconColor: colors.dangerText,
-			title: 'Baixa confiança',
-			text: `${guaras} com notas baixas. Revise esta foto antes de usar o resultado.`,
+			title: i18n.t('detail:banner.lowTitle'),
+			text: i18n.t('detail:banner.lowText', { guaras }),
 			box: appStyles.recordImageBannerLow,
 			textStyle: appStyles.recordImageBannerTextLow,
 		}
@@ -107,8 +110,8 @@ function getVariant(
 	return {
 		icon: 'information-circle',
 		iconColor: colors.muted,
-		title: 'Sem detecções nesta imagem',
-		text: 'A análise não encontrou guarás nesta foto.',
+		title: i18n.t('detail:banner.noneTitle'),
+		text: i18n.t('detail:banner.noneText'),
 		box: appStyles.recordImageBannerNeutral,
 		textStyle: appStyles.recordImageBannerTextNeutral,
 	}
@@ -116,6 +119,8 @@ function getVariant(
 
 // Faixa de resumo da análise: cor, ícone e texto dizem o mesmo (a cor nunca é a única pista).
 export function ConfidenceBanner({ level, detectionCount, status = null, avisos = [] }: Props) {
+	// Só para re-renderizar quando o idioma muda; os textos saem de i18n.t em getVariant.
+	useTranslation('detail')
 	const variant = getVariant(level, detectionCount, status, avisos)
 
 	return (

@@ -1,15 +1,17 @@
 import React from 'react'
 import { View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../styles/appStyles'
 import { HeaderBackButton } from '../HeaderBackButton'
 import { Skeleton } from '../Skeleton'
 
 // Esqueleto da tela de detalhe: foto no topo (com o botão voltar), título, chips e dois cartões.
 export function RecordDetailSkeleton({ onBack }: { onBack: () => void }) {
+	const { t } = useTranslation('detail')
 	return (
 		<View
 			style={appStyles.recordDetailScreen}
-			accessibilityLabel="Carregando registro"
+			accessibilityLabel={t('loading')}
 			accessibilityLiveRegion="polite"
 		>
 			<View style={appStyles.recordDetailContent}>

@@ -1,5 +1,11 @@
-import { readFileSync } from 'fs'
+import { readdirSync, readFileSync } from 'fs'
 import { join } from 'path'
+
+// Os textos em português ficam nos arquivos de tradução; todos entram na conferência de acentos.
+const PT_LOCALE_DIR = 'src/i18n/locales/pt-BR'
+const ptLocaleFiles = readdirSync(join(process.cwd(), PT_LOCALE_DIR))
+	.filter((file) => file.endsWith('.ts'))
+	.map((file) => `${PT_LOCALE_DIR}/${file}`)
 
 const filesToCheck = [
 	'src/components/PasswordRules.tsx',
@@ -99,7 +105,7 @@ const unaccentedVisibleCopy = [
 
 describe('visible Portuguese copy', () => {
 	it('uses accents in user-facing strings', () => {
-		const source = filesToCheck
+		const source = [...filesToCheck, ...ptLocaleFiles]
 			.map((file) => readFileSync(join(process.cwd(), file), 'utf8'))
 			.join('\n')
 

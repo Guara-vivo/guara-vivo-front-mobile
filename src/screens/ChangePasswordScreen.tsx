@@ -1,6 +1,7 @@
 import React, { useCallback, useReducer, useState } from 'react'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -25,6 +26,7 @@ function reducer(state: State, action: { field: Field; value: string }): State {
 
 export function ChangePasswordScreen() {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation(['profile', 'common'])
 	const [state, dispatch] = useReducer(reducer, initialState)
 	const [showComingSoon, setShowComingSoon] = useState(false)
 	const status = getPasswordRuleStatus(state.newPassword, state.confirmPassword)
@@ -36,7 +38,7 @@ export function ChangePasswordScreen() {
 			style={appStyles.profileScreen}
 			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
 		>
-			<Header title="Alterar senha" leftIcon={<HeaderBackButton onPress={goBack} />} />
+			<Header title={t('profile:password.title')} leftIcon={<HeaderBackButton onPress={goBack} />} />
 
 			<ScrollView
 				contentContainerStyle={appStyles.settingsContent}
@@ -44,14 +46,14 @@ export function ChangePasswordScreen() {
 			>
 				<View style={appStyles.changePasswordCard}>
 					<AuthField
-						label="Senha atual"
+						label={t('profile:password.current')}
 						secure
 						value={state.currentPassword}
 						onChangeText={(value) => dispatch({ field: 'currentPassword', value })}
 						autoComplete="current-password"
 					/>
 					<AuthField
-						label="Nova senha"
+						label={t('profile:password.new')}
 						secure
 						value={state.newPassword}
 						onChangeText={(value) => dispatch({ field: 'newPassword', value })}
@@ -59,7 +61,7 @@ export function ChangePasswordScreen() {
 						hasError={!status.withinByteLimit}
 					/>
 					<AuthField
-						label="Confirmar nova senha"
+						label={t('profile:password.confirm')}
 						secure
 						value={state.confirmPassword}
 						onChangeText={(value) => dispatch({ field: 'confirmPassword', value })}
@@ -70,20 +72,20 @@ export function ChangePasswordScreen() {
 			</ScrollView>
 
 			<View style={appStyles.settingsFooter}>
-				<ActionButton title="Alterar senha" onPress={() => setShowComingSoon(true)} />
+				<ActionButton title={t('profile:password.title')} onPress={() => setShowComingSoon(true)} />
 				<Pressable
 					onPress={goBack}
 					accessibilityRole="button"
-					accessibilityLabel="Cancelar"
+					accessibilityLabel={t('common:cancel')}
 					style={appStyles.settingsCancelButton}
 				>
-					<Text style={appStyles.settingsCancelText}>Cancelar</Text>
+					<Text style={appStyles.settingsCancelText}>{t('common:cancel')}</Text>
 				</Pressable>
 			</View>
 
 			<ComingSoonModal
 				visible={showComingSoon}
-				message="A alteração de senha ainda não está disponível no aplicativo."
+				message={t('profile:password.unavailable')}
 				onClose={() => setShowComingSoon(false)}
 			/>
 		</KeyboardAvoidingView>

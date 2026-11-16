@@ -1,6 +1,8 @@
 import React from 'react'
 import { ScrollView, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { HeaderBackButton } from '../HeaderBackButton'
+import { LanguageToggle } from '../language/LanguageToggle'
 import { appStyles } from '../../styles/appStyles'
 
 type Props = {
@@ -16,6 +18,8 @@ type Props = {
 
 // Moldura comum do login e do cadastro: voltar, título grande, corpo rolável e rodapé fixo.
 export function AuthFrame({ title, subtitle, onBack, step, children, footer }: Props) {
+	const { t } = useTranslation('auth')
+
 	return (
 		<View style={appStyles.authScreen}>
 			<ScrollView
@@ -25,14 +29,17 @@ export function AuthFrame({ title, subtitle, onBack, step, children, footer }: P
 			>
 				<View style={appStyles.authHeaderRow}>
 					<HeaderBackButton onPress={onBack} />
-					{step ? (
-						<Text style={appStyles.authStepText}>
-							{step.current} de {step.total}
-						</Text>
-					) : null}
+					<View style={appStyles.authHeaderRight}>
+						{step ? (
+							<Text style={appStyles.authStepText}>
+								{t('register.stepOf', { current: step.current, total: step.total })}
+							</Text>
+						) : null}
+						<LanguageToggle />
+					</View>
 				</View>
 				{step ? (
-					<View style={appStyles.authProgress} accessible accessibilityLabel={`Passo ${step.current} de ${step.total}`}>
+					<View style={appStyles.authProgress} accessible accessibilityLabel={t('register.stepA11y', { current: step.current, total: step.total })}>
 						{Array.from({ length: step.total }, (_, index) => (
 							<View
 								key={index}

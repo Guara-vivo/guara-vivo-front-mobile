@@ -1,6 +1,7 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../../constants/theme'
 import { appStyles } from '../../styles/appStyles'
 import { registerStyles as styles } from './registerStyles'
@@ -18,13 +19,15 @@ export function RegisterLocationField({
 	onOpen,
 	onClear,
 }: Props) {
+	const { t } = useTranslation('register')
+
 	return (
 		<View style={appStyles.registerDateRow}>
 			<View style={appStyles.registerDateField}>
 				<Pressable
 					onPress={onOpen}
 					accessibilityRole="button"
-					accessibilityLabel={hasSelectedLocation ? "Localização selecionada. Alterar no mapa" : "Escolher localização no mapa. Usando a localização do dispositivo"}
+					accessibilityLabel={hasSelectedLocation ? t('location.changeA11y') : t('location.chooseA11y')}
 					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={styles.locationFieldContent}
@@ -35,7 +38,7 @@ export function RegisterLocationField({
 							!hasSelectedLocation && appStyles.registerDateFieldPlaceholder,
 						]}
 					>
-						{hasSelectedLocation ? 'Localização selecionada' : 'Localização atual do dispositivo'}
+						{hasSelectedLocation ? t('location.selected') : t('location.current')}
 					</Text>
 				</Pressable>
 				{!hasSelectedLocation && <Ionicons name="map-outline" size={16} color={colors.secondary} />}
@@ -44,7 +47,7 @@ export function RegisterLocationField({
 						onPress={onClear}
 						disabled={disabled}
 						accessibilityRole="button"
-						accessibilityLabel="Usar a localização do dispositivo"
+						accessibilityLabel={t('location.useDevice')}
 						style={styles.locationClearButton}
 					>
 						<Ionicons name="close-circle" size={20} color={colors.primary} />

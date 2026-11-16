@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import {
 	BottomSheetBackdrop,
 	BottomSheetModal,
@@ -35,6 +36,7 @@ export function HistoryFilterModal({
 	clearFilters: () => void
 	onClose: () => void
 }) {
+	const { t } = useTranslation('history')
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
 	const { zones, failed: zonesFailed } = useMapZoneOptions()
 	const [openSections, setOpenSections] = useState<Record<HistoryFilterSection, boolean>>({
@@ -90,12 +92,12 @@ export function HistoryFilterModal({
 		>
 			<View style={appStyles.filterHeader}>
 				<Text style={appStyles.filterTitle} accessibilityRole="header">
-					Filtros
+					{t('filters.title')}
 				</Text>
 				<Pressable
 					onPress={() => bottomSheetRef.current?.dismiss()}
 					accessibilityRole="button"
-					accessibilityLabel="Fechar filtros"
+					accessibilityLabel={t('filters.close')}
 					style={appStyles.filterClose}
 				>
 					<Ionicons name="close" size={22} color={colors.text} />
@@ -108,7 +110,7 @@ export function HistoryFilterModal({
 			>
 				<FilterSection
 					iconName="calendar-outline"
-					title="Período"
+					title={t('filters.period')}
 					isOpen={openSections.period}
 					onToggle={() => toggleSection('period')}
 				>
@@ -117,7 +119,7 @@ export function HistoryFilterModal({
 
 				<FilterSection
 					iconName="location-outline"
-					title="Localização"
+					title={t('filters.location')}
 					isOpen={openSections.location}
 					onToggle={() => toggleSection('location')}
 				>
@@ -131,7 +133,7 @@ export function HistoryFilterModal({
 
 				<FilterSection
 					iconName="people-outline"
-					title="Quantidade de guarás"
+					title={t('filters.quantity')}
 					isOpen={openSections.quantity}
 					onToggle={() => toggleSection('quantity')}
 				>
@@ -140,7 +142,7 @@ export function HistoryFilterModal({
 
 				<FilterSection
 					iconName="walk-outline"
-					title="Comportamentos"
+					title={t('filters.behaviors')}
 					isOpen={openSections.behaviors}
 					onToggle={() => toggleSection('behaviors')}
 				>
@@ -153,14 +155,14 @@ export function HistoryFilterModal({
 
 			<View style={appStyles.filterActions}>
 				<ActionButton
-					title="Limpar"
+					title={t('filters.clear')}
 					variant="outline"
 					fullWidth={false}
 					containerStyle={appStyles.filterAction}
 					onPress={clearFilters}
 				/>
 				<ActionButton
-					title="Aplicar filtros"
+					title={t('filters.apply')}
 					fullWidth={false}
 					containerStyle={appStyles.filterAction}
 					onPress={applyFilters}

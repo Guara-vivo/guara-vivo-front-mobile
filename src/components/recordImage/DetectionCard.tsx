@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../styles/appStyles'
 import type { DetectionItem } from '../../types/records'
 import { averageScore, formatPercent, isLowScore } from '../../utils/confidence'
@@ -13,10 +14,10 @@ import {
 import { colors } from '../../constants/theme'
 
 const ACCURACY_ITEMS = [
-	{ label: 'Ave detectada', key: 'deteccao_yolo' },
-	{ label: 'Guará-vermelho', key: 'classificacao_guara' },
-	{ label: 'Cor da plumagem', key: 'classificacao_cor' },
-	{ label: 'Fase da vida', key: 'classificacao_fase_vida' },
+	{ key: 'deteccao_yolo' },
+	{ key: 'classificacao_guara' },
+	{ key: 'classificacao_cor' },
+	{ key: 'classificacao_fase_vida' },
 ] as const
 
 type Props = {
@@ -31,6 +32,7 @@ export function getDetectionScore(detection: DetectionItem): number | null {
 }
 
 function ScoreBar({ label, value }: { label: string; value: number | undefined }) {
+	const { t } = useTranslation('detail')
 	const known = typeof value === 'number' && Number.isFinite(value)
 	const low = known && isLowScore(value)
 	const width = known ? `${Math.max(0, Math.min(1, value)) * 100}%` : '0%'
@@ -39,7 +41,7 @@ function ScoreBar({ label, value }: { label: string; value: number | undefined }
 		<View
 			style={appStyles.recordImageBarRow}
 			accessible
-			accessibilityLabel={`${label}: ${formatPercent(value)}${low ? ', nota baixa' : ''}`}
+			accessibilityLabel={t(low ? 'detection.barA11yLow' : 'detection.barA11y', { label, value: formatPercent(value) })}
 		>
 			<View style={appStyles.recordImageBarLabelRow}>
 				<Text style={appStyles.recordImageBarLabel}>{label}</Text>
@@ -60,6 +62,7 @@ function ScoreBar({ label, value }: { label: string; value: number | undefined }
 
 // Um guará detectado: cor da caixa, nota geral e, ao tocar, barras por critério.
 export function DetectionCard({ detection, index }: Props) {
+	const { t } = useTranslation('detail')
 	const [expanded, setExpanded] = useState(false)
 	const color = BBOX_COLORS[index % BBOX_COLORS.length]
 	const acuracia = detection.raw_detection?.acuracia
@@ -79,16 +82,16 @@ export function DetectionCard({ detection, index }: Props) {
 			<Pressable
 				onPress={() => setExpanded((current) => !current)}
 				accessibilityRole="button"
-				accessibilityLabel={`Guará ${index + 1}, nota geral ${formatPercent(score)}${hasWarning ? ', com aviso' : ''}`}
+				accessibilityLabel={t(hasWarning ? 'detection.a11yWarning' : 'detection.a11y', { n: index + 1, score: formatPercent(score) })}
 				accessibilityState={{ expanded }}
 				style={appStyles.recordImageDetectionHeader}
 			>
 				<View style={[appStyles.recordImageDetectionSwatch, { backgroundColor: color }]} />
 				<View style={appStyles.recordImageDetectionInfo}>
-					<Text style={appStyles.recordImageDetectionName}>Guará {index + 1}</Text>
+					<Text style={appStyles.recordImageDetectionName}>{t('detection.name', { n: index + 1 })}</Text>
 					<Text style={appStyles.recordImageDetectionMeta}>
 						{getPlumageLabel(detection.color)} · {getLifeStageLabel(detection.age_group)}
-						{hasWarning ? ' · Com aviso' : ''}
+						{hasWarning ? t('detection.withWarning') : ''}
 					</Text>
 				</View>
 				<Text
@@ -110,11 +113,11 @@ export function DetectionCard({ detection, index }: Props) {
 				<View style={appStyles.recordImageDetectionBody}>
 					{acuracia ? (
 						ACCURACY_ITEMS.map((item) => (
-							<ScoreBar key={item.key} label={item.label} value={acuracia[item.key]} />
+							<ScoreBar key={item.key} label={t(`detection.criteria.${item.key}`)} value={acuracia[item.key]} />
 						))
 					) : (
 						<Text style={appStyles.recordImageDetectionMeta}>
-							Esta detecção não trouxe notas detalhadas.
+							{t('detection.noScores')}
 						</Text>
 					)}
 					{warningMessages.map((message) => (
@@ -124,7 +127,7 @@ export function DetectionCard({ detection, index }: Props) {
 					))}
 					{hasLowScore ? (
 						<Text style={appStyles.recordImageLowNotice} accessibilityRole="alert">
-							Alguma nota está abaixo de 70%. Confira este guará na foto.
+							{t('detection.lowNotice')}
 						</Text>
 					) : null}
 				</View>

@@ -8,6 +8,7 @@ import {
 	View,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -46,6 +47,7 @@ function editProfileReducer(
 
 export function EditProfileScreen({ user }: { user: UserRead | null }) {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation(['profile', 'common', 'auth'])
 	const [state, dispatch] = useReducer(editProfileReducer, {
 		name: user?.name ?? '',
 		email: user?.email ?? '',
@@ -59,7 +61,7 @@ export function EditProfileScreen({ user }: { user: UserRead | null }) {
 			behavior={Platform.OS === 'ios' ? 'padding' : undefined}
 		>
 			<Header
-				title="Editar perfil"
+				title={t('profile:editProfile.title')}
 				leftIcon={<HeaderBackButton onPress={() => navigation.goBack()} />}
 			/>
 
@@ -73,14 +75,14 @@ export function EditProfileScreen({ user }: { user: UserRead | null }) {
 
 				<View style={appStyles.changePasswordCard}>
 					<AuthField
-						label="Nome"
+						label={t('profile:editProfile.name')}
 						value={state.name}
 						onChangeText={(text) => dispatch({ type: 'SET_NAME', payload: text })}
 						autoComplete="name"
 						textContentType="name"
 					/>
 					<AuthField
-						label="E-mail"
+						label={t('auth:login.email')}
 						value={state.email}
 						onChangeText={(text) => dispatch({ type: 'SET_EMAIL', payload: text })}
 						keyboardType="email-address"
@@ -93,20 +95,20 @@ export function EditProfileScreen({ user }: { user: UserRead | null }) {
 			</ScrollView>
 
 			<View style={appStyles.settingsFooter}>
-				<ActionButton title="Salvar" onPress={() => setShowComingSoon(true)} />
+				<ActionButton title={t('profile:editProfile.save')} onPress={() => setShowComingSoon(true)} />
 				<Pressable
 					onPress={() => navigation.goBack()}
 					accessibilityRole="button"
-					accessibilityLabel="Cancelar"
+					accessibilityLabel={t('common:cancel')}
 					style={appStyles.settingsCancelButton}
 				>
-					<Text style={appStyles.settingsCancelText}>Cancelar</Text>
+					<Text style={appStyles.settingsCancelText}>{t('common:cancel')}</Text>
 				</Pressable>
 			</View>
 
 			<ComingSoonModal
 				visible={showComingSoon}
-				message="A edição de perfil ainda não está disponível no aplicativo."
+				message={t('profile:editProfile.unavailable')}
 				onClose={() => setShowComingSoon(false)}
 			/>
 		</KeyboardAvoidingView>

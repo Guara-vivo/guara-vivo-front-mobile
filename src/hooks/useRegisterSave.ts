@@ -1,4 +1,5 @@
 import * as Location from 'expo-location'
+import i18n from '../i18n'
 import {
 	discardPendingRecord,
 	enqueueRecord,
@@ -49,8 +50,7 @@ export function useRegisterSave({
 
 		if (images.selectedImages.length === 0) {
 			showErrorFeedback(
-				'Imagem obrigatória',
-				'Adicione pelo menos uma imagem para salvar o registro.',
+				i18n.t('register:feedback.imageRequired.title'), i18n.t('register:feedback.imageRequired.message'),
 			)
 			return
 		}
@@ -59,8 +59,7 @@ export function useRegisterSave({
 
 		if (apiBehaviors.length === 0) {
 			showErrorFeedback(
-				'Comportamento inválido',
-				'Selecione um comportamento válido para enviar o registro.',
+				i18n.t('register:feedback.behaviorInvalid.title'), i18n.t('register:feedback.behaviorInvalid.message'),
 			)
 			return
 		}
@@ -79,8 +78,7 @@ export function useRegisterSave({
 
 				if (!permission.granted) {
 					showErrorFeedback(
-						'Permissão necessária',
-						'Permita acesso à localização para enviar o registro.',
+						i18n.t('register:feedback.locationPermission.title'), i18n.t('register:feedback.locationPermission.message'),
 					)
 					setIsSaving(false)
 					return

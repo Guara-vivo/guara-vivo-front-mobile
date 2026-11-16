@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import {
@@ -10,11 +11,14 @@ import {
 } from '../utils/passwordRules'
 
 function Rule({ ok, bad = false, text }: { ok: boolean; bad?: boolean; text: string }) {
+	const { t } = useTranslation('auth')
+	const state = t(ok ? 'rules.met' : bad ? 'rules.unmet' : 'rules.pending')
+
 	return (
 		<View
 			style={appStyles.authRuleRow}
 			accessible
-			accessibilityLabel={`${text}: ${ok ? 'cumprida' : bad ? 'não cumprida' : 'pendente'}`}
+			accessibilityLabel={t('rules.state', { text, state })}
 		>
 			<View
 				style={[
@@ -41,15 +45,17 @@ function Rule({ ok, bad = false, text }: { ok: boolean; bad?: boolean; text: str
 
 // Lista de regras da senha: cada uma acende quando cumprida. O limite de bytes só aparece quando estoura.
 export function PasswordRules({ status }: { status: PasswordRuleStatus }) {
+	const { t } = useTranslation('auth')
+
 	return (
 		<View style={appStyles.authRules}>
-			<Rule ok={status.minLength} text={`Pelo menos ${MIN_PASSWORD_LENGTH} caracteres`} />
-			<Rule ok={status.matches} text="As duas senhas são iguais" />
+			<Rule ok={status.minLength} text={t('rules.minLength', { min: MIN_PASSWORD_LENGTH })} />
+			<Rule ok={status.matches} text={t('rules.matches')} />
 			{!status.withinByteLimit ? (
 				<Rule
 					ok={false}
 					bad
-					text={`Máximo de ${MAX_PASSWORD_BYTES} bytes (acentos e símbolos ocupam mais espaço)`}
+					text={t('rules.tooLong', { max: MAX_PASSWORD_BYTES })}
 				/>
 			) : null}
 		</View>

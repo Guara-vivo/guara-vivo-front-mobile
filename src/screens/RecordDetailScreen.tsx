@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { AiAnalysisCard } from '../components/recordDetail/AiAnalysisCard'
 import { ImageCarouselCard } from '../components/recordDetail/ImageCarouselCard'
@@ -19,6 +20,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 export function RecordDetailScreen() {
 	const navigation = useNavigation<NavigationProp>()
 	const route = useRoute<RouteProp<RootStackParamList, 'RecordDetail'>>()
+	const { t } = useTranslation('detail')
 	const recordId = route.params?.recordId
 
 	const { record, isLoading, isRefreshing, isFetchingDetail, loadError, retry, handleRefresh } =
@@ -35,7 +37,7 @@ export function RecordDetailScreen() {
 	}
 
 	if (!record) {
-		return <RecordDetailMessage onBack={goBack} message="Registro não encontrado." />
+		return <RecordDetailMessage onBack={goBack} message={t('notFound')} />
 	}
 
 	const imageUris = record.images ?? []

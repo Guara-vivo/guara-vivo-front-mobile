@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../styles/appStyles'
 import type { RegisterStep } from '../../utils/registerSteps'
 import { HeaderBackButton } from '../HeaderBackButton'
@@ -15,17 +16,18 @@ type Props = {
 
 // Topo do registro: voltar, "Passo n de 3", barra de progresso e a pergunta do passo.
 export function RegisterStepHeader({ step, title, hint, onBack }: Props) {
+	const { t } = useTranslation('register')
 	return (
 		<View style={appStyles.registerStepHeader}>
 			<View style={appStyles.registerStepTopRow}>
 				<HeaderBackButton onPress={onBack} />
-				<Text style={appStyles.registerStepCount}>{`Passo ${step} de ${STEPS.length}`}</Text>
+				<Text style={appStyles.registerStepCount}>{t('stepCount', { step, total: STEPS.length })}</Text>
 			</View>
 			<View
 				style={appStyles.registerProgressRow}
 				accessible
 				accessibilityRole="progressbar"
-				accessibilityLabel={`Passo ${step} de ${STEPS.length}`}
+				accessibilityLabel={t('stepCount', { step, total: STEPS.length })}
 				accessibilityValue={{ min: 1, max: STEPS.length, now: step }}
 			>
 				{STEPS.map((item) => (

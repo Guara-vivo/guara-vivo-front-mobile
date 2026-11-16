@@ -1,6 +1,8 @@
 import { Animated } from 'react-native'
 import { Marker } from 'react-native-maps'
+import { useTranslation } from 'react-i18next'
 import type { MapZoneRecordRead } from '../../types/api'
+import { countLabel } from '../../utils/countLabel'
 
 type RecordMarkerProps = {
 	record: MapZoneRecordRead
@@ -17,6 +19,7 @@ const RECORD_IMAGE = require('../../assets/images/record-marker.png')
 const RECORD_IMAGE_FOCUSED = require('../../assets/images/record-marker-selected.png')
 
 export function RecordMarker({ record, focused, onPress }: RecordMarkerProps) {
+	const { t } = useTranslation('map')
 	return (
 		<Marker
 			coordinate={{
@@ -27,7 +30,7 @@ export function RecordMarker({ record, focused, onPress }: RecordMarkerProps) {
 			anchor={{ x: 0.5, y: 0.5 }}
 			zIndex={focused ? 201 : 200}
 			image={focused ? RECORD_IMAGE_FOCUSED : RECORD_IMAGE}
-			accessibilityLabel={`Registro ${record.id}, ${record.ibis_quantity ?? 0} guarás`}
+			accessibilityLabel={t('marker.record', { id: record.id, ibis: countLabel(record.ibis_quantity ?? 0) })}
 		/>
 	)
 }

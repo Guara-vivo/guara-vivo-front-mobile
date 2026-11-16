@@ -2,6 +2,7 @@ import React, { forwardRef, useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import type { TextInputProps } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../../constants/theme'
 import { appStyles } from '../../styles/appStyles'
 
@@ -17,6 +18,7 @@ export const AuthField = forwardRef<TextInput, Props>(function AuthField(
 	{ label, secure = false, hasError = false, onFocus, onBlur, ...inputProps },
 	ref,
 ) {
+	const { t } = useTranslation('auth')
 	const [focused, setFocused] = useState(false)
 	const [visible, setVisible] = useState(false)
 
@@ -52,7 +54,7 @@ export const AuthField = forwardRef<TextInput, Props>(function AuthField(
 					<Pressable
 						onPress={() => setVisible((current) => !current)}
 						accessibilityRole="button"
-						accessibilityLabel={visible ? `Ocultar ${label}` : `Mostrar ${label}`}
+						accessibilityLabel={t(visible ? 'field.hide' : 'field.show', { label })}
 						style={appStyles.authFieldEye}
 					>
 						<Ionicons

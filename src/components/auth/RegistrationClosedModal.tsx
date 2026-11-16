@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../../constants/theme'
 import FeedbackModal from '../FeedbackModal'
 
@@ -11,11 +12,13 @@ export function RegistrationClosedModal({
 	visible: boolean
 	onClose: () => void
 }) {
+	const { t } = useTranslation('auth')
+
 	return (
 		<FeedbackModal
 			visible={visible}
-			title="Cadastro indisponível"
-			message="O cadastro de novas contas está fechado no momento. Se você já tem uma conta, use o botão Entrar."
+			title={t('registrationClosed.title')}
+			message={t('registrationClosed.message')}
 			iconName="information-circle-outline"
 			iconColor={colors.secondary}
 			onConfirm={onClose}

@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -12,31 +13,12 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
 type PreferenceId = 'newRecords' | 'mapUpdates' | 'monthlyReport' | 'systemAlerts'
 
-const PREFERENCES: { id: PreferenceId; title: string; subtitle: string }[] = [
-	{
-		id: 'newRecords',
-		title: 'Novos registros',
-		subtitle: 'Receba notificações sobre novos avistamentos',
-	},
-	{
-		id: 'mapUpdates',
-		title: 'Atualizações de mapas',
-		subtitle: 'Notifique quando houver mudanças nos mapas de calor',
-	},
-	{
-		id: 'monthlyReport',
-		title: 'Relatório mensal',
-		subtitle: 'Resumo mensal de atividades e estatísticas',
-	},
-	{
-		id: 'systemAlerts',
-		title: 'Alertas do sistema',
-		subtitle: 'Avisos importantes e atualizações do aplicativo',
-	},
-]
+// Os textos de cada preferência ficam em `profile:notificationsScreen.<id>`.
+const PREFERENCES: PreferenceId[] = ['newRecords', 'mapUpdates', 'monthlyReport', 'systemAlerts']
 
 export function NotificationsScreen() {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation('profile')
 	const [enabled, setEnabled] = useState<Record<PreferenceId, boolean>>({
 		newRecords: true,
 		mapUpdates: false,
@@ -53,30 +35,30 @@ export function NotificationsScreen() {
 
 	return (
 		<View style={appStyles.profileScreen}>
-			<Header title="Notificações" leftIcon={<HeaderBackButton onPress={goBack} />} />
+			<Header title={t('notificationsScreen.title')} leftIcon={<HeaderBackButton onPress={goBack} />} />
 
 			<ScrollView contentContainerStyle={appStyles.settingsContent}>
 				<View style={appStyles.notificationsCard}>
-					{PREFERENCES.map((item, index) => (
+					{PREFERENCES.map((id, index) => (
 						<Pressable
-							key={item.id}
-							onPress={() => toggle(item.id)}
+							key={id}
+							onPress={() => toggle(id)}
 							accessibilityRole="switch"
-							accessibilityLabel={item.title}
-							accessibilityHint={item.subtitle}
-							accessibilityState={{ checked: enabled[item.id] }}
+							accessibilityLabel={t(`notificationsScreen.${id}.title`)}
+							accessibilityHint={t(`notificationsScreen.${id}.subtitle`)}
+							accessibilityState={{ checked: enabled[id] }}
 							style={[
 								appStyles.notificationsItem,
 								index > 0 && appStyles.notificationsItemDivider,
 							]}
 						>
 							<View style={appStyles.notificationsTextWrap}>
-								<Text style={appStyles.notificationsItemTitle}>{item.title}</Text>
-								<Text style={appStyles.notificationsItemSubtitle}>{item.subtitle}</Text>
+								<Text style={appStyles.notificationsItemTitle}>{t(`notificationsScreen.${id}.title`)}</Text>
+								<Text style={appStyles.notificationsItemSubtitle}>{t(`notificationsScreen.${id}.subtitle`)}</Text>
 							</View>
 							{/* A linha inteira alterna (alvo de toque grande); o Switch é só o indicador. */}
 							<Switch
-								value={enabled[item.id]}
+								value={enabled[id]}
 								pointerEvents="none"
 								importantForAccessibility="no-hide-descendants"
 								accessibilityElementsHidden

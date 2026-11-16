@@ -8,30 +8,29 @@ import {
   type LayoutChangeEvent,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 import { Skeleton } from './Skeleton'
 import { appStyles } from '../styles/appStyles'
-import { formatDate, formatTime } from '../utils/recordFormatters'
+import { countLabel } from '../utils/countLabel'
+import { formatDate, formatDateAtTime } from '../utils/recordFormatters'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 import type { MapZoneRecordRead, MapZoneType } from '../types/api'
 import type { RootStackParamList } from '../types/navigation'
 import { colors } from '../constants/theme'
 
 function formatZoneType(type: MapZoneType) {
-  return type === 'feeding' ? 'Alimentação' : 'Ninho'
+  return i18n.t(type === 'feeding' ? 'map:sheet.typeFeeding' : 'map:sheet.typeNest')
 }
 
 function formatZoneDate(value: string) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+  return formatDate(value)
 }
 
 const RECORD_FOCUS_IN_MS = 180
@@ -46,6 +45,7 @@ type ZoneRecordRowProps = {
 }
 
 function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: ZoneRecordRowProps) {
+  const { t } = useTranslation('map')
   const focusValue = useRef(new Animated.Value(selected ? 1 : 0)).current
 
   useEffect(() => {
@@ -73,13 +73,13 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
       <Animated.View style={[appStyles.mapZoneRecordFocusAccent, focusStyle]} />
       <Pressable onPress={() => onSelect(record.id)}
         accessibilityRole="button"
-        accessibilityLabel={`Registro ${record.id}, localizar no mapa`}>
+        accessibilityLabel={t('sheet.recordA11y', { id: record.id })}>
         <View style={appStyles.mapZoneRecordMainRow}>
           <Text style={appStyles.mapZoneRecordId}>
             #{String(record.id).padStart(3, '0')}
           </Text>
           <Text style={appStyles.mapZoneRecordDate}>
-            {formatDate(record.date_time)} às {formatTime(record.date_time)}
+            {formatDateAtTime(record.date_time)}
           </Text>
         </View>
         <Text numberOfLines={1} style={appStyles.mapZoneRecordAuthor}>
@@ -89,18 +89,17 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
       <View style={appStyles.mapZoneRecordFooter}>
         <View style={appStyles.mapZoneRecordChip}>
           <Text style={appStyles.mapZoneRecordChipText}>
-            {record.ibis_quantity ?? 0}{' '}
-            {(record.ibis_quantity ?? 0) === 1 ? 'guará' : 'guarás'}
+            {countLabel(record.ibis_quantity ?? 0)}
           </Text>
         </View>
         <Pressable
           onPress={() => onOpenDetails(record.id)}
           accessibilityRole="button"
-          accessibilityLabel={`Ver detalhes do registro ${record.id}`}
+          accessibilityLabel={t('sheet.detailsA11y', { id: record.id })}
           hitSlop={8}
           style={appStyles.mapZoneRecordDetailsButton}
         >
-          <Text style={appStyles.mapZoneRecordDetailsButtonText}>Ver detalhes</Text>
+          <Text style={appStyles.mapZoneRecordDetailsButtonText}>{t('sheet.details')}</Text>
           <Ionicons name="chevron-forward" size={16} color={colors.secondary} />
         </Pressable>
       </View>
@@ -109,6 +108,7 @@ function ZoneRecordRow({ record, selected, onSelect, onOpenDetails, onLayout }: 
 }
 
 export function MapZoneDetailSheet() {
+  const { t } = useTranslation('map')
   const ctx = useMapZoneDetail()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const bottomSheetRef = useRef<BottomSheet>(null)
@@ -216,7 +216,7 @@ export function MapZoneDetailSheet() {
                     <Pressable
                       onPress={handleDeletePress}
                       accessibilityRole="button"
-                      accessibilityLabel="Excluir área"
+                      accessibilityLabel={t('sheet.delete')}
                       disabled={ctx.isDeleting}
                       hitSlop={8}
                       style={appStyles.mapZoneInfoDeleteIconButton}
@@ -227,7 +227,7 @@ export function MapZoneDetailSheet() {
                   <Pressable
                     onPress={handleCloseZoneDetail}
                     accessibilityRole="button"
-                    accessibilityLabel="Fechar detalhes da área"
+                    accessibilityLabel={t('sheet.close')}
                     disabled={ctx.isDeleting}
                     hitSlop={8}
                     style={appStyles.mapZoneInfoCloseButton}
@@ -242,7 +242,7 @@ export function MapZoneDetailSheet() {
                   <Text style={appStyles.mapZoneInfoValue}>
                     {ctx.selectedZone.radius_meters} m
                   </Text>
-                  <Text style={appStyles.mapZoneInfoLabel}>de raio</Text>
+                  <Text style={appStyles.mapZoneInfoLabel}>{t('sheet.radiusLabel')}</Text>
                 </View>
                 <View style={appStyles.mapZoneInfoMetric}>
                   {ctx.isZoneRecordsLoading ? (
@@ -254,15 +254,15 @@ export function MapZoneDetailSheet() {
                   )}
                   <Text style={appStyles.mapZoneInfoLabel}>
                     {!ctx.isZoneRecordsLoading && visibleZoneRecords.length === 1
-                      ? 'registro'
-                      : 'registros'}
+                      ? t('sheet.recordsOne')
+                      : t('sheet.recordsMany')}
                   </Text>
                 </View>
                 <View style={appStyles.mapZoneInfoMetric}>
                   <Text style={appStyles.mapZoneInfoValueSmall}>
                     {formatZoneDate(ctx.selectedZone.created_at)}
                   </Text>
-                  <Text style={appStyles.mapZoneInfoLabel}>criada em</Text>
+                  <Text style={appStyles.mapZoneInfoLabel}>{t('sheet.createdAt')}</Text>
                 </View>
               </View>
 
@@ -276,12 +276,12 @@ export function MapZoneDetailSheet() {
 
               <View style={appStyles.mapZoneRecordsSection}>
                 <Text accessibilityRole="header" style={appStyles.mapZoneRecordsTitle}>
-                  Registros na área
+                  {t('sheet.recordsTitle')}
                 </Text>
                 {ctx.isZoneRecordsLoading ? (
                   <View
                     accessible
-                    accessibilityLabel="Carregando registros da área"
+                    accessibilityLabel={t('sheet.recordsLoading')}
                     accessibilityLiveRegion="polite"
                   >
                     {[0, 1].map((index) => (
@@ -325,7 +325,7 @@ export function MapZoneDetailSheet() {
                     </View>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
-                    Nenhum registro com guarás identificados nesta área.
+                    {t('sheet.recordsEmpty')}
                   </Text>
                 )}
               </View>

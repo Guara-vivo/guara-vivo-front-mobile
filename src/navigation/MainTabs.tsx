@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import { Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { HomeScreen } from '../screens/HomeScreen'
 import { RegisterScreen } from '../screens/RegisterScreen'
@@ -18,12 +19,14 @@ const BASE_TAB_BAR_HEIGHT = 72
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
 type TabBarIconProps = { color: string; focused: boolean }
 type TabIconProps = TabBarIconProps & {
-	label: string
+	labelKey: string
 	icon: IoniconName
 	focusedIcon: IoniconName
 }
 
-function TabIcon({ color, focused, label, icon, focusedIcon }: TabIconProps) {
+function TabIcon({ color, focused, labelKey, icon, focusedIcon }: TabIconProps) {
+	const { t } = useTranslation('nav')
+
 	return (
 		<View style={appStyles.bottomNavTabContent}>
 			<View style={[appStyles.bottomNavPill, focused && appStyles.bottomNavPillActive]}>
@@ -34,7 +37,7 @@ function TabIcon({ color, focused, label, icon, focusedIcon }: TabIconProps) {
 				allowFontScaling={false}
 				style={[appStyles.bottomNavLabel, { color }, focused && appStyles.bottomNavLabelActive]}
 			>
-				{label}
+				{t(labelKey)}
 			</Text>
 		</View>
 	)
@@ -42,7 +45,9 @@ function TabIcon({ color, focused, label, icon, focusedIcon }: TabIconProps) {
 
 // Botão central de Registrar: a ação mais usada do app, sempre em vermelho e dentro da barra
 // (fora dela o Android não entrega o toque).
-function RegisterTabIcon() {
+function RegisterTab() {
+	const { t } = useTranslation('nav')
+
 	return (
 		<View style={appStyles.bottomNavTabContent}>
 			<View style={appStyles.bottomNavRegisterButton}>
@@ -53,26 +58,31 @@ function RegisterTabIcon() {
 				allowFontScaling={false}
 				style={[appStyles.bottomNavLabel, appStyles.bottomNavLabelRegister]}
 			>
-				Registrar
+				{t('register')}
 			</Text>
 		</View>
 	)
 }
 
+// O navegador chama `tabBarIcon` como função comum, então o texto (que usa hook) fica num componente.
+function RegisterTabIcon() {
+	return <RegisterTab />
+}
+
 function HomeTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Início" icon="home-outline" focusedIcon="home" />
+	return <TabIcon {...props} labelKey="home" icon="home-outline" focusedIcon="home" />
 }
 
 function MapsTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Mapas" icon="map-outline" focusedIcon="map" />
+	return <TabIcon {...props} labelKey="maps" icon="map-outline" focusedIcon="map" />
 }
 
 function HistoryTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Histórico" icon="list" focusedIcon="list" />
+	return <TabIcon {...props} labelKey="history" icon="list" focusedIcon="list" />
 }
 
 function ProfileTabIcon(props: TabBarIconProps) {
-	return <TabIcon {...props} label="Perfil" icon="person-outline" focusedIcon="person" />
+	return <TabIcon {...props} labelKey="profile" icon="person-outline" focusedIcon="person" />
 }
 
 type MainTabsProps = {
@@ -81,6 +91,7 @@ type MainTabsProps = {
 }
 
 export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
+	const { t } = useTranslation('nav')
 	// Soma o inset do sistema (gestos/botões) à altura da barra, para o branco ir até o fim da tela.
 	const { bottom: bottomInset } = useSafeAreaInsets()
 	const tabBarStyle = useMemo(
@@ -107,7 +118,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				name="Home"
 				options={{
 					tabBarIcon: HomeTabIcon,
-					tabBarAccessibilityLabel: 'Início',
+					tabBarAccessibilityLabel: t('home'),
 				}}
 			>
 				{() => <HomeScreen userName={currentUser?.name} />}
@@ -117,7 +128,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={MapsScreen} 
 				options={{
 					tabBarIcon: MapsTabIcon,
-					tabBarAccessibilityLabel: 'Mapas',
+					tabBarAccessibilityLabel: t('maps'),
 				}}
 			/>
 			<Tab.Screen 
@@ -125,7 +136,7 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={RegisterScreen} 
 				options={{
 					tabBarIcon: RegisterTabIcon,
-					tabBarAccessibilityLabel: 'Registrar',
+					tabBarAccessibilityLabel: t('register'),
 					// O registro em passos ocupa a tela toda: a barra volta ao sair dele.
 					tabBarStyle: [tabBarStyle, { display: 'none' }],
 				}}
@@ -135,14 +146,14 @@ export function MainTabs({ currentUser, onLogoutSuccess }: MainTabsProps) {
 				component={HistoryScreen} 
 				options={{
 					tabBarIcon: HistoryTabIcon,
-					tabBarAccessibilityLabel: 'Histórico',
+					tabBarAccessibilityLabel: t('history'),
 				}}
 			/>
 			<Tab.Screen 
 				name="Profile" 
 				options={{
 					tabBarIcon: ProfileTabIcon,
-					tabBarAccessibilityLabel: 'Perfil',
+					tabBarAccessibilityLabel: t('profile'),
 				}}
 			>
 				{() => (

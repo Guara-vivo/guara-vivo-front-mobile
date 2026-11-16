@@ -1,3 +1,4 @@
+import i18n from '../i18n'
 import React, {
 	createContext,
 	useCallback,
@@ -88,7 +89,7 @@ export function MapZoneDetailProvider({
 			})
 			.catch((error: unknown) => {
 				if (mounted && error instanceof Error && error.name !== 'AbortError') {
-					setZoneRecordsError(getLoadErrorMessage(error, 'Não foi possível carregar os registros desta área.'))
+					setZoneRecordsError(getLoadErrorMessage(error, i18n.t('map:sheet.recordsLoadError')))
 				}
 			})
 			.finally(() => {

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import { appStyles } from '../styles/appStyles'
 import { colors } from '../constants/theme'
@@ -16,6 +17,7 @@ export function MapZoneDeleteConfirmSheet({
 	onCancel,
 	isDeleting,
 }: MapZoneDeleteConfirmSheetProps) {
+	const { t } = useTranslation('map')
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
 
 	useEffect(() => {
@@ -52,10 +54,10 @@ export function MapZoneDeleteConfirmSheet({
 					<Ionicons name="trash-outline" size={26} color={colors.dangerText} />
 				</View>
 				<Text accessibilityRole="header" style={appStyles.zoneModalTitle}>
-					Excluir esta área?
+					{t('remove.title')}
 				</Text>
 				<Text style={appStyles.zoneDeleteConfirmText}>
-					Essa ação não pode ser desfeita.
+					{t('remove.text')}
 				</Text>
 				<View style={appStyles.zoneModalButtonContainer}>
 					<Pressable
@@ -65,10 +67,10 @@ export function MapZoneDeleteConfirmSheet({
 						]}
 						onPress={onCancel}
 						accessibilityRole="button"
-						accessibilityLabel="Cancelar"
+						accessibilityLabel={t('common:cancel')}
 						disabled={isDeleting}
 					>
-						<Text style={appStyles.zoneDeleteCancelText}>Cancelar</Text>
+						<Text style={appStyles.zoneDeleteCancelText}>{t('common:cancel')}</Text>
 					</Pressable>
 					<Pressable
 						style={[
@@ -77,14 +79,14 @@ export function MapZoneDeleteConfirmSheet({
 						]}
 						onPress={onConfirm}
 						accessibilityRole="button"
-						accessibilityLabel="Excluir área"
+						accessibilityLabel={t('remove.deleteA11y')}
 						accessibilityState={{ busy: isDeleting, disabled: isDeleting }}
 						disabled={isDeleting}
 					>
 						{isDeleting ? (
 							<ActivityIndicator size="small" color={colors.onColor} />
 						) : (
-							<Text style={appStyles.zoneDeleteConfirmButtonText}>Excluir</Text>
+							<Text style={appStyles.zoneDeleteConfirmButtonText}>{t('remove.delete')}</Text>
 						)}
 					</Pressable>
 				</View>

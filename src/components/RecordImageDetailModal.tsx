@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../styles/appStyles'
 import type { RecordDetailItem } from '../types/records'
 import { averageScore, getConfidenceLevel } from '../utils/confidence'
@@ -49,6 +50,8 @@ export function RecordImageDetailModal({
 	const canGoPrevious = imageIndex > 0
 	const canGoNext = imageIndex < totalImages - 1
 
+	const { t } = useTranslation('detail')
+
 	const level = useMemo(() => {
 		const score = averageScore((detections ?? []).map(getDetectionScore))
 		return score === null ? null : getConfidenceLevel(score)
@@ -67,13 +70,13 @@ export function RecordImageDetailModal({
 			<View style={appStyles.recordImageModalScreen} accessibilityViewIsModal>
 				<View style={[appStyles.recordImageModalTopBar, { paddingTop: insets.top }]}>
 					<Text style={appStyles.recordImageModalTitle} accessibilityRole="header">
-						Análise da imagem
+						{t('modal.title')}
 					</Text>
 					<Pressable
 						onPress={onClose}
 						hitSlop={8}
 						accessibilityRole="button"
-						accessibilityLabel="Fechar análise"
+						accessibilityLabel={t('modal.close')}
 						style={appStyles.headerActionButton}
 					>
 						<Ionicons name="close" size={22} color={colors.text} />
@@ -127,7 +130,7 @@ export function RecordImageDetailModal({
 							<Pressable
 								onPress={() => handleImageChange(imageIndex - 1)}
 								accessibilityRole="button"
-								accessibilityLabel="Imagem anterior"
+								accessibilityLabel={t('images.previous')}
 								style={[appStyles.recordImageModalArrow, appStyles.recordImageModalArrowLeft]}
 							>
 								<Ionicons name="chevron-back" size={24} color={colors.onColor} />
@@ -138,7 +141,7 @@ export function RecordImageDetailModal({
 							<Pressable
 								onPress={() => handleImageChange(imageIndex + 1)}
 								accessibilityRole="button"
-								accessibilityLabel="Próxima imagem"
+								accessibilityLabel={t('images.next')}
 								style={[appStyles.recordImageModalArrow, appStyles.recordImageModalArrowRight]}
 							>
 								<Ionicons name="chevron-forward" size={24} color={colors.onColor} />
@@ -165,7 +168,7 @@ export function RecordImageDetailModal({
 					) : (
 						<View style={appStyles.recordImageEmpty}>
 							<Text style={appStyles.recordImageEmptyText}>
-								Aguardando análise desta imagem...
+								{t('modal.empty')}
 							</Text>
 						</View>
 					)}

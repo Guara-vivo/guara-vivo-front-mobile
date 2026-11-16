@@ -1,6 +1,9 @@
 import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
+import { behaviorLabel } from '../utils/behaviorLabel'
+import { countLabel } from '../utils/countLabel'
 import { isAnalysisInProgress } from '../utils/historyRecords'
 import { formatTime } from '../utils/recordFormatters'
 import AnalysisProgressIndicator from './AnalysisProgressIndicator'
@@ -21,19 +24,20 @@ function HistoryRecordCardBase({
 	onOpenRecord: (id: number) => void
 	onDiscard?: (clientUuid: string) => void
 }) {
+	const { t } = useTranslation('history')
 	const syncState = item.sync_state
 	const behaviorTags = String(item.flock_size)
 		.split(',')
-		.map((t) => t.trim())
+		.map((tag) => tag.trim())
 		.filter(Boolean)
 	const areaLabel = item.map_zones.length
 		? item.map_zones.map((zone) => zone.name).join(' · ')
-		: 'Sem área'
+		: t('card.noArea')
 	const photo = item.images?.[0]
 	// Enquanto a IA analisa (ou o registro espera para ser enviado), a contagem 0 não vale: mostra
 	// esqueleto no lugar.
 	const analyzing = isAnalysisInProgress(item)
-	const guaras = `${item.ibis_quantity} ${item.ibis_quantity === 1 ? 'guará' : 'guarás'}`
+	const guaras = countLabel(item.ibis_quantity)
 	const meta = `${formatTime(item.datetime)}${syncState ? '' : ` · #${item.id}`} · ${areaLabel}`
 
 	const content = (
@@ -42,7 +46,7 @@ function HistoryRecordCardBase({
 				<SkeletonImage
 					uri={photo}
 					style={appStyles.historyRecordThumb}
-					accessibilityLabel={`Foto do registro ${item.id}`}
+					accessibilityLabel={t('card.photo', { id: item.id })}
 				/>
 			) : (
 				<View style={appStyles.historyRecordThumb}>
@@ -52,7 +56,7 @@ function HistoryRecordCardBase({
 
 			<View style={appStyles.historyRecordBody}>
 				{syncState === 'failed' ? (
-					<Text style={appStyles.historyRecordTitle}>Não enviado</Text>
+					<Text style={appStyles.historyRecordTitle}>{t('card.notSent')}</Text>
 				) : analyzing || syncState ? (
 					<Skeleton width={96} height={20} radius={6} style={appStyles.historyRecordTitleSkeleton} />
 				) : (
@@ -74,7 +78,7 @@ function HistoryRecordCardBase({
 								syncState === 'failed' && appStyles.historySyncChipTextFailed,
 							]}
 						>
-							{syncState === 'failed' ? 'Recusado' : 'Aguardando envio'}
+							{syncState === 'failed' ? t('card.refused') : t('card.waitingToSend')}
 						</Text>
 					</View>
 				) : (
@@ -82,7 +86,7 @@ function HistoryRecordCardBase({
 						<View style={appStyles.historyTagRow}>
 							{behaviorTags.map((tag) => (
 								<View key={`${item.client_uuid ?? item.id}-${tag}`} style={appStyles.historyTagChip}>
-									<Text style={appStyles.historyTagChipText}>{tag}</Text>
+									<Text style={appStyles.historyTagChipText}>{behaviorLabel(tag)}</Text>
 								</View>
 							))}
 						</View>
@@ -114,10 +118,10 @@ function HistoryRecordCardBase({
 						onPress={() => onDiscard(item.client_uuid as string)}
 						accessibilityRole="button"
 						hitSlop={4}
-						accessibilityLabel="Descartar registro recusado"
+						accessibilityLabel={t('card.discardA11y')}
 						style={[appStyles.historyDetailButton, appStyles.historyDiscardButton]}
 					>
-						<Text style={appStyles.historyDetailButtonText}>Descartar registro</Text>
+						<Text style={appStyles.historyDetailButtonText}>{t('card.discard')}</Text>
 					</Pressable>
 				) : null}
 			</View>
@@ -128,7 +132,11 @@ function HistoryRecordCardBase({
 		<Pressable
 			onPress={() => onOpenRecord(item.id)}
 			accessibilityRole="button"
-			accessibilityLabel={`Ver detalhes do registro ${item.id}: ${syncState === 'failed' ? 'não enviado' : analyzing || syncState ? 'sem contagem ainda' : guaras}, ${areaLabel}`}
+			accessibilityLabel={t('card.open', {
+				id: item.id,
+				state: syncState === 'failed' ? t('card.stateNotSent') : analyzing || syncState ? t('card.stateNoCount') : guaras,
+				area: areaLabel,
+			})}
 			style={appStyles.historyRecordCard}
 		>
 			{content}
