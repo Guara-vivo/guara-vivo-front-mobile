@@ -1,5 +1,6 @@
 import MapView, { Circle } from 'react-native-maps'
 import { ActivityIndicator, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { MapLayerId } from '../config/map'
 import { mapStyle } from '../config/mapStyle'
@@ -147,6 +148,7 @@ function MapLibreMapViewBase({
 		})
 	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers])
 
+	const { t } = useTranslation('map')
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
 
 	return (
@@ -193,10 +195,10 @@ function MapLibreMapViewBase({
 					<View
 						style={styles.recordsLoadingPill}
 						accessibilityLiveRegion="polite"
-						accessibilityLabel="Carregando mapa"
+						accessibilityLabel={t('loading')}
 					>
 						<ActivityIndicator size="small" color={colors.secondary} />
-						<Text style={styles.loadingText}>Carregando mapa…</Text>
+						<Text style={styles.loadingText}>{t('loading')}…</Text>
 					</View>
 				</View>
 			) : null}

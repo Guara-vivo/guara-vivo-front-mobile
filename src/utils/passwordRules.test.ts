@@ -7,9 +7,10 @@ import {
 	isPasswordWithinLimit,
 	MAX_PASSWORD_BYTES,
 	MIN_PASSWORD_LENGTH,
-	PASSWORD_RULE_HINT,
-	PASSWORD_TOO_LONG_HINT,
+	getPasswordRuleHint,
+	getPasswordTooLongHint,
 } from './passwordRules'
+import i18n from '../i18n'
 
 describe('passwordRules', () => {
 	it('exige o tamanho mínimo', () => {
@@ -36,9 +37,19 @@ describe('passwordRules', () => {
 
 	it('só mostra dica depois de digitar', () => {
 		expect(getPasswordHint('')).toBe('')
-		expect(getPasswordHint('abc')).toBe(PASSWORD_RULE_HINT)
+		expect(getPasswordHint('abc')).toBe(getPasswordRuleHint())
 		expect(getPasswordHint('abcdefgh')).toBe('Senha válida')
-		expect(getPasswordHint('ã'.repeat(40))).toBe(PASSWORD_TOO_LONG_HINT)
+		expect(getPasswordHint('ã'.repeat(40))).toBe(getPasswordTooLongHint())
+	})
+
+	it('troca a dica com o idioma', async () => {
+		await i18n.changeLanguage('en-US')
+		try {
+			expect(getPasswordHint('abc')).toBe('At least 8 characters')
+			expect(getPasswordHint('abcdefgh')).toBe('Valid password')
+		} finally {
+			await i18n.changeLanguage('pt-BR')
+		}
 	})
 })
 

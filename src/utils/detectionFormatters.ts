@@ -1,3 +1,4 @@
+import i18n from '../i18n'
 import type { DetectionItem } from '../types/records'
 
 export const BBOX_COLORS = [
@@ -60,26 +61,32 @@ export function calculateAccuracySummary(
 	}
 }
 
+const PLUMAGE_KEYS: Record<string, string> = {
+	vermelho: 'red',
+	red: 'red',
+	cinza: 'gray',
+	gray: 'gray',
+	indefinido: 'undefined',
+}
+
+const LIFE_STAGE_KEYS: Record<string, string> = {
+	adulto: 'adult',
+	adult: 'adult',
+	filhote: 'chick',
+	chick: 'chick',
+	indefinido: 'undefined',
+}
+
+// Valores que a API manda (em português ou inglês) viram o rótulo do idioma ativo; o que não
+// é conhecido aparece como veio.
 export function getPlumageLabel(color: string): string {
-	const colorMap: Record<string, string> = {
-		vermelho: 'Vermelho',
-		cinza: 'Cinza',
-		red: 'Vermelho',
-		gray: 'Cinza',
-		indefinido: 'Indefinida',
-	}
-	return colorMap[color.toLowerCase()] || color
+	const key = PLUMAGE_KEYS[color.toLowerCase()]
+	return key ? i18n.t(`detail:plumage.${key}`) : color
 }
 
 export function getLifeStageLabel(stage: string): string {
-	const stageMap: Record<string, string> = {
-		adulto: 'Adulto',
-		filhote: 'Filhote',
-		adult: 'Adulto',
-		chick: 'Filhote',
-		indefinido: 'Indefinida',
-	}
-	return stageMap[stage.toLowerCase()] || stage
+	const key = LIFE_STAGE_KEYS[stage.toLowerCase()]
+	return key ? i18n.t(`detail:lifeStage.${key}`) : stage
 }
 
 // A API pode mandar `raw_detection` como objeto ou como texto JSON; em ambos os casos a

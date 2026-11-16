@@ -9,11 +9,10 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
+import { useTranslation } from 'react-i18next'
 import { buildMonthGrid } from '../utils/monthGrid'
-import { MONTHS } from '../utils/timeFormatters'
+import { getMonthName } from '../utils/timeFormatters'
 import { ActionButton } from './common'
-
-const WEEK_LABELS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S']
 
 type Props = {
 	// Título da folha (padrão: data do avistamento).
@@ -27,9 +26,11 @@ function sameDay(a: Date, b: Date) {
 	return a.toDateString() === b.toDateString()
 }
 
-// Calendário em pt-BR numa folha inferior; não deixa escolher dias futuros. Deve ser montado só
+// Calendário no idioma ativo numa folha inferior; não deixa escolher dias futuros. Deve ser montado só
 // quando for aberto (abre ao montar e avisa por onClose ao fechar), como o modal de filtros.
-export function DatePickerSheet({ title = 'Data do avistamento', value, onConfirm, onClose }: Props) {
+export function DatePickerSheet({ title, value, onConfirm, onClose }: Props) {
+	const { t } = useTranslation(['dates', 'common'])
+	const weekLabels = t('dates:weekLabels', { returnObjects: true }) as string[]
 	const sheetRef = useRef<BottomSheetModal>(null)
 	const today = new Date()
 	const [draft, setDraft] = useState<Date>(value ?? today)
@@ -84,13 +85,13 @@ export function DatePickerSheet({ title = 'Data do avistamento', value, onConfir
 		>
 			<BottomSheetView style={appStyles.dateSheetContent} accessibilityViewIsModal>
 				<Text style={appStyles.dateSheetTitle} accessibilityRole="header">
-					{title}
+					{title ?? t('dates:picker.title')}
 				</Text>
 
 				<View style={appStyles.dateShortcutRow}>
 					{[
-						{ label: 'Hoje', date: today },
-						{ label: 'Ontem', date: yesterday },
+						{ label: t('dates:today'), date: today },
+						{ label: t('dates:yesterday'), date: yesterday },
 					].map(({ label, date }) => {
 						const active = sameDay(draft, date)
 						return (
@@ -118,19 +119,22 @@ export function DatePickerSheet({ title = 'Data do avistamento', value, onConfir
 					<Pressable
 						onPress={() => shiftMonth(-1)}
 						accessibilityRole="button"
-						accessibilityLabel="Mês anterior"
+						accessibilityLabel={t('dates:picker.previousMonth')}
 						style={appStyles.dateMonthButton}
 					>
 						<Ionicons name="chevron-back" size={22} color={colors.text} />
 					</Pressable>
 					<Text style={appStyles.dateMonthTitle} accessibilityRole="header">
-						{`${MONTHS[viewMonth].charAt(0).toUpperCase()}${MONTHS[viewMonth].slice(1)} de ${viewYear}`}
+						{t('dates:monthYear', {
+							month: `${getMonthName(viewMonth).charAt(0).toUpperCase()}${getMonthName(viewMonth).slice(1)}`,
+							year: viewYear,
+						})}
 					</Text>
 					<Pressable
 						onPress={() => shiftMonth(1)}
 						disabled={isCurrentMonth}
 						accessibilityRole="button"
-						accessibilityLabel="Próximo mês"
+						accessibilityLabel={t('dates:picker.nextMonth')}
 						accessibilityState={{ disabled: isCurrentMonth }}
 						style={[
 							appStyles.dateMonthButton,
@@ -142,7 +146,7 @@ export function DatePickerSheet({ title = 'Data do avistamento', value, onConfir
 				</View>
 
 				<View style={appStyles.dateWeekRow} importantForAccessibility="no-hide-descendants">
-					{WEEK_LABELS.map((label, index) => (
+					{weekLabels.map((label, index) => (
 						<Text key={`${label}-${index}`} style={appStyles.dateWeekLabel}>
 							{label}
 						</Text>
@@ -159,7 +163,7 @@ export function DatePickerSheet({ title = 'Data do avistamento', value, onConfir
 									onPress={() => pickDate(new Date(viewYear, viewMonth, cell.day))}
 									disabled={cell.disabled}
 									accessibilityRole="button"
-									accessibilityLabel={`${cell.day} de ${MONTHS[viewMonth]} de ${viewYear}`}
+									accessibilityLabel={t('dates:dayMonthYear', { day: cell.day, month: getMonthName(viewMonth), year: viewYear })}
 									accessibilityState={{ selected: cell.selected, disabled: cell.disabled }}
 									style={[appStyles.dateDay, cell.selected && appStyles.dateDaySelected]}
 								>
@@ -180,14 +184,14 @@ export function DatePickerSheet({ title = 'Data do avistamento', value, onConfir
 
 				<View style={appStyles.dateSheetActions}>
 					<ActionButton
-						title="Cancelar"
+						title={t('common:cancel')}
 						variant="outline"
 						fullWidth={false}
 						containerStyle={appStyles.dateSheetAction}
 						onPress={() => sheetRef.current?.dismiss()}
 					/>
 					<ActionButton
-						title="Confirmar"
+						title={t('dates:picker.confirm')}
 						fullWidth={false}
 						containerStyle={appStyles.dateSheetAction}
 						onPress={() => {

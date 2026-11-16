@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../../constants/theme'
 import { Skeleton } from '../Skeleton'
 import { appStyles } from '../../styles/appStyles'
@@ -8,19 +9,19 @@ import type { RecordDetailItem } from '../../services/recordsService'
 import { averageScore, getConfidenceLevel, type ConfidenceLevel } from '../../utils/confidence'
 import { getDetectionScore } from '../recordImage/DetectionCard'
 
-const LEVEL_BADGE: Record<ConfidenceLevel, { label: string; box: object; text: object }> = {
+const LEVEL_BADGE: Record<ConfidenceLevel, { labelKey: 'high' | 'medium' | 'low'; box: object; text: object }> = {
 	alta: {
-		label: 'Alta confiança',
+		labelKey: 'high',
 		box: appStyles.recordDetailBadgeHigh,
 		text: appStyles.recordDetailBadgeTextHigh,
 	},
 	media: {
-		label: 'Confiança média',
+		labelKey: 'medium',
 		box: appStyles.recordDetailBadgeMedium,
 		text: appStyles.recordDetailBadgeTextMedium,
 	},
 	baixa: {
-		label: 'Baixa confiança',
+		labelKey: 'low',
 		box: appStyles.recordDetailBadgeLow,
 		text: appStyles.recordDetailBadgeTextLow,
 	},
@@ -35,6 +36,7 @@ type Props = {
 
 // Cartão "Análise por IA": selo com a confiança média das detecções; toque abre a análise da primeira foto.
 export function AiAnalysisCard({ record, onOpen, loading = false }: Props) {
+	const { t } = useTranslation('detail')
 	const level = useMemo(() => {
 		const scores = (record.image_analyses ?? []).flatMap((analysis) =>
 			analysis.detections.map(getDetectionScore),
@@ -46,21 +48,26 @@ export function AiAnalysisCard({ record, onOpen, loading = false }: Props) {
 	const hasImages = (record.images?.length ?? 0) > 0
 	const badge = level ? LEVEL_BADGE[level] : null
 	const waiting = !analyzed && (record.status === 'pending' || record.status === 'processing')
-	const summary = analyzed
-		? 'Veja as caixas, as notas e a confiança de cada guará detectado.'
+	const stateLabel = badge
+		? t(`ai.${badge.labelKey}`)
 		: waiting
-			? 'A análise ainda está em andamento.'
-			: 'Este registro não tem análise.'
+			? t('ai.waiting')
+			: t('ai.none')
+	const summary = analyzed
+		? t('ai.summaryDone')
+		: waiting
+			? t('ai.summaryWaiting')
+			: t('ai.summaryNone')
 
 	if (loading) {
 		return (
-			<View style={appStyles.recordDetailCard} accessibilityLabel="Carregando análise por IA" accessibilityLiveRegion="polite">
+			<View style={appStyles.recordDetailCard} accessibilityLabel={t('ai.loading')} accessibilityLiveRegion="polite">
 				<View style={appStyles.recordDetailCardHeader}>
 					<View style={appStyles.recordDetailCardIcon}>
 						<Ionicons name="sparkles-outline" size={20} color={colors.secondary} />
 					</View>
 					<View style={appStyles.recordDetailCardTitleWrap}>
-						<Text style={appStyles.recordDetailCardTitle}>Análise por IA</Text>
+						<Text style={appStyles.recordDetailCardTitle}>{t('ai.title')}</Text>
 						<Skeleton width="80%" height={14} />
 					</View>
 				</View>
@@ -74,7 +81,7 @@ export function AiAnalysisCard({ record, onOpen, loading = false }: Props) {
 			onPress={onOpen}
 			disabled={!hasImages}
 			accessibilityRole="button"
-			accessibilityLabel={`Análise por IA. ${badge ? badge.label : waiting ? 'Em análise' : 'Sem análise'}. Abrir`}
+			accessibilityLabel={t('ai.a11y', { state: stateLabel })}
 			style={appStyles.recordDetailCard}
 		>
 			<View style={appStyles.recordDetailCardHeader}>
@@ -82,14 +89,14 @@ export function AiAnalysisCard({ record, onOpen, loading = false }: Props) {
 					<Ionicons name="sparkles-outline" size={20} color={colors.secondary} />
 				</View>
 				<View style={appStyles.recordDetailCardTitleWrap}>
-					<Text style={appStyles.recordDetailCardTitle}>Análise por IA</Text>
+					<Text style={appStyles.recordDetailCardTitle}>{t('ai.title')}</Text>
 					<Text style={appStyles.recordDetailCardText}>{summary}</Text>
 				</View>
 				{hasImages ? <Ionicons name="chevron-forward" size={18} color={colors.muted} /> : null}
 			</View>
 			<View style={[appStyles.recordDetailBadge, badge ? badge.box : appStyles.recordDetailBadgeNeutral]}>
 				<Text style={[appStyles.recordDetailBadgeText, badge ? badge.text : null]}>
-					{badge ? badge.label : waiting ? 'Em análise' : 'Sem análise'}
+					{stateLabel}
 				</Text>
 			</View>
 		</Pressable>

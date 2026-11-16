@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../../styles/appStyles'
 import type { HistoryFilterState } from '../../../hooks/useHistoryFilters'
 import { formatInputDate, parseInputDate } from '../../../utils/inputDate'
+import { formatDate } from '../../../utils/recordFormatters'
 import { DatePickerSheet } from '../../DatePickerSheet'
 import type { FilterFieldSetter } from './FilterSection'
 import { colors } from '../../../constants/theme'
@@ -28,7 +30,11 @@ function DateButton({
 	onPress: () => void
 	onClear: () => void
 }) {
+	const { t } = useTranslation('history')
 	const hasValue = value.trim() !== ''
+	// O valor guardado é dd/mm/aaaa; na tela aparece no formato do idioma.
+	const parsed = parseInputDate(value)
+	const shown = parsed ? formatDate(parsed.toISOString()) : value
 
 	return (
 		<View style={appStyles.filterColumn}>
@@ -37,11 +43,11 @@ function DateButton({
 				<Pressable
 					onPress={onPress}
 					accessibilityRole="button"
-					accessibilityLabel={hasValue ? `${label}: ${value}. Alterar` : `${label}. Escolher no calendário`}
+					accessibilityLabel={hasValue ? t('filters.changeDate', { label, value: shown }) : t('filters.pickDate', { label })}
 					style={appStyles.filterFieldPressable}
 				>
 					<Text style={[appStyles.filterFieldText, !hasValue && appStyles.filterFieldPlaceholder]}>
-						{hasValue ? value : 'Selecionar'}
+						{hasValue ? shown : t('filters.select')}
 					</Text>
 				</Pressable>
 				{hasValue ? (
@@ -49,7 +55,7 @@ function DateButton({
 						onPress={onClear}
 						hitSlop={8}
 						accessibilityRole="button"
-						accessibilityLabel={`Limpar ${label.toLowerCase()}`}
+						accessibilityLabel={t('filters.clearDate', { label: label.toLowerCase() })}
 					>
 						<Ionicons name="close-circle" size={20} color={colors.muted} />
 					</Pressable>
@@ -63,21 +69,22 @@ function DateButton({
 
 // Conteúdo da seção Período: data inicial e final escolhidas no calendário (sem digitar).
 export function PeriodFilter({ draftFilters, setField }: Props) {
+	const { t } = useTranslation('history')
 	const [editing, setEditing] = useState<DateField | null>(null)
 
 	return (
 		<>
 			<View style={appStyles.filterRow}>
 				<DateButton
-					title="De"
-					label="Data inicial"
+					title={t('filters.from')}
+					label={t('filters.startDate')}
 					value={draftFilters.fromDate}
 					onPress={() => setEditing('fromDate')}
 					onClear={() => setField('fromDate', '')}
 				/>
 				<DateButton
-					title="Até"
-					label="Data final"
+					title={t('filters.to')}
+					label={t('filters.endDate')}
 					value={draftFilters.toDate}
 					onPress={() => setEditing('toDate')}
 					onClear={() => setField('toDate', '')}
@@ -86,7 +93,7 @@ export function PeriodFilter({ draftFilters, setField }: Props) {
 
 			{editing ? (
 				<DatePickerSheet
-					title={editing === 'fromDate' ? 'Data inicial' : 'Data final'}
+					title={editing === 'fromDate' ? t('filters.startDate') : t('filters.endDate')}
 					value={parseInputDate(draftFilters[editing])}
 					onConfirm={(date) => setField(editing, formatInputDate(date))}
 					onClose={() => setEditing(null)}

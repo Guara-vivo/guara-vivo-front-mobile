@@ -1,24 +1,20 @@
+import i18n from '../i18n'
 import { WARNING_CODES } from './analysisWarningCodes'
 
 // A API manda só códigos (`status_analise`, `avisos`); o texto ao usuário é daqui.
 
 export type AnalysisStatus = 'ok' | 'atencao' | 'sem_ave' | 'sem_guara'
 
-const GENERIC_WARNING =
-	'A foto não está nas melhores condições. Tente uma mais próxima e com boa luz.'
-
-const WARNING_MESSAGES: Record<string, string> = {
-	[WARNING_CODES.noBird]:
-		'Não encontramos nenhuma ave nesta foto. Tente uma foto mais próxima e com boa luz.',
-	[WARNING_CODES.noIbis]:
-		'Encontramos aves, mas nenhum guará-vermelho. Tente uma foto mais próxima e com boa luz.',
-	[WARNING_CODES.lifeStageUncertain]: 'Não deu para saber a fase da vida deste guará.',
-	[WARNING_CODES.birdTooSmall]: 'A ave está muito pequena na foto. Chegue mais perto para fotografar.',
-	[WARNING_CODES.maskUnavailable]: 'Não conseguimos analisar a plumagem deste guará.',
+const WARNING_KEYS: Record<string, string> = {
+	[WARNING_CODES.noBird]: 'noBird',
+	[WARNING_CODES.noIbis]: 'noIbis',
+	[WARNING_CODES.lifeStageUncertain]: 'lifeStageUncertain',
+	[WARNING_CODES.birdTooSmall]: 'birdTooSmall',
+	[WARNING_CODES.maskUnavailable]: 'maskUnavailable',
 }
 
 export function getWarningMessage(code: string): string {
-	return WARNING_MESSAGES[code] ?? GENERIC_WARNING
+	return i18n.t(`detail:warnings.${WARNING_KEYS[code] ?? 'generic'}`)
 }
 
 // Aceita lista ausente, nula ou com itens inválidos (registros antigos não têm o campo).

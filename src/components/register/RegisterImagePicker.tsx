@@ -2,6 +2,7 @@ import React from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { Image } from 'expo-image'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../styles/appStyles'
 import type { ReactNativeFile } from '../../types/api'
 import { colors } from '../../constants/theme'
@@ -23,12 +24,14 @@ export function RegisterImagePicker({
 	onPick,
 	onRemove,
 }: Props) {
+	const { t } = useTranslation('register')
+
 	return (
 		<>
 			<Pressable
 				onPress={onPick}
 				accessibilityRole="button"
-				accessibilityLabel="Adicionar fotos"
+				accessibilityLabel={t('images.add')}
 				accessibilityState={{ busy: isPicking, disabled: disabled || isPicking }}
 				disabled={disabled || isPicking}
 				style={[
@@ -44,10 +47,10 @@ export function RegisterImagePicker({
 					)}
 				</View>
 				<Text style={appStyles.registerDropZoneTitle}>
-					{isPicking ? 'Preparando imagens...' : 'Toque para adicionar fotos'}
+					{isPicking ? t('images.preparing') : t('images.tap')}
 				</Text>
 				{isPicking ? null : (
-					<Text style={appStyles.registerDropZoneHint}>Você pode escolher mais de uma</Text>
+					<Text style={appStyles.registerDropZoneHint}>{t('images.multiple')}</Text>
 				)}
 			</Pressable>
 
@@ -57,7 +60,7 @@ export function RegisterImagePicker({
 						<View key={image.uri} style={appStyles.registerImagePreviewWrap}>
 							<Image
 								source={{ uri: image.uri }}
-								accessibilityLabel={`Foto ${images.indexOf(image) + 1} de ${images.length}`}
+								accessibilityLabel={t('images.photoOf', { n: images.indexOf(image) + 1, total: images.length })}
 								style={appStyles.registerImagePreview}
 								contentFit="cover"
 							/>
@@ -66,7 +69,7 @@ export function RegisterImagePicker({
 								disabled={disabled}
 								hitSlop={8}
 								accessibilityRole="button"
-								accessibilityLabel="Remover imagem"
+								accessibilityLabel={t('images.remove')}
 								style={({ pressed }) => [
 									appStyles.registerImageRemoveButton,
 									pressed && appStyles.registerImageRemoveButtonPressed,

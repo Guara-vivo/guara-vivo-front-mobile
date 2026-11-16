@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker'
+import i18n from '../i18n'
 import type { ReactNativeFile } from '../types/api'
 
 const pressFeedbackDelayMs = 80
@@ -32,8 +33,7 @@ export function useRegisterImages({ isSaving, onError }: Params) {
 
 			if (!permission.granted) {
 				onError(
-					'Permissão necessária',
-					'Permita acesso às fotos para adicionar imagens.',
+					i18n.t('register:feedback.photosPermission.title'), i18n.t('register:feedback.photosPermission.message'),
 				)
 				return
 			}
@@ -53,8 +53,7 @@ export function useRegisterImages({ isSaving, onError }: Params) {
 			)
 			if (oversized.length > 0) {
 				onError(
-					'Imagem muito grande',
-					'Cada imagem deve ter no máximo 5 MB.',
+					i18n.t('register:feedback.imageTooLarge.title'), i18n.t('register:feedback.imageTooLarge.message'),
 				)
 				return
 			}
@@ -78,8 +77,7 @@ export function useRegisterImages({ isSaving, onError }: Params) {
 			})
 		} catch {
 			onError(
-				'Erro ao abrir galeria',
-				'Não foi possível acessar a galeria. Tente novamente.',
+				i18n.t('register:feedback.galleryError.title'), i18n.t('register:feedback.galleryError.message'),
 			)
 		} finally {
 			setIsDropZonePressed(false)

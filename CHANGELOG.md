@@ -6,6 +6,9 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
+### Adicionado
+- O aplicativo agora também está em inglês (en-US). A bandeirinha na tela de boas-vindas e na de entrar mostra o idioma atual e troca para o outro com um toque; no Perfil, o grupo "Conta" tem a opção "Idioma". A escolha fica só no aparelho e, na primeira abertura, o app começa em português. As datas seguem o idioma (em inglês, mês antes do dia e horário de 12 h com AM/PM), e o mapa do Google continua em português.
+
 ### Corrigido
 - Na confirmação de excluir uma área do mapa, os botões "Cancelar" e "Excluir" ficavam cortados embaixo da tela; agora a folha cresce até caber o conteúdo.
 

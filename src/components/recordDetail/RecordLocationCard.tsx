@@ -1,5 +1,6 @@
 import React from 'react'
 import { Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import MapView, { Marker } from 'react-native-maps'
 import { Ionicons } from '@expo/vector-icons'
 import { mapStyle } from '../../config/mapStyle'
@@ -12,9 +13,10 @@ const MINI_MAP_DELTA = 0.004
 
 // Cartão "Local": mini-mapa estático (liteMode, sem gestos), áreas e coordenadas.
 export function RecordLocationCard({ record }: { record: RecordDetailItem }) {
+	const { t } = useTranslation('detail')
 	const areaLabel = record.map_zones.length
 		? record.map_zones.map((zone) => zone.name).join(' · ')
-		: 'Sem área'
+		: t('location.noArea')
 	const coordinate = { latitude: record.latitude, longitude: record.longitude }
 
 	return (
@@ -24,7 +26,7 @@ export function RecordLocationCard({ record }: { record: RecordDetailItem }) {
 					<Ionicons name="location-outline" size={20} color={colors.primary} />
 				</View>
 				<View style={appStyles.recordDetailCardTitleWrap}>
-					<Text style={appStyles.recordDetailCardTitle}>Local</Text>
+					<Text style={appStyles.recordDetailCardTitle}>{t('location.title')}</Text>
 					<Text style={appStyles.recordDetailCardText}>{areaLabel}</Text>
 				</View>
 			</View>
@@ -32,7 +34,7 @@ export function RecordLocationCard({ record }: { record: RecordDetailItem }) {
 			<View
 				style={appStyles.recordDetailMiniMap}
 				accessible
-				accessibilityLabel={`Mapa do local do registro, coordenadas ${formatLocationLabel(record.latitude, record.longitude)}`}
+				accessibilityLabel={t('location.mapA11y', { coords: formatLocationLabel(record.latitude, record.longitude) })}
 			>
 				<MapView
 					style={appStyles.recordDetailMiniMapView}

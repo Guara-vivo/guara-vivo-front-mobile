@@ -1,6 +1,7 @@
 import type { RecordItem } from '../types/records'
+import i18n from '../i18n'
 import { formatRelativeDay } from './dayLabels'
-import { MONTHS } from './timeFormatters'
+import { formatDayMonth } from './timeFormatters'
 
 export type HistoryRow =
 	| { kind: 'header'; key: string; label: string }
@@ -20,10 +21,10 @@ function dayKey(datetime: string) {
 
 function groupLabel(datetime: string, now: Date) {
 	const label = formatRelativeDay(datetime, now)
-	if (label !== 'Ontem') return label
+	if (label !== i18n.t('dates:yesterday')) return label
 
 	const date = new Date(datetime)
-	return `Ontem · ${date.getDate()} de ${MONTHS[date.getMonth()]}`
+	return i18n.t('dates:yesterdayWithDate', { date: formatDayMonth(date) })
 }
 
 // Intercala um cabeçalho de dia antes de cada sequência de registros do mesmo dia (mantém a ordem recebida).

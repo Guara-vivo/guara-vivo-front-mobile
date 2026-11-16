@@ -1,5 +1,6 @@
 import { FlatList, Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { useImageCarousel } from '../../hooks/useImageCarousel'
 import { appStyles } from '../../styles/appStyles'
 import { colors } from '../../constants/theme'
@@ -14,6 +15,7 @@ type Props = {
 
 // Foto em largura total no topo: voltar, contador e setas por cima; tocar abre a análise.
 export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
+	const { t } = useTranslation('detail')
 	const imageSlots = imageUris.length
 	const carouselImages: (string | null)[] = imageSlots > 0 ? imageUris : [null]
 	const {
@@ -55,7 +57,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 							<Pressable
 								onPress={() => onImagePress(index)}
 								accessibilityRole="button"
-								accessibilityLabel={`Abrir análise da imagem ${index + 1}`}
+								accessibilityLabel={t('images.open', { n: index + 1 })}
 								style={appStyles.recordDetailCarouselImagePressable}
 							>
 								<SkeletonImage uri={imageUri} style={appStyles.recordDetailCarouselImage} />
@@ -63,7 +65,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 						) : (
 							<View style={appStyles.recordDetailCarouselPlaceholder}>
 								<Ionicons name="camera-outline" size={44} color={colors.muted} />
-								<Text style={appStyles.recordDetailEmptyText}>Nenhuma imagem disponível.</Text>
+								<Text style={appStyles.recordDetailEmptyText}>{t('images.none')}</Text>
 							</View>
 						)}
 					</View>
@@ -77,7 +79,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 			{imageSlots > 0 && (
 				<View style={appStyles.recordDetailHeroCounter}>
 					<Text style={appStyles.recordDetailHeroCounterText}>
-						{`${activeImageIndex + 1} de ${imageSlots}`}
+						{t('images.counter', { current: activeImageIndex + 1, total: imageSlots })}
 					</Text>
 				</View>
 			)}
@@ -86,7 +88,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 				<Pressable
 					onPress={() => handleArrowPress(activeImageIndex - 1)}
 					accessibilityRole="button"
-					accessibilityLabel="Imagem anterior"
+					accessibilityLabel={t('images.previous')}
 					style={[appStyles.recordDetailCarouselArrow, appStyles.recordDetailCarouselArrowLeft]}
 				>
 					<Ionicons name="chevron-back" size={24} color={colors.onColor} />
@@ -97,7 +99,7 @@ export function ImageCarouselCard({ imageUris, onImagePress, onBack }: Props) {
 				<Pressable
 					onPress={() => handleArrowPress(activeImageIndex + 1)}
 					accessibilityRole="button"
-					accessibilityLabel="Próxima imagem"
+					accessibilityLabel={t('images.next')}
 					style={[appStyles.recordDetailCarouselArrow, appStyles.recordDetailCarouselArrowRight]}
 				>
 					<Ionicons name="chevron-forward" size={24} color={colors.onColor} />

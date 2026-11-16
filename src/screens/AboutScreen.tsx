@@ -1,6 +1,7 @@
 import React from 'react'
 import { ScrollView, Image, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
@@ -13,10 +14,13 @@ const aboutLogo = require('../assets/images/Logo Simplificada Fonte Escura.png')
 
 export function AboutScreen() {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation('profile')
+	const features = t('about.features', { returnObjects: true }) as string[]
+
 	return (
 		<View style={appStyles.profileScreen}>
 			<Header
-				title="Sobre o app"
+				title={t('about.title')}
 				leftIcon={
 					<HeaderBackButton onPress={() => navigation.goBack()} />
 				}
@@ -33,59 +37,31 @@ export function AboutScreen() {
 						style={appStyles.aboutLogo}
 						resizeMode="contain"
 					/>
-					
+
 					<Text style={appStyles.aboutVersion}>{formatAppVersion()}</Text>
 
 					<View style={appStyles.aboutSection}>
-						<Text style={appStyles.aboutSectionTitle}>Sobre o projeto</Text>
-						<Text style={appStyles.aboutBodyText}>
-							Sistema de auxílio ao monitoramento e proteção do Guará na ARIE. O
-							aplicativo facilita o registro de avistamentos, análise de
-							comportamentos e geração de mapas de concentração para apoiar a
-							equipe de gestão no desenvolvimento de planos de manejo
-							eficientes.
-						</Text>
+						<Text style={appStyles.aboutSectionTitle}>{t('about.projectTitle')}</Text>
+						<Text style={appStyles.aboutBodyText}>{t('about.projectText')}</Text>
 					</View>
 
 					<View style={appStyles.aboutSection}>
-						<Text style={appStyles.aboutSectionTitle}>Funcionalidades</Text>
-						<View style={appStyles.aboutBulletRow}>
-							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBulletText}>
-								Registro de avistamentos com análise IA
-							</Text>
-						</View>
-						<View style={appStyles.aboutBulletRow}>
-							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBulletText}>
-								Mapeamento de áreas de alimentação e ninhos
-							</Text>
-						</View>
-						<View style={appStyles.aboutBulletRow}>
-							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBulletText}>
-								Histórico completo de registros
-							</Text>
-						</View>
-						<View style={appStyles.aboutBulletRow}>
-							<Text style={appStyles.aboutBulletDot}>•</Text>
-							<Text style={appStyles.aboutBulletText}>
-								Visualização de rotas de voo
-							</Text>
-						</View>
+						<Text style={appStyles.aboutSectionTitle}>{t('about.featuresTitle')}</Text>
+						{features.map((feature) => (
+							<View key={feature} style={appStyles.aboutBulletRow}>
+								<Text style={appStyles.aboutBulletDot}>•</Text>
+								<Text style={appStyles.aboutBulletText}>{feature}</Text>
+							</View>
+						))}
 					</View>
 
 					<View style={appStyles.aboutSection}>
-						<Text style={appStyles.aboutSectionTitle}>Desenvolvedores</Text>
-						<Text style={appStyles.aboutBodyText}>
-							Desenvolvido para a ARIE - Área de Relevante Interesse Ecológico
-						</Text>
+						<Text style={appStyles.aboutSectionTitle}>{t('about.developersTitle')}</Text>
+						<Text style={appStyles.aboutBodyText}>{t('about.developersText')}</Text>
 					</View>
 
 					<View style={appStyles.aboutFooterDivider} />
-					<Text style={appStyles.aboutFooterText}>
-						© 2026 GuaráVivo. Todos os direitos reservados.
-					</Text>
+					<Text style={appStyles.aboutFooterText}>{t('about.footer')}</Text>
 				</View>
 			</ScrollView>
 		</View>

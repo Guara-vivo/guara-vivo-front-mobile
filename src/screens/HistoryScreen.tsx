@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react'
 import { FlatList, RefreshControl, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import Header from '../components/Header'
 import HistoryFilterModal from '../components/HistoryFilterModal'
 import HistoryRecordCard from '../components/HistoryRecordCard'
@@ -17,6 +18,7 @@ import { groupRecordsByDay, type HistoryRow } from '../utils/dayGroups'
 import { sortRecordsByRecency, type SortOrder } from '../utils/historyRecords'
 
 export function HistoryScreen() {
+	const { t, i18n } = useTranslation('history')
 	const navigation = useNavigation<MainTabNavigationProp>()
 	const { allRecords, isLoading, isRefreshing, loadError, staleSince, handleRefresh } =
 		useHistoryRecords()
@@ -57,7 +59,9 @@ export function HistoryScreen() {
 
 	const rows = useMemo(
 		() => groupRecordsByDay(orderedRecords, new Date()),
-		[orderedRecords],
+		// O idioma entra nas dependências porque os rótulos dos dias (Hoje/Today) mudam com ele.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[orderedRecords, i18n.language],
 	)
 
 	const renderItem = useCallback(
@@ -79,7 +83,7 @@ export function HistoryScreen() {
 
 	return (
 		<View style={appStyles.historyScreen}>
-			<Header title="Histórico" />
+			<Header title={t('title')} />
 			<View style={appStyles.screen}>
 				<FlatList
 					contentContainerStyle={appStyles.historyContent}

@@ -1,7 +1,9 @@
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../styles/appStyles'
+import { behaviorLabel } from '../utils/behaviorLabel'
 import { colors } from '../constants/theme'
 
 export function RegisterBehaviorList({
@@ -13,6 +15,9 @@ export function RegisterBehaviorList({
 	behaviors: string[]
 	toggleBehavior: (b: string) => void
 }) {
+	// Só para re-renderizar quando o idioma muda; os rótulos vêm de behaviorLabel.
+	useTranslation('records')
+
 	return (
 		<View style={appStyles.registerBehaviorList}>
 			{behaviorOrder.map((behavior) => {
@@ -23,7 +28,7 @@ export function RegisterBehaviorList({
 						onPress={() => toggleBehavior(behavior)}
 						accessibilityRole="checkbox"
 						accessibilityState={{ checked: active }}
-						accessibilityLabel={behavior}
+						accessibilityLabel={behaviorLabel(behavior)}
 						style={[
 							appStyles.registerBehaviorItem,
 							active && appStyles.registerBehaviorItemActive,
@@ -39,7 +44,7 @@ export function RegisterBehaviorList({
 								<Ionicons name="checkmark" size={14} color={colors.onColor} />
 							) : null}
 						</View>
-						<Text style={appStyles.registerBehaviorLabel}>{behavior}</Text>
+						<Text style={appStyles.registerBehaviorLabel}>{behaviorLabel(behavior)}</Text>
 					</Pressable>
 				)
 			})}

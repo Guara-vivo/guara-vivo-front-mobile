@@ -7,6 +7,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
+import i18n from '../i18n'
 import InAppNotificationBanner, {
 	type InAppNotificationVariant,
 } from '../components/InAppNotificationBanner'
@@ -47,8 +48,8 @@ function buildAnalysisNotification({
 		return {
 			recordId,
 			status,
-			title: 'Análise finalizada',
-			message: `Registro #${String(recordId).padStart(3, '0')} pronto. Toque para ver os detalhes.`,
+			title: i18n.t('notifications:completed.title'),
+			message: i18n.t('notifications:completed.message', { id: String(recordId).padStart(3, '0') }),
 			variant: 'success',
 		}
 	}
@@ -57,8 +58,8 @@ function buildAnalysisNotification({
 		return {
 			recordId,
 			status,
-			title: 'Análise falhou',
-			message: `Não foi possível analisar o registro #${String(recordId).padStart(3, '0')}. Toque para abrir.`,
+			title: i18n.t('notifications:failed.title'),
+			message: i18n.t('notifications:failed.message', { id: String(recordId).padStart(3, '0') }),
 			variant: 'error',
 		}
 	}

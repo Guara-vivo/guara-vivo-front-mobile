@@ -1,3 +1,4 @@
+import i18n from '../i18n'
 import React from 'react'
 import { View, Text } from 'react-native'
 import type { ReactNode } from 'react'
@@ -24,7 +25,7 @@ export class ErrorBoundary extends React.Component<Props, { hasError: boolean }>
 		if (this.state.hasError) {
 			return (
 				<View style={{ padding: 20 }}>
-					<Text style={{ fontSize: 16 }}>Erro inesperado</Text>
+					<Text style={{ fontSize: 16 }}>{i18n.t('common:unexpectedError')}</Text>
 				</View>
 			)
 		}

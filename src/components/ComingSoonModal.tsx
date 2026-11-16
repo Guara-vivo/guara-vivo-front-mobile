@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../constants/theme'
 import FeedbackModal from './FeedbackModal'
 
@@ -12,10 +13,12 @@ export function ComingSoonModal({
 	message: string
 	onClose: () => void
 }) {
+	const { t } = useTranslation('common')
+
 	return (
 		<FeedbackModal
 			visible={visible}
-			title="Em breve"
+			title={t('comingSoon')}
 			message={message}
 			iconName="information-circle-outline"
 			iconColor={colors.secondary}

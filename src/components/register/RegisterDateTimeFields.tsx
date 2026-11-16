@@ -4,6 +4,8 @@ import DateTimePicker, {
 	type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
+import { currentLanguage } from '../../i18n'
 import { appStyles } from '../../styles/appStyles'
 import { colors } from '../../constants/theme'
 import { formatRelativeDay } from '../../utils/dayLabels'
@@ -18,7 +20,7 @@ type Props = {
 	onTimeChange: (time: Date) => void
 }
 
-// Data (calendário em pt-BR) e hora (seletor nativo) do avistamento; já vêm preenchidas com o momento atual.
+// Data (calendário no idioma ativo) e hora (seletor nativo) do avistamento; já vêm preenchidas com o momento atual.
 export function RegisterDateTimeFields({
 	date,
 	time,
@@ -26,6 +28,7 @@ export function RegisterDateTimeFields({
 	onDateChange,
 	onTimeChange,
 }: Props) {
+	const { t } = useTranslation('register')
 	const [showDateSheet, setShowDateSheet] = useState(false)
 	const [showTimePicker, setShowTimePicker] = useState(false)
 
@@ -47,7 +50,7 @@ export function RegisterDateTimeFields({
 				<Pressable
 					onPress={() => setShowDateSheet(true)}
 					accessibilityRole="button"
-					accessibilityLabel={`Data do avistamento: ${dateLabel}. Alterar`}
+					accessibilityLabel={t('dateTime.dateA11y', { value: dateLabel })}
 					accessibilityState={{ disabled }}
 					disabled={disabled}
 					style={appStyles.registerDateField}
@@ -59,7 +62,7 @@ export function RegisterDateTimeFields({
 				<Pressable
 					onPress={() => setShowTimePicker(true)}
 					accessibilityRole="button"
-					accessibilityLabel={`Hora do avistamento: ${timeLabel}. Alterar`}
+					accessibilityLabel={t('dateTime.timeA11y', { value: timeLabel })}
 					accessibilityState={{ disabled }}
 					disabled={disabled}
 					style={appStyles.registerDateField}
@@ -78,7 +81,12 @@ export function RegisterDateTimeFields({
 			) : null}
 
 			{showTimePicker ? (
-				<DateTimePicker mode="time" value={time} is24Hour onChange={handleTimeChange} />
+				<DateTimePicker
+					mode="time"
+					value={time}
+					is24Hour={currentLanguage() !== 'en-US'}
+					onChange={handleTimeChange}
+				/>
 			) : null}
 		</>
 	)

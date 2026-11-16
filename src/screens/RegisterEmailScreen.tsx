@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import FeedbackModal from '../components/FeedbackModal'
 import { AuthField } from '../components/auth/AuthField'
 import { AuthFrame } from '../components/auth/AuthFrame'
@@ -12,14 +13,15 @@ type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
 export function RegisterEmailScreen() {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation('auth')
 	const [email, setEmail] = useState('')
 	const [feedback, setFeedback] = useState<{ title: string; message: string } | null>(null)
 
 	const handleContinue = () => {
 		if (!email.trim()) {
 			setFeedback({
-				title: 'Campo obrigatório',
-				message: 'Informe um e-mail para continuar.',
+				title: t('register.emailRequiredTitle'),
+				message: t('register.emailRequiredMessage'),
 			})
 			return
 		}
@@ -29,14 +31,14 @@ export function RegisterEmailScreen() {
 	return (
 		<>
 			<AuthFrame
-				title="Crie sua conta"
-				subtitle="Informe seu e-mail para começar."
+				title={t('register.emailTitle')}
+				subtitle={t('register.emailSubtitle')}
 				onBack={() => navigation.goBack()}
 				step={{ current: 1, total: 2 }}
-				footer={<ActionButton title="Continuar" onPress={handleContinue} />}
+				footer={<ActionButton title={t('register.continue')} onPress={handleContinue} />}
 			>
 				<AuthField
-					label="E-mail"
+					label={t('login.email')}
 					value={email}
 					onChangeText={setEmail}
 					keyboardType="email-address"

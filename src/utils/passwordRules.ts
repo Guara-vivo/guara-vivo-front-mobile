@@ -1,10 +1,13 @@
+import i18n from '../i18n'
+
 // Regra única de senha do app (cadastro e troca de senha), alinhada à API:
 // mínimo de 8 caracteres e máximo de 72 BYTES em UTF-8 (acentos contam mais de 1).
 export const MIN_PASSWORD_LENGTH = 8
 export const MAX_PASSWORD_BYTES = 72
 
-export const PASSWORD_RULE_HINT = `Mínimo de ${MIN_PASSWORD_LENGTH} caracteres`
-export const PASSWORD_TOO_LONG_HINT = `Máximo de ${MAX_PASSWORD_BYTES} bytes (acentos e símbolos ocupam mais espaço)`
+// Textos em função (e não em constante) para acompanharem o idioma ativo.
+export const getPasswordRuleHint = () => i18n.t('auth:hint.minLength', { min: MIN_PASSWORD_LENGTH })
+export const getPasswordTooLongHint = () => i18n.t('auth:hint.tooLong', { max: MAX_PASSWORD_BYTES })
 
 // Tamanho em bytes UTF-8, sem depender de TextEncoder (nem sempre presente no Hermes).
 export function getPasswordByteLength(password: string) {
@@ -37,8 +40,8 @@ export function isPasswordValid(password: string) {
 // Mensagem de apoio sob o campo de nova senha; vazia enquanto nada foi digitado.
 export function getPasswordHint(password: string) {
 	if (!password) return ''
-	if (!isPasswordLongEnough(password)) return PASSWORD_RULE_HINT
-	return isPasswordWithinLimit(password) ? 'Senha válida' : PASSWORD_TOO_LONG_HINT
+	if (!isPasswordLongEnough(password)) return getPasswordRuleHint()
+	return isPasswordWithinLimit(password) ? i18n.t('auth:hint.valid') : getPasswordTooLongHint()
 }
 
 export type PasswordRuleStatus = {

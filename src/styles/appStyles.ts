@@ -12,6 +12,7 @@ import { recordImageStyles } from './recordImage'
 import { datePickerStyles } from './datePicker'
 import { filtersStyles } from './filters'
 import { skeletonStyles } from './skeleton'
+import { languageStyles } from './language'
 
 // Estilos organizados por assunto em arquivos separados; este objeto junta todos
 // para que as telas continuem usando `appStyles.<nome>`.
@@ -30,4 +31,5 @@ export const appStyles = {
 	...datePickerStyles,
 	...filtersStyles,
 	...skeletonStyles,
+	...languageStyles,
 }

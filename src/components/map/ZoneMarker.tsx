@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import React from 'react'
 import { Marker } from 'react-native-maps'
 import type { MapZoneRead } from '../../types/api'
@@ -36,6 +37,7 @@ function getZoneImage(isNest: boolean, selected: boolean, dimmed: boolean) {
 // Ponto da área no centro do círculo: vermelho com talher = alimentação, azul com casa = ninho.
 // O selecionado fica maior, então a cor não é a única pista.
 function ZoneMarkerBase({ zone, selected, dimmed = false, onPress }: Props) {
+	const { t } = useTranslation('map')
 	const isNest = zone.type === 'nest'
 
 	return (
@@ -45,7 +47,7 @@ function ZoneMarkerBase({ zone, selected, dimmed = false, onPress }: Props) {
 			anchor={{ x: 0.5, y: 0.5 }}
 			zIndex={selected ? 2 : 1}
 			image={getZoneImage(isNest, selected, dimmed)}
-			accessibilityLabel={`${isNest ? 'Ninho' : 'Área de alimentação'} ${zone.name}`}
+			accessibilityLabel={`${t(isNest ? 'marker.nest' : 'marker.feeding')} ${zone.name}`}
 		/>
 	)
 }
