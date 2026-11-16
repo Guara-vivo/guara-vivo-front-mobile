@@ -16,6 +16,7 @@ const filesToCheck = [
 	'src/screens/HomeScreen.tsx',
 	'src/components/Avatar.tsx',
 	'src/components/DatePickerSheet.tsx',
+	'src/components/DateRangePickerSheet.tsx',
 	'src/components/recordImage/ConfidenceBanner.tsx',
 	'src/utils/analysisWarnings.ts',
 	'src/components/recordImage/DetectionCard.tsx',
