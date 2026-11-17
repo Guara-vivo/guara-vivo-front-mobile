@@ -15,6 +15,7 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 - O filtro de período do histórico agora usa um calendário só: toque no dia inicial e depois no final, com a faixa pintada, e atalhos de 7 dias, 30 dias e este mês. A data inicial não pode mais ficar maior que a final.
 
 ### Corrigido
+- Na tela inicial, os números e o último avistamento não ficam mais escondidos por um esqueleto em boa parte das aberturas: quando o aplicativo já tem a lista guardada no celular, ele a mostra na hora e só indica "Atualizando…" enquanto confere com o servidor. O esqueleto continua só quando não há nada para mostrar.
 - A folha de detalhes de uma área do mapa não fecha mais sem querer ao arrastar de volta para a posição original; agora só fecha com um arrasto longo para baixo (ou pelo X).
 - Na confirmação de excluir uma área do mapa, os botões "Cancelar" e "Excluir" ficavam cortados embaixo da tela; agora a folha cresce até caber o conteúdo.
 
