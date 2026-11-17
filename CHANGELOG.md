@@ -6,6 +6,10 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
+Nada ainda.
+
+## [0.2.0] - 2026-11-17 (versionCode 4)
+
 ### Adicionado
 - O aplicativo agora também está em inglês (en-US). A bandeirinha na tela de boas-vindas e na de entrar mostra o idioma atual e troca para o outro com um toque; no Perfil, o grupo "Conta" tem a opção "Idioma". A escolha fica só no aparelho e, na primeira abertura, o app começa em português. As datas seguem o idioma (em inglês, mês antes do dia e horário de 12 h com AM/PM), e o mapa do Google continua em português.
 
