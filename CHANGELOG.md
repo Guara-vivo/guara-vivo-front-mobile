@@ -18,6 +18,7 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 - Na tela inicial, os números e o último avistamento não ficam mais escondidos por um esqueleto em boa parte das aberturas: quando o aplicativo já tem a lista guardada no celular, ele a mostra na hora e só indica "Atualizando…" enquanto confere com o servidor. O esqueleto continua só quando não há nada para mostrar.
 - A folha de detalhes de uma área do mapa não fecha mais sem querer ao arrastar de volta para a posição original; agora só fecha com um arrasto longo para baixo (ou pelo X).
 - Na confirmação de excluir uma área do mapa, os botões "Cancelar" e "Excluir" ficavam cortados embaixo da tela; agora a folha cresce até caber o conteúdo.
+- Em algumas aberturas do aplicativo (cerca de 1 em 10) a tela inicial não usava a lista guardada no celular e ficava com esqueleto até o servidor responder; agora ela é usada em todas as aberturas.
 
 ## [0.1.2] - 2026-11-12 (versionCode 3)
 
