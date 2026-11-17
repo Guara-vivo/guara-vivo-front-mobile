@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { AppState } from 'react-native'
 import NetInfo from '@react-native-community/netinfo'
 import { flushPendingRecords, setQueueOwner } from '../services/offlineQueue'
@@ -9,10 +9,20 @@ const RETRY_INTERVAL_MS = 60000
 // Envia os registros guardados no aparelho: ao entrar, quando a rede volta, quando o
 // app volta ao primeiro plano e a cada minuto (cobre API fora do ar com rede ligada).
 export function usePendingRecordsSync(userId: number | null) {
-	useEffect(() => {
+	// O dono da fila e da cópia local é definido num efeito de layout: ele roda antes de qualquer efeito
+	// passivo dos filhos. A Início lê a cópia local no seu useEffect; com o dono num useEffect do pai, a
+	// leitura chegava com o dono ainda null quando os dois montavam no mesmo commit (~1 de 10 aberturas).
+	useLayoutEffect(() => {
 		setQueueOwner(userId)
 		setRecordsStoreOwner(userId)
 
+		return () => {
+			setQueueOwner(null)
+			setRecordsStoreOwner(null)
+		}
+	}, [userId])
+
+	useEffect(() => {
 		if (userId === null) {
 			return
 		}
@@ -41,8 +51,6 @@ export function usePendingRecordsSync(userId: number | null) {
 			unsubscribeNetInfo()
 			appStateSubscription.remove()
 			clearInterval(interval)
-			setQueueOwner(null)
-			setRecordsStoreOwner(null)
 		}
 	}, [userId])
 }
