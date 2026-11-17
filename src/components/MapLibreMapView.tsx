@@ -28,6 +28,8 @@ type Props = {
 	onMapPress?: (lat: number, lng: number) => void
 	onZonePress?: (zone: MapZoneRead) => void
 	onRecordMarkerPress?: (recordId: number) => void
+	// Definido só para admin: marcadores distinguem registros próprios dos de outras pessoas.
+	markerViewerId?: number | null
 	selectedZoneId?: number | null
 	selectedRecordId?: number | null
 	isLoadingData?: boolean
@@ -42,6 +44,7 @@ function MapLibreMapViewBase({
 	onMapPress,
 	onZonePress,
 	onRecordMarkerPress,
+	markerViewerId,
 	selectedZoneId,
 	selectedRecordId,
 	isLoadingData = false,
@@ -143,10 +146,11 @@ function MapLibreMapViewBase({
 					focused={selected}
 					opacity={recordMarkerOpacity}
 					onPress={onRecordMarkerPress}
+					viewerId={markerViewerId}
 				/>
 			)
 		})
-	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers])
+	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
 
 	const { t } = useTranslation('map')
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady

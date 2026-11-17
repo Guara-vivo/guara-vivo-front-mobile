@@ -4,6 +4,11 @@ export default {
 	notFound: 'Registro não encontrado.',
 	loadError: 'Não foi possível carregar o registro. Tente de novo.',
 	loading: 'Carregando registro',
+	adminView: {
+		title: 'Visão de administrador',
+		body: 'Este registro foi enviado por {{author}}.',
+		unknownAuthor: 'outro usuário',
+	},
 	retry: 'Tentar de novo',
 	meta: 'Registro #{{id}} · {{when}}',
 	location: {

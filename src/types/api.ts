@@ -92,6 +92,8 @@ export type AnalysisImageRead = {
 }
 
 export type RecordDetailRead = RecordRead & {
+	// Nome de quem enviou; a API devolve no detalhe (ausente em APIs antigas).
+	author_name?: string | null
 	analysis: AnalysisRead | null
 	ibis: IbisRead[]
 	image_analyses: AnalysisImageRead[]

@@ -57,6 +57,7 @@ export function mapRecordDetailToRecordItem(
 ): RecordDetailItem {
 	return {
 		...mapRecordReadToRecordItem(record, record.analysis),
+		author_name: record.author_name ?? null,
 		ibis_quantity: record.analysis?.ibis_quantity ?? 0,
 		image_analyses: record.image_analyses.map((img) => {
 			// Filter ibis detections for this specific image

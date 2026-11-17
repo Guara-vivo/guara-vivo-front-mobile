@@ -19,6 +19,7 @@ import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { MapLayerId } from '../config/map'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { invalidateRecordsCache } from '../services/recordsService'
+import { useAdminMapMarkers } from '../hooks/useAdminMapMarkers'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 import { filterZonesByLayer } from '../utils/mapZoneStyle'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
@@ -53,6 +54,10 @@ export function MapsScreen() {
 		() => getVisibleMapZoneRecords(ctx.zoneRecords),
 		[ctx.zoneRecords],
 	)
+
+	// Admin: todos os registros de todos os usuários no mapa (as demais contas seguem como antes).
+	const admin = useAdminMapMarkers(selectedLayer)
+	const { refreshIfStale: refreshAdminRecords, reload: reloadAdminRecords } = admin
 
 	const visibleZoneCount = useMemo(
 		() => filterZonesByLayer(zones, selectedLayer).length,
@@ -104,11 +109,11 @@ export function MapsScreen() {
 		setIsReloading(true)
 
 		try {
-			await loadZones()
+			await Promise.all([loadZones(), reloadAdminRecords()])
 		} finally {
 			setIsReloading(false)
 		}
-	}, [isReloading, loadZones])
+	}, [isReloading, loadZones, reloadAdminRecords])
 
 	const handleToggleSelectionMode = useCallback(() => {
 		if (selectionMode) {
@@ -141,6 +146,13 @@ export function MapsScreen() {
 				closeSheet()
 			}
 		}, [closeSheet]),
+	)
+
+	// Ao voltar para o mapa, atualiza os registros do admin se a última carga já passou de 1 minuto.
+	useFocusEffect(
+		useCallback(() => {
+			refreshAdminRecords()
+		}, [refreshAdminRecords]),
 	)
 
 	useEffect(() => {
@@ -179,10 +191,13 @@ export function MapsScreen() {
 				<MapLibreMapView
 					selectedLayer={selectedLayer}
 					zones={zones}
-					recordMarkers={visibleZoneRecords}
+					recordMarkers={admin.markers ?? visibleZoneRecords}
+					markerViewerId={admin.isAdmin ? admin.viewerId : undefined}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 					onZonePress={!selectionMode ? openSheet : undefined}
-					onRecordMarkerPress={!selectionMode ? onRecordMarkerPress : undefined}
+					onRecordMarkerPress={
+						!selectionMode ? (admin.isAdmin ? admin.handleMarkerPress : onRecordMarkerPress) : undefined
+					}
 					selectedZoneId={ctx.selectedZone?.id ?? null}
 					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}
@@ -232,13 +247,13 @@ export function MapsScreen() {
 					countLabel={t(visibleZoneCount === 1 ? 'zonesCountOne' : 'zonesCountMany', { count: visibleZoneCount })}
 				/>
 
-				{zonesError ? (
+				{zonesError ?? admin.error ? (
 					<View
 						style={[appStyles.zoneErrorBanner, appStyles.mapsErrorBanner]}
 						accessibilityRole="alert"
 						accessibilityLiveRegion="polite"
 					>
-						<Text style={appStyles.zoneErrorText}>{zonesError}</Text>
+						<Text style={appStyles.zoneErrorText}>{zonesError ?? admin.error}</Text>
 					</View>
 				) : null}
 
