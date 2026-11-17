@@ -70,11 +70,23 @@ function LatestSkeleton() {
 export function HomeScreen({ userName }: { userName?: string | null }) {
 	const navigation = useNavigation<MainTabNavigationProp>()
 	const { t } = useTranslation(['home', 'records'])
-	const { allRecords, isLoading, isRecovering, isRefreshing, loadError, staleSince, handleRefresh } =
-		useHistoryRecords()
+	const {
+		allRecords,
+		isLoading,
+		isRecovering,
+		isRevalidating,
+		isRefreshing,
+		loadError,
+		staleSince,
+		handleRefresh,
+	} = useHistoryRecords()
 	const online = useIsOnline()
 	// Esqueleto também quando a lista incompleta (offline/zerada) está sendo corrigida ao voltar a internet.
 	const loading = isLoading || isRecovering
+	// Com a cópia do aparelho na tela e internet, os números ficam e só o indicador mostra que está
+	// atualizando (sem o aviso de "só o que está guardado", que vale só se a busca falhar ou sem internet).
+	const revalidating = isRevalidating && online
+	const updating = loading || revalidating
 	const now = new Date()
 	const summary = useMemo(() => summarizeRecords(allRecords, new Date()), [allRecords])
 	const latest = useMemo(() => getLatestRecord(allRecords), [allRecords])
@@ -86,7 +98,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 	// Em análise a contagem ainda é 0: mostra esqueleto e a barra de progresso, como no histórico.
 	const analyzing = Boolean(latest && isAnalysisInProgress(latest))
 
-	const syncText = loading
+	const syncText = updating
 		? t('home:sync.updating')
 		: waiting
 		? t(waiting === 1 ? 'home:sync.waitingOne' : 'home:sync.waitingMany', { count: waiting })
@@ -94,7 +106,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			? t('home:sync.offline')
 			: t('home:sync.ok')
 	// Os números vêm só do que está guardado no aparelho (sem internet, ou lista que não carregou).
-	const partialNumbers = !loading && (!online || Boolean(staleSince) || loadError)
+	const partialNumbers = !loading && (!online || (!revalidating && (Boolean(staleSince) || loadError)))
 	const syncOk = online && !waiting && !loadError && !staleSince
 
 	return (
@@ -222,7 +234,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			)}
 
 			<View style={appStyles.homeSync} accessibilityRole="text" accessibilityLiveRegion="polite">
-				{loading ? (
+				{updating ? (
 					<ActivityIndicator size="small" color={colors.muted} style={appStyles.homeSyncSpinner} />
 				) : (
 					<View style={[appStyles.homeSyncDot, !syncOk && appStyles.homeSyncDotWarn]}>

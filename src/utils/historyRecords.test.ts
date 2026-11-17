@@ -5,6 +5,7 @@ import {
 	mergeProgressUpdates,
 	needsRecordsRefresh,
 	getLatestRecord,
+	resolveRecoveryDisplay,
 	sortRecordsByRecency,
 } from './historyRecords'
 
@@ -141,5 +142,28 @@ describe("needsRecordsRefresh", () => {
 
 	it("não recarrega sem atualizações", () => {
 		expect(needsRecordsRefresh(known, [])).toBe(false)
+	})
+})
+
+describe('resolveRecoveryDisplay', () => {
+	it('sem recarga em andamento não mostra esqueleto nem atualização', () => {
+		expect(resolveRecoveryDisplay(false, 0)).toEqual({ showSkeleton: false, isRevalidating: false })
+		expect(resolveRecoveryDisplay(false, 8)).toEqual({ showSkeleton: false, isRevalidating: false })
+	})
+
+	it('recarga com a lista vazia mostra esqueleto (nada para exibir)', () => {
+		expect(resolveRecoveryDisplay(true, 0)).toEqual({ showSkeleton: true, isRevalidating: false })
+	})
+
+	it('recarga com registros já na tela (cópia do aparelho) mantém os números e só indica a atualização', () => {
+		expect(resolveRecoveryDisplay(true, 8)).toEqual({ showSkeleton: false, isRevalidating: true })
+	})
+
+	it('primeira busca ainda em andamento com a cópia do aparelho na tela só indica a atualização', () => {
+		expect(resolveRecoveryDisplay(false, 8, true)).toEqual({ showSkeleton: false, isRevalidating: true })
+	})
+
+	it('primeira busca em andamento sem registros não é atualização (a tela já mostra o carregamento)', () => {
+		expect(resolveRecoveryDisplay(false, 0, true)).toEqual({ showSkeleton: false, isRevalidating: false })
 	})
 })

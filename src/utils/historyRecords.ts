@@ -92,3 +92,18 @@ export function sortRecordsByRecency<T extends Pick<RecordItem, 'id' | 'sync_sta
 export function getLatestRecord<T extends Pick<RecordItem, 'id' | 'sync_state'>>(records: T[]) {
 	return sortRecordsByRecency(records, 'desc')[0] ?? null
 }
+
+// A recarga que corrige uma lista incompleta só esconde a tela (esqueleto) quando não há nada para
+// mostrar. Com registros já na tela (cópia guardada no aparelho), os números ficam e a tela só indica
+// que está atualizando, em vez de piscar entre números e esqueleto. O mesmo vale para a primeira
+// busca ainda em andamento: a cópia do aparelho é mostrada como "atualizando", não como "sem internet".
+export function resolveRecoveryDisplay(
+	isRecovering: boolean,
+	recordCount: number,
+	isInitialFetch = false,
+) {
+	return {
+		showSkeleton: isRecovering && recordCount === 0,
+		isRevalidating: (isRecovering || isInitialFetch) && recordCount > 0,
+	}
+}
