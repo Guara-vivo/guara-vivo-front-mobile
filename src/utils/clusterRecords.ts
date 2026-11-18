@@ -24,13 +24,24 @@ export function zoomFromLongitudeDelta(longitudeDelta: number, screenWidthDp: nu
 }
 
 // Posição do ponto no "mundo" em pixels (projeção Web Mercator) naquele zoom.
-function worldPixel(latitude: number, longitude: number, zoom: number) {
+export function worldPixel(latitude: number, longitude: number, zoom: number) {
 	const scale = TILE_SIZE * 2 ** zoom
 	const sin = Math.sin((latitude * Math.PI) / 180)
 
 	return {
 		x: ((longitude + 180) / 360) * scale,
 		y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale,
+	}
+}
+
+// Faz o caminho de volta de `worldPixel`: do pixel do "mundo" para latitude e longitude.
+export function coordinateFromWorldPixel(x: number, y: number, zoom: number) {
+	const scale = TILE_SIZE * 2 ** zoom
+	const mercator = (0.5 - y / scale) * 2 * Math.PI
+
+	return {
+		latitude: (Math.atan(Math.sinh(mercator)) * 180) / Math.PI,
+		longitude: (x / scale) * 360 - 180,
 	}
 }
 

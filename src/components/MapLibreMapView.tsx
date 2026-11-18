@@ -13,6 +13,7 @@ import {
 	getZoneCircleColors,
 } from '../utils/mapZoneStyle'
 import { findZoneAtCoordinate } from '../utils/mapZoneHit'
+import { keepClustersClearOfZones } from '../utils/clusterPlacement'
 import { clusterRecords, zoomFromLongitudeDelta } from '../utils/clusterRecords'
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { ClusterMarker } from './map/ClusterMarker'
@@ -148,10 +149,15 @@ function MapLibreMapViewBase({
 		))
 	}, [onZonePress, selectedZoneId, visibleZones])
 
-	const clusterItems = useMemo(
-		() => (clusteringEnabled && zoom !== null ? clusterRecords(visibleRecordMarkers, zoom) : null),
-		[clusteringEnabled, zoom, visibleRecordMarkers],
-	)
+	const clusterItems = useMemo(() => {
+		if (!clusteringEnabled || zoom === null) {
+			return null
+		}
+
+		// O grupo nasce no meio dos registros, que ficam em volta do ícone da zona: sem afastar, ele
+		// esconderia o ícone. Só há ícone de zona quando as zonas são tocáveis.
+		return keepClustersClearOfZones(clusterRecords(visibleRecordMarkers, zoom), onZonePress ? visibleZones : [], zoom)
+	}, [clusteringEnabled, zoom, visibleRecordMarkers, visibleZones, onZonePress])
 
 	const selectedRecordMarkers = useMemo(() => {
 		const renderRecord = (record: MapZoneRecordRead) => (
