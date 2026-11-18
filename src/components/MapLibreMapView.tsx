@@ -17,6 +17,7 @@ import { focusedMarkerRadius, getRecordMarkerKind } from '../utils/adminMapRecor
 import { placeBalloon } from '../utils/balloonPlacement'
 import { keepClustersClearOfZones } from '../utils/clusterPlacement'
 import { clusterRecords, shouldUseCompactMarkers, zoomFromLongitudeDelta } from '../utils/clusterRecords'
+import { fanOutOverlappingRecords } from '../utils/fanOutRecords'
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { ClusterMarker } from './map/ClusterMarker'
 import { BALLOON_HEIGHT_DP, BALLOON_WIDTH_DP, RecordBalloon, type RecordBalloonHandlers } from './map/RecordBalloon'
@@ -81,6 +82,16 @@ function MapLibreMapViewBase({
 	const [zoom, setZoom] = useState<number | null>(null)
 	const clusteringEnabled = markerViewerId !== undefined
 
+	// Registros colados uns nos outros (zoom sem grupos) são desenhados abertos em círculo para não se
+	// cobrirem. É só o desenho: o registro mantém a coordenada real. O balão ancora no ponto desenhado.
+	const displayedRecordMarkers = useMemo(
+		() =>
+			clusteringEnabled && shouldUseCompactMarkers(zoom)
+				? fanOutOverlappingRecords(visibleRecordMarkers)
+				: visibleRecordMarkers,
+		[clusteringEnabled, zoom, visibleRecordMarkers],
+	)
+
 	// Balão do registro tocado (só admin). `anchor` é o centro do marcador na tela, em dp; fica nulo
 	// enquanto o mapa se move e o balão some, e volta quando o movimento termina.
 	const [containerSize, setContainerSize] = useState<{ width: number; height: number } | null>(null)
@@ -88,7 +99,7 @@ function MapLibreMapViewBase({
 	const balloonRecordIdRef = useRef<number | null>(null)
 	const balloonTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const visibleRecordsRef = useRef<MapZoneRecordRead[]>(EMPTY_RECORD_MARKERS)
-	visibleRecordsRef.current = visibleRecordMarkers
+	visibleRecordsRef.current = displayedRecordMarkers
 
 	const closeBalloon = useCallback(() => {
 		balloonRecordIdRef.current = null
@@ -260,8 +271,8 @@ function MapLibreMapViewBase({
 		// esconderia o ícone. Só há ícone de zona quando as zonas são tocáveis e os ícones não estão ocultos.
 		const zonesWithIcon = onZonePress && !hideZoneIcons ? visibleZones : []
 
-		return keepClustersClearOfZones(clusterRecords(visibleRecordMarkers, zoom), zonesWithIcon, zoom)
-	}, [clusteringEnabled, zoom, visibleRecordMarkers, visibleZones, onZonePress, hideZoneIcons])
+		return keepClustersClearOfZones(clusterRecords(displayedRecordMarkers, zoom), zonesWithIcon, zoom)
+	}, [clusteringEnabled, zoom, displayedRecordMarkers, visibleZones, onZonePress, hideZoneIcons])
 
 	const selectedRecordMarkers = useMemo(() => {
 		const renderRecord = (record: MapZoneRecordRead) => (
@@ -278,7 +289,7 @@ function MapLibreMapViewBase({
 		)
 
 		if (!clusterItems) {
-			return visibleRecordMarkers.map(renderRecord)
+			return displayedRecordMarkers.map(renderRecord)
 		}
 
 		return clusterItems.map((item) => {
@@ -303,7 +314,7 @@ function MapLibreMapViewBase({
 				/>
 			)
 		})
-	}, [balloon?.recordId, clusterItems, clusteringEnabled, closeBalloon, handleRecordPress, selectedRecordId, recordMarkerOpacity, visibleRecordMarkers, markerViewerId, zoom])
+	}, [balloon?.recordId, clusterItems, clusteringEnabled, closeBalloon, displayedRecordMarkers, handleRecordPress, selectedRecordId, recordMarkerOpacity, markerViewerId, zoom])
 
 	const balloonRecord = balloon ? visibleRecordMarkers.find((record) => record.id === balloon.recordId) : undefined
 	const balloonPlacement = useMemo(
