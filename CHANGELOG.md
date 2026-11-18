@@ -9,8 +9,6 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 ### Alterado
 - No mapa da conta de administração, os pontos simples dos registros de outras pessoas (sem guará, pendentes ou com falha) agora são vermelhos, em vez de laranja. O ponto continua azul quando o registro é selecionado.
 
-Nada ainda.
-
 ## [0.2.0] - 2026-11-17 (versionCode 4)
 
 ### Adicionado
