@@ -12,6 +12,7 @@ import {
 	filterZonesByLayer,
 	getZoneCircleColors,
 } from '../utils/mapZoneStyle'
+import { findZoneAtCoordinate } from '../utils/mapZoneHit'
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { RecordMarker } from './map/RecordMarker'
 import { ZoneMarker } from './map/ZoneMarker'
@@ -28,6 +29,8 @@ type Props = {
 	onMapPress?: (lat: number, lng: number) => void
 	onZonePress?: (zone: MapZoneRead) => void
 	onRecordMarkerPress?: (recordId: number) => void
+	// Definido só para admin: marcadores distinguem registros próprios dos de outras pessoas.
+	markerViewerId?: number | null
 	selectedZoneId?: number | null
 	selectedRecordId?: number | null
 	isLoadingData?: boolean
@@ -42,6 +45,7 @@ function MapLibreMapViewBase({
 	onMapPress,
 	onZonePress,
 	onRecordMarkerPress,
+	markerViewerId,
 	selectedZoneId,
 	selectedRecordId,
 	isLoadingData = false,
@@ -143,10 +147,11 @@ function MapLibreMapViewBase({
 					focused={selected}
 					opacity={recordMarkerOpacity}
 					onPress={onRecordMarkerPress}
+					viewerId={markerViewerId}
 				/>
 			)
 		})
-	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers])
+	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
 
 	const { t } = useTranslation('map')
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
@@ -174,8 +179,19 @@ function MapLibreMapViewBase({
 					customMapStyle={mapStyle}
 					initialRegion={initialRegion}
 					onPress={(e) => {
+						const { latitude, longitude } = e.nativeEvent.coordinate
+
 						if (onMapPress) {
-							onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
+							onMapPress(latitude, longitude)
+							return
+						}
+
+						// O Circle não recebe toque (e o marcador do centro fica sob os registros): o toque na
+						// área da zona é que a abre. Tocar num marcador não passa por aqui.
+						const zone = onZonePress ? findZoneAtCoordinate(visibleZones, latitude, longitude) : null
+
+						if (zone) {
+							onZonePress?.(zone)
 						}
 					}}
 				>

@@ -23,8 +23,12 @@ export default {
 		nest: 'Nest',
 		feeding: 'Feeding zone',
 		record: 'Record {{id}}, {{ibis}}',
+		recordBy: 'Record {{id}}, {{ibis}}, sent by {{author}}',
 		userTitle: 'Your location',
 		userDescription: 'Current location',
+	},
+	adminRecords: {
+		loadError: "Could not load all users' records. The map shows only what was already loaded.",
 	},
 	zones: {
 		loadError: 'Could not load zones. Tap refresh to try again.',

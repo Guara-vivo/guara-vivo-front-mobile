@@ -4,6 +4,11 @@ export default {
 	notFound: 'Record not found.',
 	loadError: 'Could not load the record. Try again.',
 	loading: 'Loading record',
+	adminView: {
+		title: 'Administrator view',
+		body: 'This record was sent by {{author}}.',
+		unknownAuthor: 'another user',
+	},
 	retry: 'Try again',
 	meta: 'Record #{{id}} · {{when}}',
 	location: {

@@ -23,8 +23,12 @@ export default {
 		nest: 'Ninho',
 		feeding: 'Área de alimentação',
 		record: 'Registro {{id}}, {{ibis}}',
+		recordBy: 'Registro {{id}}, {{ibis}}, enviado por {{author}}',
 		userTitle: 'Sua localização',
 		userDescription: 'Localização atual',
+	},
+	adminRecords: {
+		loadError: 'Não foi possível carregar os registros de todos os usuários. O mapa mostra só o que já estava carregado.',
 	},
 	zones: {
 		loadError: 'Não foi possível carregar as áreas. Toque em atualizar para tentar de novo.',

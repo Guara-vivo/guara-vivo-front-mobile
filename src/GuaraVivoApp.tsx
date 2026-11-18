@@ -14,6 +14,7 @@ import { NavigationContainer, useNavigationContainerRef } from '@react-navigatio
 import i18n from './i18n'
 import { loadStoredLanguage } from './i18n/storage'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { AdminRecordsProvider } from './contexts/AdminRecordsContext'
 import { InAppNotificationProvider } from './contexts/InAppNotificationContext'
 import { RecordProgressProvider } from './contexts/RecordProgressContext'
 import { colors } from './constants/theme'
@@ -172,6 +173,10 @@ export default function GuaraVivoApp() {
 				onOpenRecord={handleOpenNotificationRecord}
 			>
 				<RecordProgressProvider isEnabled={isAuthenticated}>
+					<AdminRecordsProvider
+						isAdmin={isAuthenticated && currentUser?.is_admin === true}
+						viewerId={currentUser?.id ?? null}
+					>
 					<NavigationContainer ref={navigationRef}>
 						<MapZoneDetailProvider canManageZones={currentUser?.is_admin === true}>
 							<RootNavigator
@@ -184,6 +189,7 @@ export default function GuaraVivoApp() {
 							<MapZoneDeleteConfirmSheetWrapper />
 						</MapZoneDetailProvider>
 					</NavigationContainer>
+					</AdminRecordsProvider>
 				</RecordProgressProvider>
 			</InAppNotificationProvider>
 		)

@@ -107,6 +107,24 @@ export const recordStyles = StyleSheet.create<Record<string, any>>({
 		fontSize: fontSize.body,
 		fontWeight: '600',
 	},
+	recordDetailAdminBanner: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: spacing.sm,
+		marginHorizontal: screenGutter,
+		marginTop: spacing.sm2,
+		padding: spacing.sm2,
+		borderRadius: radius.md,
+		backgroundColor: colors.blueSoft,
+	},
+	recordDetailAdminBannerText: {
+		flex: 1,
+		fontSize: fontSize.body,
+		color: colors.text,
+	},
+	recordDetailAdminBannerTitle: {
+		fontWeight: '700',
+	},
 	recordDetailTitleBlock: {
 		paddingHorizontal: screenGutter,
 		gap: spacing.sm,
