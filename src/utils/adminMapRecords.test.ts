@@ -3,6 +3,7 @@ import {
 	getRecordMarkerKind,
 	focusedMarkerRadius,
 	getRecordMarkerVariant,
+	getRecordMarkerZIndex,
 	isAdminViewOfRecord,
 	shouldShowRecordBalloon,
 } from './adminMapRecords'
@@ -122,17 +123,23 @@ describe('shouldShowRecordBalloon', () => {
 
 describe('focusedMarkerRadius', () => {
 	it('is the radius of the focused marker image: 29 dp for a guará, 15 dp for a plain dot', () => {
-		expect(focusedMarkerRadius('own-hit')).toBe(29)
-		expect(focusedMarkerRadius('other-hit')).toBe(29)
-		expect(focusedMarkerRadius('own-plain')).toBe(15)
-		expect(focusedMarkerRadius('other-plain')).toBe(15)
+		expect(focusedMarkerRadius('own-hit', false)).toBe(29)
+		expect(focusedMarkerRadius('other-hit', false)).toBe(29)
+		expect(focusedMarkerRadius('own-plain', false)).toBe(15)
+		expect(focusedMarkerRadius('other-plain', false)).toBe(15)
+	})
+
+	it('is 16 dp for a guará when compact, because the focused one is then the same 32 dp dot', () => {
+		expect(focusedMarkerRadius('own-hit', true)).toBe(16)
+		expect(focusedMarkerRadius('other-hit', true)).toBe(16)
+		expect(focusedMarkerRadius('other-plain', true)).toBe(15)
 	})
 })
 
 describe('getRecordMarkerVariant', () => {
 	it('uses the focused image for the focused record, whatever the kind and size', () => {
-		expect(getRecordMarkerVariant('own-hit', true, true)).toBe('focused')
 		expect(getRecordMarkerVariant('other-plain', true, false)).toBe('focused')
+		expect(getRecordMarkerVariant('own-hit', true, false)).toBe('focused')
 	})
 
 	it('shrinks guará records to a solid dot when compact', () => {
@@ -148,5 +155,32 @@ describe('getRecordMarkerVariant', () => {
 	it('never changes the plain dots, which are already small', () => {
 		expect(getRecordMarkerVariant('own-plain', false, true)).toBe('normal')
 		expect(getRecordMarkerVariant('other-plain', false, true)).toBe('normal')
+	})
+})
+
+describe('getRecordMarkerVariant when compact and focused', () => {
+	it('uses a focused dot as small as the others, so it does not take taps from its neighbors', () => {
+		expect(getRecordMarkerVariant('own-hit', true, true)).toBe('focused-compact')
+		expect(getRecordMarkerVariant('other-hit', true, true)).toBe('focused-compact')
+	})
+
+	it('keeps the regular focused image for plain dots', () => {
+		expect(getRecordMarkerVariant('own-plain', true, true)).toBe('focused')
+	})
+})
+
+describe('getRecordMarkerZIndex', () => {
+	it('lifts the big focused marker above its neighbors', () => {
+		expect(getRecordMarkerZIndex('own-hit', 'focused')).toBe(201)
+	})
+
+	it('gives the compact focused dot the same level as the other guará dots, never above', () => {
+		expect(getRecordMarkerZIndex('own-hit', 'focused-compact')).toBe(getRecordMarkerZIndex('own-hit', 'compact'))
+		expect(getRecordMarkerZIndex('other-hit', 'focused-compact')).toBe(200)
+	})
+
+	it('keeps plain dots below the guará markers', () => {
+		expect(getRecordMarkerZIndex('own-plain', 'normal')).toBe(199)
+		expect(getRecordMarkerZIndex('other-hit', 'normal')).toBe(200)
 	})
 })

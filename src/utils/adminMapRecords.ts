@@ -29,26 +29,46 @@ export function getRecordMarkerKind(
 	return hit ? 'other-hit' : 'other-plain'
 }
 
-export type RecordMarkerVariant = 'normal' | 'compact' | 'focused'
+export type RecordMarkerVariant = 'normal' | 'compact' | 'focused' | 'focused-compact'
 
-// Qual imagem usar: o registro em foco é sempre o grande; no modo compacto só os marcadores de
-// guará encolhem (os pontos simples já são pequenos).
+function isHitKind(kind: RecordMarkerKind) {
+	return kind === 'own-hit' || kind === 'other-hit'
+}
+
+// Qual imagem usar. No modo compacto os marcadores de guará encolhem (os pontos simples já são
+// pequenos) e o registro em foco também é um ponto de 32 dp, azul: um marcador em foco maior ou
+// mais alto que os vizinhos colados ganha o toque deles (o Android escolhe pelo `zIndex` e pela
+// área do marcador), e o toque no vizinho caía no selecionado.
 export function getRecordMarkerVariant(
 	kind: RecordMarkerKind,
 	focused: boolean,
 	compact: boolean,
 ): RecordMarkerVariant {
 	if (focused) {
-		return 'focused'
+		return compact && isHitKind(kind) ? 'focused-compact' : 'focused'
 	}
 
-	return compact && (kind === 'own-hit' || kind === 'other-hit') ? 'compact' : 'normal'
+	return compact && isHitKind(kind) ? 'compact' : 'normal'
 }
 
-// Metade do tamanho da imagem do marcador em foco (record-marker-selected 58 dp; record-dot-selected 30 dp),
-// para o balão encostar nele sem cobri-lo.
-export function focusedMarkerRadius(kind: RecordMarkerKind): number {
-	return kind === 'own-plain' || kind === 'other-plain' ? 15 : 29
+// O grande em foco fica acima dos vizinhos; no modo compacto ninguém sobe, para o toque ir ao
+// marcador que a pessoa tocou. Pontos simples ficam abaixo dos de guará.
+export function getRecordMarkerZIndex(kind: RecordMarkerKind, variant: RecordMarkerVariant): number {
+	if (variant === 'focused') {
+		return 201
+	}
+
+	return isHitKind(kind) ? 200 : 199
+}
+
+// Metade do tamanho da imagem do marcador em foco (record-marker-selected 58 dp; record-dot-selected
+// 30 dp; no modo compacto o guará em foco é o ponto de 32 dp), para o balão encostar nele sem cobri-lo.
+export function focusedMarkerRadius(kind: RecordMarkerKind, compact: boolean): number {
+	if (!isHitKind(kind)) {
+		return 15
+	}
+
+	return compact ? 16 : 29
 }
 
 // Admin olhando um registro que não é dele: o detalhe mostra de quem é.

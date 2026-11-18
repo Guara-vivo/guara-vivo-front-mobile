@@ -3,7 +3,13 @@ import { Marker } from 'react-native-maps'
 import { useTranslation } from 'react-i18next'
 import type { MapZoneRecordRead } from '../../types/api'
 import { countLabel } from '../../utils/countLabel'
-import { getRecordMarkerKind, getRecordMarkerVariant, type RecordMarkerKind } from '../../utils/adminMapRecords'
+import {
+	getRecordMarkerKind,
+	getRecordMarkerVariant,
+	getRecordMarkerZIndex,
+	type RecordMarkerKind,
+	type RecordMarkerVariant,
+} from '../../utils/adminMapRecords'
 
 type RecordMarkerProps = {
 	record: MapZoneRecordRead
@@ -27,25 +33,45 @@ const RECORD_IMAGE = require('../../assets/images/record-marker.png')
 const RECORD_IMAGE_FOCUSED = require('../../assets/images/record-marker-selected.png')
 const RECORD_IMAGE_OTHER = require('../../assets/images/record-marker-other.png')
 const RECORD_IMAGE_COMPACT = require('../../assets/images/record-marker-compact.png')
+const RECORD_IMAGE_FOCUSED_COMPACT = require('../../assets/images/record-marker-selected-compact.png')
 const RECORD_IMAGE_OTHER_COMPACT = require('../../assets/images/record-marker-other-compact.png')
 const DOT_IMAGE = require('../../assets/images/record-dot.png')
 const DOT_IMAGE_OTHER = require('../../assets/images/record-dot-other.png')
 const DOT_IMAGE_FOCUSED = require('../../assets/images/record-dot-selected.png')
 
-const MARKER_IMAGES: Record<RecordMarkerKind, { normal: number; compact: number; focused: number }> = {
-	'own-hit': { normal: RECORD_IMAGE, compact: RECORD_IMAGE_COMPACT, focused: RECORD_IMAGE_FOCUSED },
-	'other-hit': { normal: RECORD_IMAGE_OTHER, compact: RECORD_IMAGE_OTHER_COMPACT, focused: RECORD_IMAGE_FOCUSED },
-	'own-plain': { normal: DOT_IMAGE, compact: DOT_IMAGE, focused: DOT_IMAGE_FOCUSED },
-	'other-plain': { normal: DOT_IMAGE_OTHER, compact: DOT_IMAGE_OTHER, focused: DOT_IMAGE_FOCUSED },
+const MARKER_IMAGES: Record<RecordMarkerKind, Record<RecordMarkerVariant, number>> = {
+	'own-hit': {
+		normal: RECORD_IMAGE,
+		compact: RECORD_IMAGE_COMPACT,
+		focused: RECORD_IMAGE_FOCUSED,
+		'focused-compact': RECORD_IMAGE_FOCUSED_COMPACT,
+	},
+	'other-hit': {
+		normal: RECORD_IMAGE_OTHER,
+		compact: RECORD_IMAGE_OTHER_COMPACT,
+		focused: RECORD_IMAGE_FOCUSED,
+		'focused-compact': RECORD_IMAGE_FOCUSED_COMPACT,
+	},
+	'own-plain': {
+		normal: DOT_IMAGE,
+		compact: DOT_IMAGE,
+		focused: DOT_IMAGE_FOCUSED,
+		'focused-compact': DOT_IMAGE_FOCUSED,
+	},
+	'other-plain': {
+		normal: DOT_IMAGE_OTHER,
+		compact: DOT_IMAGE_OTHER,
+		focused: DOT_IMAGE_FOCUSED,
+		'focused-compact': DOT_IMAGE_FOCUSED,
+	},
 }
 
 export function RecordMarker({ record, focused, compact = false, onPress, viewerId }: RecordMarkerProps) {
 	const { t } = useTranslation('map')
 	const adminView = viewerId !== undefined
 	const kind: RecordMarkerKind = adminView ? getRecordMarkerKind(record, viewerId) : 'own-hit'
-	const images = MARKER_IMAGES[kind]
+	const variant = getRecordMarkerVariant(kind, focused, compact)
 	const foreign = kind === 'other-hit' || kind === 'other-plain'
-	const plain = kind === 'own-plain' || kind === 'other-plain'
 	const ibis = countLabel(record.ibis_quantity ?? 0)
 
 	return (
@@ -56,9 +82,9 @@ export function RecordMarker({ record, focused, compact = false, onPress, viewer
 			}}
 			onPress={onPress ? () => onPress(record.id) : undefined}
 			anchor={{ x: 0.5, y: 0.5 }}
-			// Registros com guará ficam por cima dos pontos simples.
-			zIndex={focused ? 201 : plain ? 199 : 200}
-			image={images[getRecordMarkerVariant(kind, focused, compact)]}
+			// Registros com guará ficam por cima dos pontos simples; o grande em foco sobe acima dos vizinhos.
+			zIndex={getRecordMarkerZIndex(kind, variant)}
+			image={MARKER_IMAGES[kind][variant]}
 			accessibilityLabel={
 				foreign
 					? t('marker.recordBy', { id: record.id, ibis, author: record.author_name })

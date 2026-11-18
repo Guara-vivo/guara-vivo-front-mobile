@@ -325,10 +325,10 @@ function MapLibreMapViewBase({
 						balloon: { width: BALLOON_WIDTH_DP, height: BALLOON_HEIGHT_DP },
 						container: containerSize,
 						// O marcador do balão está em foco (maior): a pontinha encosta nele sem cobri-lo.
-						markerRadius: focusedMarkerRadius(getRecordMarkerKind(balloonRecord, markerViewerId ?? null)),
+						markerRadius: focusedMarkerRadius(getRecordMarkerKind(balloonRecord, markerViewerId ?? null), clusteringEnabled && shouldUseCompactMarkers(zoom)),
 					})
 				: null,
-		[balloon?.anchor, balloonRecord, containerSize, markerViewerId],
+		[balloon?.anchor, balloonRecord, clusteringEnabled, containerSize, markerViewerId, zoom],
 	)
 
 	const { t } = useTranslation('map')
