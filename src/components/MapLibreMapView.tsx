@@ -39,6 +39,9 @@ type Props = {
 	onRecordMarkerPress?: (recordId: number) => void
 	// Só no mapa do admin: tocar no marcador abre um balão (quando `shouldShow`) em vez de `onRecordMarkerPress`.
 	recordBalloon?: RecordBalloonHandlers
+	// Esconde os ícones das áreas e deixa só o círculo (a área segue abrindo pelo toque dentro do raio):
+	// o ícone ganha o toque dos registros colados nele.
+	hideZoneIcons?: boolean
 	// Definido só para admin: marcadores distinguem registros próprios dos de outras pessoas.
 	markerViewerId?: number | null
 	selectedZoneId?: number | null
@@ -56,6 +59,7 @@ function MapLibreMapViewBase({
 	onZonePress,
 	onRecordMarkerPress,
 	recordBalloon,
+	hideZoneIcons = false,
 	markerViewerId,
 	selectedZoneId,
 	selectedRecordId,
@@ -232,7 +236,7 @@ function MapLibreMapViewBase({
 	}), [selectedZoneId, visibleZones])
 
 	const zonePressMarkers = useMemo(() => {
-		if (!onZonePress) {
+		if (!onZonePress || hideZoneIcons) {
 			return null
 		}
 
@@ -245,7 +249,7 @@ function MapLibreMapViewBase({
 				onPress={handleZonePress}
 			/>
 		))
-	}, [handleZonePress, onZonePress, selectedZoneId, visibleZones])
+	}, [handleZonePress, hideZoneIcons, onZonePress, selectedZoneId, visibleZones])
 
 	const clusterItems = useMemo(() => {
 		if (!clusteringEnabled || zoom === null) {
@@ -253,9 +257,11 @@ function MapLibreMapViewBase({
 		}
 
 		// O grupo nasce no meio dos registros, que ficam em volta do ícone da zona: sem afastar, ele
-		// esconderia o ícone. Só há ícone de zona quando as zonas são tocáveis.
-		return keepClustersClearOfZones(clusterRecords(visibleRecordMarkers, zoom), onZonePress ? visibleZones : [], zoom)
-	}, [clusteringEnabled, zoom, visibleRecordMarkers, visibleZones, onZonePress])
+		// esconderia o ícone. Só há ícone de zona quando as zonas são tocáveis e os ícones não estão ocultos.
+		const zonesWithIcon = onZonePress && !hideZoneIcons ? visibleZones : []
+
+		return keepClustersClearOfZones(clusterRecords(visibleRecordMarkers, zoom), zonesWithIcon, zoom)
+	}, [clusteringEnabled, zoom, visibleRecordMarkers, visibleZones, onZonePress, hideZoneIcons])
 
 	const selectedRecordMarkers = useMemo(() => {
 		const renderRecord = (record: MapZoneRecordRead) => (

@@ -19,6 +19,8 @@ export default {
 	cancelSelection: 'Cancelar seleção de área',
 	locate: 'Ir para minha localização',
 	reload: 'Atualizar áreas',
+	hideZoneIcons: 'Ocultar ícones das áreas',
+	showZoneIcons: 'Mostrar ícones das áreas',
 	marker: {
 		nest: 'Ninho',
 		feeding: 'Área de alimentação',

@@ -19,6 +19,8 @@ export default {
 	cancelSelection: 'Cancel zone selection',
 	locate: 'Go to my location',
 	reload: 'Refresh zones',
+	hideZoneIcons: 'Hide zone icons',
+	showZoneIcons: 'Show zone icons',
 	marker: {
 		nest: 'Nest',
 		feeding: 'Feeding zone',

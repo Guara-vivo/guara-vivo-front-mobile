@@ -46,6 +46,8 @@ export function MapsScreen() {
 	const [creatingZone, setCreatingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
 	const [recenterKey, setRecenterKey] = useState(0)
+	// Só o admin: esconde os ícones das áreas para os registros colados neles receberem o toque.
+	const [showZoneIcons, setShowZoneIcons] = useState(true)
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
@@ -197,6 +199,7 @@ export function MapsScreen() {
 					onZonePress={!selectionMode ? openSheet : undefined}
 					onRecordMarkerPress={!selectionMode ? onRecordMarkerPress : undefined}
 					recordBalloon={!selectionMode && admin.isAdmin ? admin.recordBalloon : undefined}
+					hideZoneIcons={admin.isAdmin && !showZoneIcons}
 					selectedZoneId={ctx.selectedZone?.id ?? null}
 					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}
@@ -267,6 +270,16 @@ export function MapsScreen() {
 				) : null}
 
 				<View style={appStyles.mapsSideButtons}>
+					{admin.isAdmin ? (
+						<Pressable
+							onPress={() => setShowZoneIcons((shown) => !shown)}
+							accessibilityRole="button"
+							accessibilityLabel={showZoneIcons ? t('hideZoneIcons') : t('showZoneIcons')}
+							style={appStyles.mapsSideButton}
+						>
+							<Ionicons name={showZoneIcons ? 'eye' : 'eye-off'} size={22} color={colors.secondary} />
+						</Pressable>
+					) : null}
 					{ctx.canManageZones ? (
 						<Pressable
 							onPress={handleToggleSelectionMode}
