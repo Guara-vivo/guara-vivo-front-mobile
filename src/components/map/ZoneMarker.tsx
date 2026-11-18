@@ -45,7 +45,9 @@ function ZoneMarkerBase({ zone, selected, dimmed = false, onPress }: Props) {
 			coordinate={{ latitude: zone.latitude, longitude: zone.longitude }}
 			onPress={() => onPress(zone)}
 			anchor={{ x: 0.5, y: 0.5 }}
-			zIndex={selected ? 2 : 1}
+			// Acima dos registros (200 a 202) e dos grupos: com os registros do admin sempre visíveis, o
+			// Google Maps escolhe pelo zIndex e o ícone da zona perdia o toque para um registro vizinho.
+			zIndex={selected ? 204 : 203}
 			image={getZoneImage(isNest, selected, dimmed)}
 			accessibilityLabel={`${t(isNest ? 'marker.nest' : 'marker.feeding')} ${zone.name}`}
 		/>
