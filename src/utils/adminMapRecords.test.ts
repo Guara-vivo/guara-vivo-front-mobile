@@ -1,5 +1,10 @@
-import { filterRecordsByLayer, getRecordMarkerKind, isAdminViewOfRecord } from './adminMapRecords'
-import type { MapZoneRecordRead } from '../types/api'
+import {
+	filterRecordsByLayer,
+	getRecordMarkerKind,
+	isAdminViewOfRecord,
+	shouldShowRecordBalloon,
+} from './adminMapRecords'
+import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
 
 function makeRecord(overrides: Partial<MapZoneRecordRead> = {}): MapZoneRecordRead {
 	return {
@@ -80,5 +85,35 @@ describe('isAdminViewOfRecord', () => {
 		expect(isAdminViewOfRecord(8, { isAdmin: false, id: 7 })).toBe(false)
 		expect(isAdminViewOfRecord(8, { isAdmin: true, id: null })).toBe(false)
 		expect(isAdminViewOfRecord(undefined, { isAdmin: true, id: 7 })).toBe(false)
+	})
+})
+
+describe('shouldShowRecordBalloon', () => {
+	const zone: MapZoneRead = {
+		id: 1,
+		type: 'feeding',
+		name: 'Alimentação A',
+		sequence_index: 1,
+		latitude: -24.5,
+		longitude: -47.8,
+		radius_meters: 50,
+		user_id: 7,
+		created_at: '2026-06-04T10:00:00Z',
+	}
+
+	it('shows the balloon when no zone sheet is open', () => {
+		expect(shouldShowRecordBalloon(5, null, [])).toBe(true)
+	})
+
+	it('shows the balloon when a zone sheet is open but the record is not in its list', () => {
+		expect(shouldShowRecordBalloon(5, zone, [makeRecord({ id: 6 })])).toBe(true)
+	})
+
+	it('does not show the balloon for a record listed in the open zone sheet', () => {
+		expect(shouldShowRecordBalloon(5, zone, [makeRecord({ id: 5 })])).toBe(false)
+	})
+
+	it('ignores the zone list when no zone is selected', () => {
+		expect(shouldShowRecordBalloon(5, null, [makeRecord({ id: 5 })])).toBe(true)
 	})
 })

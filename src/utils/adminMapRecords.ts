@@ -1,5 +1,5 @@
 import type { MapLayerId } from '../config/map'
-import type { MapZoneRecordRead } from '../types/api'
+import type { MapZoneRead, MapZoneRecordRead } from '../types/api'
 
 export type RecordMarkerKind = 'own-hit' | 'other-hit' | 'own-plain' | 'other-plain'
 
@@ -35,4 +35,14 @@ export function isAdminViewOfRecord(
 	viewer: { isAdmin: boolean; id: number | null },
 ): boolean {
 	return viewer.isAdmin && viewer.id !== null && recordUserId !== undefined && recordUserId !== viewer.id
+}
+
+// Verdadeiro quando o toque no registro deve abrir o balão; falso quando a folha de uma zona está
+// aberta e o registro está na lista dela (aí o toque destaca e rola, como sempre).
+export function shouldShowRecordBalloon(
+	recordId: number,
+	selectedZone: MapZoneRead | null,
+	zoneRecords: MapZoneRecordRead[],
+): boolean {
+	return !(selectedZone !== null && zoneRecords.some((record) => record.id === recordId))
 }
