@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
+import { useTranslation } from 'react-i18next'
 import Slider from '@react-native-community/slider'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
 import type { MapZoneType } from '../types/api'
@@ -18,6 +19,7 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 	onCancel,
 	isSubmitting = false,
 }) => {
+	const { t } = useTranslation('map')
 	const [zoneType, setZoneType] = useState<MapZoneType>('feeding')
 	const [radius, setRadius] = useState(50)
 	const bottomSheetRef = useRef<BottomSheetModal>(null)
@@ -66,9 +68,9 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 			handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
 		>
 			<BottomSheetView style={appStyles.zoneBottomSheetContent}>
-				<Text style={appStyles.zoneModalTitle}>Adicionar Área</Text>
+				<Text style={appStyles.zoneModalTitle}>{t('add.title')}</Text>
 
-				<Text style={appStyles.zoneModalLabel}>Tipo</Text>
+				<Text style={appStyles.zoneModalLabel}>{t('add.type')}</Text>
 				<View style={appStyles.zoneSelectContainer}>
 					<View
 						style={[
@@ -78,18 +80,18 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 					>
 						<Picker
 							selectedValue={zoneType}
-							accessibilityLabel="Tipo de área"
+							accessibilityLabel={t('add.typeA11y')}
 							onValueChange={(value) => setZoneType(value as MapZoneType)}
 							enabled={!isSubmitting}
 							style={appStyles.zonePicker}
 						>
-							<Picker.Item label="Alimentação" value="feeding" />
-							<Picker.Item label="Ninho" value="nest" />
+							<Picker.Item label={t('add.feeding')} value="feeding" />
+							<Picker.Item label={t('add.nest')} value="nest" />
 						</Picker>
 					</View>
 				</View>
 
-				<Text style={appStyles.zoneModalLabel}>Raio: {radius}m</Text>
+				<Text style={appStyles.zoneModalLabel}>{t('add.radius', { radius })}</Text>
 				<Slider
 					style={[
 						appStyles.zoneSlider,
@@ -100,8 +102,8 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 					value={radius}
 					onValueChange={setRadius}
 					step={10}
-					accessibilityLabel="Raio da área em metros"
-					accessibilityValue={{ min: 10, max: 500, now: radius, text: `${radius} metros` }}
+					accessibilityLabel={t('add.radiusA11y')}
+					accessibilityValue={{ min: 10, max: 500, now: radius, text: t('add.radiusValue', { radius }) }}
 					disabled={isSubmitting}
 				/>
 
@@ -113,10 +115,10 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 						]}
 						onPress={handleCancel}
 						accessibilityRole="button"
-						accessibilityLabel="Cancelar"
+						accessibilityLabel={t('common:cancel')}
 						disabled={isSubmitting}
 					>
-						<Text style={appStyles.zoneModalCancelButtonText}>Cancelar</Text>
+						<Text style={appStyles.zoneModalCancelButtonText}>{t('common:cancel')}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
 						style={[
@@ -125,14 +127,14 @@ export const MapZoneSelectionModal: React.FC<MapZoneSelectionModalProps> = ({
 						]}
 						onPress={handleConfirm}
 						accessibilityRole="button"
-						accessibilityLabel="Confirmar área"
+						accessibilityLabel={t('add.confirmA11y')}
 						accessibilityState={{ busy: isSubmitting, disabled: isSubmitting }}
 						disabled={isSubmitting}
 					>
 						{isSubmitting ? (
 							<ActivityIndicator size="small" color={colors.onColor} />
 						) : (
-							<Text style={appStyles.zoneModalConfirmButtonText}>Confirmar</Text>
+							<Text style={appStyles.zoneModalConfirmButtonText}>{t('add.confirm')}</Text>
 						)}
 					</TouchableOpacity>
 				</View>

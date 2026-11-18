@@ -1,4 +1,5 @@
 import type { MapLayerId } from '../config/map'
+import i18n from '../i18n'
 import type { MapZoneRead } from '../types/api'
 
 export function filterZonesByLayer(zones: MapZoneRead[], layer: MapLayerId) {
@@ -47,8 +48,8 @@ export function getZoneCircleColors(
 
 export function getLayerBadgeText(layer: MapLayerId) {
 	if (layer === 'all') {
-		return 'áreas'
+		return i18n.t('map:badge.all')
 	}
 
-	return layer === 'feeding' ? 'alimentação' : 'ninhos'
+	return i18n.t(layer === 'feeding' ? 'map:badge.feeding' : 'map:badge.nests')
 }

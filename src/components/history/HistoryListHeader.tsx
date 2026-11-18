@@ -1,9 +1,10 @@
 import React from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../styles/appStyles'
 import type { SortOrder } from '../../utils/historyRecords'
-import { formatDate, formatTime } from '../../utils/recordFormatters'
+import { formatDateAtTime } from '../../utils/recordFormatters'
 import { colors } from '../../constants/theme'
 
 type Props = {
@@ -29,17 +30,18 @@ function HistoryListHeaderBase({
 	onToggleSort,
 	disabled,
 }: Props) {
+	const { t } = useTranslation('history')
 	const staleIso = staleSince !== null ? new Date(staleSince).toISOString() : null
 
 	return (
 		<View style={appStyles.historyHeaderGroup}>
 			{staleIso !== null ? (
 				<Text style={appStyles.historyEmptyText}>
-					{`Sem conexão com o servidor. Mostrando dados de ${formatDate(staleIso)} às ${formatTime(staleIso)}.`}
+					{t('staleServer', { when: formatDateAtTime(staleIso) })}
 				</Text>
 			) : offline ? (
 				<Text style={appStyles.historyEmptyText}>
-					Sem conexão com a internet. Os registros podem estar desatualizados.
+					{t('offline')}
 				</Text>
 			) : null}
 
@@ -49,8 +51,8 @@ function HistoryListHeaderBase({
 					<TextInput
 						value={searchTerm}
 						onChangeText={onSearchChange}
-						accessibilityLabel="Buscar registros"
-						placeholder="Buscar por local ou data"
+						accessibilityLabel={t('searchLabel')}
+						placeholder={t('searchPlaceholder')}
 						placeholderTextColor={colors.placeholder}
 						style={appStyles.historySearchInput}
 					/>
@@ -58,7 +60,7 @@ function HistoryListHeaderBase({
 				<Pressable
 					onPress={onOpenFilters}
 					accessibilityRole="button"
-					accessibilityLabel="Filtros"
+					accessibilityLabel={t('filtersButton')}
 					accessibilityState={{ disabled: !!disabled }}
 					disabled={disabled}
 					style={[
@@ -75,8 +77,8 @@ function HistoryListHeaderBase({
 				accessibilityRole="button"
 				accessibilityLabel={
 					sortOrder === 'desc'
-						? 'Ordenação: mais recentes primeiro. Alternar'
-						: 'Ordenação: mais antigos primeiro. Alternar'
+						? t('sort.descA11y')
+						: t('sort.ascA11y')
 				}
 				accessibilityState={{ disabled: !!disabled }}
 				disabled={disabled}
@@ -87,7 +89,7 @@ function HistoryListHeaderBase({
 			>
 				<Ionicons name="swap-vertical" size={16} color={colors.secondary} />
 				<Text style={appStyles.historySortPillText}>
-					{sortOrder === 'desc' ? 'Mais recentes' : 'Mais antigos'}
+					{sortOrder === 'desc' ? t('sort.desc') : t('sort.asc')}
 				</Text>
 			</Pressable>
 		</View>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs'
 import FeedbackModal from '../components/FeedbackModal'
 import { LocationPickerModal } from '../components/register/LocationPickerModal'
@@ -24,13 +25,8 @@ import { canAdvance, type RegisterStep } from '../utils/registerSteps'
 
 type NavigationProp = BottomTabNavigationProp<MainTabParamList>
 
-const STEP_COPY: Record<RegisterStep, { title: string; hint: string }> = {
-	1: { title: 'Fotos do avistamento', hint: 'Adicione pelo menos uma foto.' },
-	2: { title: 'O que os guarás estavam fazendo?', hint: 'Escolha um ou mais comportamentos.' },
-	3: { title: 'Onde e quando?', hint: 'Já preenchemos com o local e a hora de agora.' },
-}
-
 export function RegisterScreen() {
+	const { t } = useTranslation('register')
 	const navigation = useNavigation<NavigationProp>()
 	const [step, setStep] = useState<RegisterStep>(1)
 	const [behaviors, setBehaviors] = useState<string[]>([])
@@ -103,7 +99,7 @@ export function RegisterScreen() {
 		hasLocation: true,
 		dateTimeValid,
 	})
-	const copy = STEP_COPY[step]
+	const copy = { title: t(`steps.${step}.title`), hint: t(`steps.${step}.hint`) }
 
 	return (
 		<View style={appStyles.registerScreen}>
@@ -140,7 +136,7 @@ export function RegisterScreen() {
 
 				{step === 3 ? (
 					<>
-						<RegisterSubsection icon="location-outline" title="Local do avistamento">
+						<RegisterSubsection icon="location-outline" title={t('placeTitle')}>
 							<RegisterLocationField
 								hasSelectedLocation={Boolean(location.selectedLocation)}
 								disabled={isSaving}
@@ -149,7 +145,7 @@ export function RegisterScreen() {
 							/>
 						</RegisterSubsection>
 
-						<RegisterSubsection icon="calendar-outline" title="Data e hora">
+						<RegisterSubsection icon="calendar-outline" title={t('dateTitle')}>
 							<RegisterDateTimeFields
 								date={selectedDate}
 								time={selectedTime}
@@ -159,7 +155,7 @@ export function RegisterScreen() {
 							/>
 							{dateTimeValid ? null : (
 								<Text style={appStyles.registerFieldError} accessibilityRole="alert">
-									A data e a hora não podem estar no futuro.
+									{t('futureError')}
 								</Text>
 							)}
 						</RegisterSubsection>
@@ -171,7 +167,7 @@ export function RegisterScreen() {
 			<View style={appStyles.registerFooter}>
 				{step > 1 ? (
 					<ActionButton
-						title="Voltar"
+						title={t('back')}
 						variant="outline"
 						onPress={() => setStep((step - 1) as RegisterStep)}
 						disabled={isSaving}
@@ -181,7 +177,7 @@ export function RegisterScreen() {
 					/>
 				) : null}
 				<ActionButton
-					title={step < 3 ? 'Continuar' : isSaving ? 'Enviando...' : 'Salvar registro'}
+					title={step < 3 ? t('continue') : isSaving ? t('sending') : t('save')}
 					onPress={() => {
 						if (step < 3) {
 							setStep((step + 1) as RegisterStep)
@@ -216,7 +212,7 @@ export function RegisterScreen() {
 					visible
 					title={feedback.title}
 					message={feedback.message}
-					buttonLabel="OK"
+					buttonLabel={t('common:ok')}
 					iconName={feedback.iconName}
 					iconColor={feedback.iconColor}
 					onConfirm={handleFeedbackConfirm}

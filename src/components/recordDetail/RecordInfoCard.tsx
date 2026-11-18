@@ -1,14 +1,18 @@
 import React from 'react'
 import { Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Skeleton } from '../Skeleton'
 import { appStyles } from '../../styles/appStyles'
 import type { RecordDetailItem } from '../../services/recordsService'
-import { formatDate, formatTime } from '../../utils/recordFormatters'
+import { behaviorLabel } from '../../utils/behaviorLabel'
+import { countLabel } from '../../utils/countLabel'
+import { formatDateAtTime } from '../../utils/recordFormatters'
 
 // Título do registro: quantidade de guarás, comportamentos (chips) e linha "Registro #id · data e hora".
 // Com `loading`, a quantidade (que o resumo ainda pode trazer desatualizada) vira um esqueleto.
 export function RecordInfoCard({ record, loading = false }: { record: RecordDetailItem; loading?: boolean }) {
-	const quantityLabel = `${record.ibis_quantity} ${record.ibis_quantity === 1 ? 'guará' : 'guarás'}`
+	const { t } = useTranslation('detail')
+	const quantityLabel = countLabel(record.ibis_quantity)
 	const behaviors = String(record.flock_size)
 		.split(',')
 		.map((item) => item.trim())
@@ -27,13 +31,13 @@ export function RecordInfoCard({ record, loading = false }: { record: RecordDeta
 				<View style={appStyles.recordDetailChipRow}>
 					{behaviors.map((behavior) => (
 						<View key={behavior} style={appStyles.recordDetailChip}>
-							<Text style={appStyles.recordDetailChipText}>{behavior}</Text>
+							<Text style={appStyles.recordDetailChipText}>{behaviorLabel(behavior)}</Text>
 						</View>
 					))}
 				</View>
 			) : null}
 			<Text style={appStyles.recordDetailMeta}>
-				{`Registro #${record.id} · ${formatDate(record.datetime)} às ${formatTime(record.datetime)}`}
+				{t('meta', { id: record.id, when: formatDateAtTime(record.datetime) })}
 			</Text>
 		</View>
 	)

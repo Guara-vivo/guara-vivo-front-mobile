@@ -320,7 +320,6 @@ export const zonesStyles = StyleSheet.create<Record<string, any>>({
 		color: colors.text,
 	} as TextStyle,
 	zoneDeleteSheetContent: {
-		flex: 1,
 		alignItems: 'center',
 		padding: spacing.lg,
 	} as ViewStyle,

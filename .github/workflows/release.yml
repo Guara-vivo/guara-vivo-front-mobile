@@ -117,7 +117,9 @@ jobs:
         run: |
           chmod +x gradlew
           # Sem -PlocalDebugSign: assina com o app.keystore.
-          ./gradlew assembleRelease --console=plain --no-daemon
+          # Só as ABIs de celular (ARM de 32 e de 64 bits). x86 e x86_64 existem para emulador e
+          # dobravam o tamanho do APK; o build de teste no emulador continua com elas (android:install).
+          ./gradlew assembleRelease -PreactNativeArchitectures=armeabi-v7a,arm64-v8a --console=plain --no-daemon
 
       - name: Remover o keystore do runner
         if: always()

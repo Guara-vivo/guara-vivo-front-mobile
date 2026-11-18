@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 import type { RecordItem } from '../types/records'
@@ -16,6 +17,8 @@ export function AnalysisProgressIndicator({
 	progress,
 	status,
 }: AnalysisProgressIndicatorProps) {
+	const { t } = useTranslation('records')
+
 	if (status === 'completed') {
 		return null
 	}
@@ -25,24 +28,24 @@ export function AnalysisProgressIndicator({
 			<View
 				accessible
 				accessibilityRole="alert"
-				accessibilityLabel="Análise falhou"
+				accessibilityLabel={t('analysis.failed')}
 				style={appStyles.analysisFailedChip}
 			>
 				<Ionicons name="alert-circle" size={14} color={colors.dangerText} />
-				<Text style={appStyles.analysisFailedText}>Análise falhou</Text>
+				<Text style={appStyles.analysisFailedText}>{t('analysis.failed')}</Text>
 			</View>
 		)
 	}
 
 	const percent = Math.min(Math.max(Math.round(progress), 0), 100)
 	const isQueued = status === 'pending' && percent === 0
-	const label = isQueued ? 'Na fila para análise' : `Analisando · ${percent}%`
+	const label = isQueued ? t('analysis.queued') : t('analysis.running', { percent })
 
 	return (
 		<View
 			accessible
 			accessibilityRole="progressbar"
-			accessibilityLabel={isQueued ? 'Análise na fila' : `Análise ${percent}% concluída`}
+			accessibilityLabel={isQueued ? t('analysis.queuedA11y') : t('analysis.runningA11y', { percent })}
 			accessibilityValue={{ min: 0, max: 100, now: percent }}
 			style={appStyles.analysisProgressWrap}
 		>

@@ -6,6 +6,7 @@ import {
 	formatLocationLabel,
 } from '../utils/recordFormatters'
 import type { RecordItem } from '../types/records'
+import { behaviorLabel } from '../utils/behaviorLabel'
 import { parseInputDate } from '../utils/inputDate'
 
 const SEARCH_DEBOUNCE_MS = 250
@@ -106,6 +107,7 @@ export function useHistoryFilters(records: RecordItem[]) {
 					formatTime(record.datetime),
 					locationLabel,
 					record.flock_size,
+					...parseBehaviorTags(record.flock_size).map(behaviorLabel),
 					String(record.ibis_quantity),
 					...zoneNames,
 				]

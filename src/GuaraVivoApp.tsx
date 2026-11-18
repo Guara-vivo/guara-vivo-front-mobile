@@ -11,12 +11,15 @@ import { PortalProvider } from '@gorhom/portal'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native'
 
+import i18n from './i18n'
+import { loadStoredLanguage } from './i18n/storage'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { AdminRecordsProvider } from './contexts/AdminRecordsContext'
 import { InAppNotificationProvider } from './contexts/InAppNotificationContext'
 import { RecordProgressProvider } from './contexts/RecordProgressContext'
 import { colors } from './constants/theme'
 import { setSessionExpiredHandler } from './services/apiClient'
-import { clearExpiredSession, restoreSession } from './services/authService'
+import { clearExpiredSession, openSession } from './services/authService'
 import { usePendingRecordsSync } from './hooks/usePendingRecordsSync'
 import { RootNavigator } from './navigation/RootNavigator'
 import { SplashScreen } from './screens/SplashScreen'
@@ -48,7 +51,7 @@ function MapZoneDeleteConfirmSheetWrapper() {
 	const handleDeleteConfirm = useCallback(async () => {
 		const result = await ctx.deleteZone()
 		if (result === null) {
-			Alert.alert('Erro', 'Não foi possível excluir a área. Tente novamente.')
+			Alert.alert(i18n.t('map:zones.deleteErrorTitle'), i18n.t('map:zones.deleteError'))
 		}
 	}, [ctx])
 
@@ -68,6 +71,8 @@ export default function GuaraVivoApp() {
 	const navigationRef = useNavigationContainerRef<RootStackParamList>()
 	const [isAuthenticated, setIsAuthenticated] = useState(false)
 	const [isSessionReady, setIsSessionReady] = useState(false)
+	// A splash espera o idioma salvo no aparelho, para o app não abrir em português e trocar logo depois.
+	const [isLanguageReady, setIsLanguageReady] = useState(false)
 	const [currentUser, setCurrentUser] = useState<UserRead | null>(null)
 	// Se a fonte falhar, segue com a fonte do sistema (fontError) em vez de travar na abertura.
 	const [fontsLoaded, fontError] = useFonts({
@@ -81,7 +86,32 @@ export default function GuaraVivoApp() {
 	useEffect(() => {
 		let mounted = true
 
-		restoreSession()
+		void loadStoredLanguage().finally(() => {
+			if (mounted) {
+				setIsLanguageReady(true)
+			}
+		})
+
+		// Abre com o usuario guardado no aparelho e confere a sessao em segundo plano.
+		openSession((user) => {
+			if (!mounted) {
+				return
+			}
+
+			if (!user) {
+				// O servidor recusou a sessao: de volta ao login.
+				setCurrentUser(null)
+				setIsAuthenticated(false)
+				return
+			}
+
+			// Mesma pessoa com dados novos (nome, permissao de admin): so troca se mudou.
+			setCurrentUser((previous) =>
+				previous && previous.id === user.id && JSON.stringify(previous) !== JSON.stringify(user)
+					? user
+					: previous,
+			)
+		})
 			.then((user) => {
 				if (!mounted) {
 					return
@@ -133,7 +163,7 @@ export default function GuaraVivoApp() {
 	}
 
 	const renderScreen = () => {
-		if (!isSessionReady || !fontsSettled) {
+		if (!isSessionReady || !isLanguageReady || !fontsSettled) {
 			return <SplashScreen isLoading />
 		}
 
@@ -143,6 +173,10 @@ export default function GuaraVivoApp() {
 				onOpenRecord={handleOpenNotificationRecord}
 			>
 				<RecordProgressProvider isEnabled={isAuthenticated}>
+					<AdminRecordsProvider
+						isAdmin={isAuthenticated && currentUser?.is_admin === true}
+						viewerId={currentUser?.id ?? null}
+					>
 					<NavigationContainer ref={navigationRef}>
 						<MapZoneDetailProvider canManageZones={currentUser?.is_admin === true}>
 							<RootNavigator
@@ -155,6 +189,7 @@ export default function GuaraVivoApp() {
 							<MapZoneDeleteConfirmSheetWrapper />
 						</MapZoneDetailProvider>
 					</NavigationContainer>
+					</AdminRecordsProvider>
 				</RecordProgressProvider>
 			</InAppNotificationProvider>
 		)

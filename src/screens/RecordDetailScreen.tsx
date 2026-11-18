@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { RefreshControl, ScrollView, View } from 'react-native'
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { AdminViewBanner } from '../components/recordDetail/AdminViewBanner'
 import { AiAnalysisCard } from '../components/recordDetail/AiAnalysisCard'
 import { ImageCarouselCard } from '../components/recordDetail/ImageCarouselCard'
 import { RecordDetailMessage } from '../components/recordDetail/RecordDetailMessage'
@@ -10,20 +12,24 @@ import { RecordInfoCard } from '../components/recordDetail/RecordInfoCard'
 import { RecordLocationCard } from '../components/recordDetail/RecordLocationCard'
 import RecordImageDetailModal from '../components/RecordImageDetailModal'
 import { colors } from '../constants/theme'
+import { useAdminRecords } from '../contexts/AdminRecordsContext'
 import { useRecordDetail } from '../hooks/useRecordDetail'
 import { appStyles } from '../styles/appStyles'
 import type { RootStackParamList } from '../types/navigation'
+import { isAdminViewOfRecord } from '../utils/adminMapRecords'
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>
 
 export function RecordDetailScreen() {
 	const navigation = useNavigation<NavigationProp>()
 	const route = useRoute<RouteProp<RootStackParamList, 'RecordDetail'>>()
+	const { t } = useTranslation('detail')
 	const recordId = route.params?.recordId
 
 	const { record, isLoading, isRefreshing, isFetchingDetail, loadError, retry, handleRefresh } =
 		useRecordDetail(recordId)
 	const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
+	const { isAdmin, viewerId } = useAdminRecords()
 	const goBack = () => navigation.goBack()
 
 	if (isLoading) {
@@ -35,7 +41,7 @@ export function RecordDetailScreen() {
 	}
 
 	if (!record) {
-		return <RecordDetailMessage onBack={goBack} message="Registro não encontrado." />
+		return <RecordDetailMessage onBack={goBack} message={t('notFound')} />
 	}
 
 	const imageUris = record.images ?? []
@@ -61,6 +67,9 @@ export function RecordDetailScreen() {
 					onImagePress={setSelectedImageIndex}
 					onBack={goBack}
 				/>
+				{isAdminViewOfRecord(record.user_id, { isAdmin, id: viewerId }) ? (
+					<AdminViewBanner authorName={record.author_name} />
+				) : null}
 				<RecordInfoCard record={record} loading={detailPending} />
 				<AiAnalysisCard
 					record={record}

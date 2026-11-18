@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import FeedbackModal from '../components/FeedbackModal'
 import { ComingSoonModal } from '../components/ComingSoonModal'
 import { AuthField } from '../components/auth/AuthField'
@@ -20,6 +21,7 @@ type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
 export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void }) {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation(['auth', 'common'])
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [isLoading, setIsLoading] = useState(false)
@@ -31,8 +33,8 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 	const handleLogin = async () => {
 		if (!email || !password) {
 			setFeedback({
-				title: 'Campos obrigatórios',
-				message: 'Preencha e-mail e senha para continuar.',
+				title: t('auth:login.requiredTitle'),
+				message: t('auth:login.requiredMessage'),
 			})
 			return
 		}
@@ -52,25 +54,25 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 	return (
 		<>
 			<AuthFrame
-				title="Entrar"
-				subtitle="Use o e-mail e a senha da sua conta."
+				title={t('auth:login.title')}
+				subtitle={t('auth:login.subtitle')}
 				onBack={() => navigation.goBack()}
 				footer={
 					<>
 						<ActionButton
-							title={isLoading ? 'Entrando...' : 'Entrar'}
+							title={isLoading ? t('auth:login.submitting') : t('auth:login.submit')}
 							onPress={handleLogin}
 							disabled={isLoading}
 						/>
 						<View style={appStyles.authBelowRow}>
-							<Text style={appStyles.authBelowText}>Ainda não tem conta?</Text>
+							<Text style={appStyles.authBelowText}>{t('auth:login.noAccount')}</Text>
 							<Pressable
 								onPress={() => setShowRegistrationClosed(true)}
 								accessibilityRole="button"
-								accessibilityLabel="Criar conta"
+								accessibilityLabel={t('auth:login.createAccount')}
 								hitSlop={8}
 							>
-								<Text style={appStyles.authLink}>Criar conta</Text>
+								<Text style={appStyles.authLink}>{t('auth:login.createAccount')}</Text>
 							</Pressable>
 						</View>
 						<Text style={appStyles.authVersion}>{formatAppVersion()}</Text>
@@ -78,7 +80,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 				}
 			>
 				<AuthField
-					label="E-mail"
+					label={t('auth:login.email')}
 					value={email}
 					onChangeText={setEmail}
 					keyboardType="email-address"
@@ -91,7 +93,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 				/>
 				<AuthField
 					ref={passwordInputRef}
-					label="Senha"
+					label={t('auth:login.password')}
 					value={password}
 					onChangeText={setPassword}
 					secure
@@ -104,11 +106,11 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 				<Pressable
 					onPress={() => setShowForgotNotice(true)}
 					accessibilityRole="button"
-					accessibilityLabel="Recuperar senha"
+					accessibilityLabel={t('auth:login.forgotA11y')}
 					hitSlop={{ left: 8, right: 8 }}
 					style={appStyles.authLinkButton}
 				>
-					<Text style={appStyles.authLink}>Esqueci minha senha</Text>
+					<Text style={appStyles.authLink}>{t('auth:login.forgot')}</Text>
 				</Pressable>
 			</AuthFrame>
 
@@ -119,7 +121,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 
 			<ComingSoonModal
 				visible={showForgotNotice}
-				message="A recuperação de senha ainda não está disponível no aplicativo."
+				message={t('auth:login.forgotUnavailable')}
 				onClose={() => setShowForgotNotice(false)}
 			/>
 
@@ -128,7 +130,7 @@ export function LoginScreen({ onSuccess }: { onSuccess: (user: UserRead) => void
 					visible
 					title={feedback.title}
 					message={feedback.message}
-					buttonLabel="OK"
+					buttonLabel={t('common:ok')}
 					iconName="alert-circle-outline"
 					iconColor={colors.primary}
 					onConfirm={() => setFeedback(null)}

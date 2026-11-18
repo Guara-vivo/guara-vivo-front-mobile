@@ -1,6 +1,7 @@
 import React from 'react'
 import { Pressable, Text, View, type GestureResponderEvent } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 
@@ -21,6 +22,7 @@ export function InAppNotificationBanner({
 	onPress,
 	onClose,
 }: InAppNotificationBannerProps) {
+	const { t } = useTranslation('notifications')
 	const isError = variant === 'error'
 	const handleClose = (event: GestureResponderEvent) => {
 		event.stopPropagation()
@@ -58,7 +60,7 @@ export function InAppNotificationBanner({
 
 				<Pressable
 					accessibilityRole="button"
-					accessibilityLabel="Fechar notificação"
+					accessibilityLabel={t('notifications:close')}
 					hitSlop={8}
 					onPress={handleClose}
 					style={appStyles.inAppNotificationCloseButton}

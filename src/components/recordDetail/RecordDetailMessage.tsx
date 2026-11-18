@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../../constants/theme'
 import { ActionButton } from '../common'
 import { appStyles } from '../../styles/appStyles'
@@ -15,6 +16,7 @@ type Props = {
 
 // Tela de estado: "Registro não encontrado." ou falha ao carregar (com tentar de novo).
 export function RecordDetailMessage({ onBack, message, onRetry }: Props) {
+	const { t } = useTranslation('detail')
 	return (
 		<View style={appStyles.recordDetailScreen}>
 			<RecordDetailHeader onBack={onBack} />
@@ -29,7 +31,7 @@ export function RecordDetailMessage({ onBack, message, onRetry }: Props) {
 				<Text style={appStyles.recordDetailEmptyText}>{message}</Text>
 				{onRetry ? (
 					<ActionButton
-						title="Tentar de novo"
+						title={t('retry')}
 						fullWidth={false}
 						leftIcon={<Ionicons name="refresh" size={20} color={colors.onColor} />}
 						containerStyle={appStyles.recordDetailRetryButton}

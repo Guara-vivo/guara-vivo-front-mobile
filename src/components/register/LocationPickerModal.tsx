@@ -2,6 +2,7 @@ import React from 'react'
 import { Pressable, Text, View } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../../constants/theme'
 import type { Coordinates } from '../../hooks/useRegisterLocation'
 import { mapStyle } from '../../config/mapStyle'
@@ -24,11 +25,13 @@ export function LocationPickerModal({
 	onBack,
 	onConfirm,
 }: Props) {
+	const { t } = useTranslation('register')
+
 	return (
 		<View style={styles.locationPickerOverlay}>
 			<MapView
 				style={styles.pickerMap}
-				accessibilityLabel="Mapa para escolher a localização do registro"
+				accessibilityLabel={t('location.mapA11y')}
 				initialRegion={userLocation ? {
 					latitude: userLocation.latitude,
 					longitude: userLocation.longitude,
@@ -60,16 +63,16 @@ export function LocationPickerModal({
 				<Pressable
 					onPress={onBack}
 					accessibilityRole="button"
-					accessibilityLabel="Voltar"
+					accessibilityLabel={t('back')}
 					style={styles.pickerButton}
 				>
 					<Ionicons name="arrow-back" size={24} color={colors.text} />
-					<Text style={styles.pickerButtonText}>Voltar</Text>
+					<Text style={styles.pickerButtonText}>{t('back')}</Text>
 				</Pressable>
 				<Pressable
 					onPress={onConfirm}
 					accessibilityRole="button"
-					accessibilityLabel="Confirmar localização"
+					accessibilityLabel={t('location.confirmA11y')}
 					accessibilityState={{ disabled: !tempLocation }}
 					disabled={!tempLocation}
 					style={[
@@ -77,7 +80,7 @@ export function LocationPickerModal({
 						!tempLocation && { opacity: 0.5 },
 					]}
 				>
-					<Text style={styles.pickerButtonConfirmText}>Confirmar Localização</Text>
+					<Text style={styles.pickerButtonConfirmText}>{t('location.confirm')}</Text>
 				</Pressable>
 			</View>
 		</View>

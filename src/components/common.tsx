@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../constants/theme'
 import { appStyles } from '../styles/appStyles'
 
@@ -132,10 +133,12 @@ export function ScreenHeader({
 	subtitle?: string
 	onBack: () => void
 }) {
+	const { t } = useTranslation('common')
+
 	return (
 		<View style={appStyles.headerWrap}>
-			<Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel="Voltar" style={appStyles.backButton}>
-				<Text style={appStyles.backButtonText}>Voltar</Text>
+			<Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel={t('back')} style={appStyles.backButton}>
+				<Text style={appStyles.backButtonText}>{t('back')}</Text>
 			</Pressable>
 			<Text style={appStyles.headerTitle}>{title}</Text>
 			{subtitle ? (

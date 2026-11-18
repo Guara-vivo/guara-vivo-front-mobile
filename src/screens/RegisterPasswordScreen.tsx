@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import FeedbackModal from '../components/FeedbackModal'
 import { PasswordRules } from '../components/PasswordRules'
 import { AuthField } from '../components/auth/AuthField'
@@ -20,6 +21,7 @@ type NavigationProp = NativeStackNavigationProp<AuthStackParamList>
 
 export function RegisterPasswordScreen({ onSuccess }: { onSuccess: () => void }) {
 	const navigation = useNavigation<NavigationProp>()
+	const { t } = useTranslation('auth')
 	const [password, setPassword] = useState('')
 	const [confirmPassword, setConfirmPassword] = useState('')
 	const [feedback, setFeedback] = useState<{ title: string; message: string } | null>(null)
@@ -27,20 +29,26 @@ export function RegisterPasswordScreen({ onSuccess }: { onSuccess: () => void })
 
 	const handleFinish = () => {
 		if (!isPasswordLongEnough(password)) {
-			setFeedback({ title: 'Senha fraca', message: `Use pelo menos ${MIN_PASSWORD_LENGTH} caracteres.` })
+			setFeedback({
+				title: t('register.weakTitle'),
+				message: t('register.weakMessage', { min: MIN_PASSWORD_LENGTH }),
+			})
 			return
 		}
 
 		if (!isPasswordWithinLimit(password)) {
 			setFeedback({
-				title: 'Senha muito longa',
-				message: `Use no máximo ${MAX_PASSWORD_BYTES} bytes (acentos e símbolos ocupam mais de 1).`,
+				title: t('register.tooLongTitle'),
+				message: t('register.tooLongMessage', { max: MAX_PASSWORD_BYTES }),
 			})
 			return
 		}
 
 		if (password !== confirmPassword) {
-			setFeedback({ title: 'Senhas diferentes', message: 'A confirmação não confere com a senha.' })
+			setFeedback({
+				title: t('register.mismatchTitle'),
+				message: t('register.mismatchMessage'),
+			})
 			return
 		}
 
@@ -51,14 +59,14 @@ export function RegisterPasswordScreen({ onSuccess }: { onSuccess: () => void })
 	return (
 		<>
 			<AuthFrame
-				title="Crie sua senha"
-				subtitle="Você vai usar ela, junto com o e-mail, para entrar."
+				title={t('register.passwordTitle')}
+				subtitle={t('register.passwordSubtitle')}
 				onBack={() => navigation.goBack()}
 				step={{ current: 2, total: 2 }}
-				footer={<ActionButton title="Continuar" onPress={handleFinish} />}
+				footer={<ActionButton title={t('register.continue')} onPress={handleFinish} />}
 			>
 				<AuthField
-					label="Senha"
+					label={t('register.passwordLabel')}
 					value={password}
 					onChangeText={setPassword}
 					secure
@@ -68,7 +76,7 @@ export function RegisterPasswordScreen({ onSuccess }: { onSuccess: () => void })
 					hasError={!status.withinByteLimit}
 				/>
 				<AuthField
-					label="Confirmar senha"
+					label={t('register.confirmLabel')}
 					value={confirmPassword}
 					onChangeText={setConfirmPassword}
 					secure

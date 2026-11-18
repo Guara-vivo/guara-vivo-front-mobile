@@ -3,6 +3,7 @@ import { Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '../../../constants/theme'
 import { Picker } from '@react-native-picker/picker'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../../styles/appStyles'
 import type { HistoryFilterState } from '../../../hooks/useHistoryFilters'
 import type { MapZoneRead } from '../../../types/api'
@@ -18,6 +19,8 @@ type Props = {
 
 // Conteúdo da seção Localização: seletor de área do mapa.
 export function LocationFilter({ draftFilters, setField, zones, zonesFailed = false }: Props) {
+	const { t } = useTranslation('history')
+
 	return (
 		<View style={appStyles.filterColumn}>
 			<View style={appStyles.filterPicker}>
@@ -26,7 +29,7 @@ export function LocationFilter({ draftFilters, setField, zones, zonesFailed = fa
 				onValueChange={(value) => setField('location', value)}
 				style={appStyles.filterPickerInput}
 			>
-				<Picker.Item label="Todas as áreas" value="" />
+				<Picker.Item label={t('filters.allZones')} value="" />
 				{zones.map((zone) => (
 					<Picker.Item key={zone.id} label={zone.name} value={zone.name} />
 				))}
@@ -36,7 +39,7 @@ export function LocationFilter({ draftFilters, setField, zones, zonesFailed = fa
 				<View style={appStyles.filterNotice} accessibilityRole="alert" accessibilityLiveRegion="polite">
 					<Ionicons name="cloud-offline-outline" size={16} color={colors.warning} />
 					<Text style={appStyles.filterNoticeText}>
-						Não foi possível carregar as áreas. Verifique a internet para filtrar por local.
+						{t('filters.zonesError')}
 					</Text>
 				</View>
 			) : null}

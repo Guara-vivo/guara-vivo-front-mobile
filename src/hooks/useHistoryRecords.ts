@@ -17,6 +17,7 @@ import type { RecordItem } from '../types/records'
 import {
 	mergeProgressUpdates,
 	needsRecordsRefresh,
+	resolveRecoveryDisplay,
 } from '../utils/historyRecords'
 import { mergeHistoryRecords } from '../utils/pendingRecords'
 import { createRefreshScheduler } from '../utils/refreshScheduler'
@@ -30,6 +31,8 @@ export function useHistoryRecords() {
 	const [records, setRecords] = useState<RecordItem[]>(cachedRecords ?? [])
 	const [isLoading, setIsLoading] = useState(!cachedRecords)
 	const [isRefreshing, setIsRefreshing] = useState(false)
+	// Primeira busca da abertura ainda em andamento (a cópia do aparelho já pode estar na tela).
+	const [isInitialFetch, setIsInitialFetch] = useState(true)
 	// Recarga silenciosa que corrige dados incompletos (começou offline ou lista zerada): a tela mostra esqueleto.
 	const [isRecovering, setIsRecovering] = useState(false)
 	const [loadError, setLoadError] = useState(false)
@@ -128,6 +131,10 @@ export function useHistoryRecords() {
 				}
 			})
 			.finally(() => {
+				if (mounted) {
+					setIsInitialFetch(false)
+				}
+
 				if (mounted && !hasCachedRecords) {
 					setIsLoading(false)
 				}
@@ -243,11 +250,15 @@ export function useHistoryRecords() {
 		}
 	}
 
+	// Esqueleto só se não há registros para mostrar; com a cópia do aparelho na tela, só avisa a atualização.
+	const recovery = resolveRecoveryDisplay(isRecovering, records.length, isInitialFetch)
+
 	return {
 		allRecords,
 		isLoading,
 		isRefreshing,
-		isRecovering,
+		isRecovering: recovery.showSkeleton,
+		isRevalidating: recovery.isRevalidating,
 		loadError,
 		staleSince,
 		handleRefresh,

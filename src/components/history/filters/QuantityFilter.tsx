@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text, View } from 'react-native'
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../../styles/appStyles'
 import type { HistoryFilterState } from '../../../hooks/useHistoryFilters'
 import type { FilterFieldSetter } from './FilterSection'
@@ -44,19 +45,21 @@ function QuantityInput({
 
 // Conteúdo da seção Quantidade de guarás: mínimo e máximo.
 export function QuantityFilter({ draftFilters, setField }: Props) {
+	const { t } = useTranslation('history')
+
 	return (
 		<View style={appStyles.filterRow}>
 			<QuantityInput
-				title="Mínimo"
-				label="Quantidade mínima"
+				title={t('filters.min')}
+				label={t('filters.minLabel')}
 				placeholder="0"
 				value={draftFilters.minQuantity}
 				onChangeText={(value) => setField('minQuantity', value)}
 			/>
 			<QuantityInput
-				title="Máximo"
-				label="Quantidade máxima"
-				placeholder="Sem limite"
+				title={t('filters.max')}
+				label={t('filters.maxLabel')}
+				placeholder={t('filters.noLimit')}
 				value={draftFilters.maxQuantity}
 				onChangeText={(value) => setField('maxQuantity', value)}
 			/>

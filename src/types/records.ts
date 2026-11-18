@@ -12,6 +12,8 @@ export type RecordItem = {
 	status?: 'pending' | 'processing' | 'completed' | 'failed'
 	analysis_progress: number
 	user_id?: number
+	// Só vem no detalhe: nome de quem enviou (mostrado na visão de administrador).
+	author_name?: string | null
 	map_zones: LinkedMapZoneRead[]
 	// Identifica o registro entre o aparelho e a API (junta pendente com enviado)
 	client_uuid?: string | null

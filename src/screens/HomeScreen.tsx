@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
+import { useTranslation } from 'react-i18next'
 import { colors } from '../constants/theme'
 import { Skeleton } from '../components/Skeleton'
 import { SkeletonImage } from '../components/SkeletonImage'
@@ -12,6 +13,8 @@ import type { MainTabNavigationProp } from '../types/navigation'
 import AnalysisProgressIndicator from '../components/AnalysisProgressIndicator'
 import { getLatestRecord, isAnalysisInProgress } from '../utils/historyRecords'
 import { summarizeRecords } from '../utils/homeSummary'
+import { behaviorLabel } from '../utils/behaviorLabel'
+import { countLabel } from '../utils/countLabel'
 import { formatTime } from '../utils/recordFormatters'
 import { formatLongDate } from '../utils/timeFormatters'
 import { formatRelativeDay } from '../utils/dayLabels'
@@ -29,9 +32,11 @@ function Stat({
 	label: string
 	loading: boolean
 }) {
+	const { t } = useTranslation('home')
+
 	if (loading) {
 		return (
-			<View style={appStyles.homeStat} accessible accessibilityLabel={`Carregando ${label}`}>
+			<View style={appStyles.homeStat} accessible accessibilityLabel={t('stats.loading', { label })}>
 				<View style={appStyles.homeStatSkeleton}>
 					<Skeleton width={44} height={30} radius={8} />
 				</View>
@@ -41,7 +46,7 @@ function Stat({
 	}
 
 	return (
-		<View style={appStyles.homeStat} accessible accessibilityLabel={`${value} ${label}`}>
+		<View style={appStyles.homeStat} accessible accessibilityLabel={t('stats.a11y', { value, label })}>
 			<Text style={appStyles.homeStatValue}>{value}</Text>
 			<Text style={appStyles.homeStatLabel}>{label}</Text>
 		</View>
@@ -49,8 +54,10 @@ function Stat({
 }
 
 function LatestSkeleton() {
+	const { t } = useTranslation('home')
+
 	return (
-		<View style={appStyles.homeLatest} accessible accessibilityLabel="Carregando último avistamento">
+		<View style={appStyles.homeLatest} accessible accessibilityLabel={t('latest.loading')}>
 			<Skeleton width={56} height={56} radius={8} />
 			<View style={appStyles.homeLatestText}>
 				<Skeleton width="55%" height={18} radius={6} />
@@ -62,11 +69,24 @@ function LatestSkeleton() {
 
 export function HomeScreen({ userName }: { userName?: string | null }) {
 	const navigation = useNavigation<MainTabNavigationProp>()
-	const { allRecords, isLoading, isRecovering, isRefreshing, loadError, staleSince, handleRefresh } =
-		useHistoryRecords()
+	const { t } = useTranslation(['home', 'records'])
+	const {
+		allRecords,
+		isLoading,
+		isRecovering,
+		isRevalidating,
+		isRefreshing,
+		loadError,
+		staleSince,
+		handleRefresh,
+	} = useHistoryRecords()
 	const online = useIsOnline()
 	// Esqueleto também quando a lista incompleta (offline/zerada) está sendo corrigida ao voltar a internet.
 	const loading = isLoading || isRecovering
+	// Com a cópia do aparelho na tela e internet, os números ficam e só o indicador mostra que está
+	// atualizando (sem o aviso de "só o que está guardado", que vale só se a busca falhar ou sem internet).
+	const revalidating = isRevalidating && online
+	const updating = loading || revalidating
 	const now = new Date()
 	const summary = useMemo(() => summarizeRecords(allRecords, new Date()), [allRecords])
 	const latest = useMemo(() => getLatestRecord(allRecords), [allRecords])
@@ -78,15 +98,15 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 	// Em análise a contagem ainda é 0: mostra esqueleto e a barra de progresso, como no histórico.
 	const analyzing = Boolean(latest && isAnalysisInProgress(latest))
 
-	const syncText = loading
-		? 'Atualizando…'
+	const syncText = updating
+		? t('home:sync.updating')
 		: waiting
-		? `${waiting} ${waiting === 1 ? 'registro aguardando' : 'registros aguardando'} envio`
+		? t(waiting === 1 ? 'home:sync.waitingOne' : 'home:sync.waitingMany', { count: waiting })
 		: !online || loadError || staleSince
-			? 'Sem conexão · mostrando os dados guardados'
-			: 'Tudo sincronizado'
+			? t('home:sync.offline')
+			: t('home:sync.ok')
 	// Os números vêm só do que está guardado no aparelho (sem internet, ou lista que não carregou).
-	const partialNumbers = !loading && (!online || Boolean(staleSince) || loadError)
+	const partialNumbers = !loading && (!online || (!revalidating && (Boolean(staleSince) || loadError)))
 	const syncOk = online && !waiting && !loadError && !staleSince
 
 	return (
@@ -105,32 +125,32 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			<Text style={appStyles.homeBrand} accessibilityRole="header">
 				GUARÁ<Text style={appStyles.homeBrandAccent}>VIVO</Text>
 			</Text>
-			<Text style={appStyles.homeGreeting}>{greeting ? `Olá, ${greeting}` : 'Olá'}</Text>
+			<Text style={appStyles.homeGreeting}>{greeting ? t('home:greeting', { name: greeting }) : t('home:greetingAnonymous')}</Text>
 			<Text style={appStyles.homeDate}>{formatLongDate(now)}</Text>
 
 			<Pressable
 				onPress={() => navigation.navigate('Register')}
 				accessibilityRole="button"
-				accessibilityLabel="Novo registro"
+				accessibilityLabel={t('home:newRecord')}
 				style={appStyles.homeCta}
 			>
 				<View style={appStyles.homeCtaIcon}>
 					<Ionicons name="camera-outline" size={24} color={colors.onColor} />
 				</View>
 				<View style={appStyles.homeCtaText}>
-					<Text style={appStyles.homeCtaTitle}>Novo registro</Text>
-					<Text style={appStyles.homeCtaHint}>Foto, comportamento, local e hora</Text>
+					<Text style={appStyles.homeCtaTitle}>{t('home:newRecord')}</Text>
+					<Text style={appStyles.homeCtaHint}>{t('home:newRecordHint')}</Text>
 				</View>
 				<Ionicons name="chevron-forward" size={22} color={colors.onColor} />
 			</Pressable>
 
 			<View style={appStyles.homeStatRow}>
-				<Stat loading={loading} value={summary.weekRecords} label="registros nesta semana" />
-				<Stat loading={loading} value={summary.ibis} label="guarás avistados" />
+				<Stat loading={loading} value={summary.weekRecords} label={t('home:stats.weekRecords')} />
+				<Stat loading={loading} value={summary.ibis} label={t('home:stats.ibis')} />
 				<Stat
 					loading={loading}
 					value={summary.areas}
-					label={summary.areas === 1 ? 'área mapeada' : 'áreas mapeadas'}
+					label={t(summary.areas === 1 ? 'home:stats.zonesOne' : 'home:stats.zonesMany')}
 				/>
 			</View>
 
@@ -138,13 +158,13 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 				<View style={appStyles.homeOfflineNote} accessibilityRole="alert" accessibilityLiveRegion="polite">
 					<Ionicons name="cloud-offline-outline" size={16} color={colors.warning} />
 					<Text style={appStyles.homeOfflineNoteText}>
-						Sem internet: os números mostram só o que está guardado neste aparelho.
+						{t('home:offlineNote')}
 					</Text>
 				</View>
 			) : null}
 
 			<Text style={appStyles.homeSectionTitle} accessibilityRole="header">
-				Último avistamento
+				{t('home:latest.title')}
 			</Text>
 			{loading ? (
 				<LatestSkeleton />
@@ -153,7 +173,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 					onPress={() => navigation.navigate('RecordDetail', { recordId: latest.id })}
 					disabled={Boolean(latest.sync_state)}
 					accessibilityRole="button"
-					accessibilityLabel={`Ver registro ${latest.id}${analyzing ? ', em análise' : ''}`}
+					accessibilityLabel={t(analyzing ? 'home:latest.viewAnalyzing' : 'home:latest.view', { id: latest.id })}
 					style={appStyles.homeLatest}
 				>
 					{photo ? (
@@ -165,12 +185,12 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 					)}
 					<View style={appStyles.homeLatestText}>
 						{latest.sync_state === 'failed' ? (
-							<Text style={appStyles.homeLatestTitle}>Não enviado</Text>
+							<Text style={appStyles.homeLatestTitle}>{t('home:latest.notSent')}</Text>
 						) : analyzing || latest.sync_state ? (
 							<Skeleton width={96} height={18} radius={6} />
 						) : (
 							<Text style={appStyles.homeLatestTitle}>
-								{guaras} {guaras === 1 ? 'guará' : 'guarás'}
+								{countLabel(guaras)}
 							</Text>
 						)}
 						<Text style={appStyles.homeLatestMeta}>
@@ -191,7 +211,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 										latest.sync_state === 'failed' && appStyles.historySyncChipTextFailed,
 									]}
 								>
-									{latest.sync_state === 'failed' ? 'Recusado' : 'Aguardando envio'}
+									{latest.sync_state === 'failed' ? t('home:latest.refused') : t('home:latest.waitingToSend')}
 								</Text>
 							</View>
 						) : analyzing ? (
@@ -200,7 +220,7 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 					</View>
 					{behavior ? (
 						<View style={appStyles.homeLatestChip}>
-							<Text style={appStyles.homeLatestChipText}>{behavior}</Text>
+							<Text style={appStyles.homeLatestChipText}>{behaviorLabel(behavior)}</Text>
 						</View>
 					) : null}
 					<Ionicons name="chevron-forward" size={18} color={colors.muted} />
@@ -208,13 +228,13 @@ export function HomeScreen({ userName }: { userName?: string | null }) {
 			) : (
 				<View style={appStyles.homeEmpty}>
 					<Text style={appStyles.homeEmptyText}>
-						Nenhum registro ainda. Toque em “Novo registro” para começar.
+						{t('home:latest.empty')}
 					</Text>
 				</View>
 			)}
 
 			<View style={appStyles.homeSync} accessibilityRole="text" accessibilityLiveRegion="polite">
-				{loading ? (
+				{updating ? (
 					<ActivityIndicator size="small" color={colors.muted} style={appStyles.homeSyncSpinner} />
 				) : (
 					<View style={[appStyles.homeSyncDot, !syncOk && appStyles.homeSyncDotWarn]}>

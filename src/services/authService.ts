@@ -111,6 +111,29 @@ async function isDeviceOffline() {
 	}
 }
 
+// Abertura rapida: com token e usuario guardados no aparelho, abre na hora com os dados
+// locais e confere a sessao com o servidor depois, sem segurar a abertura pela rede.
+// `onRevalidated` recebe o usuario atualizado, ou null se o servidor encerrou a sessao
+// (nesse caso os tokens e os dados locais ja foram apagados por restoreSession).
+// Sem usuario guardado (primeira abertura depois de atualizar o app) espera o servidor,
+// como antes.
+export async function openSession(
+	onRevalidated: (user: UserRead | null) => void,
+): Promise<UserRead | null> {
+	const token = await getToken()
+	const cached = token ? await readCachedUser() : null
+
+	if (!cached) {
+		return restoreSession()
+	}
+
+	restoreSession().then(onRevalidated, () => {
+		// Falha inesperada na conferencia: segue com o usuario guardado.
+	})
+
+	return cached
+}
+
 export async function restoreSession() {
 	const token = await getToken()
 
@@ -183,6 +206,7 @@ export default {
 	getToken,
 	login,
 	logout,
+	openSession,
 	restoreSession,
 	saveToken,
 }

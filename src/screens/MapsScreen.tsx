@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import {
 	ActivityIndicator,
 	Pressable,
 	Text,
 	View,
 } from 'react-native'
+import i18n from '../i18n'
 import { MapLibreMapView } from '../components/MapLibreMapView'
 import { LastUpdatedPill } from '../components/map/LastUpdatedPill'
 import { MapZoneSelectionModal } from '../components/MapZoneSelectionModal'
@@ -17,23 +19,23 @@ import type { MapZoneRead, MapZoneType } from '../types/api'
 import type { MapLayerId } from '../config/map'
 import { getMapZones, createMapZone } from '../services/mapZonesApi'
 import { invalidateRecordsCache } from '../services/recordsService'
+import { useAdminMapMarkers } from '../hooks/useAdminMapMarkers'
 import { getVisibleMapZoneRecords } from '../utils/mapZoneRecords'
 import { filterZonesByLayer } from '../utils/mapZoneStyle'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 import { colors } from '../constants/theme'
 
-const ZONES_LOAD_ERROR = 'Não foi possível carregar as áreas. Toque em atualizar para tentar de novo.'
-
 type IoniconName = React.ComponentProps<typeof Ionicons>['name']
-type LayerButton = { id: MapLayerId; label: string; icon: IoniconName }
+type LayerButton = { id: MapLayerId; icon: IoniconName }
 
 const LAYER_BUTTONS: LayerButton[] = [
-	{ id: 'all', label: 'Todos', icon: 'layers-outline' },
-	{ id: 'feeding', label: 'Alimentação', icon: 'fish' },
-	{ id: 'nests', label: 'Ninhos', icon: 'home' },
+	{ id: 'all', icon: 'layers-outline' },
+	{ id: 'feeding', icon: 'fish' },
+	{ id: 'nests', icon: 'home' },
 ]
 
 export function MapsScreen() {
+	const { t } = useTranslation('map')
 	const ctx = useMapZoneDetail()
 	const selectionModalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 	const [selectedLayer, setSelectedLayer] = useState<MapLayerId>('all')
@@ -44,6 +46,8 @@ export function MapsScreen() {
 	const [creatingZone, setCreatingZone] = useState(false)
 	const [isReloading, setIsReloading] = useState(false)
 	const [recenterKey, setRecenterKey] = useState(0)
+	// Só o admin: esconde os ícones das áreas para os registros colados neles receberem o toque.
+	const [showZoneIcons, setShowZoneIcons] = useState(true)
 	const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null)
 	const [selectionMode, setSelectionMode] = useState(false)
 	const [selectedCoords, setSelectedCoords] = useState<{ lat: number; lng: number } | null>(null)
@@ -52,6 +56,10 @@ export function MapsScreen() {
 		() => getVisibleMapZoneRecords(ctx.zoneRecords),
 		[ctx.zoneRecords],
 	)
+
+	// Admin: todos os registros de todos os usuários no mapa (as demais contas seguem como antes).
+	const admin = useAdminMapMarkers(selectedLayer)
+	const { refreshIfStale: refreshAdminRecords, reload: reloadAdminRecords } = admin
 
 	const visibleZoneCount = useMemo(
 		() => filterZonesByLayer(zones, selectedLayer).length,
@@ -70,7 +78,7 @@ export function MapsScreen() {
 				return
 			}
 
-			setZonesError(getLoadErrorMessage(error, ZONES_LOAD_ERROR))
+			setZonesError(getLoadErrorMessage(error, i18n.t('map:zones.loadError')))
 		} finally {
 			setIsZonesLoading(false)
 		}
@@ -103,11 +111,11 @@ export function MapsScreen() {
 		setIsReloading(true)
 
 		try {
-			await loadZones()
+			await Promise.all([loadZones(), reloadAdminRecords()])
 		} finally {
 			setIsReloading(false)
 		}
-	}, [isReloading, loadZones])
+	}, [isReloading, loadZones, reloadAdminRecords])
 
 	const handleToggleSelectionMode = useCallback(() => {
 		if (selectionMode) {
@@ -142,6 +150,13 @@ export function MapsScreen() {
 		}, [closeSheet]),
 	)
 
+	// Ao voltar para o mapa, atualiza os registros do admin se a última carga já passou de 1 minuto.
+	useFocusEffect(
+		useCallback(() => {
+			refreshAdminRecords()
+		}, [refreshAdminRecords]),
+	)
+
 	useEffect(() => {
 		registerOnZoneDeleted((zoneId: number) => {
 			setZones((prev) => prev.filter((z) => z.id !== zoneId))
@@ -163,7 +178,7 @@ export function MapsScreen() {
 			if (__DEV__) {
 				console.error('[MapsScreen] Failed to create zone:', error)
 			}
-			setZonesError(getLoadErrorMessage(error, 'Não foi possível criar a área. Tente de novo.'))
+			setZonesError(getLoadErrorMessage(error, i18n.t('map:zones.createError')))
 		} finally {
 			setCreatingZone(false)
 		}
@@ -178,10 +193,13 @@ export function MapsScreen() {
 				<MapLibreMapView
 					selectedLayer={selectedLayer}
 					zones={zones}
-					recordMarkers={visibleZoneRecords}
+					recordMarkers={admin.markers ?? visibleZoneRecords}
+					markerViewerId={admin.isAdmin ? admin.viewerId : undefined}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 					onZonePress={!selectionMode ? openSheet : undefined}
 					onRecordMarkerPress={!selectionMode ? onRecordMarkerPress : undefined}
+					recordBalloon={!selectionMode && admin.isAdmin ? admin.recordBalloon : undefined}
+					hideZoneIcons={admin.isAdmin && !showZoneIcons}
 					selectedZoneId={ctx.selectedZone?.id ?? null}
 					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}
@@ -198,7 +216,7 @@ export function MapsScreen() {
 								onPress={() => setSelectedLayer(item.id)}
 								accessibilityRole="radio"
 								accessibilityState={{ selected: active }}
-								accessibilityLabel={`Camada ${item.label}`}
+								accessibilityLabel={t('layers.a11y', { label: t(`layers.${item.id}`) })}
 								hitSlop={{ top: 4, bottom: 4 }}
 								style={[appStyles.mapsChip, active && appStyles.mapsChipActive]}
 							>
@@ -219,7 +237,7 @@ export function MapsScreen() {
 								<Text
 									style={[appStyles.mapsChipLabel, active && appStyles.mapsChipLabelActive]}
 								>
-									{item.label}
+									{t(`layers.${item.id}`)}
 								</Text>
 							</Pressable>
 						)
@@ -228,16 +246,16 @@ export function MapsScreen() {
 
 				<LastUpdatedPill
 					lastUpdatedAt={lastUpdatedAt}
-					countLabel={`${visibleZoneCount} ${visibleZoneCount === 1 ? 'área' : 'áreas'}`}
+					countLabel={t(visibleZoneCount === 1 ? 'zonesCountOne' : 'zonesCountMany', { count: visibleZoneCount })}
 				/>
 
-				{zonesError ? (
+				{zonesError ?? admin.error ? (
 					<View
 						style={[appStyles.zoneErrorBanner, appStyles.mapsErrorBanner]}
 						accessibilityRole="alert"
 						accessibilityLiveRegion="polite"
 					>
-						<Text style={appStyles.zoneErrorText}>{zonesError}</Text>
+						<Text style={appStyles.zoneErrorText}>{zonesError ?? admin.error}</Text>
 					</View>
 				) : null}
 
@@ -245,18 +263,28 @@ export function MapsScreen() {
 					<View style={appStyles.mapSelectionInstructionOverlay} pointerEvents="none">
 						<View style={appStyles.mapSelectionInstructionPill}>
 							<Text style={appStyles.mapSelectionInstructionText}>
-								Toque no mapa para escolher a área
+								{t('selectHint')}
 							</Text>
 						</View>
 					</View>
 				) : null}
 
 				<View style={appStyles.mapsSideButtons}>
+					{admin.isAdmin ? (
+						<Pressable
+							onPress={() => setShowZoneIcons((shown) => !shown)}
+							accessibilityRole="button"
+							accessibilityLabel={showZoneIcons ? t('hideZoneIcons') : t('showZoneIcons')}
+							style={appStyles.mapsSideButton}
+						>
+							<Ionicons name={showZoneIcons ? 'eye' : 'eye-off'} size={22} color={colors.secondary} />
+						</Pressable>
+					) : null}
 					{ctx.canManageZones ? (
 						<Pressable
 							onPress={handleToggleSelectionMode}
 							accessibilityRole="button"
-							accessibilityLabel={selectionMode ? 'Cancelar seleção de área' : 'Adicionar área'}
+							accessibilityLabel={selectionMode ? t('cancelSelection') : t('addZone')}
 							accessibilityState={{ disabled: creatingZone }}
 							disabled={creatingZone}
 							style={[
@@ -275,7 +303,7 @@ export function MapsScreen() {
 					<Pressable
 						onPress={() => setRecenterKey((key) => key + 1)}
 						accessibilityRole="button"
-						accessibilityLabel="Ir para minha localização"
+						accessibilityLabel={t('locate')}
 						style={appStyles.mapsSideButton}
 					>
 						<Ionicons name="locate" size={22} color={colors.secondary} />
@@ -283,7 +311,7 @@ export function MapsScreen() {
 					<Pressable
 						onPress={handleReloadZones}
 						accessibilityRole="button"
-						accessibilityLabel="Atualizar áreas"
+						accessibilityLabel={t('reload')}
 						accessibilityState={{ busy: isReloading, disabled: isReloading }}
 						disabled={isReloading}
 						style={[appStyles.mapsSideButton, isReloading && appStyles.mapsSideButtonDisabled]}

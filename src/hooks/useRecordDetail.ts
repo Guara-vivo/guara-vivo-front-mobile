@@ -5,6 +5,7 @@ import {
 	isRecordDetailCacheFresh,
 	type RecordDetailItem,
 } from '../services/recordsService'
+import i18n from '../i18n'
 import { getLoadErrorMessage } from '../utils/loadErrorMessage'
 
 // Carrega o detalhe de um registro (cache primeiro, rede em seguida) e expõe o pull-to-refresh.
@@ -66,7 +67,7 @@ export function useRecordDetail(recordId: number | undefined) {
 
 					if (!cached) {
 						setLoadError(
-							getLoadErrorMessage(error, 'Não foi possível carregar o registro. Tente de novo.'),
+							getLoadErrorMessage(error, i18n.t('detail:loadError')),
 						)
 					}
 				}

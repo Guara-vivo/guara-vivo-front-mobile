@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 import { appStyles } from '../../../styles/appStyles'
 import type { HistoryFilterState } from '../../../hooks/useHistoryFilters'
 import { formatInputDate, parseInputDate } from '../../../utils/inputDate'
-import { DatePickerSheet } from '../../DatePickerSheet'
+import { formatDate } from '../../../utils/recordFormatters'
+import { DateRangePickerSheet } from '../../DateRangePickerSheet'
 import type { FilterFieldSetter } from './FilterSection'
 import { colors } from '../../../constants/theme'
 
@@ -13,43 +15,51 @@ type Props = {
 	setField: FilterFieldSetter
 }
 
-type DateField = 'fromDate' | 'toDate'
+// Conteúdo da seção Período: um campo que abre o calendário de faixa (toque no início e no fim).
+// O valor guardado continua sendo dd/mm/aaaa em `fromDate` e `toDate`.
+export function PeriodFilter({ draftFilters, setField }: Props) {
+	const { t } = useTranslation('history')
+	const [isPickerOpen, setIsPickerOpen] = useState(false)
 
-function DateButton({
-	title,
-	label,
-	value,
-	onPress,
-	onClear,
-}: {
-	title: string
-	label: string
-	value: string
-	onPress: () => void
-	onClear: () => void
-}) {
-	const hasValue = value.trim() !== ''
+	const start = parseInputDate(draftFilters.fromDate)
+	const end = parseInputDate(draftFilters.toDate)
+	const label = t('filters.period')
+	const hasValue = start !== null || end !== null
+
+	let shown = ''
+	if (start && end) {
+		shown = t('filters.periodBetween', {
+			start: formatDate(start.toISOString()),
+			end: formatDate(end.toISOString()),
+		})
+	} else if (start || end) {
+		shown = t('filters.periodFrom', { date: formatDate((start ?? end)!.toISOString()) })
+	}
 
 	return (
-		<View style={appStyles.filterColumn}>
-			<Text style={appStyles.filterLabel}>{title}</Text>
+		<>
 			<View style={appStyles.filterField}>
 				<Pressable
-					onPress={onPress}
+					onPress={() => setIsPickerOpen(true)}
 					accessibilityRole="button"
-					accessibilityLabel={hasValue ? `${label}: ${value}. Alterar` : `${label}. Escolher no calendário`}
+					accessibilityLabel={
+						hasValue ? t('filters.changeDate', { label, value: shown }) : t('filters.pickDate', { label })
+					}
 					style={appStyles.filterFieldPressable}
 				>
 					<Text style={[appStyles.filterFieldText, !hasValue && appStyles.filterFieldPlaceholder]}>
-						{hasValue ? value : 'Selecionar'}
+						{hasValue ? shown : t('filters.select')}
 					</Text>
 				</Pressable>
 				{hasValue ? (
 					<Pressable
-						onPress={onClear}
+						onPress={() => {
+							setField('fromDate', '')
+							setField('toDate', '')
+						}}
 						hitSlop={8}
 						accessibilityRole="button"
-						accessibilityLabel={`Limpar ${label.toLowerCase()}`}
+						accessibilityLabel={t('filters.clearDate', { label: label.toLowerCase() })}
 					>
 						<Ionicons name="close-circle" size={20} color={colors.muted} />
 					</Pressable>
@@ -57,39 +67,17 @@ function DateButton({
 					<Ionicons accessible={false} name="calendar-outline" size={18} color={colors.muted} />
 				)}
 			</View>
-		</View>
-	)
-}
 
-// Conteúdo da seção Período: data inicial e final escolhidas no calendário (sem digitar).
-export function PeriodFilter({ draftFilters, setField }: Props) {
-	const [editing, setEditing] = useState<DateField | null>(null)
-
-	return (
-		<>
-			<View style={appStyles.filterRow}>
-				<DateButton
-					title="De"
-					label="Data inicial"
-					value={draftFilters.fromDate}
-					onPress={() => setEditing('fromDate')}
-					onClear={() => setField('fromDate', '')}
-				/>
-				<DateButton
-					title="Até"
-					label="Data final"
-					value={draftFilters.toDate}
-					onPress={() => setEditing('toDate')}
-					onClear={() => setField('toDate', '')}
-				/>
-			</View>
-
-			{editing ? (
-				<DatePickerSheet
-					title={editing === 'fromDate' ? 'Data inicial' : 'Data final'}
-					value={parseInputDate(draftFilters[editing])}
-					onConfirm={(date) => setField(editing, formatInputDate(date))}
-					onClose={() => setEditing(null)}
+			{isPickerOpen ? (
+				<DateRangePickerSheet
+					title={label}
+					start={start}
+					end={end}
+					onConfirm={(range) => {
+						setField('fromDate', range.start ? formatInputDate(range.start) : '')
+						setField('toDate', range.end ? formatInputDate(range.end) : '')
+					}}
+					onClose={() => setIsPickerOpen(false)}
 				/>
 			) : null}
 		</>
