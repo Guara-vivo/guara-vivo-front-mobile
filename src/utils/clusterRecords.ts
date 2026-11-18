@@ -11,10 +11,11 @@ export type RecordClusterItem =
 			records: MapZoneRecordRead[]
 	  }
 
-// Lado da célula da grade, em dp: marcadores mais próximos que isso se juntam num grupo.
-const CLUSTER_CELL_DP = 60
-// A partir deste zoom os registros aparecem um a um (mesmo empilhados).
-const NO_CLUSTER_FROM_ZOOM = 18
+// Dois marcadores a menos que isso (em dp, centro a centro) se juntam num grupo. O marcador tem
+// 46 dp, então 70 dp deixa um respiro entre os que ficam fora do grupo.
+const CLUSTER_RADIUS_DP = 70
+// A partir deste zoom os registros aparecem um a um (é o limite prático do mapa).
+const NO_CLUSTER_FROM_ZOOM = 20
 const TILE_SIZE = 256
 
 // Zoom do Google Maps a partir da largura de longitude visível (e da largura da tela em dp).
@@ -33,9 +34,16 @@ function worldPixel(latitude: number, longitude: number, zoom: number) {
 	}
 }
 
-// Junta registros próximos numa grade de células de CLUSTER_CELL_DP. Célula com um registro só
-// continua sendo o registro; com dois ou mais vira um grupo na posição média. Agrupamento simples
-// (sem biblioteca): basta para algumas centenas de registros.
+type Group = { records: MapZoneRecordRead[]; x: number; y: number }
+
+function distance(a: { x: number; y: number }, b: { x: number; y: number }) {
+	return Math.hypot(a.x - b.x, a.y - b.y)
+}
+
+// Junta registros próximos na tela: cada registro entra no grupo mais perto dentro do raio (ou abre
+// um novo) e, no fim, grupos que ficaram perto uns dos outros se fundem. Sem grade, então não há
+// efeito de borda. Grupo com um registro só continua sendo o registro; com dois ou mais vira um
+// grupo na posição média. Basta para algumas centenas de registros.
 export function clusterRecords(records: MapZoneRecordRead[], zoom: number): RecordClusterItem[] {
 	const roundedZoom = Math.round(zoom)
 
@@ -43,39 +51,70 @@ export function clusterRecords(records: MapZoneRecordRead[], zoom: number): Reco
 		return records.map((record) => ({ kind: 'record', record }))
 	}
 
-	const cells = new Map<string, MapZoneRecordRead[]>()
+	const groups: Group[] = []
 
 	for (const record of records) {
-		const { x, y } = worldPixel(record.latitude_camera, record.longitude_camera, roundedZoom)
-		const cell = `${Math.floor(x / CLUSTER_CELL_DP)}:${Math.floor(y / CLUSTER_CELL_DP)}`
-		const bucket = cells.get(cell)
+		const point = worldPixel(record.latitude_camera, record.longitude_camera, roundedZoom)
+		let nearest: Group | null = null
+		let nearestDistance = CLUSTER_RADIUS_DP
 
-		if (bucket) {
-			bucket.push(record)
+		for (const group of groups) {
+			const d = distance(group, point)
+
+			if (d <= nearestDistance) {
+				nearest = group
+				nearestDistance = d
+			}
+		}
+
+		if (nearest) {
+			const size = nearest.records.length
+			nearest.x = (nearest.x * size + point.x) / (size + 1)
+			nearest.y = (nearest.y * size + point.y) / (size + 1)
+			nearest.records.push(record)
 		} else {
-			cells.set(cell, [record])
+			groups.push({ records: [record], x: point.x, y: point.y })
 		}
 	}
 
-	const items: RecordClusterItem[] = []
+	let merged = true
 
-	for (const [cell, bucket] of cells) {
-		if (bucket.length === 1) {
-			items.push({ kind: 'record', record: bucket[0] })
-			continue
+	while (merged) {
+		merged = false
+
+		for (let i = 0; i < groups.length && !merged; i += 1) {
+			for (let j = i + 1; j < groups.length && !merged; j += 1) {
+				if (distance(groups[i], groups[j]) <= CLUSTER_RADIUS_DP) {
+					const a = groups[i]
+					const b = groups[j]
+					const total = a.records.length + b.records.length
+
+					a.x = (a.x * a.records.length + b.x * b.records.length) / total
+					a.y = (a.y * a.records.length + b.y * b.records.length) / total
+					a.records.push(...b.records)
+					groups.splice(j, 1)
+					merged = true
+				}
+			}
+		}
+	}
+
+	return groups.map((group): RecordClusterItem => {
+		if (group.records.length === 1) {
+			return { kind: 'record', record: group.records[0] }
 		}
 
-		items.push({
+		const count = group.records.length
+
+		return {
 			kind: 'cluster',
-			key: `cluster-${roundedZoom}-${cell}`,
-			latitude: bucket.reduce((sum, record) => sum + record.latitude_camera, 0) / bucket.length,
-			longitude: bucket.reduce((sum, record) => sum + record.longitude_camera, 0) / bucket.length,
-			count: bucket.length,
-			records: bucket,
-		})
-	}
-
-	return items
+			key: `cluster-${roundedZoom}-${Math.min(...group.records.map((record) => record.id))}`,
+			latitude: group.records.reduce((sum, record) => sum + record.latitude_camera, 0) / count,
+			longitude: group.records.reduce((sum, record) => sum + record.longitude_camera, 0) / count,
+			count,
+			records: group.records,
+		}
+	})
 }
 
 // Rótulo do grupo: o número exato até 9 e faixas ("10+", "20+", "50+", "100+") acima disso.
