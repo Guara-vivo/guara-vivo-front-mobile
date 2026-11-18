@@ -195,9 +195,8 @@ export function MapsScreen() {
 					markerViewerId={admin.isAdmin ? admin.viewerId : undefined}
 					onMapPress={selectionMode ? handleMapPress : undefined}
 					onZonePress={!selectionMode ? openSheet : undefined}
-					onRecordMarkerPress={
-						!selectionMode ? (admin.isAdmin ? admin.handleMarkerPress : onRecordMarkerPress) : undefined
-					}
+					onRecordMarkerPress={!selectionMode ? onRecordMarkerPress : undefined}
+					recordBalloon={!selectionMode && admin.isAdmin ? admin.recordBalloon : undefined}
 					selectedZoneId={ctx.selectedZone?.id ?? null}
 					selectedRecordId={ctx.selectedRecordId}
 					isLoadingData={isZonesLoading}

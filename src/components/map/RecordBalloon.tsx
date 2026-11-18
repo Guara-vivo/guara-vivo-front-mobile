@@ -10,6 +10,12 @@ import { mapViewStyles as styles } from './mapViewStyles'
 export const BALLOON_WIDTH_DP = 232
 export const BALLOON_HEIGHT_DP = 60
 
+// O que o mapa precisa saber do dono do balão: quando mostrá-lo e o que fazer ao tocar nele.
+export type RecordBalloonHandlers = {
+	shouldShow: (recordId: number) => boolean
+	onPress: (recordId: number) => void
+}
+
 type RecordBalloonProps = {
 	record: MapZoneRecordRead
 	placement: BalloonPlacement
