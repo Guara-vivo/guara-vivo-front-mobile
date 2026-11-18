@@ -5,9 +5,9 @@ import type { MapZoneRecordRead } from '../types/api'
 // lugar quando o admin aproxima ou afasta o mapa. Com mais zoom o espaço entre eles só aumenta.
 export const FAN_OUT_REFERENCE_ZOOM = 20
 // Dois marcadores (ponto de 32 dp) a menos que isso, centro a centro, se cobrem.
-export const FAN_OUT_MIN_DISTANCE_DP = 34
+export const FAN_OUT_MIN_DISTANCE_DP = 42
 // Distância mínima entre os pontos depois de afastados (um respiro de 2 dp além do marcador).
-const FAN_OUT_SPACING_DP = 36
+const FAN_OUT_SPACING_DP = 44
 // Pontos que cabem no primeiro círculo; o k-ésimo círculo (a partir de 0) tem raio
 // SPACING * (k + 1) e comporta 6 * (k + 1) pontos.
 const FIRST_RING_CAPACITY = 6
