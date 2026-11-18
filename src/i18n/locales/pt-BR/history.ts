@@ -28,6 +28,7 @@ export default {
 		open: 'Ver detalhes do registro {{id}}: {{state}}, {{area}}',
 		stateNotSent: 'não enviado',
 		stateNoCount: 'sem contagem ainda',
+		sentBy: 'Enviado por {{name}}',
 	},
 	filters: {
 		title: 'Filtros',
