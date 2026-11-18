@@ -1,5 +1,5 @@
 import MapView, { Circle } from 'react-native-maps'
-import { ActivityIndicator, Text, View } from 'react-native'
+import { ActivityIndicator, Dimensions, Text, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import type { MapLayerId } from '../config/map'
@@ -13,7 +13,9 @@ import {
 	getZoneCircleColors,
 } from '../utils/mapZoneStyle'
 import { findZoneAtCoordinate } from '../utils/mapZoneHit'
+import { clusterRecords, zoomFromLongitudeDelta } from '../utils/clusterRecords'
 import { mapViewStyles as styles } from './map/mapViewStyles'
+import { ClusterMarker } from './map/ClusterMarker'
 import { RecordMarker } from './map/RecordMarker'
 import { ZoneMarker } from './map/ZoneMarker'
 import { UserLocationMarker } from './map/UserLocationMarker'
@@ -61,6 +63,16 @@ function MapLibreMapViewBase({
 	const { initialRegion, initialRegionReady, persistCameraRegion } = useStoredCameraRegion()
 	const { visibleRecordMarkers, recordMarkerOpacity } = useRecordMarkerFade(activeRecordMarkers)
 	const { cameraTargetRegion, hasLocationTarget, locationReady } = useCurrentLocationTarget()
+
+	// Zoom inteiro do mapa; só o admin agrupa registros (as demais contas seguem como antes).
+	const [zoom, setZoom] = useState<number | null>(null)
+	const clusteringEnabled = markerViewerId !== undefined
+
+	useEffect(() => {
+		if (initialRegionReady) {
+			setZoom((current) => current ?? Math.round(zoomFromLongitudeDelta(initialRegion.longitudeDelta, Dimensions.get('window').width)))
+		}
+	}, [initialRegion, initialRegionReady])
 
 	useEffect(() => {
 		let cameraFallback: ReturnType<typeof setTimeout> | undefined
@@ -136,22 +148,49 @@ function MapLibreMapViewBase({
 		))
 	}, [onZonePress, selectedZoneId, visibleZones])
 
-	const selectedRecordMarkers = useMemo(() => {
-		return visibleRecordMarkers.map((record) => {
-			const selected = record.id === selectedRecordId
+	const clusterItems = useMemo(
+		() => (clusteringEnabled && zoom !== null ? clusterRecords(visibleRecordMarkers, zoom) : null),
+		[clusteringEnabled, zoom, visibleRecordMarkers],
+	)
 
+	const selectedRecordMarkers = useMemo(() => {
+		const renderRecord = (record: MapZoneRecordRead) => (
+			<RecordMarker
+				key={`record-marker-${record.id}`}
+				record={record}
+				focused={record.id === selectedRecordId}
+				opacity={recordMarkerOpacity}
+				onPress={onRecordMarkerPress}
+				viewerId={markerViewerId}
+			/>
+		)
+
+		if (!clusterItems) {
+			return visibleRecordMarkers.map(renderRecord)
+		}
+
+		return clusterItems.map((item) => {
+			if (item.kind === 'record') {
+				return renderRecord(item.record)
+			}
+
+			// Toque no grupo: aproxima o mapa até enquadrar os registros dele.
 			return (
-				<RecordMarker
-					key={`record-marker-${record.id}`}
-					record={record}
-					focused={selected}
-					opacity={recordMarkerOpacity}
-					onPress={onRecordMarkerPress}
-					viewerId={markerViewerId}
+				<ClusterMarker
+					key={item.key}
+					latitude={item.latitude}
+					longitude={item.longitude}
+					count={item.count}
+					onPress={() => {
+						mapRef.current?.fitToCoordinates(
+							item.records.map((record) => ({ latitude: record.latitude_camera, longitude: record.longitude_camera })),
+							{ edgePadding: { top: 220, right: 120, bottom: 220, left: 120 }, animated: true },
+						)
+					}}
 				/>
 			)
 		})
-	}, [selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
+	}, [clusterItems, selectedRecordId, onRecordMarkerPress, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
 
 	const { t } = useTranslation('map')
 	const showMapLoading = isLoadingData || !initialRegionReady || !mapReady || !cameraReady
@@ -168,6 +207,7 @@ function MapLibreMapViewBase({
 					}}
 					onRegionChangeComplete={(region) => {
 						persistCameraRegion(region)
+						setZoom(Math.round(zoomFromLongitudeDelta(region.longitudeDelta, Dimensions.get('window').width)))
 
 						if (cameraInitializedRef.current && !cameraReady) {
 							setCameraReady(true)
