@@ -29,6 +29,22 @@ export function getRecordMarkerKind(
 	return hit ? 'other-hit' : 'other-plain'
 }
 
+export type RecordMarkerVariant = 'normal' | 'compact' | 'focused'
+
+// Qual imagem usar: o registro em foco é sempre o grande; no modo compacto só os marcadores de
+// guará encolhem (os pontos simples já são pequenos).
+export function getRecordMarkerVariant(
+	kind: RecordMarkerKind,
+	focused: boolean,
+	compact: boolean,
+): RecordMarkerVariant {
+	if (focused) {
+		return 'focused'
+	}
+
+	return compact && (kind === 'own-hit' || kind === 'other-hit') ? 'compact' : 'normal'
+}
+
 // Metade do tamanho da imagem do marcador em foco (record-marker-selected 58 dp; record-dot-selected 30 dp),
 // para o balão encostar nele sem cobri-lo.
 export function focusedMarkerRadius(kind: RecordMarkerKind): number {

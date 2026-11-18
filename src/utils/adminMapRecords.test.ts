@@ -2,6 +2,7 @@ import {
 	filterRecordsByLayer,
 	getRecordMarkerKind,
 	focusedMarkerRadius,
+	getRecordMarkerVariant,
 	isAdminViewOfRecord,
 	shouldShowRecordBalloon,
 } from './adminMapRecords'
@@ -125,5 +126,27 @@ describe('focusedMarkerRadius', () => {
 		expect(focusedMarkerRadius('other-hit')).toBe(29)
 		expect(focusedMarkerRadius('own-plain')).toBe(15)
 		expect(focusedMarkerRadius('other-plain')).toBe(15)
+	})
+})
+
+describe('getRecordMarkerVariant', () => {
+	it('uses the focused image for the focused record, whatever the kind and size', () => {
+		expect(getRecordMarkerVariant('own-hit', true, true)).toBe('focused')
+		expect(getRecordMarkerVariant('other-plain', true, false)).toBe('focused')
+	})
+
+	it('shrinks guará records to a solid dot when compact', () => {
+		expect(getRecordMarkerVariant('own-hit', false, true)).toBe('compact')
+		expect(getRecordMarkerVariant('other-hit', false, true)).toBe('compact')
+	})
+
+	it('keeps the regular image when not compact', () => {
+		expect(getRecordMarkerVariant('own-hit', false, false)).toBe('normal')
+		expect(getRecordMarkerVariant('other-hit', false, false)).toBe('normal')
+	})
+
+	it('never changes the plain dots, which are already small', () => {
+		expect(getRecordMarkerVariant('own-plain', false, true)).toBe('normal')
+		expect(getRecordMarkerVariant('other-plain', false, true)).toBe('normal')
 	})
 })

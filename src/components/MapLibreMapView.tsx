@@ -16,7 +16,7 @@ import { findZoneAtCoordinate } from '../utils/mapZoneHit'
 import { focusedMarkerRadius, getRecordMarkerKind } from '../utils/adminMapRecords'
 import { placeBalloon } from '../utils/balloonPlacement'
 import { keepClustersClearOfZones } from '../utils/clusterPlacement'
-import { clusterRecords, zoomFromLongitudeDelta } from '../utils/clusterRecords'
+import { clusterRecords, shouldUseCompactMarkers, zoomFromLongitudeDelta } from '../utils/clusterRecords'
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { ClusterMarker } from './map/ClusterMarker'
 import { BALLOON_HEIGHT_DP, BALLOON_WIDTH_DP, RecordBalloon, type RecordBalloonHandlers } from './map/RecordBalloon'
@@ -270,6 +270,7 @@ function MapLibreMapViewBase({
 				record={record}
 				// Em foco (cor e tamanho diferentes) o registro selecionado na folha da zona e o do balão aberto.
 				focused={record.id === selectedRecordId || record.id === balloon?.recordId}
+				compact={clusteringEnabled && shouldUseCompactMarkers(zoom)}
 				opacity={recordMarkerOpacity}
 				onPress={handleRecordPress}
 				viewerId={markerViewerId}
@@ -302,7 +303,7 @@ function MapLibreMapViewBase({
 				/>
 			)
 		})
-	}, [balloon?.recordId, clusterItems, closeBalloon, handleRecordPress, selectedRecordId, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
+	}, [balloon?.recordId, clusterItems, clusteringEnabled, closeBalloon, handleRecordPress, selectedRecordId, recordMarkerOpacity, visibleRecordMarkers, markerViewerId, zoom])
 
 	const balloonRecord = balloon ? visibleRecordMarkers.find((record) => record.id === balloon.recordId) : undefined
 	const balloonPlacement = useMemo(
