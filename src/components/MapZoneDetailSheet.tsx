@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import {
   Animated,
   Pressable,
-  ScrollView,
   Text,
   View,
   type LayoutChangeEvent,
@@ -12,7 +11,10 @@ import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet'
+import BottomSheet, {
+  BottomSheetScrollView,
+  type BottomSheetScrollViewMethods,
+} from '@gorhom/bottom-sheet'
 import { useMapZoneDetail } from '../contexts/MapZoneDetailContext'
 import { Skeleton } from './Skeleton'
 import { appStyles } from '../styles/appStyles'
@@ -113,10 +115,13 @@ export function MapZoneDetailSheet() {
   const ctx = useMapZoneDetail()
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const bottomSheetRef = useRef<BottomSheet>(null)
-  const recordScrollRef = useRef<ScrollView>(null)
+  // Rolagem da própria folha: a lista inteira de registros mora dentro dela (um ScrollView interno
+  // perdia o arrasto para o gesto da folha e os registros do 5º em diante não eram alcançáveis).
+  const sheetScrollRef = useRef<BottomSheetScrollViewMethods>(null)
+  const recordsSectionYRef = useRef(0)
   const recordRowYByIdRef = useRef<Record<number, number>>({})
-  const RECORD_ROW_HEIGHT = 108
-  const MAX_VISIBLE_ROWS = 4
+  // Altura da linha (100) mais o espaço entre linhas (8): usada se a posição medida ainda não existe.
+  const RECORD_ROW_STRIDE = 108
 
   const closingByCodeRef = useRef(false)
   const snapPoints = [`${LOW_SNAP_FRACTION * 100}%`, '80%']
@@ -139,8 +144,10 @@ export function MapZoneDetailSheet() {
   const scrollToRecordRow = useCallback((recordId: number) => {
     const idx = visibleZoneRecords.findIndex((r) => r.id === recordId)
     if (idx >= 0) {
-      recordScrollRef.current?.scrollTo({
-        y: idx * RECORD_ROW_HEIGHT,
+      // A posição da linha é medida a partir da seção de registros; soma o início da seção.
+      const rowY = recordRowYByIdRef.current[recordId] ?? idx * RECORD_ROW_STRIDE
+      sheetScrollRef.current?.scrollTo({
+        y: Math.max(0, recordsSectionYRef.current + rowY),
         animated: true,
       })
     }
@@ -150,8 +157,6 @@ export function MapZoneDetailSheet() {
     ctx.registerScrollToRecord(scrollToRecordRow)
   }, [ctx, scrollToRecordRow])
 
-  // A altura da lista já nasce com até 4 linhas: enquanto a folha sobe, os registros já aparecem
-  // (antes ela só crescia depois de soltar). Na posição baixa, o excesso fica abaixo da tela.
   const handleSheetChange = useCallback(
     (index: number) => {
       if (index === -1) {
@@ -200,7 +205,7 @@ export function MapZoneDetailSheet() {
       backgroundStyle={appStyles.zoneBottomSheetBackground}
       handleIndicatorStyle={appStyles.zoneBottomSheetIndicator}
     >
-      <BottomSheetScrollView scrollEnabled={false}>
+      <BottomSheetScrollView ref={sheetScrollRef}>
         <View style={appStyles.zoneBottomSheetContent}>
         {ctx.selectedZone && (
             <>
@@ -294,7 +299,12 @@ export function MapZoneDetailSheet() {
                 </Text>
               </View>
 
-              <View style={appStyles.mapZoneRecordsSection}>
+              <View
+                style={appStyles.mapZoneRecordsSection}
+                onLayout={(event) => {
+                  recordsSectionYRef.current = event.nativeEvent.layout.y
+                }}
+              >
                 <Text accessibilityRole="header" style={appStyles.mapZoneRecordsTitle}>
                   {t('sheet.recordsTitle')}
                 </Text>
@@ -323,14 +333,7 @@ export function MapZoneDetailSheet() {
                     {ctx.zoneRecordsError}
                   </Text>
                 ) : visibleZoneRecords.length > 0 ? (
-                    <View style={{ height: RECORD_ROW_HEIGHT * Math.min(visibleZoneRecords.length, MAX_VISIBLE_ROWS) }}>
-                    <ScrollView
-                      ref={recordScrollRef}
-                      snapToInterval={RECORD_ROW_HEIGHT}
-                      decelerationRate="fast"
-                      showsVerticalScrollIndicator={false}
-                      nestedScrollEnabled
-                    >
+                    <>
                       {visibleZoneRecords.map((record) => (
                         <ZoneRecordRow
                           key={record.id}
@@ -341,8 +344,7 @@ export function MapZoneDetailSheet() {
                           onLayout={handleRecordRowLayout}
                         />
                       ))}
-                    </ScrollView>
-                    </View>
+                    </>
                 ) : (
                   <Text style={appStyles.mapZoneRecordsStatusText}>
                     {t('sheet.recordsEmpty')}
