@@ -375,11 +375,17 @@ function MapLibreMapViewBase({
 					initialRegion={initialRegion}
 					onPress={(e) => {
 						const { latitude, longitude } = e.nativeEvent.coordinate
+						// Com o balão aberto, o toque vazio só o fecha: não abre a zona que estiver sob o dedo.
+						const balloonWasOpen = balloonRecordIdRef.current !== null
 
 						closeBalloon()
 
 						if (onMapPress) {
 							onMapPress(latitude, longitude)
+							return
+						}
+
+						if (balloonWasOpen) {
 							return
 						}
 
