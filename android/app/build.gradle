@@ -110,6 +110,14 @@ android {
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
     signingConfigs {
+        // Teste local (-PlocalDebugSign): o Google Maps só aceita o SHA-1 deste debug.keystore. Sem esta
+        // definição o Gradle assinaria com o ~/.android/debug.keystore da máquina e o mapa não carregaria.
+        debug {
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
         release {
           storeFile file("app.keystore")
           storePassword System.getenv("ANDROID_STORE_PASSWORD")
