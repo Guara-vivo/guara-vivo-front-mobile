@@ -65,6 +65,11 @@ function HistoryRecordCardBase({
 				<Text numberOfLines={1} style={appStyles.historyRecordMeta}>
 					{meta}
 				</Text>
+				{item.author_name ? (
+					<Text numberOfLines={1} style={appStyles.historyRecordMeta}>
+						{t('card.sentBy', { name: item.author_name })}
+					</Text>
+				) : null}
 				{syncState ? (
 					<View
 						style={[

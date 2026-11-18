@@ -28,6 +28,7 @@ export default {
 		open: 'View details of record {{id}}: {{state}}, {{area}}',
 		stateNotSent: 'not sent',
 		stateNoCount: 'no count yet',
+		sentBy: 'Sent by {{name}}',
 	},
 	filters: {
 		title: 'Filters',
