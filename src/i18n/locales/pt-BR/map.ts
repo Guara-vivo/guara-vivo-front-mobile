@@ -24,6 +24,7 @@ export default {
 		feeding: 'Área de alimentação',
 		record: 'Registro {{id}}, {{ibis}}',
 		recordBy: 'Registro {{id}}, {{ibis}}, enviado por {{author}}',
+		cluster: 'Grupo de {{count}} registros. Toque para aproximar.',
 		userTitle: 'Sua localização',
 		userDescription: 'Localização atual',
 	},

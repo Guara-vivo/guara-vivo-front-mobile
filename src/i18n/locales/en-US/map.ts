@@ -24,6 +24,7 @@ export default {
 		feeding: 'Feeding zone',
 		record: 'Record {{id}}, {{ibis}}',
 		recordBy: 'Record {{id}}, {{ibis}}, sent by {{author}}',
+		cluster: 'Group of {{count}} records. Tap to zoom in.',
 		userTitle: 'Your location',
 		userDescription: 'Current location',
 	},
