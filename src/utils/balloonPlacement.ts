@@ -19,12 +19,20 @@ type Size = { width: number; height: number }
 // Onde desenhar o balão de um registro, no mesmo sistema de coordenadas do container (dp). Fica
 // centralizado no marcador, dentro das margens laterais, acima dele; vai para baixo quando não
 // sobra espaço em cima (perto do topo ou dos chips). Se nenhum lado cabe, usa o que tem mais espaço.
+// Sem balão (null) quando o marcador saiu da área visível do mapa: ele não ficaria ancorado em nada
+// e apareceria cortado ou sob os chips.
 export function placeBalloon(input: {
 	anchor: { x: number; y: number }
 	balloon: Size
 	container: Size
-}): BalloonPlacement {
+}): BalloonPlacement | null {
 	const { anchor, balloon, container } = input
+	const r = BALLOON_MARKER_RADIUS_DP
+
+	if (anchor.x < -r || anchor.x > container.width + r || anchor.y < -r || anchor.y > container.height + r) {
+		return null
+	}
+
 	const gap = BALLOON_MARKER_RADIUS_DP + BALLOON_POINTER_DP
 	const maxLeft = container.width - BALLOON_MARGIN_DP - balloon.width
 	const left = Math.max(BALLOON_MARGIN_DP, Math.min(anchor.x - balloon.width / 2, maxLeft))

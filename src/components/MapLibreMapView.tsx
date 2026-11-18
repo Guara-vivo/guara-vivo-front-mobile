@@ -343,6 +343,9 @@ function MapLibreMapViewBase({
 							setCameraReady(true)
 						}
 					}}
+					// Sem a barra de rotas do Google que o Android mostra com um marcador selecionado (o balão
+					// já mostra o essencial e a barra ficava atrás dos botões do mapa).
+					toolbarEnabled={false}
 					showsPointsOfInterest={false}
 					showsIndoors={false}
 					showsBuildings={false}
