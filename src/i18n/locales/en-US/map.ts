@@ -28,6 +28,10 @@ export default {
 		userTitle: 'Your location',
 		userDescription: 'Current location',
 	},
+	balloon: {
+		open: 'Open details for record {{id}}',
+		unknownAuthor: 'Unknown author',
+	},
 	adminRecords: {
 		loadError: "Could not load all users' records. The map shows only what was already loaded.",
 	},

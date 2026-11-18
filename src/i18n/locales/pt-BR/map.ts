@@ -28,6 +28,10 @@ export default {
 		userTitle: 'Sua localização',
 		userDescription: 'Localização atual',
 	},
+	balloon: {
+		open: 'Abrir detalhes do registro {{id}}',
+		unknownAuthor: 'Autor não informado',
+	},
 	adminRecords: {
 		loadError: 'Não foi possível carregar os registros de todos os usuários. O mapa mostra só o que já estava carregado.',
 	},
