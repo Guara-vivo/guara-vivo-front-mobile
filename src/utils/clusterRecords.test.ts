@@ -1,4 +1,4 @@
-import { clusterLabel, clusterRecords, zoomFromLongitudeDelta } from './clusterRecords'
+import { clusterLabel, clusterRecords, shouldUseCompactMarkers, zoomFromLongitudeDelta } from './clusterRecords'
 import type { MapZoneRecordRead } from '../types/api'
 
 function makeRecord(id: number, latitude: number, longitude: number): MapZoneRecordRead {
@@ -141,5 +141,17 @@ describe('clusterLabel', () => {
 			'100+',
 			'100+',
 		])
+	})
+})
+
+describe('shouldUseCompactMarkers', () => {
+	it('is true only once the records stop being grouped (zoom 20 and up)', () => {
+		expect(shouldUseCompactMarkers(19.4)).toBe(false)
+		expect(shouldUseCompactMarkers(19.6)).toBe(true)
+		expect(shouldUseCompactMarkers(21)).toBe(true)
+	})
+
+	it('is false while the zoom is still unknown', () => {
+		expect(shouldUseCompactMarkers(null)).toBe(false)
 	})
 })

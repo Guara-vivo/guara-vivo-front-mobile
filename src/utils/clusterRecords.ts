@@ -18,6 +18,12 @@ const CLUSTER_RADIUS_DP = 70
 const NO_CLUSTER_FROM_ZOOM = 20
 const TILE_SIZE = 256
 
+// Com os registros aparecendo um a um (sem grupos) os marcadores de guará encolhem para um ponto
+// sólido de 32 dp, para os que ficam muito próximos não se cobrirem tanto.
+export function shouldUseCompactMarkers(zoom: number | null): boolean {
+	return zoom !== null && Math.round(zoom) >= NO_CLUSTER_FROM_ZOOM
+}
+
 // Zoom do Google Maps a partir da largura de longitude visível (e da largura da tela em dp).
 export function zoomFromLongitudeDelta(longitudeDelta: number, screenWidthDp: number) {
 	return Math.log2((360 * screenWidthDp) / (TILE_SIZE * longitudeDelta))

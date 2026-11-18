@@ -19,6 +19,8 @@ export default {
 	cancelSelection: 'Cancelar seleção de área',
 	locate: 'Ir para minha localização',
 	reload: 'Atualizar áreas',
+	hideZoneIcons: 'Ocultar ícones das áreas',
+	showZoneIcons: 'Mostrar ícones das áreas',
 	marker: {
 		nest: 'Ninho',
 		feeding: 'Área de alimentação',
@@ -27,6 +29,10 @@ export default {
 		cluster: 'Grupo de {{count}} registros. Toque para aproximar.',
 		userTitle: 'Sua localização',
 		userDescription: 'Localização atual',
+	},
+	balloon: {
+		open: 'Abrir detalhes do registro {{id}}',
+		unknownAuthor: 'Autor não informado',
 	},
 	adminRecords: {
 		loadError: 'Não foi possível carregar os registros de todos os usuários. O mapa mostra só o que já estava carregado.',

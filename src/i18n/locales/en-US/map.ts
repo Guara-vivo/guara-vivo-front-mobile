@@ -19,6 +19,8 @@ export default {
 	cancelSelection: 'Cancel zone selection',
 	locate: 'Go to my location',
 	reload: 'Refresh zones',
+	hideZoneIcons: 'Hide zone icons',
+	showZoneIcons: 'Show zone icons',
 	marker: {
 		nest: 'Nest',
 		feeding: 'Feeding zone',
@@ -27,6 +29,10 @@ export default {
 		cluster: 'Group of {{count}} records. Tap to zoom in.',
 		userTitle: 'Your location',
 		userDescription: 'Current location',
+	},
+	balloon: {
+		open: 'Open details for record {{id}}',
+		unknownAuthor: 'Unknown author',
 	},
 	adminRecords: {
 		loadError: "Could not load all users' records. The map shows only what was already loaded.",
