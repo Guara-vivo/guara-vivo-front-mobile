@@ -34,7 +34,9 @@ export function ClusterMarker({ latitude, longitude, count, onPress }: ClusterMa
 			coordinate={{ latitude, longitude }}
 			onPress={onPress}
 			anchor={{ x: 0.5, y: 0.5 }}
-			zIndex={202}
+			// Acima do ícone da zona (203 e 204), que costuma ficar colado no grupo: tocar no grupo só
+			// aproxima o mapa, e a zona continua alcançável pelo toque na área do círculo.
+			zIndex={205}
 			image={CLUSTER_IMAGES[clusterLabel(count)]}
 			accessibilityLabel={t('marker.cluster', { count })}
 		/>
