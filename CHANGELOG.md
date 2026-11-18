@@ -6,13 +6,14 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
-### Corrigido
-- Na folha de uma área do mapa, a lista de registros mostrava só os 4 primeiros e não rolava: os demais ficavam inalcançáveis, mesmo com o número certo no cabeçalho (por exemplo, "10 registros" e só 4 linhas). Agora a lista inteira aparece e rola junto com a folha.
+Nada ainda.
 
-## [0.2.0] - 2026-11-17 (versionCode 4)
+## [0.2.0] - 2026-11-18 (versionCode 4)
 
 ### Adicionado
 - O aplicativo agora também está em inglês (en-US). A bandeirinha na tela de boas-vindas e na de entrar mostra o idioma atual e troca para o outro com um toque; no Perfil, o grupo "Conta" tem a opção "Idioma". A escolha fica só no aparelho e, na primeira abertura, o app começa em português. As datas seguem o idioma (em inglês, mês antes do dia e horário de 12 h com AM/PM), e o mapa do Google continua em português.
+- Contas de administração veem no mapa os registros de todas as pessoas, não só os próprios. Registros próximos se juntam em grupos com a contagem (toque no grupo para aproximar); registros de outras pessoas têm marcador laranja, e os seus, vermelho. Tocar num registro mostra um balão com o autor, o número, a quantidade de guarás e a data e hora, e tocar no balão abre o detalhe. Um botão de olho esconde os ícones das áreas, deixando só o círculo.
+- No histórico, a conta de administração também lista os registros de todas as pessoas, com a linha "Enviado por …" em cada um.
 
 ### Alterado
 - O aplicativo abre mais rápido para quem já está conectada: a tela inicial aparece logo, sem esperar a internet, e a conta é conferida em segundo plano. Se o servidor encerrar a sessão, o app volta para a tela de entrar.
@@ -20,6 +21,7 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 - O filtro de período do histórico agora usa um calendário só: toque no dia inicial e depois no final, com a faixa pintada, e atalhos de 7 dias, 30 dias e este mês. A data inicial não pode mais ficar maior que a final.
 
 ### Corrigido
+- Na folha de uma área do mapa, a lista de registros mostrava só os 4 primeiros e não rolava: os demais ficavam inalcançáveis, mesmo com o número certo no cabeçalho (por exemplo, "10 registros" e só 4 linhas). Agora a lista inteira aparece e rola junto com a folha.
 - Na tela inicial, os números e o último avistamento não ficam mais escondidos por um esqueleto em boa parte das aberturas: quando o aplicativo já tem a lista guardada no celular, ele a mostra na hora e só indica "Atualizando…" enquanto confere com o servidor. O esqueleto continua só quando não há nada para mostrar.
 - A folha de detalhes de uma área do mapa não fecha mais sem querer ao arrastar de volta para a posição original; agora só fecha com um arrasto longo para baixo (ou pelo X).
 - Na confirmação de excluir uma área do mapa, os botões "Cancelar" e "Excluir" ficavam cortados embaixo da tela; agora a folha cresce até caber o conteúdo.
