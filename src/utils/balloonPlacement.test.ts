@@ -79,4 +79,12 @@ describe('placeBalloon', () => {
 		expect(placeBalloon({ anchor: { x: 180, y: -10 }, balloon: BALLOON, container: CONTAINER })).not.toBeNull()
 		expect(placeBalloon({ anchor: { x: 370, y: 300 }, balloon: BALLOON, container: CONTAINER })).not.toBeNull()
 	})
+
+	it('keeps the pointer clear of a larger marker when given its radius', () => {
+		const above = place({ anchor: { x: 180, y: 400 }, balloon: BALLOON, container: CONTAINER, markerRadius: 29 })
+		const below = place({ anchor: { x: 180, y: 120 }, balloon: BALLOON, container: CONTAINER, markerRadius: 29 })
+
+		expect(above.top).toBe(303)
+		expect(below.top).toBe(157)
+	})
 })

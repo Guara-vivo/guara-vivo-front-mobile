@@ -13,6 +13,7 @@ import {
 	getZoneCircleColors,
 } from '../utils/mapZoneStyle'
 import { findZoneAtCoordinate } from '../utils/mapZoneHit'
+import { focusedMarkerRadius, getRecordMarkerKind } from '../utils/adminMapRecords'
 import { placeBalloon } from '../utils/balloonPlacement'
 import { keepClustersClearOfZones } from '../utils/clusterPlacement'
 import { clusterRecords, zoomFromLongitudeDelta } from '../utils/clusterRecords'
@@ -261,7 +262,8 @@ function MapLibreMapViewBase({
 			<RecordMarker
 				key={`record-marker-${record.id}`}
 				record={record}
-				focused={record.id === selectedRecordId}
+				// Em foco (cor e tamanho diferentes) o registro selecionado na folha da zona e o do balão aberto.
+				focused={record.id === selectedRecordId || record.id === balloon?.recordId}
 				opacity={recordMarkerOpacity}
 				onPress={handleRecordPress}
 				viewerId={markerViewerId}
@@ -294,19 +296,21 @@ function MapLibreMapViewBase({
 				/>
 			)
 		})
-	}, [clusterItems, closeBalloon, handleRecordPress, selectedRecordId, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
+	}, [balloon?.recordId, clusterItems, closeBalloon, handleRecordPress, selectedRecordId, recordMarkerOpacity, visibleRecordMarkers, markerViewerId])
 
 	const balloonRecord = balloon ? visibleRecordMarkers.find((record) => record.id === balloon.recordId) : undefined
 	const balloonPlacement = useMemo(
 		() =>
-			balloon?.anchor && containerSize
+			balloon?.anchor && containerSize && balloonRecord
 				? placeBalloon({
 						anchor: balloon.anchor,
 						balloon: { width: BALLOON_WIDTH_DP, height: BALLOON_HEIGHT_DP },
 						container: containerSize,
+						// O marcador do balão está em foco (maior): a pontinha encosta nele sem cobri-lo.
+						markerRadius: focusedMarkerRadius(getRecordMarkerKind(balloonRecord, markerViewerId ?? null)),
 					})
 				: null,
-		[balloon?.anchor, containerSize],
+		[balloon?.anchor, balloonRecord, containerSize, markerViewerId],
 	)
 
 	const { t } = useTranslation('map')

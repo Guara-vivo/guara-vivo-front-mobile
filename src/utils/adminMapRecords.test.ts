@@ -1,6 +1,7 @@
 import {
 	filterRecordsByLayer,
 	getRecordMarkerKind,
+	focusedMarkerRadius,
 	isAdminViewOfRecord,
 	shouldShowRecordBalloon,
 } from './adminMapRecords'
@@ -115,5 +116,14 @@ describe('shouldShowRecordBalloon', () => {
 
 	it('ignores the zone list when no zone is selected', () => {
 		expect(shouldShowRecordBalloon(5, null, [makeRecord({ id: 5 })])).toBe(true)
+	})
+})
+
+describe('focusedMarkerRadius', () => {
+	it('is the radius of the focused marker image: 29 dp for a guará, 15 dp for a plain dot', () => {
+		expect(focusedMarkerRadius('own-hit')).toBe(29)
+		expect(focusedMarkerRadius('other-hit')).toBe(29)
+		expect(focusedMarkerRadius('own-plain')).toBe(15)
+		expect(focusedMarkerRadius('other-plain')).toBe(15)
 	})
 })

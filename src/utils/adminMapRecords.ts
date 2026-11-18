@@ -29,6 +29,12 @@ export function getRecordMarkerKind(
 	return hit ? 'other-hit' : 'other-plain'
 }
 
+// Metade do tamanho da imagem do marcador em foco (record-marker-selected 58 dp; record-dot-selected 30 dp),
+// para o balão encostar nele sem cobri-lo.
+export function focusedMarkerRadius(kind: RecordMarkerKind): number {
+	return kind === 'own-plain' || kind === 'other-plain' ? 15 : 29
+}
+
 // Admin olhando um registro que não é dele: o detalhe mostra de quem é.
 export function isAdminViewOfRecord(
 	recordUserId: number | undefined,

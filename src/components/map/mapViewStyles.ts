@@ -39,12 +39,19 @@ export const mapViewStyles = StyleSheet.create({
 	},
 	balloon: {
 		...StyleSheet.absoluteFillObject,
-		justifyContent: 'center',
-		gap: 2,
-		paddingHorizontal: spacing.md,
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: spacing.sm,
+		paddingLeft: spacing.md,
+		paddingRight: spacing.sm,
 		borderRadius: radius.md,
 		backgroundColor: colors.surface,
 		...overlayShadow,
+	},
+	balloonBody: {
+		flex: 1,
+		justifyContent: 'center',
+		gap: 2,
 	},
 	balloonRow: {
 		flexDirection: 'row',

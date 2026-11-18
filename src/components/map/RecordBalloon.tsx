@@ -1,5 +1,7 @@
 import { Pressable, Text, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import { useTranslation } from 'react-i18next'
+import { colors } from '../../constants/theme'
 import type { MapZoneRecordRead } from '../../types/api'
 import { BALLOON_POINTER_DP, type BalloonPlacement } from '../../utils/balloonPlacement'
 import { countLabel } from '../../utils/countLabel'
@@ -7,7 +9,7 @@ import { formatDateAtTime } from '../../utils/recordFormatters'
 import { mapViewStyles as styles } from './mapViewStyles'
 
 // Tamanho fixo: a posição é calculada antes de desenhar (utils/balloonPlacement), sem medir a view.
-export const BALLOON_WIDTH_DP = 232
+export const BALLOON_WIDTH_DP = 248
 export const BALLOON_HEIGHT_DP = 60
 
 // O que o mapa precisa saber do dono do balão: quando mostrá-lo e o que fazer ao tocar nele.
@@ -45,15 +47,19 @@ export function RecordBalloon({ record, placement, onPress }: RecordBalloonProps
 				accessibilityLabel={t('balloon.open', { id: record.id })}
 				style={styles.balloon}
 			>
-				<View style={styles.balloonRow}>
-					<Text style={styles.balloonAuthor} numberOfLines={1} ellipsizeMode="tail">
-						{author}
+				<View style={styles.balloonBody}>
+					<View style={styles.balloonRow}>
+						<Text style={styles.balloonAuthor} numberOfLines={1} ellipsizeMode="tail">
+							{author}
+						</Text>
+						<Text style={styles.balloonId}>#{record.id}</Text>
+					</View>
+					<Text style={styles.balloonMeta} numberOfLines={1} ellipsizeMode="tail">
+						{`${countLabel(record.ibis_quantity ?? 0)} · ${formatDateAtTime(record.date_time)}`}
 					</Text>
-					<Text style={styles.balloonId}>#{record.id}</Text>
 				</View>
-				<Text style={styles.balloonMeta} numberOfLines={1} ellipsizeMode="tail">
-					{`${countLabel(record.ibis_quantity ?? 0)} · ${formatDateAtTime(record.date_time)}`}
-				</Text>
+				{/* Seta à direita: diz que o balão é tocável e leva ao detalhe. */}
+				<Ionicons name="chevron-forward" size={22} color={colors.secondary} />
 			</Pressable>
 			<View
 				pointerEvents="none"
