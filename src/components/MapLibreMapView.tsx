@@ -12,6 +12,7 @@ import {
 	filterZonesByLayer,
 	getZoneCircleColors,
 } from '../utils/mapZoneStyle'
+import { findZoneAtCoordinate } from '../utils/mapZoneHit'
 import { mapViewStyles as styles } from './map/mapViewStyles'
 import { RecordMarker } from './map/RecordMarker'
 import { ZoneMarker } from './map/ZoneMarker'
@@ -178,8 +179,19 @@ function MapLibreMapViewBase({
 					customMapStyle={mapStyle}
 					initialRegion={initialRegion}
 					onPress={(e) => {
+						const { latitude, longitude } = e.nativeEvent.coordinate
+
 						if (onMapPress) {
-							onMapPress(e.nativeEvent.coordinate.latitude, e.nativeEvent.coordinate.longitude)
+							onMapPress(latitude, longitude)
+							return
+						}
+
+						// O Circle não recebe toque (e o marcador do centro fica sob os registros): o toque na
+						// área da zona é que a abre. Tocar num marcador não passa por aqui.
+						const zone = onZonePress ? findZoneAtCoordinate(visibleZones, latitude, longitude) : null
+
+						if (zone) {
+							onZonePress?.(zone)
 						}
 					}}
 				>
