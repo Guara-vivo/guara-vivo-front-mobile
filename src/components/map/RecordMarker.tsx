@@ -28,7 +28,7 @@ type RecordMarkerProps = {
 // muda (acontecia ao selecionar). Guará nas cores originais; o anel vermelho vira azul e o marcador
 // cresce quando o registro está em foco.
 // Admin: anel laranja para registros de outras pessoas e pontos simples (azul claro, os do próprio
-// usuário; laranja claro, os de outras pessoas) para registros sem guará, pendentes ou com falha.
+// usuário; vermelho claro, os de outras pessoas) para registros sem guará, pendentes ou com falha.
 const RECORD_IMAGE = require('../../assets/images/record-marker.png')
 const RECORD_IMAGE_FOCUSED = require('../../assets/images/record-marker-selected.png')
 const RECORD_IMAGE_OTHER = require('../../assets/images/record-marker-other.png')
