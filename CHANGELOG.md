@@ -6,7 +6,8 @@ Formato: [Semantic Versioning](https://semver.org/lang/pt-BR/). Toda mudança vi
 
 ## [Não lançado]
 
-Nada ainda.
+### Corrigido
+- Na folha de uma área do mapa, a lista de registros mostrava só os 4 primeiros e não rolava: os demais ficavam inalcançáveis, mesmo com o número certo no cabeçalho (por exemplo, "10 registros" e só 4 linhas). Agora a lista inteira aparece e rola junto com a folha.
 
 ## [0.2.0] - 2026-11-17 (versionCode 4)
 
