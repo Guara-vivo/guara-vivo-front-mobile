@@ -18,3 +18,9 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npx jest --ci
+
+      # Só avisa: uma falha nova no registro do npm não deve travar os PRs.
+      # Sobra um aviso alto aceito (image-size dentro do Metro, só no build); ver Guara-vivo/documents#88.
+      - name: Auditoria de dependências
+        continue-on-error: true
+        run: npm audit --audit-level=high
