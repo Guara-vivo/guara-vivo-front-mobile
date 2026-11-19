@@ -8,10 +8,14 @@ O que o app faz:
 - **Registrar** avistamento: fotos, local no mapa, data/hora e comportamento. Funciona offline: o registro fica guardado no aparelho e é enviado quando a internet volta.
 - **Histórico** com busca e filtros, e **detalhe** de cada registro com o resultado da análise de IA (quantidade, cor, fase de vida e confiança por imagem).
 - **Mapas** com as zonas de alimentação e ninhos.
+- **Administração:** contas de admin criam e excluem áreas e veem no mapa e no histórico os registros de todas as pessoas. No mapa, os registros próximos se juntam em grupos com a contagem, e tocar num registro abre um balão com autor, número, guarás e data.
+- **Português e inglês (en-US):** a troca fica na bandeirinha da tela de entrar e em Perfil > Idioma. As datas seguem o idioma.
 
 Ele conversa com a [API](https://github.com/Guara-vivo/guara-vivo-api); a análise de IA acontece no servidor.
 
-**Stack:** Expo SDK 54, React Native 0.81, React 19, TypeScript, React Navigation, `react-native-maps` (Google Maps).
+**Stack:** Expo SDK 54, React Native 0.81, React 19, TypeScript, React Navigation, `react-native-maps` (Google Maps), i18next / react-i18next.
+
+**Baixar o app:** o APK oficial, assinado, fica nas [Releases](https://github.com/Guara-vivo/guara-vivo-front-mobile/releases) deste repositório. Cada merge da `develop` na `main` gera sozinho a tag `vX.Y.Z` e a Release com o APK (`.github/workflows/release.yml`). O que mudou em cada versão está no [`CHANGELOG.md`](CHANGELOG.md), e o fluxo de release está no `AGENTS.md` ("Versionamento e releases"). Esse APK leva só as bibliotecas ARM dos celulares, então não instala no BlueStacks: para testar no emulador, use o `npm run android:install` (abaixo).
 
 ## O que você precisa antes
 
@@ -81,6 +85,8 @@ src/
 ├── components/        componentes reutilizáveis
 ├── hooks/             lógica reutilizável (histórico, registro, mapa, conexão)
 ├── services/          API, autenticação, cache e sincronização
+├── contexts/          estado compartilhado (ex.: registros de todos, só em memória, para o admin)
+├── i18n/              traduções (pt-BR e en-US) e configuração do i18next
 ├── utils/             funções puras (com testes)
 ├── styles/            estilos por assunto
 └── constants/theme.ts cores, espaçamentos e fontes
